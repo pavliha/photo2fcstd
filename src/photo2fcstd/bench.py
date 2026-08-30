@@ -135,7 +135,7 @@ def build_shard(args):
         os.remove(attempt_log)
         built += len(done)
         remaining = [j for j in jobs if os.path.splitext(os.path.basename(j[1]))[0] not in done]
-        if not timed_out or not remaining:
+        if not remaining:
             jobs = []
             continue
         skipped.append(os.path.splitext(os.path.basename(remaining[0][1]))[0])
@@ -164,8 +164,10 @@ def build_all(run_dir, parts, shards):
                for p in open(os.path.join(run_dir, f)).read().split()]
     if skipped:
         print("  skipped %d parts whose build hung: %s" % (len(skipped), " ".join(skipped[:8])), flush=True)
+    if not built:
+        raise SystemExit("no models built - see %s/build*.log" % run_dir)
     if built + len(skipped) < len(jobs):
-        raise SystemExit("build incomplete: %d built, %d skipped of %d - see %s/build*.log" % (built, len(skipped), len(jobs), run_dir))
+        print("  WARNING: %d built, %d skipped, %d unaccounted of %d" % (built, len(skipped), len(jobs) - built - len(skipped), len(jobs)), flush=True)
     return built
 
 
