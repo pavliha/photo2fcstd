@@ -102,13 +102,48 @@ def warm_masks(parts):
     return len(photos), len(todo)
 
 
+PART_BUDGET_S = float(os.environ.get("P2F_PART_BUDGET", 45))
+
+
+def completed_parts(log):
+    if not os.path.exists(log):
+        return []
+    return [l.split(" ", 2)[1] for l in open(log, errors="ignore") if l.startswith("BATCH ")]
+
+
 def build_shard(args):
     listing, log = args
+    jobs = [l.rstrip("\n").split("\t") for l in open(listing) if l.strip()]
     builder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build.py")
-    with open(log, "w") as fh:
-        subprocess.run([FREECADCMD, builder], stdout=fh, stderr=subprocess.STDOUT,
-                       env=dict(os.environ, P2F_LIST=listing), timeout=7200)
-    return sum(1 for l in open(log, errors="ignore") if l.startswith("BATCH "))
+    skipped = []
+    built = 0
+    while jobs:
+        with open(listing, "w") as fh:
+            for spec_path, out in jobs:
+                fh.write("%s\t%s\n" % (spec_path, out))
+        attempt_log = log + ".part"
+        timed_out = False
+        with open(attempt_log, "w") as fh:
+            try:
+                subprocess.run([FREECADCMD, builder], stdout=fh, stderr=subprocess.STDOUT,
+                               env=dict(os.environ, P2F_LIST=listing), timeout=PART_BUDGET_S * len(jobs) + 60)
+            except subprocess.TimeoutExpired:
+                timed_out = True
+        done = completed_parts(attempt_log)
+        with open(log, "a") as out_fh, open(attempt_log, errors="ignore") as in_fh:
+            out_fh.write(in_fh.read())
+        os.remove(attempt_log)
+        built += len(done)
+        remaining = [j for j in jobs if os.path.splitext(os.path.basename(j[1]))[0] not in done]
+        if not timed_out or not remaining:
+            jobs = []
+            continue
+        skipped.append(os.path.splitext(os.path.basename(remaining[0][1]))[0])
+        jobs = remaining[1:]
+    if skipped:
+        with open(log + ".skipped", "w") as fh:
+            fh.write("\n".join(skipped) + "\n")
+    return built
 
 
 def build_all(run_dir, parts, shards):
@@ -125,8 +160,12 @@ def build_all(run_dir, parts, shards):
         listings.append((listing, os.path.join(run_dir, "build%d.log" % i)))
     with Pool(shards) as pool:
         built = sum(pool.map(build_shard, listings))
-    if built != len(jobs):
-        raise SystemExit("build incomplete: %d of %d - see %s/build*.log" % (built, len(jobs), run_dir))
+    skipped = [p for f in sorted(os.listdir(run_dir)) if f.endswith(".skipped")
+               for p in open(os.path.join(run_dir, f)).read().split()]
+    if skipped:
+        print("  skipped %d parts whose build hung: %s" % (len(skipped), " ".join(skipped[:8])), flush=True)
+    if built + len(skipped) < len(jobs):
+        raise SystemExit("build incomplete: %d built, %d skipped of %d - see %s/build*.log" % (built, len(skipped), len(jobs), run_dir))
     return built
 
 
