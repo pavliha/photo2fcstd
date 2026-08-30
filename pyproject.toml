@@ -24,13 +24,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest", "scikit-learn", "joblib"]
 
 [project.scripts]
 photo2fcstd = "photo2fcstd.cli:run"
 photo2fcstd-bench = "photo2fcstd.bench:run"
 photo2fcstd-score = "photo2fcstd.score:run"
 photo2fcstd-gallery = "photo2fcstd.gallery:run"
+photo2fcstd-insight = "photo2fcstd.insight:run"
+photo2fcstd-train-modes = "photo2fcstd.mode_model:run"
 
 [tool.setuptools.packages.find]
 where = ["src"]

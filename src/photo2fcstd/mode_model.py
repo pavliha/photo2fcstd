@@ -1,0 +1,106 @@
+import argparse
+import json
+import os
+import sys
+
+import numpy as np
+
+MODES = ("stations", "profile", "plan", "revolve")
+VIEW_FIELDS = ("elongation", "rectangularity", "solidity", "hole_frac", "min_over_max",
+               "ellipse_rms", "stroke_px", "stations")
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+MODEL_PATH = os.environ.get("P2F_MODE_MODEL", os.path.join(ROOT, "data", "mode_model.joblib"))
+
+
+def features(views):
+    ordered = sorted(views, key=lambda v: -v["elongation"])[:3]
+    row = []
+    for v in ordered:
+        row += [float(v[f]) for f in VIEW_FIELDS]
+        row += [float(v["ellipse_aspect"] or 0.0), float(v["round"]), float(v["roundish"]),
+                float(v["stroke_px"]) / max(v["length_px"], 1.0), float(len(v["symmetric"]))]
+    while len(row) < 3 * (len(VIEW_FIELDS) + 5):
+        row += row[:len(VIEW_FIELDS) + 5]
+    rect = [v["rectangularity"] for v in ordered]
+    elong = [v["elongation"] for v in ordered]
+    sol = [v["solidity"] for v in ordered]
+    row += [max(rect) - min(rect), max(sol) - min(sol), max(elong) / max(min(elong), 1e-6),
+            max(v["hole_frac"] for v in ordered), sum(v["round"] for v in ordered), len(ordered)]
+    return row
+
+
+def matrix(rows):
+    return np.array([features(r["views"]) for r in rows], float)
+
+
+def iou_of(row, mode):
+    return row["iou_per_mode"].get(mode, 0.0)
+
+
+def evaluate(rows, predicted):
+    return float(np.mean([iou_of(r, m) for r, m in zip(rows, predicted)]))
+
+
+def cross_validated(rows, seed=0):
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.model_selection import StratifiedKFold
+    X = matrix(rows)
+    y = np.array([r["label"] for r in rows])
+    predicted = np.empty(len(rows), dtype=object)
+    for train, test in StratifiedKFold(5, shuffle=True, random_state=seed).split(X, y):
+        model = RandomForestClassifier(n_estimators=400, min_samples_leaf=2, random_state=seed, class_weight="balanced")
+        model.fit(X[train], y[train])
+        predicted[test] = model.predict(X[test])
+    return list(predicted)
+
+
+def train(rows, seed=0):
+    from sklearn.ensemble import RandomForestClassifier
+    model = RandomForestClassifier(n_estimators=400, min_samples_leaf=2, random_state=seed, class_weight="balanced")
+    model.fit(matrix(rows), [r["label"] for r in rows])
+    return model
+
+
+def predict(views):
+    import joblib
+    if not os.path.exists(MODEL_PATH):
+        return None
+    model = joblib.load(MODEL_PATH)
+    return str(model.predict(np.array([features(views)], float))[0])
+
+
+def main(argv):
+    p = argparse.ArgumentParser(prog="photo2fcstd-train-modes")
+    p.add_argument("dataset", nargs="?", default=os.path.join(ROOT, "data", "mode_labels.json"))
+    p.add_argument("--out", default=MODEL_PATH)
+    p.add_argument("--rules-run", default="v12")
+    a = p.parse_args(argv)
+    rows = json.load(open(a.dataset))
+    oracle = float(np.mean([r["iou_per_mode"][r["label"]] for r in rows]))
+    cv = cross_validated(rows)
+    learned = evaluate(rows, cv)
+    accuracy = float(np.mean([m == r["label"] for r, m in zip(rows, cv)]))
+    from photo2fcstd.insight import results
+    rules = results(a.rules_run)
+    rule_iou = float(np.mean([iou_of(r, rules[r["part"]][0]) for r in rows if r["part"] in rules]))
+    rule_acc = float(np.mean([rules[r["part"]][0] == r["label"] for r in rows if r["part"] in rules]))
+    print("mode selection on %d parts" % len(rows))
+    print("  rules      accuracy %.0f%%   mean IoU %.3f" % (100 * rule_acc, rule_iou))
+    print("  learned CV accuracy %.0f%%   mean IoU %.3f" % (100 * accuracy, learned))
+    print("  oracle                        mean IoU %.3f" % oracle)
+    import joblib
+    joblib.dump(train(rows), a.out)
+    print("  wrote %s" % a.out)
+    model = train(rows)
+    names = [f + "_v%d" % i for i in range(3) for f in list(VIEW_FIELDS) + ["ellipse_aspect", "round", "roundish", "stroke_frac", "symmetry"]] + \
+            ["rect_spread", "solidity_spread", "elongation_ratio", "max_hole_frac", "round_views", "n_views"]
+    top = sorted(zip(model.feature_importances_, names), reverse=True)[:8]
+    print("  top features: %s" % ", ".join("%s %.2f" % (n, v) for v, n in top))
+
+
+def run():
+    main(sys.argv[1:])
+
+
+if __name__ == "__main__":
+    run()
