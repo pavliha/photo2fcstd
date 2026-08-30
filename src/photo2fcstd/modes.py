@@ -20,6 +20,8 @@ def same_face(specs):
 
 
 def select(specs, forced=None):
+    if not specs:
+        raise ValueError("no views to choose a mode from: the part has no photos")
     holed = max(specs, key=lambda v: v["shape"]["hole_frac"])
     least_rect = min(specs, key=lambda v: v["shape"]["rectangularity"])
     if forced == "profile":

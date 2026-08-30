@@ -169,6 +169,12 @@ def build_all(run_dir, parts, shards):
     return built
 
 
+def with_photos(parts):
+    have = [p for p in parts if photos_of(p)]
+    missing = [p for p in parts if not photos_of(p)]
+    return have, missing
+
+
 def run_bench(name, jobs, parts, mode=None):
     run_dir = os.path.join(ROOT, "runs", name)
     if os.path.exists(run_dir):
@@ -177,6 +183,10 @@ def run_bench(name, jobs, parts, mode=None):
     os.makedirs(out_dir)
     shutil.copytree(os.path.dirname(os.path.abspath(__file__)), os.path.join(run_dir, "code"))
     t0 = time.time()
+    parts, missing = with_photos(parts)
+    if missing:
+        open(os.path.join(run_dir, "no_photos.txt"), "w").write("\n".join(missing) + "\n")
+        print("skipping %d parts with no photos (listed in no_photos.txt)" % len(missing), flush=True)
     total, fresh = warm_masks(parts)
     print("stage 1 masks: %d cached, %d segmented in %.0f s" % (total - fresh, fresh, time.time() - t0), flush=True)
     t1 = time.time()

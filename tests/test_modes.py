@@ -20,6 +20,11 @@ def test_forced_mode_overrides(dataset, photos_of):
     assert modes.select(views, "revolve")[0] == "revolve"
 
 
+def test_select_rejects_an_empty_view_list():
+    with pytest.raises(ValueError):
+        modes.select([])
+
+
 def test_same_face_detects_a_plate(dataset, photos_of):
     assert modes.same_face([analysis.view(p) for p in photos_of("01289")[:3]])
     assert not modes.same_face([analysis.view(p) for p in photos_of("00523")[:3]])
