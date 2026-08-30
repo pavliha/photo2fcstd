@@ -21,6 +21,7 @@ dependencies = [
     "timm",
     "kornia",
     "einops",
+    "shapely",
 ]
 
 [project.optional-dependencies]

@@ -95,12 +95,41 @@ def dataset(per_mode, events_path, out):
     return rows
 
 
+def label_quality(rows, ambiguous=0.05, floor=0.2):
+    import numpy as np
+    per = [r["iou_per_mode"] for r in rows]
+    counts = {}
+    for r in rows:
+        counts[r["label"]] = counts.get(r["label"], 0) + 1
+    modes_present = np.array([len(d) for d in per])
+    best = np.array([max(d.values()) for d in per])
+    second = np.array([sorted(d.values())[-2] if len(d) > 1 else 0.0 for d in per])
+    margin = best - second
+    unlearnable = best < floor
+    ties = (~unlearnable) & (margin < ambiguous)
+    clear = (~unlearnable) & (margin >= ambiguous)
+    print("labels: %d parts   %s" % (len(rows), counts))
+    print("  modes that built per part: mean %.2f of 4 (all four for %d parts)" % (modes_present.mean(), int((modes_present == 4).sum())))
+    print("  best-mode IoU: median %.2f, quartiles %.2f/%.2f" % (np.median(best), *np.percentile(best, [25, 75])))
+    print("  margin over second best: median %.3f, quartiles %.3f/%.3f" % (np.median(margin), *np.percentile(margin, [25, 75])))
+    print("  unlearnable (best < %.2f, no mode works): %d (%.0f%%)" % (floor, unlearnable.sum(), 100 * unlearnable.mean()))
+    print("  ambiguous (margin < %.2f, label is a coin flip): %d (%.0f%%)" % (ambiguous, ties.sum(), 100 * ties.mean()))
+    print("  decisive labels worth learning: %d (%.0f%%)" % (clear.sum(), 100 * clear.mean()))
+    reachable = float(np.mean([b if c else s for b, s, c in zip(best, second, clear)]))
+    print("  ceiling if every decisive label were predicted: %.3f (oracle %.3f)" % (reachable, best.mean()))
+    return {"n": len(rows), "decisive": int(clear.sum()), "unlearnable": int(unlearnable.sum()), "ambiguous": int(ties.sum())}
+
+
 def main(argv):
     p = argparse.ArgumentParser(prog="photo2fcstd-insight")
     p.add_argument("run")
     p.add_argument("--forced-prefix", default="forced_")
     p.add_argument("--dataset", help="write a mode-labelled training set here")
+    p.add_argument("--quality", help="report the quality of an existing label set")
     a = p.parse_args(argv)
+    if a.quality:
+        label_quality(json.load(open(a.quality)))
+        return
     per_mode = forced(a.forced_prefix)
     if not per_mode:
         raise SystemExit("no forced runs found: photo2fcstd-bench forced_<mode> --mode <mode>")

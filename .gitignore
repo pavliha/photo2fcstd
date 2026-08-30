@@ -3,3 +3,5 @@ __pycache__/
 runs/
 data/printcad/
 .pytest_cache/
+*.joblib
+.playwright-mcp/
