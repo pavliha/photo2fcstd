@@ -228,11 +228,13 @@ def ellipse_ok(f, n_points=None):
     return f["rms"] < max(0.03 * f["b"], 3.0) and f["aspect"] > 0.5
 
 
-def arc_from_run(run, ccw):
+def arc_from_run(run, ccw=None):
     f = fit_ellipse(run)
     cx, cy, r = (f["cx"], f["cy"], f["a"]) if ellipse_ok(f) else fit_circle(run)[:3]
     c = np.array([cx, cy])
     on = lambda q: (c + (np.asarray(q) - c) / max(np.hypot(*(np.asarray(q) - c)), 1e-9) * r).tolist()
+    if ccw is None:
+        ccw = arc_span(run, cx, cy) > 0
     return {"type": "arc", "p0": on(run[0]), "p1": on(run[-1]), "cx": float(cx), "cy": float(cy), "r": float(r), "ccw": bool(ccw), "_run": run}
 
 
@@ -247,7 +249,7 @@ def elements(raw, length_px):
             cv = run[-1] - run[0]
             sag = float(np.max(np.abs(cv[0] * (run[:, 1] - run[0][1]) - cv[1] * (run[:, 0] - run[0][0])) / max(chord, 1e-9)))
             if rel * r < max(th.ARC_FIT_TOL * r, 1.2) and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG and sag > th.ARC_MIN_SAG_FRAC * chord:
-                els.append(arc_from_run(run, span > 0))
+                els.append(arc_from_run(run))
                 continue
         els.append({"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist()})
 
@@ -260,14 +262,12 @@ def elements(raw, length_px):
     merged = []
     for e in els:
         if merged and mergeable(merged[-1], e):
-            merged[-1] = arc_from_run(np.vstack([merged[-1]["_run"], e["_run"]]), e["ccw"])
+            merged[-1] = arc_from_run(np.vstack([merged[-1]["_run"], e["_run"]]))
         else:
             merged.append(dict(e))
     if len(merged) > 1 and mergeable(merged[-1], merged[0]):
-        merged[-1] = arc_from_run(np.vstack([merged[-1]["_run"], merged[0]["_run"]]), merged[0]["ccw"])
+        merged[-1] = arc_from_run(np.vstack([merged[-1]["_run"], merged[0]["_run"]]))
         merged.pop(0)
-    for e in merged:
-        e.pop("_run", None)
     arcs = [i for i, e in enumerate(merged) if e["type"] == "arc"]
     for j, i in enumerate(arcs):
         e = merged[i]
@@ -277,10 +277,15 @@ def elements(raw, length_px):
                 e["cx"], e["cy"], e["centre_of"] = o["cx"], o["cy"], k
                 break
     for e in merged:
-        if e["type"] == "arc":
-            c = np.array([e["cx"], e["cy"]])
-            on = lambda q: (c + (np.array(q) - c) / max(np.hypot(*(np.array(q) - c)), 1e-9) * e["r"]).tolist()
-            e["p0"], e["p1"] = on(e["p0"]), on(e["p1"])
+        if e["type"] != "arc":
+            continue
+        run = np.asarray(e["_run"], float)
+        c = np.array([e["cx"], e["cy"]])
+        e["ccw"] = bool(arc_span(run, c[0], c[1]) > 0)
+        on = lambda q: (c + (np.asarray(q, float) - c) / max(np.hypot(*(np.asarray(q, float) - c)), 1e-9) * e["r"]).tolist()
+        e["p0"], e["p1"] = on(run[0]), on(run[-1])
+    for e in merged:
+        e.pop("_run", None)
     return merged
 
 
