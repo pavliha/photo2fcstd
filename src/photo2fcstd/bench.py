@@ -213,8 +213,16 @@ def sketch_line(sketches):
     if not trusted:
         return line + "; none of them has trustworthy ground truth to compare against"
     mean, lo, hi = stats.mean_ci([r["region_iou"] for r in trusted])
-    return line + "; region IoU %.3f [%.3f, %.3f] on the %d with trustworthy truth; %d reproduce its exact primitives" % (
+    line += "; region IoU %.3f [%.3f, %.3f] on the %d with trustworthy truth; %d reproduce its exact primitives" % (
         mean, lo, hi, len(trusted), len(exact))
+    keen = [r for r in trusted if r.get("discriminating")]
+    if not keen:
+        return line
+    triv = sum(r["trivial"] for r in keen) / len(keen)
+    got = sum(r["region_iou"] for r in keen) / len(keen)
+    return line + ("\n  against the baseline: drawing one circle and ignoring the photo scores %.3f "
+                   "on the %d parts that can tell the difference, where this run scores %.3f (skill %.3f)"
+                   % (triv, len(keen), got, (got - triv) / max(1.0 - triv, 1e-9)))
 
 
 def summarise(name, scored, elapsed, baseline=None, sketches=None):

@@ -194,7 +194,9 @@ def score_one(spec, record):
     ideal = polygon_of(ideal_rings(record))
     mc, ic = counts_of_spec(spec), record.get("counts", {})
     cmp = compare(mine, ideal)
+    triv = trivial_score(record)
     return {"has_sketch": bool(rings), "region_iou": cmp["iou"],
+            "trivial": triv, "difficulty": 1.0 - triv, "discriminating": (1.0 - triv) >= 0.15,
             "missing": cmp["missing"], "extra": cmp["extra"],
             "dev_mean": cmp["dev_mean"], "dev_p95": cmp["dev_p95"],
             "loops_mine": len(rings), "loops_ideal": record.get("n_loops", 0),
@@ -237,3 +239,58 @@ def run():
 
 if __name__ == "__main__":
     run()
+
+
+def _mask(poly, n=192):
+    from shapely import contains_xy
+    x0, y0, x1, y1 = poly.bounds
+    xs = np.linspace(x0, x1, n)
+    ys = np.linspace(y0, y1, n)
+    gx, gy = np.meshgrid(xs, ys)
+    return contains_xy(poly, gx.ravel(), gy.ravel()).reshape(n, n), (xs, ys)
+
+
+def equivalent_ellipse(poly):
+    from shapely.geometry import Point
+    import shapely.affinity as aff
+    m, (xs, ys) = _mask(poly)
+    if m.sum() < 4:
+        return None
+    gx, gy = np.meshgrid(xs, ys)
+    px, py = gx[m], gy[m]
+    cov = np.cov(np.stack([px, py]))
+    w, v = np.linalg.eigh(cov)
+    w = np.maximum(w, 1e-12)
+    a, b = 2 * np.sqrt(w[1]), 2 * np.sqrt(w[0])
+    k = np.sqrt(poly.area / max(np.pi * a * b, 1e-12))
+    e = aff.scale(Point(0, 0).buffer(1, quad_segs=64), k * a, k * b, origin=(0, 0))
+    ang = np.degrees(np.arctan2(v[1, 1], v[0, 1]))
+    return aff.translate(aff.rotate(e, ang, origin=(0, 0)), px.mean(), py.mean())
+
+
+def trivial_score(record):
+    """What a pipeline that always draws one circle would score on this part.
+
+    Region IoU is scale-invariant, so any circle matches any circle at about 0.99. This is
+    the score to beat before a number means anything, and it is a real answer a pipeline
+    could produce without looking at the photo - unlike a shape fitted to the reference,
+    which is not a baseline but a second oracle.
+    """
+    from shapely.geometry import Point
+    ideal = polygon_of(ideal_rings(record))
+    if ideal is None or ideal.is_empty:
+        return 0.0
+    return region_iou(ideal, Point(0, 0).buffer(1, quad_segs=64))
+
+
+def difficulty(record):
+    return 1.0 - trivial_score(record)
+
+
+def discriminating(record, floor=0.15):
+    return difficulty(record) >= floor
+
+
+def skill(iou, baseline):
+    """Fraction of the achievable margin above a trivial answer that was actually won."""
+    return float((iou - baseline) / (1.0 - baseline)) if baseline < 1.0 else 0.0

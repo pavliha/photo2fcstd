@@ -313,3 +313,43 @@ and the remaining matting cost of roughly 0.02 takes it lower still.
 Degradation is graceful, which is the difference between this and the two-view intersections
 that failed: those registered each photo independently, which is many degrees of error, and
 intersection deletes correct material that nothing restores.
+
+## The metric has a baseline, and nobody had computed it
+
+Region IoU is scale-invariant and dihedral-aligned, so **any circle matches any circle at
+0.99**. A pipeline that draws one circle and never looks at the photo is therefore not a
+strawman - it is a real answer with a real score. Over the 397 parts both paths were measured
+on, that answer scores **0.555**, against the photo path's **0.600**.
+
+The whole photo pipeline is worth **+0.045** over ignoring the photo.
+
+`sketch_score.trivial_score` computes it, `difficulty` is one minus it, and `score_one` now
+carries both on every part, so no future run can quote a mean without its baseline beside it.
+
+Splitting on whether a part can discriminate at all (`difficulty >= 0.15`):
+
+| subset | n | photo | carve, thinnest | carve, learned |
+|---|---|---|---|---|
+| everything | 397 | 0.600 | 0.668 | 0.757 |
+| cannot discriminate | 76 | 0.667 | 0.695 | 0.888 |
+| can discriminate | 321 | 0.584 | 0.662 | 0.726 |
+| genuinely complex (>= 0.35) | 244 | 0.558 | 0.633 | 0.696 |
+
+The parts that cannot discriminate score *highest* everywhere, which is the tell: they were
+inflating every mean this project has ever quoted. On the 321 that can, the trivial answer
+gets 0.455, so as a fraction of the margin actually available:
+
+| | IoU | skill |
+|---|---|---|
+| photo | 0.584 | 0.236 |
+| carve, thinnest axis | 0.662 | 0.380 |
+| **carve, learned axis** | **0.726** | **0.498** |
+| carve, oracle axis | 0.756 | 0.552 |
+
+Aggregate skill is pooled, not a mean of per-part ratios - the ratio blows up wherever the
+trivial answer is already near 1, which is exactly the subset being excluded.
+
+None of the session's conclusions reverse under this metric: the ordering photo < thinnest <
+learned < oracle holds on every subset. What changes is the size of everything. The photo path
+in particular is much weaker than 0.600 suggested.
+
