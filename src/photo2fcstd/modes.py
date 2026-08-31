@@ -4,6 +4,24 @@ from photo2fcstd import thresholds as th
 
 LEARNED = os.environ.get("P2F_LEARNED_MODES") == "1"
 VIEW_PICK = os.environ.get("P2F_VIEW_PICK", "first")
+ORACLE_DEPTH = os.environ.get("P2F_ORACLE_DEPTH") == "1"
+_TRUE_RATIOS = {}
+
+
+def true_ratio(source):
+    if not _TRUE_RATIOS:
+        import json
+        from photo2fcstd.settings import PACKAGE_ROOT
+        path = os.path.join(PACKAGE_ROOT, "data", "depth_rows.json")
+        rows = json.load(open(path)) if os.path.exists(path) else []
+        _TRUE_RATIOS.update({r["part"]: r["ratio"] for r in rows})
+    return _TRUE_RATIOS.get(os.path.basename(source).split("_")[0])
+
+
+def oracle_depth(src):
+    ratio = true_ratio(src["source"])
+    return None if ratio is None else (ratio * src["length_px"],
+                                       "depth from the STEP file (oracle experiment, px units)")
 
 
 def pick_view(specs):
@@ -175,6 +193,10 @@ def predicted_depth(src, others):
 def outline_depth(src, others, mode, thickness_px):
     if thickness_px is not None:
         return thickness_px, "thickness from --thickness-px (px units)"
+    if ORACLE_DEPTH:
+        known = oracle_depth(src)
+        if known is not None:
+            return known
     if mode == "plan":
         learned = predicted_depth(src, others)
         if learned is not None:

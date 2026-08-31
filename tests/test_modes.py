@@ -52,3 +52,29 @@ def test_source_for_picks_a_view_each_mode_can_use(dataset, photos_of):
     views = [analysis.view(p) for p in photos_of("01407")[:3]]
     for mode in ("stations", "profile", "plan", "revolve"):
         assert modes.source_for(mode, views) in views
+
+
+def test_oracle_depth_is_off_unless_asked(monkeypatch):
+    from photo2fcstd import modes
+    monkeypatch.setattr(modes, "ORACLE_DEPTH", False)
+    src = {"source": "/p/00002_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
+    depth, note = modes.outline_depth(src, [], "plan", None)
+    assert "oracle" not in note
+
+
+def test_oracle_depth_uses_the_step_file_ratio(monkeypatch):
+    from photo2fcstd import modes
+    monkeypatch.setattr(modes, "ORACLE_DEPTH", True)
+    monkeypatch.setattr(modes, "_TRUE_RATIOS", {"00002": 0.25})
+    src = {"source": "/p/00002_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
+    depth, note = modes.outline_depth(src, [], "plan", None)
+    assert depth == 25.0 and "oracle" in note
+
+
+def test_oracle_depth_falls_through_for_an_unknown_part(monkeypatch):
+    from photo2fcstd import modes
+    monkeypatch.setattr(modes, "ORACLE_DEPTH", True)
+    monkeypatch.setattr(modes, "_TRUE_RATIOS", {"00002": 0.25})
+    src = {"source": "/p/99999_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
+    depth, note = modes.outline_depth(src, [], "plan", None)
+    assert "oracle" not in note
