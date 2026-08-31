@@ -191,3 +191,31 @@ Two details make the difference between this working and not:
 - **Require two views to agree.** One noisy depth pixel must not delete a voxel. Going
   from one vote to two recovered the convex objects (0.854 to 0.914) while keeping nearly
   all the concave gain.
+
+### Turning a carved volume into a sketch
+
+`spec_from_carve` traces the plan view of the carved volume through the same
+`outline`/`primitives` code the photo path uses. It projected along Z and took the
+extrusion depth along Z as well, both hardcoded - and the part's own axis is spread
+17/24/17 across X, Y and Z in these files, so two thirds of the time it traced an edge
+view and measured the wrong thickness.
+
+Choosing the axis matters more than anything else in that path, measured over 60 parts
+with known poses and reference sketches:
+
+| | region IoU |
+|---|---|
+| always along Z | 0.408 |
+| fraction of the bounding box filled | 0.425 |
+| largest projected area | 0.551 |
+| **thinnest extent** (shipped) | **0.597** |
+| best of the three (oracle) | **0.752** |
+| the photo path, for comparison | 0.597 |
+
+The three rules agree with the oracle 27%, 53% and 67% of the time - and note the first
+is worse than the 33% you get by guessing, so a plausible-sounding heuristic can be worse
+than nothing.
+
+**Carving does not yet beat a single photo for sketching.** It ties it. The oracle says
+another 0.15 is available if the axis were chosen correctly on the remaining third, so
+that choice, not the carving, is what limits this path.

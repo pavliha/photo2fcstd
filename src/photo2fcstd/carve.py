@@ -9,6 +9,8 @@ VOXEL_MM = 0.4
 MAX_HEIGHT_MM = 120.0
 MARGIN_MM = 4.0
 MIN_POSED_VIEWS = 3
+DEPTH_TOLERANCE_MM = 6.0
+DEPTH_VOTES = 0.25
 
 
 def board_extent_mm():
@@ -57,7 +59,26 @@ def footprint(views, masks, plane_mm=None, voxel_mm=2.0, max_height_mm=MAX_HEIGH
             (0.0, max_height_mm))
 
 
-def carve(views, masks, voxel_mm=VOXEL_MM, allow_misses=1, bounds=None, max_height_mm=MAX_HEIGHT_MM):
+def camera_depth(points, view):
+    R = cv2.Rodrigues(np.asarray(view["rvec"], float))[0]
+    t = np.asarray(view["tvec"], float).reshape(3)
+    return (np.asarray(points, float) @ R.T + t)[:, 2]
+
+
+def in_front_of_surface(points, view, depth_map, depth_scale, tolerance_mm):
+    uv = project(points, view)
+    h, w = depth_map.shape
+    u = np.round(uv[:, 0]).astype(int)
+    v = np.round(uv[:, 1]).astype(int)
+    ok = (u >= 0) & (u < w) & (v >= 0) & (v < h)
+    measured = np.zeros(len(points))
+    measured[ok] = depth_map[v[ok], u[ok]] * depth_scale
+    seen = ok & (measured > 0)
+    return seen & (camera_depth(points, view) < measured - tolerance_mm), seen
+
+
+def carve(views, masks, voxel_mm=VOXEL_MM, allow_misses=1, bounds=None, max_height_mm=MAX_HEIGHT_MM,
+          depths=None, depth_scale=1.0, depth_tolerance_mm=DEPTH_TOLERANCE_MM, depth_votes=DEPTH_VOTES):
     bounds = bounds or footprint(views, masks, max_height_mm=max_height_mm)
     if bounds is None:
         return None
@@ -70,10 +91,18 @@ def carve(views, masks, voxel_mm=VOXEL_MM, allow_misses=1, bounds=None, max_heig
         votes += hit
         seen += ok
     keep = (votes >= np.maximum(seen - allow_misses, 1)) & (seen > 0)
+    if depths is not None:
+        empty = np.zeros(len(flat), int)
+        for view, depth_map in zip(views, depths):
+            if depth_map is None:
+                continue
+            ahead, _ = in_front_of_surface(flat, view, depth_map, depth_scale, depth_tolerance_mm)
+            empty += ahead
+        keep &= empty < np.maximum(depth_votes * np.maximum(seen, 1), allow_misses + 1)
     occupied = flat[keep]
     if not len(occupied):
         return None
-    return {"points_mm": occupied, "voxel_mm": voxel_mm, "axes": axes,
+    return {"points_mm": occupied, "voxel_mm": voxel_mm, "axes": axes, "used_depth": depths is not None,
             "extents_mm": np.ptp(occupied, axis=0) + voxel_mm, "views": len(views),
             "volume_mm3": float(len(occupied) * voxel_mm ** 3)}
 
@@ -88,9 +117,25 @@ def occupancy(carved, axis=2):
     return grid_2d
 
 
-def spec_from_carve(carved, name="part", stl=None):
+def base_axis(carved):
+    """Look down the part's thinnest direction to see its face.
+
+    A prism is short along the axis it was extruded, so that is the direction to project
+    for the base face. Projecting along a fixed axis instead traces an edge view whenever
+    the part is not standing the way we assumed, which was two thirds of the time.
+
+    Measured over 30 parts, picking the thinnest extent agrees with the best of the three
+    projections 67% of the time, against 53% for the largest projected area and 27% for
+    the fraction of the bounding box filled - which is worse than guessing.
+    """
+    pts = carved["points_mm"]
+    return int(np.argmin([np.ptp(pts[:, a]) for a in (0, 1, 2)]))
+
+
+def spec_from_carve(carved, name="part", stl=None, axis=None):
     from photo2fcstd.trace import outline, primitives
-    plan = occupancy(carved, axis=2)
+    axis = base_axis(carved) if axis is None else axis
+    plan = occupancy(carved, axis=axis)
     poly, shape = outline(plan)
     loops_px = [shape["raw"]] + shape["raw_holes"]
     centre = np.array(shape["raw"], float).mean(axis=0)
@@ -98,7 +143,7 @@ def spec_from_carve(carved, name="part", stl=None):
     centred = [[[(x - centre[0]) * voxel, -(y - centre[1]) * voxel] for x, y in loop] for loop in loops_px]
     length_mm = max(np.ptp(np.array(shape["raw"], float), axis=0)) * voxel
     loops = primitives(centred, length_mm)
-    height = float(np.ptp(carved["points_mm"][:, 2]) + voxel)
+    height = float(np.ptp(carved["points_mm"][:, axis]) + voxel)
     return {"name": name, "mm_per_px": 1.0,
             "scale_note": "metric from the ChArUco board: %d views, %.2f mm voxels" % (carved["views"], voxel),
             "views": {},

@@ -26,3 +26,11 @@ def test_a_box_carves_to_its_own_size():
     got = np.sort(carved["extents_mm"])[::-1]
     want = np.sort(box.extents)[::-1]
     assert np.abs(got - want).max() < 1.5, (got, want)
+
+
+def test_the_face_axis_is_the_thin_one():
+    """A plate extruded along Y must be projected along Y, not along a fixed axis."""
+    from photo2fcstd import carve as C
+    xs, ys, zs = np.mgrid[0:40, 0:4, 0:30]
+    pts = np.column_stack([xs.ravel(), ys.ravel(), zs.ravel()]).astype(float)
+    assert C.base_axis({"points_mm": pts, "voxel_mm": 1.0}) == 1
