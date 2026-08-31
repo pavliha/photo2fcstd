@@ -40,6 +40,10 @@ Nothing else is worth running until the benchmark can detect what we are chasing
 **Done when:** `photo2fcstd-bench` prints `mean 0.4xx [lo, hi] vs <baseline> Δ+0.0xx [lo, hi]`, and
 a +0.01 change is detectable.
 
+**Status: reporting done, full-set run in flight.** `--baseline <run>` now prints a paired bootstrap
+delta and the run's own resolution. Its first use caught a real +0.031 [+0.013, +0.050] from the
+parallel commits between `v17` and `ci_check` — a change neither of us had measured.
+
 ## 2. Prove the metric path on a real part
 
 `--rectify` and `photo2fcstd-carve` are validated only against synthetic boards and a simulated box.
@@ -60,6 +64,11 @@ sketch. `ideal_sketches.py` already holds the true primitives for all 1907 parts
 
 **Done when:** each run reports primitive agreement alongside IoU, so "the ring became two circles"
 is a measured claim rather than an anecdote from a gallery.
+
+**Status: done.** Every run now reports, and records per part in `events.jsonl`: how many parts emit
+a sketch at all, the region IoU of that sketch against the ideal one with a CI, and how many
+reproduce its exact primitive counts. On the 200-part set: 97 of 200 emit a sketch, region IoU
+0.583 [0.503, 0.664] on the 55 with trustworthy ground truth, 16 exact.
 
 ## 4. Reformulate mode selection
 

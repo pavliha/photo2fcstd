@@ -1,6 +1,7 @@
 import argparse
 import glob
 import os
+import json
 import shutil
 import subprocess
 import sys
@@ -9,7 +10,7 @@ from multiprocessing import Pool
 
 import trimesh
 
-from photo2fcstd import cli, telemetry
+from photo2fcstd import cli, sketch_score, stats, telemetry
 from photo2fcstd.score import best_iou
 from photo2fcstd.settings import FREECADCMD, data_dir
 
@@ -168,7 +169,69 @@ def with_photos(parts):
     return have, missing
 
 
-def run_bench(name, jobs, parts, mode=None):
+def scores_of(run):
+    path = os.path.join(ROOT, "runs", run, "results.txt")
+    if not os.path.exists(path):
+        return {}
+    return {l.split()[0]: float(l.split()[2]) for l in open(path)
+            if len(l.split()) == 3 and l.split()[2] != "fail"}
+
+
+IDEAL_SKETCHES = os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json")
+
+
+def sketch_scores(run_dir, ideal_path=IDEAL_SKETCHES):
+    if not os.path.exists(ideal_path):
+        return {}
+    ideal = json.load(open(ideal_path))
+    out = {}
+    for name in sorted(os.listdir(os.path.join(run_dir, "out"))):
+        if not name.endswith(".spec.json"):
+            continue
+        part = name.split(".")[0]
+        record = ideal.get(part)
+        if not record or "loops" not in record:
+            continue
+        try:
+            out[part] = sketch_score.score_one(json.load(open(os.path.join(run_dir, "out", name))), record)
+        except Exception:
+            continue
+    return out
+
+
+def sketch_line(sketches):
+    if not sketches:
+        return ""
+    drawn = [r for r in sketches.values() if r["has_sketch"]]
+    trusted = [r for r in sketches.values() if r["trustworthy"] and r["has_sketch"]]
+    mean, lo, hi = stats.mean_ci([r["region_iou"] for r in trusted]) if trusted else (0.0, 0.0, 0.0)
+    exact = [r for r in trusted if r["counts_mine"] == r["counts_ideal"]]
+    return ("\n  sketch vs the ideal one: %d of %d parts emit a sketch; region IoU %.3f [%.3f, %.3f] "
+            "on %d with trustworthy truth; %d reproduce its exact primitives" % (
+                len(drawn), len(sketches), mean, lo, hi, len(trusted), len(exact)))
+
+
+def summarise(name, scored, elapsed, baseline=None, sketches=None):
+    ok = {part: float(v) for part, v, _ in scored if v != "fail"}
+    mean, lo, hi = stats.mean_ci(ok.values())
+    line = "runs/%s: n=%d mean %.3f [%.3f, %.3f] fails %d in %.0f s" % (
+        name, len(ok), mean, lo, hi, len(scored) - len(ok), elapsed)
+    delta = stats.paired_delta(scores_of(baseline), ok) if baseline else None
+    if baseline and delta:
+        half = (delta["hi"] - delta["lo"]) / 2
+        line += "\n  vs %s: %+.3f [%+.3f, %+.3f] on %d shared parts - %s" % (
+            baseline, delta["delta"], delta["lo"], delta["hi"], delta["n"],
+            "real" if delta["significant"] else "indistinguishable from zero")
+        line += "\n  paired resolution +-%.3f; detecting +0.01 would need ~%d parts" % (
+            half, int(round(delta["n"] * (half / 0.01) ** 2)))
+    elif baseline:
+        line += "\n  vs %s: no shared parts to compare" % baseline
+    else:
+        line += "\n  no baseline given; the mean alone resolves +-%.3f" % ((hi - lo) / 2)
+    return line + sketch_line(sketches or {})
+
+
+def run_bench(name, jobs, parts, mode=None, baseline=None):
     run_dir = os.path.join(ROOT, "runs", name)
     if os.path.exists(run_dir):
         raise SystemExit("runs/%s exists" % name)
@@ -209,8 +272,10 @@ def run_bench(name, jobs, parts, mode=None):
     for part, value, why in scored:
         events.record(part, iou=None if value == "fail" else float(value), score_error=why or None)
     events.write()
-    ok = [float(v) for _, v, _ in scored if v != "fail"]
-    summary = "runs/%s: n=%d mean %.3f fails %d in %.0f s" % (name, len(ok), sum(ok) / max(len(ok), 1), len(scored) - len(ok), time.time() - t0)
+    sketches = sketch_scores(run_dir)
+    for part, row in sketches.items():
+        events.record(part, sketch=row)
+    summary = summarise(name, scored, time.time() - t0, baseline, sketches)
     open(os.path.join(run_dir, "summary.txt"), "w").write(summary + "\n")
     print(summary)
     return summary
@@ -221,9 +286,11 @@ def main(argv):
     p.add_argument("name")
     p.add_argument("--jobs", type=int, default=8)
     p.add_argument("--ids", default=os.path.join(ROOT, "data", "printcad_test_ids.txt"))
-    p.add_argument("--mode", choices=("stations", "profile", "plan", "revolve"))
+    p.add_argument("--mode", choices=("stations", "profile", "plan", "revolve"),
+                   help="force every part through one modelling mode")
+    p.add_argument("--baseline", help="an earlier run to compare against, paired per part")
     a = p.parse_args(argv)
-    run_bench(a.name, a.jobs, open(a.ids).read().split(), a.mode)
+    run_bench(a.name, a.jobs, open(a.ids).read().split(), a.mode, a.baseline)
 
 
 def run():
