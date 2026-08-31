@@ -107,11 +107,24 @@ the instrument and the metric are trustworthy.
 |---|---|
 | mode selection is worth chasing | **confirmed.** Oracle gap +0.094 [+0.070, +0.120]; routing the stations fallback to plan captured +0.048 offline on 1860 parts |
 | a learned selector beats the rules | **confirmed, once powered.** +0.016 [+0.008, +0.024] against the strong "always plan" baseline on 949 held-out parts with folds grouped by geometry. The earlier "inconclusive" verdict came from 99 parts, not from the method |
-| which photo we trace matters | **confirmed, and it is the largest lever found.** +0.082 available on 411 parts; a ranker over eight silhouette statistics takes +0.031 [+0.017, +0.046] out of fold |
+| which photo we trace matters | **confirmed, but the headline was inflated.** The +0.082 oracle gap is mostly luck: on 93 parts whose three photos are geometrically interchangeable an oracle still "gains" +0.045 [+0.029, +0.063], which is selection on scoring noise, not viewpoint. The real viewpoint effect is about +0.037, and the ranker takes +0.031 of it - roughly four fifths of what is actually there, not the 38% I first claimed |
 | a cheap rule would do instead | **refuted.** Most rectangular is harmful (-0.048), largest area is neutral, least elongated gives +0.022 - a quarter of what the ranker takes |
 | the model can predict its own reliability | **refuted.** Features give AUC 0.633, a direct failure classifier 0.622, and re-projecting the model onto its own photos 0.581. Only a low-recall warning is defensible: 60% precision at 21% recall |
 | duplicates were inflating our numbers | **refuted.** 8.6% of parts have a geometric twin; grouped splits change the learned-selector gain by 0.003 |
 | we overfitted to PrintCAD's photo style | **no evidence.** T-LESS through the same pipeline scores 0.428 [0.367, 0.489] against 0.462 on PrintCAD |
+
+## The noise floor
+
+Two photos of the same part that a silhouette cannot tell apart still score a median 0.039 and mean
+0.067 IoU apart. That is the instrument's own scatter, and it sets three limits worth remembering
+before quoting any per-view number:
+
+- **Any max-over-views figure is inflated.** `tools/oracle_noise.py` measures the inflation directly,
+  on parts where the views are interchangeable and the true gain must be zero.
+- **A single part proves nothing.** A 0.04 difference between two runs on one part is the noise, not
+  the change.
+- **Gains below ~0.01 need the full set.** This is the same lesson as the 200-part instrument, one
+  level down: per-view scores are noisier than per-part scores.
 
 ## Not doing, and why
 
