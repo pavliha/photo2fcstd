@@ -212,9 +212,26 @@ with known poses and reference sketches:
 | best of the three (oracle) | **0.752** |
 | the photo path, for comparison | 0.597 |
 
-The three rules agree with the oracle 27%, 53% and 67% of the time - and note the first
-is worse than the 33% you get by guessing, so a plausible-sounding heuristic can be worse
-than nothing.
+Four rules have been tried and they all plateau:
+
+| rule | agrees with the oracle | IoU |
+|---|---|---|
+| fraction of the bounding box filled | 27% (worse than guessing) | 0.425 |
+| largest projected area | 53% | 0.551 |
+| **thinnest extent** (shipped) | 71% | **0.615** |
+| most constant cross-section | 71% | 0.561 |
+
+Note the first is worse than the 33% you get by guessing, so a plausible-sounding
+heuristic can be worse than nothing.
+
+The reason none of them wins outright: **for a plate the extrusion is short, for a rod it
+is long.** Part 00001 is a rod whose thinnest axis scores 0.23 while its extrusion axis
+scores 0.94. No single extent-based rule covers both, and measuring how constant the
+cross-section is - which is the actual definition of a prism - agrees no more often.
+
+This is a three-way choice over a carved volume with exact ground truth available from
+the STEP files, so it is one of the few places in this project where a small learned
+classifier is better posed than a rule. Worth roughly 0.15.
 
 **Carving does not yet beat a single photo for sketching.** It ties it. The oracle says
 another 0.15 is available if the axis were chosen correctly on the remaining third, so
