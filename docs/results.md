@@ -249,14 +249,28 @@ Trained on 400 parts, then measured on 400 different parts never seen in trainin
 | best of the three (oracle) | 100% | 0.785 |
 | worst of the three | | 0.219 |
 
-It fixes 93 parts and breaks 13, closing 78% of the gap to the oracle. `docs/figures/axis_model.png`
-shows five of the fixed ones: the thinnest-extent rule traces an edge view at IoU 0.00 and
-the classifier finds the face at 0.99.
+It fixes 93 parts and breaks 13, closing 78% of the gap to the oracle. On a cube, where all
+three answers are equally right, its three scores land within 0.01 of each other, so it is
+not merely confident everywhere.
 
-Every one of those is a rod - the shape the extent rules cannot cover - and the scores are
-not close: 0.95-0.99 for the right axis against 0.00-0.01 for the two edge views. On a cube,
-where all three answers are equally right, the three scores land within 0.01 of each other,
-so the model is not merely confident everywhere.
+**Most of the headline gain is on parts that trace as a single circle, and region IoU is
+scale-invariant, so any circle matches any circle.** Splitting the same 400 parts:
+
+| stratum | n | thinnest extent | learned |
+|---|---|---|---|
+| everything | 400 | 0.664 | 0.758 |
+| traced as a single circle | 158 | 0.582 | 0.773 |
+| a real outline, face at least 12 px | 235 | 0.730 | 0.750 |
+
+On real outlines the gain is +0.02, not +0.09. The rods the extent rule fails hardest on are
+exactly the parts whose face is a small circle: 22 parts have a face under 12 px across and
+go from 0.133 to 0.830, which is a real fix to a real error but is scored generously. The
+axis is genuinely chosen better - 89% against 69% agreement is independent of the metric -
+but do not read the 0.09 as 0.09 of drawing quality.
+
+`docs/figures/axis_sketches.png` shows five non-circular parts, and is worth reading for what
+the metric misses as much as for the fix: 01409 recovers a visibly correct I-beam and scores
+0.49, while 00950 scores 0.81 for a rounded blob that is plainly not the chevron it should be.
 
 **Carving now beats a single photo for sketching.** It used to tie it. Both paths measured
 on the same 397 held-out parts, so this is a like-for-like comparison and not two numbers
@@ -269,5 +283,8 @@ from two different sets:
 | **carve, learned axis** | **0.757** |
 | carve, oracle axis | 0.785 |
 
-Carving wins on 70% of parts. The axis choice, not the carving, was what held this path
-back: it was worth more than the carving itself was over a single photo.
+Carving wins on 70% of parts, and unlike the axis gain above this survives stratification -
+on the 241 parts that trace as a real outline rather than a single circle it is 0.590 against
+0.745, with carving winning 74% of them.
+
+The axis choice, not the carving, was what held this path back.
