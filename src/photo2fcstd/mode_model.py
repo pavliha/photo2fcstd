@@ -61,12 +61,16 @@ def train(rows, seed=0):
     return model
 
 
+_CACHED = {}
+
+
 def predict(views):
     import joblib
     if not os.path.exists(MODEL_PATH):
         return None
-    model = joblib.load(MODEL_PATH)
-    return str(model.predict(np.array([features(views)], float))[0])
+    if MODEL_PATH not in _CACHED:
+        _CACHED[MODEL_PATH] = joblib.load(MODEL_PATH)
+    return str(_CACHED[MODEL_PATH].predict(np.array([features(views)], float))[0])
 
 
 def main(argv):

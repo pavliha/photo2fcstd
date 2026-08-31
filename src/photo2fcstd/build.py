@@ -348,7 +348,7 @@ def build(spec, out):
         print("REPORT " + json.dumps(report))
         return report
     bb = s.BoundBox
-    report = {"valid": bool(s.isValid()), "solids": len(s.Solids), "volume": round(s.Volume, 3),
+    report = {"valid": bool(s.isValid() and s.Volume > 0), "solids": len(s.Solids), "volume": round(s.Volume, 3),
               "bbox": [round(bb.XLength, 3), round(bb.YLength, 3), round(bb.ZLength, 3)], "sketches": sketches}
     if spec.get("stl"):
         import Mesh

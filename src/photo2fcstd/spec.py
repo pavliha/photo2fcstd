@@ -24,6 +24,10 @@ def rescale_side(views):
     return f
 
 
+def not_degenerate(e):
+    return (e["p0"][0] != e["p1"][0] or e["p0"][1] != e["p1"][1]) and (e["type"] != "arc" or e["r"] > 0)
+
+
 def rounded_loops(loops, rnd):
     out = []
     for loop in loops:
@@ -33,7 +37,10 @@ def rounded_loops(loops, rnd):
         elements = [dict(e, p0=[rnd(e["p0"][0]), rnd(e["p0"][1])], p1=[rnd(e["p1"][0]), rnd(e["p1"][1])],
                          **({"cx": rnd(e["cx"]), "cy": rnd(e["cy"]), "r": rnd(e["r"])} if e["type"] == "arc" else {}))
                     for e in loop["elements"]]
-        out.append(dict(loop, elements=elements))
+        kept = [e for e in elements if not_degenerate(e)]
+        elements = kept if len(kept) >= 2 else elements
+        out.append(dict(loop, elements=elements, kinds=[k for k, e in zip(loop["kinds"], elements)] if len(elements) == len(loop["kinds"]) else loop["kinds"][:len(elements)],
+                        joins=loop["joins"][:len(elements)]))
     return out
 
 

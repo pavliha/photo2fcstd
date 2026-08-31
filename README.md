@@ -70,6 +70,25 @@ Scale-free voxel IoU against the STEP-derived ground truth, 200 hand-held photo 
 guess; `primitives_score.py` compares the sketch's primitives against the ideal ones extracted
 from the STEP files by `ideal_sketches.py`.
 
+## Mode selection, learned (off by default)
+
+Img2CAD-style factorisation: let a model choose the discrete *operation* and keep the continuous
+*dimensions* deterministic. `P2F_LEARNED_MODES=1` routes selection through
+`mode_model.predict` (RandomForest on per-view shape statistics, trained by
+`photo2fcstd-train-modes` on oracle labels from forced-mode runs).
+
+Measured, and the measurement is the point:
+
+| | mean IoU |
+|---|---|
+| rules | 0.433 |
+| learned, evaluated on its own training parts | 0.465 |
+| learned, on 100 parts it never saw | **0.393** |
+
+The in-sample gain is leakage. With 100 training parts the classifier does not generalise, so the
+switch stays off. The oracle gap it targets is real (0.094); closing it needs an order of magnitude
+more labels, which is what the full-dataset label run is for.
+
 ## Layout
 
     src/photo2fcstd/
