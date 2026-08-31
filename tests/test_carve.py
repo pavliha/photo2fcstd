@@ -68,10 +68,10 @@ def test_more_views_tighten_the_hull():
 
 
 def test_spec_from_carve_measures_the_height():
-    carved, mesh = carved_box()
+    carved, mesh = carved_box(size=(20.0, 12.0, 3.0))
     doc = spec_from_carve(carved, "box")
     assert doc["mm_per_px"] == 1.0
-    assert doc["outline"]["depth_px"] == pytest.approx(6.0, abs=1.5)
+    assert doc["outline"]["depth_px"] == pytest.approx(3.0, abs=1.5)
     assert "not guessed" in doc["outline"]["depth_note"]
     assert doc["outline"]["loops"]
 

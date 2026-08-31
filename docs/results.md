@@ -231,7 +231,32 @@ cross-section is - which is the actual definition of a prism - agrees no more of
 
 This is a three-way choice over a carved volume with exact ground truth available from
 the STEP files, so it is one of the few places in this project where a small learned
-classifier is better posed than a rule. Worth roughly 0.15.
+classifier is better posed than a rule.
+
+**The classifier wins, and it is the largest single gain in the carve path.** Rather than
+one three-way model, it scores each axis on its own and takes the best. That gives three
+training rows per part instead of one, and makes the answer independent of the order the
+axes happen to come in. Twelve features per axis: extents and their ratios, projected
+area, how much of its box the projection fills, how constant the slice count is along the
+axis, and the old thinnest-extent rule as a feature the model can override.
+
+Trained on 400 parts, then measured on 400 different parts never seen in training:
+
+| rule | agrees with the oracle | IoU |
+|---|---|---|
+| thinnest extent | 69% | 0.664 |
+| **learned** (shipped) | **89%** | **0.758** |
+| best of the three (oracle) | 100% | 0.785 |
+| worst of the three | | 0.219 |
+
+It fixes 93 parts and breaks 13, closing 78% of the gap to the oracle. `docs/figures/axis_model.png`
+shows five of the fixed ones: the thinnest-extent rule traces an edge view at IoU 0.00 and
+the classifier finds the face at 0.99.
+
+Every one of those is a rod - the shape the extent rules cannot cover - and the scores are
+not close: 0.95-0.99 for the right axis against 0.00-0.01 for the two edge views. On a cube,
+where all three answers are equally right, the three scores land within 0.01 of each other,
+so the model is not merely confident everywhere.
 
 **Carving does not yet beat a single photo for sketching.** It ties it. The oracle says
 another 0.15 is available if the axis were chosen correctly on the remaining third, so

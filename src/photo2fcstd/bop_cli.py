@@ -16,12 +16,14 @@ def main(argv):
     p.add_argument("--views", type=int, default=24, help="how many of the scene's photos to use")
     p.add_argument("--voxel-mm", type=float, default=1.0)
     p.add_argument("--allow-misses", type=int, default=1, help="views a voxel may fall outside before it is carved away")
+    p.add_argument("--depth", action="store_true", help="also carve away empty space seen by the depth maps, which recovers concavities")
     a = p.parse_args(argv)
     ids = a.objects or list(range(1, 31))
     rows = []
     for obj in ids:
         try:
-            carved = bop.carve_object(obj, a.dataset, a.split, a.views, a.voxel_mm, allow_misses=a.allow_misses)
+            carved = bop.carve_object(obj, a.dataset, a.split, a.views, a.voxel_mm,
+                                      allow_misses=a.allow_misses, use_depth=a.depth)
             row = bop.compare_to_truth(carved, obj)
         except Exception as exc:
             print("obj %02d  failed: %s" % (obj, str(exc)[:80]))

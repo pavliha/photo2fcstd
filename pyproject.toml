@@ -19,8 +19,7 @@ dependencies = [
     "torchvision",
     "transformers",
     "timm",
-    "kornia",
-    "einops",
+    "scikit-image",
     "shapely",
 ]
 
