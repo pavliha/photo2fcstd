@@ -155,7 +155,12 @@ more labels, which is what the full-dataset label run is for.
 
 ## Install
 
-    uv pip install -e .          # add --group dev for pytest
-    pytest -q                    # 27 tests; dataset and FreeCAD tests skip if absent
+    uv pip install -e .
+    photo2fcstd-doctor           # says what is present and what to set
+    pytest -q                    # dataset and FreeCAD tests skip if absent
 
-`FREECADCMD` points at the FreeCAD binary, `P2F_DATA` at the PrintCAD dataset.
+`photo2fcstd-doctor` checks the interpreter, the required and optional packages, the FreeCAD binary
+and its version, the mask cache and the benchmark dataset, and exits non-zero if something essential
+is missing. FreeCAD is found from `FREECADCMD`, then `PATH`, then the usual install locations
+(including `/Applications/FreeCAD.app`); the dataset from `P2F_DATA`, then `data/printcad/PrintCAD`
+inside the repo.
