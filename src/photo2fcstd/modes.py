@@ -81,16 +81,21 @@ def source_for(mode, specs):
     return pick_view(specs)
 
 
-USE_VIEW_MODEL = os.environ.get("P2F_VIEW_MODEL") == "1"
+USE_VIEW_MODEL = os.environ.get("P2F_VIEW_MODEL", "1") != "0"
 
 
 def outline_source(specs, fallback):
     """Which photo to draw the outline from.
 
-    The rules below pick the worst of three views 27% of the time, and what ships scores 0.554
-    where simply taking the first photo scores 0.574. Best of three is 0.642, so the choice is
-    worth about as much as undoing the viewpoint tilt would be, and unlike tilt it is a choice
-    between three real photographs rather than a quantity a silhouette does not contain.
+    The rules below pick the worst of three views 27% of the time. Scoring each view the way the
+    carve axis is scored and taking the best is worth +0.038 [+0.019, +0.056] of sketch IoU on
+    250 held-out parts, lifting skill over a drawn circle from 0.148 to 0.221, with the same
+    44 of 45 valid solids through FreeCAD. Set P2F_VIEW_MODEL=0 to go back to the rules.
+
+    Undoing the viewpoint tilt would be worth about the same, +0.090, but nothing in a silhouette
+    can find that warp - six criteria all score below leaving the photo alone. This is the half of
+    the capture problem that is a choice between real photographs rather than a quantity the mask
+    does not contain.
     """
     if not USE_VIEW_MODEL or len(specs) < 2:
         return fallback
