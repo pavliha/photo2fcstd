@@ -61,6 +61,7 @@ def test_build_writes_a_page_that_embeds_every_part(run, monkeypatch):
     page = open(path).read()
     assert (shown, total) == (0, 1)
     assert "00001_2.jpg" in page and "biggest regression first" in page
+    assert "still rendering" in page
     assert json.loads(page.split("const DATA = ")[1].split(", HAS_BASE")[0])[0]["delta"] == pytest.approx(0.15)
 
 
@@ -71,3 +72,19 @@ def test_a_run_without_a_baseline_offers_no_delta_sort(run, monkeypatch):
     report.build(d, None, None, 1, out)
     page = open(out).read()
     assert "biggest regression first" not in page and "HAS_BASE = false" in page
+
+
+def test_the_page_exists_before_any_thumbnail_is_rendered(run, monkeypatch):
+    base = run("b4", [("00001", "plan", "0.40")], {"00001": "00001_1.jpg"})
+    cand = run("c4", [("00001", "plan", "0.55")], {"00001": "00001_2.jpg"})
+    out = os.path.join(cand, "report.html")
+
+    seen = {}
+
+    def slow_render(run_dir, parts, jobs):
+        seen["page_existed"] = os.path.exists(out)
+        return {p: False for p in parts}
+
+    monkeypatch.setattr(report, "render", slow_render)
+    report.build(cand, base, None, 1, out)
+    assert seen["page_existed"]

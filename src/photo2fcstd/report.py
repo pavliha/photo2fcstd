@@ -226,9 +226,11 @@ const render = () => {
       `<span class="num ${r.delta > 0.005 ? "up" : r.delta < -0.005 ? "down" : ""}">${r.delta >= 0 ? "+" : ""}${r.delta.toFixed(3)}</span>`;
     const moved = r.base_view && r.view !== r.base_view
       ? `<span class="tag">traced ${r.base_view} &rarr; ${r.view}</span>` : "";
-    const body = r.thumb
-      ? `<img loading="lazy" src="thumbs/${r.part}.png" alt="${r.part}">`
-      : `<div class="miss">${r.failed ? "build failed" : "no thumbnail rendered"}</div>`;
+    const body = r.failed
+      ? `<div class="miss">build failed</div>`
+      : `<img loading="lazy" src="thumbs/${r.part}.png" alt="${r.part}"`
+        + ` onerror="this.replaceWith(Object.assign(document.createElement('div'),`
+        + `{className:'miss',textContent:'still rendering - reload the page'}))">`;
     return `<div class="row"><div class="head"><span class="part">${r.part}</span>`
       + `<span class="tag">${r.mode}</span><span class="num">IoU ${fmt(r.iou)}</span>${d}${moved}</div>${body}</div>`;
   }).join("");
@@ -240,13 +242,7 @@ render();
 """
 
 
-def build(run, base, limit, jobs, out):
-    rows = rows_for(run, base)
-    ordered = sorted(rows, key=lambda r: abs(r["delta"] or 0), reverse=True) if base else rows
-    keep = ordered[:limit] if limit else ordered
-    ok = render(run, [r["part"] for r in keep], jobs)
-    for r in rows:
-        r["thumb"] = ok.get(r["part"], False)
+def page_for(run, base, rows):
     modes = sorted({r["mode"] for r in rows})
     title = "photo2fcstd - %s%s" % (os.path.basename(run.rstrip("/")),
                                     (" vs %s" % os.path.basename(base.rstrip("/"))) if base else "")
@@ -258,8 +254,17 @@ def build(run, base, limit, jobs, out):
         "data": json.dumps(rows),
         "hasbase": "true" if base else "false",
     }
-    open(out, "w").write(page)
-    return out, sum(1 for r in rows if r["thumb"]), len(rows)
+    return page
+
+
+def build(run, base, limit, jobs, out):
+    rows = rows_for(run, base)
+    open(out, "w").write(page_for(run, base, rows))
+    ordered = sorted(rows, key=lambda r: abs(r["delta"] or 0), reverse=True) if base else rows
+    keep = ordered[:limit] if limit else ordered
+    ok = render(run, [r["part"] for r in keep], jobs)
+    open(out, "w").write(page_for(run, base, rows))
+    return out, sum(1 for r in rows if ok.get(r["part"])), len(rows)
 
 
 def main(argv=None):

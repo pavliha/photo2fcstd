@@ -63,6 +63,24 @@ def source_for(mode, specs):
     return pick_view(specs)
 
 
+USE_VIEW_MODEL = os.environ.get("P2F_VIEW_MODEL") == "1"
+
+
+def outline_source(specs, fallback):
+    """Which photo to draw the outline from.
+
+    The rules below pick the worst of three views 27% of the time, and what ships scores 0.554
+    where simply taking the first photo scores 0.574. Best of three is 0.642, so the choice is
+    worth about as much as undoing the viewpoint tilt would be, and unlike tilt it is a choice
+    between three real photographs rather than a quantity a silhouette does not contain.
+    """
+    if not USE_VIEW_MODEL or len(specs) < 2:
+        return fallback
+    from photo2fcstd import view_model
+    i = view_model.choose(specs)
+    return specs[i] if i is not None else fallback
+
+
 def select(specs, forced=None):
     if not specs:
         raise ValueError("no views to choose a mode from: the part has no photos")
@@ -86,10 +104,10 @@ def select(specs, forced=None):
     if round_views and (flat or len(specs) == 1 or all(v["shape"].get("round") for v in specs)):
         return "revolve", max(round_views, key=lambda v: v["shape"]["ellipse"]["aspect"])
     if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE:
-        return ("plan" if flat else "profile"), holed
+        return ("plan" if flat else "profile"), outline_source(specs, holed)
     if flat:
-        return "plan", pick_view(specs)
-    return "profile", least_rect
+        return "plan", outline_source(specs, pick_view(specs))
+    return "profile", outline_source(specs, least_rect)
 
 
 def station_views(specs):
