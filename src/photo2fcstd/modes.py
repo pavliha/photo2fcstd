@@ -3,7 +3,7 @@ import os
 from photo2fcstd import thresholds as th
 
 LEARNED = os.environ.get("P2F_LEARNED_MODES") == "1"
-VIEW_PICK = os.environ.get("P2F_VIEW_PICK", "ranker")
+VIEW_PICK = os.environ.get("P2F_VIEW_PICK", "first")
 
 
 def pick_view(specs):
