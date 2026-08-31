@@ -203,12 +203,18 @@ def sketch_line(sketches):
     if not sketches:
         return ""
     drawn = [r for r in sketches.values() if r["has_sketch"]]
-    trusted = [r for r in sketches.values() if r["trustworthy"] and r["has_sketch"]]
-    mean, lo, hi = stats.mean_ci([r["region_iou"] for r in trusted]) if trusted else (0.0, 0.0, 0.0)
+    if not drawn:
+        return ("\n  sketch comparison does not apply to this run: no part produced an outline or a "
+                "revolve profile (a stations model has no single face to compare)")
+    trusted = [r for r in drawn if r["trustworthy"]]
     exact = [r for r in trusted if r["counts_mine"] == r["counts_ideal"]]
-    return ("\n  sketch vs the ideal one: %d of %d parts emit a sketch; region IoU %.3f [%.3f, %.3f] "
-            "on %d with trustworthy truth; %d reproduce its exact primitives" % (
-                len(drawn), len(sketches), mean, lo, hi, len(trusted), len(exact)))
+    line = "\n  sketch vs the ideal one: applies to %d of %d parts (outline and revolve modes)" % (
+        len(drawn), len(sketches))
+    if not trusted:
+        return line + "; none of them has trustworthy ground truth to compare against"
+    mean, lo, hi = stats.mean_ci([r["region_iou"] for r in trusted])
+    return line + "; region IoU %.3f [%.3f, %.3f] on the %d with trustworthy truth; %d reproduce its exact primitives" % (
+        mean, lo, hi, len(trusted), len(exact))
 
 
 def summarise(name, scored, elapsed, baseline=None, sketches=None):
@@ -217,7 +223,9 @@ def summarise(name, scored, elapsed, baseline=None, sketches=None):
     line = "runs/%s: n=%d mean %.3f [%.3f, %.3f] fails %d in %.0f s" % (
         name, len(ok), mean, lo, hi, len(scored) - len(ok), elapsed)
     delta = stats.paired_delta(scores_of(baseline), ok) if baseline else None
-    if baseline and delta:
+    if baseline and delta and delta["lo"] == delta["hi"] == 0.0 and delta["delta"] == 0.0:
+        line += "\n  vs %s: identical on all %d shared parts" % (baseline, delta["n"])
+    elif baseline and delta:
         half = (delta["hi"] - delta["lo"]) / 2
         line += "\n  vs %s: %+.3f [%+.3f, %+.3f] on %d shared parts - %s" % (
             baseline, delta["delta"], delta["lo"], delta["hi"], delta["n"],

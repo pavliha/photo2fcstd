@@ -45,7 +45,7 @@ def test_bench_reads_specs_and_summarises(tmp_path, monkeypatch):
     scores = bench.sketch_scores(str(run), str(ideal))
     assert set(scores) == {"00001"}
     line = bench.sketch_line(scores)
-    assert "1 of 1 parts emit a sketch" in line
+    assert "applies to 1 of 1 parts" in line
     assert "1 reproduce its exact primitives" in line
 
 
@@ -53,3 +53,32 @@ def test_missing_ideal_file_is_not_fatal(tmp_path):
     (tmp_path / "out").mkdir()
     assert bench.sketch_scores(str(tmp_path), str(tmp_path / "nope.json")) == {}
     assert bench.sketch_line({}) == ""
+
+
+def test_a_stations_only_run_says_the_metric_does_not_apply():
+    rows = {"1": {"has_sketch": False, "trustworthy": True, "region_iou": 0.0,
+                  "counts_mine": {}, "counts_ideal": {"line": 4}}}
+    line = bench.sketch_line(rows)
+    assert "does not apply" in line
+    assert "0 of" not in line
+
+
+def test_the_denominator_is_stated_as_applicable_parts():
+    rows = {"1": {"has_sketch": True, "trustworthy": True, "region_iou": 0.9,
+                  "counts_mine": {"line": 4}, "counts_ideal": {"line": 4}},
+            "2": {"has_sketch": False, "trustworthy": True, "region_iou": 0.0,
+                  "counts_mine": {}, "counts_ideal": {"line": 4}}}
+    line = bench.sketch_line(rows)
+    assert "applies to 1 of 2 parts" in line
+    assert "1 reproduce its exact primitives" in line
+
+
+def test_identical_runs_are_reported_as_identical(tmp_path, monkeypatch):
+    monkeypatch.setattr(bench, "ROOT", str(tmp_path))
+    base = tmp_path / "runs" / "same"
+    base.mkdir(parents=True)
+    values = {"00001": 0.4, "00002": 0.6}
+    (base / "results.txt").write_text("".join("%s plan %.3f\n" % kv for kv in values.items()))
+    line = bench.summarise("copy", [(k, "%.3f" % v, "") for k, v in values.items()], 1.0, "same")
+    assert "identical on all 2 shared parts" in line
+    assert "would need ~0 parts" not in line
