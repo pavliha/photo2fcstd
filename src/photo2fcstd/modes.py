@@ -69,11 +69,7 @@ def select(specs, forced=None):
         return "revolve", max(round_views, key=lambda v: v["shape"]["ellipse"]["aspect"])
     if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE:
         return ("plan" if flat else "profile"), holed
-    if least_rect["shape"]["rectangularity"] < th.PROFILE_RECT:
-        return "profile", least_rect
-    if flat and all(v["shape"]["rectangularity"] > th.PLAN_RECT for v in specs):
-        return "plan", specs[0]
-    return "stations", specs[0]
+    return ("plan" if flat else "profile"), least_rect
 
 
 def station_views(specs):

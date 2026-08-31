@@ -76,3 +76,18 @@ def test_a_missing_object_says_so(scene, monkeypatch):
     monkeypatch.setattr(bop, "BOP_ROOT", scene[0])
     with pytest.raises(CaptureError, match="no scene for object"):
         bop.carve_object(99)
+
+
+def test_views_without_images_are_skipped(scene, monkeypatch, tmp_path):
+    import shutil
+    root, obj, mesh = scene
+    partial = tmp_path / "partial"
+    shutil.copytree(root, partial)
+    rgb = partial / "train_primesense" / ("%06d" % obj) / "rgb"
+    for i, f in enumerate(sorted(rgb.iterdir())):
+        if i % 3:
+            f.unlink()
+    monkeypatch.setattr(bop, "BOP_ROOT", str(partial))
+    views = bop.views_of(bop.scene_dir("tless", "train_primesense", obj))
+    assert 0 < len(views) < 24
+    assert all(os.path.exists(v["image"]) for v in views)
