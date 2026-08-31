@@ -74,11 +74,19 @@ unconstrained sketches.
 
 ## Renting a GPU (vast.ai)
 
-`vastai` is installed and authenticated. Check `vastai show user --raw` for the balance
-before planning anything - it is small, and a top-end card empties it in under an hour.
+`vastai` is installed and authenticated. Budget is **$100/month with auto top-up**, so
+cost is rarely the binding constraint - time is.
 
-**Know which part is actually slow before renting.** In this repo the GPU work is
-narrow:
+**The rule: estimate the runtime first, then decide.**
+
+- Under ~30 minutes: run it locally, do not rent. Setup, upload and teardown cost more
+  than the job saves.
+- Over ~1 hour: rent. Do not make anyone sit through it.
+- In between: local if it can run in the background while other work continues,
+  rented if it blocks progress.
+
+Estimate honestly by timing a small slice and extrapolating, and say the estimate out
+loud before choosing. A GPU only helps the stage that is actually GPU-bound:
 
 | job | bound by | rent a GPU? |
 |---|---|---|
@@ -87,10 +95,9 @@ narrow:
 | `curvenet.py` training | trivial - 195k params, seconds an epoch | no |
 | the benchmark, tracing, scoring, FreeCAD | CPU | no |
 
-So a bigger card does not make the current work finish sooner. Rent when the model
-grows into something real (an image-to-CAD sequence model), when re-segmenting a new
-photo set, or when generating synthetic data at a scale where vCPU count dominates -
-in that last case sort on `cpu_cores`, not `dlperf`.
+A bigger card does not speed up a CPU-bound stage. For synthetic data generation the
+thing to buy is vCPU count, so sort on `cpu_cores`, not `dlperf`. For segmentation or a
+real image-to-CAD model, buy the GPU.
 
 **Pick on value, not on the top of the list.** `-o 'dlperf-'` puts a B200 at
 $7.50/hr first; an RTX 5090 at $0.40/hr has roughly a third of the dlperf for a
