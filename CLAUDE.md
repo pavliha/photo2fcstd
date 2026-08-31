@@ -320,3 +320,19 @@ which used exactly that thinnest view, lost to a constant.
 
 `data/depth_model.joblib` is gitignored like the other model artefacts, so a fresh clone
 falls back to the geometric estimate until `tools/` rebuilds it.
+
+## A collapsed outline falls back, then refuses
+
+Regularising can flatten a thin silhouette to nothing: H/V snapping plus collinear
+merging turn a slim curved bar into a single line, and the pad then yields a null solid
+that the report used to call valid. About 3% of outline specs did this.
+
+`spec.traced_outline` checks the traced loops enclose real area (`MIN_OUTLINE_FILL` of
+`length_px` squared). If the chosen view collapses, the next most rectangular view is
+tried; if every view collapses, `assemble` raises rather than writing a document that
+looks fine and contains nothing. The views themselves look healthy in this case - 00238
+has aspect 0.12 and rectangularity 0.4 - so the check has to be on the traced loops, not
+on the silhouette statistics.
+
+00238 recovers a real four-element outline from another photo; 00332 has no usable view
+and now fails with a message telling you to reshoot it square to the face.
