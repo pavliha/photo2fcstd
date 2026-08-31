@@ -145,17 +145,20 @@ def demo():
     carved = C.carve([r["got"] for r in found], [r["mask"] for r in found], voxel_mm=0.4,
                      bounds=((w_mm / 2 - 20, w_mm / 2 + 20),
                              (h_mm / 2 - 15, h_mm / 2 + 15), (0.0, 14.0)))
+    carved["min_elevation_deg"] = min(C.view_elevation_deg(r["got"]) for r in found)
     got = np.sort(carved["extents_mm"])
     true = np.sort(mesh.extents)
+    fixed = np.sort(C.debias_height(carved)["extents_mm"])
     print("  carved extents  %s against a true %s" % (np.round(got, 2), true))
+    print("  after debias    %s" % np.round(fixed, 2))
     assert np.all(got[1:] - true[1:] < 2.0), got
     floor = true[1] / 2 * np.tan(np.radians(DETECTABLE_ELEV[0]))
-    print("  height is over by %.1f mm against a predicted %.1f: a silhouette taken %.0f degrees"
-          % (got[0] - true[0], floor, DETECTABLE_ELEV[0]))
-    print("  above the table bounds a %.0f mm wide part's height no better than that, and the"
-          % true[1])
-    print("  board stops being detectable below about %.0f degrees." % DETECTABLE_ELEV[0])
-    assert got[0] - true[0] < 3.5, got
+    print("  height was over by %.1f mm against a predicted %.1f, and is over by %.1f after"
+          % (got[0] - true[0], floor, fixed[0] - true[0]))
+    print("  the correction: the board stops being detectable below about %.0f degrees, and a"
+          % DETECTABLE_ELEV[0])
+    print("  silhouette that low cannot bound a %.0f mm wide part's height any tighter." % true[1])
+    assert abs(fixed[0] - true[0]) < 1.5, fixed
     print("the capture path works end to end on rendered board photos")
 
 

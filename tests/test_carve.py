@@ -87,3 +87,22 @@ def test_carved_mesh_is_watertight_with_positive_volume():
     assert mesh.is_watertight
     assert mesh.volume > 0
     assert mesh.volume == pytest.approx(truth.volume, rel=0.5)
+
+
+def test_debias_height_trims_what_a_low_camera_cannot_see():
+    from photo2fcstd.carve import debias_height
+    xs, ys, zs = np.mgrid[0:40, 0:20, 0:30]
+    pts = np.column_stack([xs.ravel(), ys.ravel(), zs.ravel()]).astype(float)
+    carved = {"points_mm": pts, "voxel_mm": 1.0, "extents_mm": np.ptp(pts, axis=0) + 1.0,
+              "min_elevation_deg": 15.0}
+    out = debias_height(carved)
+    cut = 19.0 / 2 * np.tan(np.radians(15.0))
+    assert out["height_debias_mm"] == pytest.approx(cut, abs=0.5)
+    assert np.ptp(out["points_mm"][:, 2]) < np.ptp(pts[:, 2])
+
+
+def test_debias_height_is_a_noop_without_an_elevation():
+    from photo2fcstd.carve import debias_height
+    pts = np.mgrid[0:10, 0:10, 0:10].reshape(3, -1).T.astype(float)
+    carved = {"points_mm": pts, "voxel_mm": 1.0}
+    assert debias_height(carved) is carved
