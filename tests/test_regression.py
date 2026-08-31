@@ -62,3 +62,13 @@ def test_the_spec_mode_survives_a_forced_choice(dataset, photos_of):
     views = [analysis.view(p) for p in photos_of("01289")[:3]]
     for forced in ("stations", "profile", "plan"):
         assert spec.assemble(views, name="x", mode=forced, log=lambda *a: None)["mode"] == forced
+
+
+def test_edge_on_photos_are_called_out(dataset, photos_of):
+    """All three photos of 00214 look at the part edge-on; the sheet must say so."""
+    from photo2fcstd import spec
+    views = [analysis.view(p) for p in photos_of("00214")[:3]]
+    doc = spec.assemble(views, name="00214", log=lambda *a: None)
+    assert doc["outline"]["warning"], "no warning on a part photographed edge-on"
+    flat = [analysis.view(p) for p in photos_of("00198")[:3]]
+    assert not spec.assemble(flat, name="00198", log=lambda *a: None)["outline"].get("warning")

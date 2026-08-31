@@ -211,6 +211,8 @@ def build_outline(spec, doc, params):
         what = "outline" if j == 0 else "hole %d" % (j - 1)
         params += [(n, round(val, 3), "%s %s (%s)" % (what, n.split("_", 1)[1], unit)) for n, val in loop_dims(loop, prefix)]
     params.append(("depth", round(v["depth_px"], 3), v["depth_note"].replace("(px units)", "(%s)" % unit).replace("(px)", "(%s)" % unit)))
+    if v.get("warning"):
+        params.append(("edge_on_warning", 0, v["warning"]))
     sheet_with(doc, params)
     body = doc.addObject("PartDesign::Body", "Body")
     body.Label = spec.get("name", "part")

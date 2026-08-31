@@ -48,6 +48,28 @@ so region IoU is dominated by alignment and cannot reward a correct-looking sket
 00294 scores 0.055 with a faithful six-line chevron. A curve-distance measure would suit
 those parts; region IoU does not.
 
+## The bottom of the distribution is a shooting fault
+
+Re-ranking against the corrected reference changed which parts are worst. Thirteen
+parts gained more than 0.1 and only two lost - 00256 went 0.177 to 0.754, 00171 0.544 to
+0.966 - so several apparent failures were correct drawings judged against a blob.
+
+What is left at the bottom is one failure mode. All ten worst parts have the **right
+loop count**; what they share is aspect. We trace a sliver (0.04 to 0.22) where the
+reference is nearly square (0.43 to 1.00), because the photographs look at the part
+**edge-on** and the silhouette is its 1 mm thickness rather than its face.
+
+| | count | mean IoU |
+|---|---|---|
+| traced outline is a sliver (aspect < 0.15) | 9 of 196 (5%) | **0.104** |
+| everything else | 187 | **0.592** |
+
+**No fallback is possible: 0 of those 9 parts has a better view** - all three photos of
+each are edge-on, so the broad face is not in the data at all. `spec.assemble` now warns,
+in the log and as an `edge_on_warning` row in the sheet, that the photos are edge-on and
+the part should be laid flat and reshot. Compare 00198, which is thinner still in truth
+(0.008) but photographed flat and scores 0.996.
+
 ## The error budget
 
 Against the orthographic silhouette, on trusted parts whose photo shows the extrusion

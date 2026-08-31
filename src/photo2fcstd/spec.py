@@ -16,6 +16,22 @@ def loop_area(loop):
     return abs(sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))) / 2.0
 
 
+def outline_aspect(loops):
+    pts = []
+    for loop in loops:
+        if loop["type"] == "circle":
+            pts += [[loop["cx"] - loop["r"], loop["cy"] - loop["r"]],
+                    [loop["cx"] + loop["r"], loop["cy"] + loop["r"]]]
+        else:
+            pts += [e["p0"] for e in loop["elements"]]
+    if len(pts) < 3:
+        return 0.0
+    a = [p[0] for p in pts]
+    b = [p[1] for p in pts]
+    w, h = max(a) - min(a), max(b) - min(b)
+    return min(w, h) / max(w, h) if max(w, h) else 0.0
+
+
 def traced_outline(view, min_fill=th.MIN_OUTLINE_FILL):
     """Trace a view into loops, or None when regularising collapses it to no area."""
     raw = view["shape"]["raw"]
@@ -113,6 +129,12 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
                              "the silhouette is too thin to regularise, reshoot it square to the face")
         depth, note = modes.outline_depth(src, others, mode_sel, thickness_px)
         outline_spec = {"source": src["source"], "loops": loops, "depth_px": depth, "depth_note": note}
+        aspect = outline_aspect(loops)
+        if aspect < th.SLIVER_ASPECT:
+            outline_spec["warning"] = ("the outline is %.0fx longer than it is wide, so these photos are "
+                                       "looking at the part edge-on - lay it flat and reshoot to get its "
+                                       "real face" % (1.0 / max(aspect, 1e-6)))
+            log("WARNING: %s" % outline_spec["warning"])
         log("sketch: %s%s" % (", ".join("circle r=%.0f" % l["r"] if l["type"] == "circle"
                                         else "%d elements (%s)" % (len(l["elements"]), "".join(l["kinds"])) for l in loops),
                               "; symmetric about " + "".join(src["symmetric"]) if src["symmetric"] else ""))
