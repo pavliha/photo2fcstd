@@ -79,3 +79,11 @@ def test_spec_from_carve_measures_the_height():
 def test_carved_mesh_is_a_solid():
     carved, _ = carved_box(voxel=1.0)
     assert mesh_of(carved).volume > 0
+
+
+def test_carved_mesh_is_watertight_with_positive_volume():
+    carved, truth = carved_box(voxel=1.0)
+    mesh = mesh_of(carved)
+    assert mesh.is_watertight
+    assert mesh.volume > 0
+    assert mesh.volume == pytest.approx(truth.volume, rel=0.5)

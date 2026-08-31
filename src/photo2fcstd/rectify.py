@@ -3,6 +3,8 @@ import sys
 import cv2
 import numpy as np
 
+from photo2fcstd.errors import CaptureError
+
 from photo2fcstd.make_target import DICT, SQUARE_MM, board
 
 PPMM = 20.0
@@ -12,8 +14,8 @@ def detect(gray):
     detector = cv2.aruco.CharucoDetector(board())
     corners, ids, _, _ = detector.detectBoard(gray)
     if ids is None or len(ids) < 6:
-        raise SystemExit("found %d charuco corners, need 6+ — reshoot with the target flat "
-                         "and fully in frame" % (0 if ids is None else len(ids)))
+        raise CaptureError("found %d charuco corners, need 6+ - reshoot with the target flat "
+                           "and fully in frame" % (0 if ids is None else len(ids)))
     return corners.reshape(-1, 2), ids.reshape(-1)
 
 
@@ -27,7 +29,7 @@ def board_points(ids):
 def rectify(path, out):
     img = cv2.imread(path)
     if img is None:
-        raise SystemExit("cannot read %s" % path)
+        raise CaptureError("cannot read %s" % path)
     corners, ids = detect(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
     H, _ = cv2.findHomography(corners, board_points(ids) * PPMM, cv2.RANSAC, 3.0)
     h, w = img.shape[:2]

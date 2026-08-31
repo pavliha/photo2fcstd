@@ -23,6 +23,23 @@ def skewed(img, dx, dy):
 
 
 VIEWS = [(60, 30), (110, 45), (150, 70), (200, 90), (40, 20), (90, 60)]
+BLOCK = np.array([[x, y, z] for x in (50.0, 70.0) for y in (60.0, 80.0) for z in (0.0, 10.0)])
+
+
+@pytest.fixture(scope="module")
+def posed_silhouettes(board_image):
+    views, masks = [], []
+    for dx, dy in VIEWS:
+        img = skewed(board_image, dx, dy)
+        p = pose(img)
+        if p is None:
+            continue
+        uv = project(BLOCK, p).astype(np.float32)
+        mask = np.zeros(img.shape[:2], np.uint8)
+        cv2.fillConvexPoly(mask, cv2.convexHull(uv.reshape(-1, 1, 2)).astype(np.int32), 1)
+        views.append(p)
+        masks.append(mask.astype(bool))
+    return views, masks
 
 
 def test_pose_recovers_the_board_it_was_measured_from(board_image):
@@ -36,19 +53,8 @@ def test_pose_recovers_the_board_it_was_measured_from(board_image):
         assert np.linalg.norm(reprojected - corners, axis=1).mean() < 30.0
 
 
-def test_carve_consumes_capture_poses(board_image):
-    views, masks = [], []
-    for dx, dy in VIEWS:
-        img = skewed(board_image, dx, dy)
-        p = pose(img)
-        if p is None:
-            continue
-        block = np.array([[x, y, z] for x in (50.0, 70.0) for y in (60.0, 80.0) for z in (0.0, 10.0)])
-        uv = project(block, p).astype(np.float32)
-        mask = np.zeros(img.shape[:2], np.uint8)
-        cv2.fillConvexPoly(mask, cv2.convexHull(uv.reshape(-1, 1, 2)).astype(np.int32), 1)
-        views.append(p)
-        masks.append(mask.astype(bool))
+def test_carve_consumes_capture_poses(posed_silhouettes):
+    views, masks = posed_silhouettes
     assert len(views) >= 5
     carved = carve(views, masks, voxel_mm=1.0, allow_misses=0, bounds=((40, 80), (50, 90), (0, 20)))
     assert carved is not None
@@ -56,19 +62,8 @@ def test_carve_consumes_capture_poses(board_image):
     assert (footprint > 18.0).all() and (footprint < 25.0).all(), carved["extents_mm"]
 
 
-def test_height_is_unconstrained_without_grazing_views(board_image):
-    views, masks = [], []
-    for dx, dy in VIEWS:
-        img = skewed(board_image, dx, dy)
-        p = pose(img)
-        if p is None:
-            continue
-        block = np.array([[x, y, z] for x in (50.0, 70.0) for y in (60.0, 80.0) for z in (0.0, 10.0)])
-        uv = project(block, p).astype(np.float32)
-        mask = np.zeros(img.shape[:2], np.uint8)
-        cv2.fillConvexPoly(mask, cv2.convexHull(uv.reshape(-1, 1, 2)).astype(np.int32), 1)
-        views.append(p)
-        masks.append(mask.astype(bool))
+def test_height_is_unconstrained_without_grazing_views(posed_silhouettes):
+    views, masks = posed_silhouettes
     tall = carve(views, masks, voxel_mm=1.0, allow_misses=0, bounds=((40, 80), (50, 90), (0, 30)))
     short = carve(views, masks, voxel_mm=1.0, allow_misses=0, bounds=((40, 80), (50, 90), (0, 20)))
     assert tall["extents_mm"][2] > short["extents_mm"][2]

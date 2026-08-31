@@ -5,6 +5,8 @@ from photo2fcstd.make_target import SQUARE_MM, board
 from photo2fcstd.rectify import PPMM, board_points, detect
 
 MIN_CORNERS = 6
+PHONE_FOCAL_FRACTION = 1.2
+MIN_CALIBRATION_VIEWS = 4
 
 
 def board_corners(image):
@@ -44,7 +46,7 @@ def rectified(image, pad_mm=5.0):
 
 def camera_matrix(shape, focal_px=None):
     h, w = shape[:2]
-    f = focal_px or 1.2 * max(h, w)
+    f = focal_px or PHONE_FOCAL_FRACTION * max(h, w)
     return np.array([[f, 0, w / 2.0], [0, f, h / 2.0], [0, 0, 1.0]], float)
 
 
@@ -75,7 +77,7 @@ def calibrate(images):
             continue
         object_points.append(np.c_[board_points(ids), np.zeros(len(ids))].astype(np.float32))
         image_points.append(corners.reshape(-1, 1, 2))
-    if len(object_points) < 4:
+    if len(object_points) < MIN_CALIBRATION_VIEWS:
         return None
     ok, K, dist, _, _ = cv2.calibrateCamera(object_points, image_points, size, None, None)
     return {"K": K, "dist": dist, "rms_px": float(ok), "views": len(object_points)}

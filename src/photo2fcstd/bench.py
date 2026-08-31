@@ -44,24 +44,15 @@ def make_spec(args):
             with open(spec_path, "w") as out_fh:
                 import json
                 json.dump(doc, out_fh)
-            chosen = doc["revolve"] and "revolve" or (doc["outline"] and ("plan" if "plate thickness" in doc["outline"]["depth_note"] else "profile")) or "stations"
+            chosen = doc["mode"]
             event = {"mode": chosen, "views": [telemetry.view_event(v) for v in views],
                      "spec": telemetry.spec_event(doc), "spec_ms": round(1000 * (time.time() - t0))}
             return part, chosen, event
-        except BaseException as exc:
+        except Exception as exc:
             fh.write("FAILED %s\n" % exc)
             return part, "none", {"mode": "none", "error": str(exc)[:200]}
         finally:
             sys.stdout, sys.stderr = out, err
-
-
-def mode_from_log(path, fh=None):
-    if fh:
-        fh.flush()
-    for line in open(path, errors="ignore"):
-        if line.startswith("mode: "):
-            return line.split()[1]
-    return "none"
 
 
 def score(args):

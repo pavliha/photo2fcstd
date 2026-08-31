@@ -36,7 +36,11 @@ def main(argv):
 
 
 def run():
-    main(sys.argv[1:])
+    from photo2fcstd.errors import Photo2FCStdError
+    try:
+        main(sys.argv[1:])
+    except Photo2FCStdError as exc:
+        raise SystemExit(str(exc))
 
 
 if __name__ == "__main__":

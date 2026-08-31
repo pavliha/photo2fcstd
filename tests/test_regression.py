@@ -37,3 +37,18 @@ def test_mini_benchmark_stays_above_the_floor(dataset, freecad, tmp_path):
     summary = run_bench("mini", 4, list(EXPECTED)[:8])
     mean = float(summary.split("mean ")[1].split()[0])
     assert mean >= FLOOR_IOU, summary
+
+
+def test_the_recorded_mode_matches_the_selected_mode(dataset, photos_of):
+    from photo2fcstd import spec
+    for part in ("01289", "00476", "00523", "01407", "00171"):
+        views = [analysis.view(p) for p in photos_of(part)[:3]]
+        doc = spec.assemble(views, name=part, log=lambda *a: None)
+        assert doc["mode"] == modes.select(views)[0], part
+
+
+def test_the_spec_mode_survives_a_forced_choice(dataset, photos_of):
+    from photo2fcstd import spec
+    views = [analysis.view(p) for p in photos_of("01289")[:3]]
+    for forced in ("stations", "profile", "plan"):
+        assert spec.assemble(views, name="x", mode=forced, log=lambda *a: None)["mode"] == forced

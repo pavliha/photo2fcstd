@@ -69,6 +69,23 @@ are added; concave features (a bowl's interior) are invisible to silhouettes and
 sketch modes. Shoot 10&ndash;20 photos around the part including low, grazing angles &mdash; those are what
 pin the height.
 
+## Depth, when only one face is visible
+
+`modes.outline_depth` takes the first answer that is actually evidence:
+
+| in order | source | note in the sheet |
+|---|---|---|
+| `--thickness-px` | you measured it | "thickness from --thickness-px" |
+| plan mode | a constant 7.5 % of length &mdash; every photo shows the same face, so nothing in them bounds it | says NOT visible, set from a caliper |
+| profile with a plain elevation | that elevation's width, scaled | names the photo it came from |
+| profile without one | 0.24 &times; the most edge-on view's aspect &times; length | says it is an estimate |
+
+The constants are fitted, and the ordering is measured, not assumed. Replacing the whole table with
+the edge-on estimate scores 0.327 on the 53 outline parts against 0.404 for the table; keeping it
+only as the last-resort fallback gives 0.405 (200-part mean 0.432). `DEPTH_FROM_ASPECT` is 0.24
+because that minimises both the log-error against true thickness (0.993 at 0.24, 1.112 at 0.46) and
+the benchmark: 0.24 beats 0.46 by 0.020 on outline parts.
+
 ## Benchmark
 
     photo2fcstd-bench v11 --jobs 8        # 200 PrintCAD parts, real photos, ~4 min

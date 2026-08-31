@@ -2,10 +2,17 @@ import cv2
 import numpy as np
 
 from photo2fcstd.capture import calibrate, pose
+from photo2fcstd.errors import CaptureError
+from photo2fcstd.make_target import COLS, ROWS, SQUARE_MM
 
 VOXEL_MM = 0.4
 MAX_HEIGHT_MM = 120.0
 MARGIN_MM = 4.0
+MIN_POSED_VIEWS = 3
+
+
+def board_extent_mm():
+    return max(COLS, ROWS) * SQUARE_MM
 
 
 def grid(bounds_mm, voxel_mm):
@@ -33,8 +40,8 @@ def inside(mask, uv):
     return hit, ok
 
 
-def footprint(views, masks, plane_mm=(0.0, 150.0), voxel_mm=2.0):
-    lo, hi = plane_mm
+def footprint(views, masks, plane_mm=None, voxel_mm=2.0, max_height_mm=MAX_HEIGHT_MM):
+    lo, hi = plane_mm or (0.0, board_extent_mm())
     xs = np.arange(lo, hi, voxel_mm)
     gx, gy = np.meshgrid(xs, xs, indexing="ij")
     pts = np.stack([gx, gy, np.zeros_like(gx)], axis=-1).reshape(-1, 3)
@@ -47,11 +54,11 @@ def footprint(views, masks, plane_mm=(0.0, 150.0), voxel_mm=2.0):
         return None
     return ((keep[:, 0].min() - MARGIN_MM, keep[:, 0].max() + MARGIN_MM),
             (keep[:, 1].min() - MARGIN_MM, keep[:, 1].max() + MARGIN_MM),
-            (0.0, MAX_HEIGHT_MM))
+            (0.0, max_height_mm))
 
 
-def carve(views, masks, voxel_mm=VOXEL_MM, allow_misses=1, bounds=None):
-    bounds = bounds or footprint(views, masks)
+def carve(views, masks, voxel_mm=VOXEL_MM, allow_misses=1, bounds=None, max_height_mm=MAX_HEIGHT_MM):
+    bounds = bounds or footprint(views, masks, max_height_mm=max_height_mm)
     if bounds is None:
         return None
     points, axes = grid(bounds, voxel_mm)
@@ -76,15 +83,14 @@ def occupancy(carved, axis=2):
     voxel = carved["voxel_mm"]
     keep = [i for i in range(3) if i != axis]
     idx = np.round((pts[:, keep] - pts[:, keep].min(axis=0)) / voxel).astype(int)
-    shape = idx.max(axis=0) + 3
-    grid_2d = np.zeros(shape, bool)
+    grid_2d = np.zeros(idx.max(axis=0) + 3, bool)
     grid_2d[idx[:, 0] + 1, idx[:, 1] + 1] = True
-    return grid_2d, pts[:, keep].min(axis=0)
+    return grid_2d
 
 
 def spec_from_carve(carved, name="part", stl=None):
     from photo2fcstd.trace import outline, primitives
-    plan, origin = occupancy(carved, axis=2)
+    plan = occupancy(carved, axis=2)
     poly, shape = outline(plan)
     loops_px = [shape["raw"]] + shape["raw_holes"]
     centre = np.array(shape["raw"], float).mean(axis=0)
@@ -104,8 +110,16 @@ def spec_from_carve(carved, name="part", stl=None):
 
 def mesh_of(carved):
     import trimesh
-    box = trimesh.creation.box((carved["voxel_mm"],) * 3)
-    return trimesh.util.concatenate([box.copy().apply_translation(p) for p in carved["points_mm"]])
+    from skimage import measure
+    voxel = carved["voxel_mm"]
+    pts = carved["points_mm"]
+    idx = np.round((pts - pts.min(axis=0)) / voxel).astype(int)
+    volume = np.zeros(idx.max(axis=0) + 3, bool)
+    volume[idx[:, 0] + 1, idx[:, 1] + 1, idx[:, 2] + 1] = True
+    verts, faces, _, _ = measure.marching_cubes(volume.astype(float), 0.5)
+    mesh = trimesh.Trimesh((verts - 1) * voxel + pts.min(axis=0), faces, process=True)
+    mesh.fix_normals()
+    return mesh
 
 
 def from_photos(paths, segment_fn, voxel_mm=VOXEL_MM):
@@ -122,8 +136,9 @@ def from_photos(paths, segment_fn, voxel_mm=VOXEL_MM):
         views.append(p)
         masks.append(segment_fn(path))
         used.append(path)
-    if len(views) < 3:
-        raise SystemExit("need the ChArUco target visible in at least 3 photos, found %d" % len(views))
+    if len(views) < MIN_POSED_VIEWS:
+        raise CaptureError("need the ChArUco target visible in at least %d photos, found %d"
+                           % (MIN_POSED_VIEWS, len(views)))
     carved = carve(views, masks, voxel_mm)
     carved["sources"] = used
     carved["calibration_rms_px"] = cal["rms_px"] if cal else None

@@ -108,6 +108,6 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
     for n, v in (views.items() if not (outline_spec or revolve_spec) else []):
         log("%s: rotated %+.0f deg, %d stations over %.0f px  widths %s"
             % (n, v["angle_deg"], len(v["stations"]), v["length_px"], [round(s["width"], 1) for s in v["stations"]]))
-    return {"name": name, "mm_per_px": mpp, "scale_note": scale_note,
+    return {"name": name, "mode": mode_sel, "mm_per_px": mpp, "scale_note": scale_note,
             "views": {k: {kk: vv for kk, vv in v.items() if kk not in ("poly", "shape")} for k, v in views.items()},
             "outline": outline_spec, "revolve": revolve_spec, "stl": stl}

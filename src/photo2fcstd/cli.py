@@ -5,6 +5,7 @@ import subprocess
 import sys
 
 from photo2fcstd import analysis, spec
+from photo2fcstd.errors import BuildError
 from photo2fcstd.settings import FREECADCMD
 
 BUILDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build.py")
@@ -37,7 +38,7 @@ def freecad_build(spec_path, out):
     if not reports:
         noise = ("FreeCAD", "(C) 2001")
         lines = [l for l in (r.stdout + r.stderr).splitlines() if not l.startswith(noise)]
-        raise SystemExit("FreeCAD build failed:\n" + "\n".join(lines)[-1800:])
+        raise BuildError("FreeCAD build failed:\n" + "\n".join(lines)[-1800:])
     return json.loads(reports[0][7:])
 
 
@@ -67,7 +68,11 @@ def main(argv):
 
 
 def run():
-    main(sys.argv[1:])
+    from photo2fcstd.errors import Photo2FCStdError
+    try:
+        main(sys.argv[1:])
+    except Photo2FCStdError as exc:
+        raise SystemExit(str(exc))
 
 
 if __name__ == "__main__":
