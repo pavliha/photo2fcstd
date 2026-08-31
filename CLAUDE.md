@@ -261,32 +261,42 @@ straight choice: `stations` keeps solid IoU 0.433 with 46% of parts drawing noth
 always-outline gives 100% coverage and sketch IoU 0.557 for solid IoU 0.364.
 `tests/test_regression.py` currently encodes the first.
 
-## Depth is predicted, not guessed
+## Depth is predicted, with an honest interval
 
-`depth_model.py` predicts `log(depth / length)` from the silhouette features of the
-photos, trained on the 889 trusted prisms whose STEP file gives the true extrusion
-depth. Gradient boosting on tabular features - the data is small and wide, so trees,
-not a network.
+`depth_model.py` predicts `log(depth / length)` from the silhouette features, trained on
+the 1442 parts whose STEP file records a real extrusion depth against a non-sliver face.
+Gradient boosting on tabular features - small wide data, so trees, not a network.
+`tools/depth_data.py` builds the rows, `tools/depth_train.py` fits and calibrates.
 
-Measured on 178 parts held out of training:
+Measured on a test slice that neither training nor calibration saw:
 
 | | median \|log\| error | within 2x |
 |---|---|---|
 | best constant | 1.045 | 35% |
 | geometric estimate (0.46 x edge-on aspect) | 1.118 | 28% |
-| **learned** | **0.457** | **62%** |
+| **learned point estimate** | **0.435** | **63%** |
 
-End to end on 41 held-out outline parts the solid IoU goes from 0.404 to 0.483, better
-on 23 and worse on 9.
+End to end on 41 held-out outline parts the solid IoU rose from 0.404 to 0.483.
 
-Note the geometric estimator committed earlier is **worse than a constant** at this
-scale; it looked better on 98 parts and did not hold on 889. It stays only as the
-fallback when sklearn and joblib are missing. A direct measurement from a second
-elevation still takes priority over both - never override an observation with a prior.
+The band comes from conformalised quantile regression, so its coverage is guaranteed
+rather than hoped for: **83% of true depths fall inside the 80% band**. Plain quantile
+regression covered only 55%, which is why the calibration step matters.
 
-`data/depth_model.joblib` is gitignored like the other model artefacts, so a fresh
-clone falls back to the geometric estimate until you run `tools/depth_data.py` then
-`tools/depth_train.py` to rebuild it. This is the one learned
-component that beat its A/B, and the reason is the same rule as before: depth is a
-single scalar with exact ground truth that geometry genuinely cannot observe, whereas
-curve segmentation needed a boundary position that per-point labels cannot express.
+**The bands are wide, and that is the real finding.** The median 80% band spans about
+**10x**, and only a couple of percent of parts get a band tighter than 2x. Depth simply
+is not in an uncalibrated photo of a part seen face-on, and the point estimate being
+decent does not change that. The `params` note now states the range and says outright
+whether the number is worth building from - which is the honest version of the old
+blanket "measure it".
+
+Relaxing the training filter from the strict `trustworthy` set (889) to any non-sliver
+face (1442) improved both the point estimate (0.514 to 0.435) and the band (11.7x to
+9.7x), as the learning curve predicted.
+
+Permutation importance says the model leans on `ellipse_rms`, `stroke_frac` and the
+*spread of rectangularity and solidity between views* - how much the three silhouettes
+disagree - not on the thinnest view. That is why the hand-written edge-on estimator,
+which used exactly that thinnest view, lost to a constant.
+
+`data/depth_model.joblib` is gitignored like the other model artefacts, so a fresh clone
+falls back to the geometric estimate until `tools/` rebuilds it.

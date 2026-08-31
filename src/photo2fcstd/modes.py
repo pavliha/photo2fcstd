@@ -124,11 +124,17 @@ def edge_on_depth(src, views):
 
 def predicted_depth(src, others):
     from photo2fcstd import depth_model
-    ratio = depth_model.ratio([src] + list(others))
-    if ratio is None:
+    got = depth_model.predict([src] + list(others))
+    if got is None:
         return None
-    return (ratio * src["length_px"],
-            "depth predicted from the silhouettes at %.3f of length - typically within 2x, measure it (px units)" % ratio)
+    ratio, lo, hi, coverage = got
+    depth = ratio * src["length_px"]
+    if lo is None or hi is None:
+        return depth, "depth predicted from the silhouettes at %.3f of length - measure it (px units)" % ratio
+    spread = hi / max(lo, 1e-9)
+    verdict = "good enough to build from" if spread < 2.0 else "too wide to trust, put a caliper on it"
+    return (depth, "depth predicted from the silhouettes: %.1f px, %.0f%% of the time between %.1f and %.1f (%.1fx spread, %s)"
+            % (depth, 100 * coverage, lo * src["length_px"], hi * src["length_px"], spread, verdict))
 
 
 def outline_depth(src, others, mode, thickness_px):

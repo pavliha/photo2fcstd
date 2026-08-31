@@ -42,13 +42,28 @@ def load():
     return model
 
 
-def ratio(views):
+def predict(views):
+    """Return (ratio, low, high, coverage) or None. Bounds are conformally calibrated."""
     from photo2fcstd import telemetry
     model = load()
     if model is None:
         return None
     try:
-        events = [telemetry.view_event(v) for v in views]
-        return float(np.exp(model.predict(np.array([features(events)], float))[0]))
+        x = np.array([features([telemetry.view_event(v) for v in views])], float)
     except Exception:
         return None
+    try:
+        if not isinstance(model, dict):
+            return float(np.exp(model.predict(x)[0])), None, None, None
+        off = model["offset"]
+        return (float(np.exp(model["point"].predict(x)[0])),
+                float(np.exp(model["lo"].predict(x)[0] - off)),
+                float(np.exp(model["hi"].predict(x)[0] + off)),
+                1.0 - model.get("alpha", 0.2))
+    except Exception:
+        return None
+
+
+def ratio(views):
+    got = predict(views)
+    return None if got is None else got[0]
