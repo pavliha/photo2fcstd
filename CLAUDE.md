@@ -209,3 +209,33 @@ wrong accuracy. When a number surprises you, check the measurement first.
 from reformulating (binary labels, excluded boundaries, right normalisation), none from
 a bigger network. When something plateaus, ask what the model is being asked to
 predict before making it larger.
+
+## Carving is the strongest path, and it is validated synthetically
+
+`carve.py` needs the ChArUco board in the photos, so it cannot be measured on the
+PrintCAD sets at all - those photos have no target. `carve_check.py` drives it with
+synthetic views of a truth mesh instead (exact poses, rendered silhouettes), which
+tests the geometry without any capture. Run `python -m photo2fcstd.carve_check` for the
+self-check, or with arguments `<views> <voxel_mm> <elevations>` for the sweep.
+
+With 16 views and 0.25 mm voxels, over 40 trusted parts:
+
+| | volumetric IoU vs truth | extent error |
+|---|---|---|
+| all parts | 0.736 mean, 0.810 median | +0.71 / +0.35 / +0.85 mm |
+| at least 4 voxels thick (n=30) | **0.791** | +4.3% / +4.8% / +30.5% |
+| thinner than 4 voxels (n=10) | median true thickness 0.43 mm | not resolvable |
+
+For comparison the photo pipeline reaches about 0.43 solid IoU and its best possible
+mode choice 0.527. Carving roughly doubles that, and the depth is measured rather than
+guessed, so it is where the remaining accuracy is.
+
+**Size the voxel to the smallest feature you care about - about a quarter of it.** The
+default `VOXEL_MM = 0.4` cannot resolve anything under roughly 1.6 mm, and a quarter of
+these parts are thinner than that. Relative extent error on the thin axis is a
+misleading statistic when the feature is near the voxel size (a 0.11 mm plate carved at
+0.5 mm reads as +350%); quote absolute millimetres there.
+
+Two harness bugs worth remembering, both found here: an OpenCV camera basis must be
+`[right, down, forward]` and right-handed (`det = +1`), and with every camera above the
+horizon the space beneath the part is unobservable, so clip the grid at the board plane.
