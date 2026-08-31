@@ -2,7 +2,7 @@ import os
 
 from photo2fcstd import modes
 from photo2fcstd import thresholds as th
-from photo2fcstd.trace import primitives
+from photo2fcstd.trace import joins, kinds_of, primitives
 
 
 def scale_of(views, mm_per_px, length_mm):
@@ -28,6 +28,10 @@ def rescale_side(views):
     return f
 
 
+def not_degenerate(e):
+    return (e["p0"][0] != e["p1"][0] or e["p0"][1] != e["p1"][1]) and (e["type"] != "arc" or e["r"] > 0)
+
+
 def rounded_loops(loops, rnd):
     out = []
     for loop in loops:
@@ -37,6 +41,10 @@ def rounded_loops(loops, rnd):
         elements = [dict(e, p0=[rnd(e["p0"][0]), rnd(e["p0"][1])], p1=[rnd(e["p1"][0]), rnd(e["p1"][1])],
                          **({"cx": rnd(e["cx"]), "cy": rnd(e["cy"]), "r": rnd(e["r"])} if e["type"] == "arc" else {}))
                     for e in loop["elements"]]
+        kept = [e for e in elements if not_degenerate(e)]
+        if len(kept) >= 2 and len(kept) != len(elements):
+            elements = kept
+            loop = dict(loop, kinds=kinds_of(elements), joins=joins(elements))
         out.append(dict(loop, elements=elements))
     return out
 

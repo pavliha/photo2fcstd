@@ -112,17 +112,28 @@ def revolve_from_prior(src, loops, R, rings, thickness_px, rim_px):
             "note": "revolve of a half profile: R and rim radius from the photo; floor thickness and rim height are NOT visible from above - measure them"}
 
 
+def edge_on_depth(src, views):
+    aspects = [(min(v["shape"]["bbox"]) / max(v["shape"]["bbox"]), v) for v in views if max(v["shape"]["bbox"])]
+    if not aspects:
+        return None, None
+    aspect, view = min(aspects, key=lambda t: t[0])
+    return (th.DEPTH_FROM_ASPECT * aspect * src["length_px"],
+            "depth estimated from the most edge-on photo (%s, aspect %.2f) - typically within 2x, measure it (px units)"
+            % (os.path.basename(view["source"]), aspect))
+
+
 def outline_depth(src, others, mode, thickness_px):
-    if mode == "plan":
-        if thickness_px is not None:
-            return thickness_px, "plate thickness from --thickness-px (px units)"
-        return (th.PLATE_FRAC * src["length_px"],
-                "plate thickness: NOT visible in plan photos, guessed as %.0f%% of length - set it from a caliper (px units)" % (th.PLATE_FRAC * 100))
-    extent = max(src["shape"]["bbox"])
-    other = max(others, key=lambda v: v["shape"]["rectangularity"]) if others else None
-    if other is not None and other["shape"]["rectangularity"] > th.PLAN_RECT:
-        width = max(st["width"] for st in other["stations"])
-        return (width * extent / other["length_px"],
-                "extrusion length = width of %s scaled by the profile extent (px units)" % os.path.basename(other["source"]))
-    return (min(src["shape"]["stroke_px"], th.PLATE_FRAC * src["length_px"]),
-            "no plain elevation photo: depth guessed as min(section stroke, %.0f%% of length) - measure it (px units)" % (th.PLATE_FRAC * 100))
+    if thickness_px is not None:
+        return thickness_px, "thickness from --thickness-px (px units)"
+    if mode != "plan":
+        extent = max(src["shape"]["bbox"])
+        other = max(others, key=lambda v: v["shape"]["rectangularity"]) if others else None
+        if other is not None and other["shape"]["rectangularity"] > th.PLAN_RECT:
+            width = max(st["width"] for st in other["stations"])
+            return (width * extent / other["length_px"],
+                    "extrusion length = width of %s scaled by the profile extent (px units)" % os.path.basename(other["source"]))
+    depth, note = edge_on_depth(src, [src] + list(others))
+    if depth is not None:
+        return depth, note
+    return (th.PLATE_FRAC * src["length_px"],
+            "depth NOT visible in these photos, guessed as %.0f%% of length - set it from a caliper (px units)" % (th.PLATE_FRAC * 100))
