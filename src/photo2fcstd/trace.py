@@ -10,6 +10,7 @@ from pillow_heif import register_heif_opener
 register_heif_opener()
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+from photo2fcstd import thresholds as th
 from photo2fcstd.rectify import PPMM
 
 WARM = 0.005
@@ -240,12 +241,12 @@ def elements(raw, length_px):
     els = []
     for run in runs:
         chord = float(np.hypot(*(run[-1] - run[0])))
-        if len(run) >= 8 and chord > 0.03 * length_px:
+        if len(run) >= th.ARC_MIN_POINTS and chord > th.ARC_MIN_CHORD_FRAC * length_px:
             cx, cy, r, rel, _ = fit_circle(run)
             span = arc_span(run, cx, cy)
             cv = run[-1] - run[0]
             sag = float(np.max(np.abs(cv[0] * (run[:, 1] - run[0][1]) - cv[1] * (run[:, 0] - run[0][0])) / max(chord, 1e-9)))
-            if rel * r < max(0.02 * r, 1.2) and 40 < abs(span) < 350 and sag > 0.08 * chord:
+            if rel * r < max(th.ARC_FIT_TOL * r, 1.2) and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG and sag > th.ARC_MIN_SAG_FRAC * chord:
                 els.append(arc_from_run(run, span > 0))
                 continue
         els.append({"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist()})
