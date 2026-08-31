@@ -127,7 +127,7 @@ def loop_dims(loop, prefix):
 
 def bind(sk, cid, name):
     sk.renameConstraint(cid, name)
-    sk.setExpression(".Constraints." + name, "params.%s * params.mm_per_px" % name)
+    sk.setExpression(".Constraints." + name, "params.%s * params.scale" % name)
 
 
 def arc_geometry(e, mpp):
@@ -205,11 +205,12 @@ def outline_sketch(doc, body, name, loops, mpp):
 def build_outline(spec, doc, params):
     v = spec["outline"]
     mpp = spec["mm_per_px"]
+    unit = spec.get("unit", "px")
     for j, loop in enumerate(v["loops"]):
         prefix = "o" if j == 0 else "h%d" % (j - 1)
         what = "outline" if j == 0 else "hole %d" % (j - 1)
-        params += [(n, round(val, 3), "%s %s (px)" % (what, n.split("_", 1)[1])) for n, val in loop_dims(loop, prefix)]
-    params.append(("depth", round(v["depth_px"], 3), v["depth_note"]))
+        params += [(n, round(val, 3), "%s %s (%s)" % (what, n.split("_", 1)[1], unit)) for n, val in loop_dims(loop, prefix)]
+    params.append(("depth", round(v["depth_px"], 3), v["depth_note"].replace("(px units)", "(%s)" % unit).replace("(px)", "(%s)" % unit)))
     sheet_with(doc, params)
     body = doc.addObject("PartDesign::Body", "Body")
     body.Label = spec.get("name", "part")
@@ -218,13 +219,14 @@ def build_outline(spec, doc, params):
     body.addObject(pad)
     pad.Profile = sk
     pad.Length = v["depth_px"] * mpp
-    pad.setExpression("Length", "params.depth * params.mm_per_px")
+    pad.setExpression("Length", "params.depth * params.scale")
     doc.recompute()
     return body
 
 def build_revolve(spec, doc, params):
     v = spec["revolve"]
     mpp = spec["mm_per_px"]
+    unit = spec.get("unit", "px")
     prof = v["profile"]
     generic = v.get("generic")
     if generic:
@@ -232,12 +234,12 @@ def build_revolve(spec, doc, params):
         els = [{"type": "line", "p0": prof[i], "p1": prof[(i + 1) % m]} for i in range(m)]
         kinds = ["H" if abs(e["p1"][1] - e["p0"][1]) < 1e-9 else "V" if abs(e["p1"][0] - e["p0"][0]) < 1e-9 else "F" for e in els]
         ploop = {"type": "loop", "elements": els, "kinds": kinds, "joins": [""] * m}
-        params += [(n, round(val, 3), "profile %s (px)" % n.split("_", 1)[1]) for n, val in loop_dims(ploop, "p")]
+        params += [(n, round(val, 3), "profile %s (%s)" % (n.split("_", 1)[1], unit)) for n, val in loop_dims(ploop, "p")]
     else:
-        params += [("R_outer", round(v["R"], 3), "outer radius (px)"), ("t_floor", round(v["t"], 3), "floor thickness (px) - guess, measure it"), ("h_rim", round(v["h"], 3), "rim height (px) - guess, measure it")]
-        params += [("R_rim", round(v["rings"][0] * v["R"], 3), "rim inner radius (px)")] if v["rings"] else []
+        params += [("R_outer", round(v["R"], 3), "outer radius (%s)" % unit), ("t_floor", round(v["t"], 3), "floor thickness (%s) - a guess, measure it" % unit), ("h_rim", round(v["h"], 3), "rim height (%s) - a guess, measure it" % unit)]
+        params += [("R_rim", round(v["rings"][0] * v["R"], 3), "rim inner radius (%s)" % unit)] if v["rings"] else []
     for j, hole in enumerate(v["holes"]):
-        params += [("hole%d_cx" % j, round(hole["cx"], 3), "hole %d x (px)" % j), ("hole%d_cy" % j, round(hole["cy"], 3), "hole %d y (px)" % j), ("hole%d_r" % j, round(hole["r"], 3), "hole %d radius (px)" % j)]
+        params += [("hole%d_cx" % j, round(hole["cx"], 3), "hole %d centre x (%s)" % (j, unit)), ("hole%d_cy" % j, round(hole["cy"], 3), "hole %d centre y (%s)" % (j, unit)), ("hole%d_r" % j, round(hole["r"], 3), "hole %d radius (%s)" % (j, unit))]
     sheet_with(doc, params)
     body = doc.addObject("PartDesign::Body", "Body")
     body.Label = spec.get("name", "part")
@@ -293,7 +295,9 @@ def symmetric(pad):
 
 def build(spec, out):
     doc = App.newDocument(spec.get("name", "part"))
-    params = [("mm_per_px", spec["mm_per_px"], spec["scale_note"])]
+    unit = spec.get("unit", "px")
+    params = [("scale", spec["mm_per_px"],
+               "multiplies every dimension below; change it to rescale the whole part. %s" % spec["scale_note"])]
     if spec.get("revolve"):
         body = build_revolve(spec, doc, params)
         views = {}
@@ -305,9 +309,9 @@ def build(spec, out):
     for vname, v in views.items():
         for i, st in enumerate(v["stations"]):
             params.append(("%s_w%d" % (vname, i), round(st["width"], 3),
-                           "%s width of station %d (px units)" % (vname, i)))
+                           "%s width of station %d (%s)" % (vname, i, unit)))
         for i, z in enumerate(v["z"]):
-            params.append(("%s_z%d" % (vname, i), round(z, 3), "%s station boundary %d (px units)" % (vname, i)))
+            params.append(("%s_z%d" % (vname, i), round(z, 3), "%s station boundary %d (%s)" % (vname, i, unit)))
     if views:
         sheet_with(doc, params)
         body = doc.addObject("PartDesign::Body", "Body")
@@ -317,9 +321,9 @@ def build(spec, out):
             "side": Rotation(Vector(0, 0, 1), 90).multiply(Rotation(Vector(1, 0, 0), 90))}
     span = max([max(st["width"] for st in v["stations"]) for v in views.values()] or [1]) * spec["mm_per_px"] * 3
     for vname, v in views.items():
-        halves = [(st["width"] / 2 * spec["mm_per_px"], "params.%s_w%d / 2 * params.mm_per_px" % (vname, i))
+        halves = [(st["width"] / 2 * spec["mm_per_px"], "params.%s_w%d / 2 * params.scale" % (vname, i))
                   for i, st in enumerate(v["stations"])]
-        zs = [(z * spec["mm_per_px"], "params.%s_z%d * params.mm_per_px" % (vname, i)) for i, z in enumerate(v["z"])]
+        zs = [(z * spec["mm_per_px"], "params.%s_z%d * params.scale" % (vname, i)) for i, z in enumerate(v["z"])]
         owner = body if first is None else doc.addObject("PartDesign::Body", "%s_tool" % vname)
         sk = elevation(doc, owner, "sk_%s" % vname, halves, zs, rots[vname])
         pad = doc.addObject("PartDesign::Pad", "pad_%s" % vname)

@@ -20,6 +20,9 @@ TAIL = 0.25
 
 
 def load(path):
+    if not os.path.exists(path):
+        from photo2fcstd.errors import CaptureError
+        raise CaptureError("cannot find %s" % path)
     im = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
     return np.asarray(im).astype(np.float32) / 255.0
 
@@ -123,7 +126,8 @@ def upright_mask(mask):
     return rotated, float(angle)
 
 
-def outline(mask, eps_frac=0.008, min_hole=0.002):
+def outline(mask, eps_frac=0.008, min_hole=None):
+    min_hole = th.MIN_HOLE_FRAC if min_hole is None else min_hole
     import cv2
     m = mask.astype(np.uint8) * 255
     cs, hier = cv2.findContours(m, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)

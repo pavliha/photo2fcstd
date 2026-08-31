@@ -13,12 +13,14 @@ def segment(path):
 
 def main(argv):
     p = argparse.ArgumentParser(prog="photo2fcstd-carve",
-                                description="many photos of a part on the ChArUco target in, a metric FreeCAD model out")
-    p.add_argument("photos", nargs="+")
-    p.add_argument("--out", default="part.FCStd")
-    p.add_argument("--stl")
-    p.add_argument("--voxel-mm", type=float, default=carve.VOXEL_MM)
-    p.add_argument("--name")
+                                description="Many photos of a part on the ChArUco target in, a model in real millimetres out: "
+                                            "the board gives every photo a pose and a scale, so the height is measured rather than guessed.",
+                                formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p.add_argument("photos", nargs="+", help="ten or more photos of the part sitting on the ChArUco target, including low grazing angles")
+    p.add_argument("--out", default="part.FCStd", help="where to write the FreeCAD document")
+    p.add_argument("--stl", help="also export a mesh here")
+    p.add_argument("--voxel-mm", type=float, default=carve.VOXEL_MM, help="carving resolution in millimetres")
+    p.add_argument("--name", help="name for the body and the document")
     a = p.parse_args(argv)
     out = os.path.abspath(a.out)
     carved = carve.from_photos(a.photos, segment, a.voxel_mm)

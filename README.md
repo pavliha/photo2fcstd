@@ -6,6 +6,18 @@ and the whole body rescales.
 
     photo2fcstd IMG_3164.HEIC IMG_3166.HEIC --length-mm=26.57 --out=camera.FCStd
 
+The spreadsheet it writes is in millimetres, one named cell per feature, each with a note saying
+where the number came from and whether to trust it:
+
+    scale       1.0     multiplies every dimension below; change it to rescale the whole part
+    front_w1    12.0    front width of station 1 (mm)
+    front_z5    26.5    front station boundary 5 (mm)
+    depth       3.2     plate thickness: NOT visible when every photo shows the same face
+
+Type a caliper reading straight into a cell. Without `--length-mm`, `--mm-per-px` or `--rectify`
+there is no scale to apply, so the cells hold pixels and say so &mdash; set `scale` to mm/px later and
+the whole body follows.
+
 ## How it works
 
 1. **Cut out** — RMBG-2.0 mattes the part (shadows and same-hue backgrounds defeat colour rules).

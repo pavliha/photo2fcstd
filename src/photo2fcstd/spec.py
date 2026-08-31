@@ -51,8 +51,9 @@ def rounded_loops(loops, rnd):
 
 def merged_stations(view, rnd, floor):
     ws = [max(rnd(st["width"]), floor) for st in view["stations"]]
+    zs = [rnd(z) for z in view["z"]]
     keep = [i for i in range(len(ws)) if i == 0 or ws[i] != ws[i - 1]]
-    return [{"width": ws[i]} for i in keep], [view["z"][i] for i in keep] + [view["z"][-1]]
+    return [{"width": ws[i]} for i in keep], [zs[i] for i in keep] + [zs[-1]]
 
 
 def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_px=None, rim_px=None, stl=None, log=print):
@@ -93,13 +94,19 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
         if end_on:
             log("WARNING: %s looks end-on; a second elevation would be better" % os.path.basename(end_on))
     mpp, scale_note = scale_of(views, mm_per_px, length_mm)
+    known = not scale_note.startswith("UNSCALED")
+    unit = "mm" if known else "px"
     if len(views) == 2:
         log("side view rescaled by %.3f to match front length" % rescale_side(views))
-    q = 1.0 if mm_per_px is None and length_mm is None else th.ROUND_MM / mpp
-    rnd = lambda v: round(round(v / q) * q, 4)
+    q = th.ROUND_MM if known else 1.0
+    rnd = lambda v: round(round(v * mpp / q) * q, 4)
     if revolve_spec:
         revolve_spec["profile"] = [[rnd(x), rnd(y)] for x, y in revolve_spec["profile"]]
         revolve_spec["holes"] = rounded_loops(revolve_spec["holes"], rnd)
+        revolve_spec["R"] = rnd(revolve_spec["R"])
+        for field in ("t", "h"):
+            if field in revolve_spec:
+                revolve_spec[field] = rnd(revolve_spec[field])
     if outline_spec:
         outline_spec["loops"] = rounded_loops(outline_spec["loops"], rnd)
         outline_spec["depth_px"] = rnd(outline_spec["depth_px"])
@@ -108,6 +115,7 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
     for n, v in (views.items() if not (outline_spec or revolve_spec) else []):
         log("%s: rotated %+.0f deg, %d stations over %.0f px  widths %s"
             % (n, v["angle_deg"], len(v["stations"]), v["length_px"], [round(s["width"], 1) for s in v["stations"]]))
-    return {"name": name, "mode": mode_sel, "mm_per_px": mpp, "scale_note": scale_note,
+    return {"name": name, "mode": mode_sel, "mm_per_px": 1.0, "unit": unit,
+            "scale_note": scale_note if known else scale_note + "; the sheet is in pixels until you set scale",
             "views": {k: {kk: vv for kk, vv in v.items() if kk not in ("poly", "shape")} for k, v in views.items()},
             "outline": outline_spec, "revolve": revolve_spec, "stl": stl}

@@ -42,3 +42,30 @@ def test_scale_rescales_the_body(dataset, freecad, photos_of, tmp_path):
     _, scaled, _ = build("00476", tmp_path / "b", photos_of, length_mm=40.0)
     assert max(scaled["bbox"]) == pytest.approx(40.0, rel=0.05)
     assert max(unscaled["bbox"]) > 100
+
+
+def test_the_sheet_is_in_millimetres_when_the_scale_is_known(dataset, freecad, photos_of, tmp_path):
+    doc, report, out = build("00476", tmp_path, photos_of, length_mm=40.0)
+    assert doc["unit"] == "mm"
+    assert doc["mm_per_px"] == 1.0
+    biggest = max(abs(v) for loop in doc["outline"]["loops"] if loop["type"] == "loop"
+                  for e in loop["elements"] for v in (e["p0"][0], e["p0"][1]))
+    assert biggest < 40.0
+    assert max(report["bbox"]) == pytest.approx(40.0, rel=0.05)
+
+
+def test_the_sheet_says_pixels_when_no_scale_is_given(dataset, freecad, photos_of, tmp_path):
+    doc, report, out = build("00476", tmp_path, photos_of)
+    assert doc["unit"] == "px"
+    assert "pixels" in doc["scale_note"]
+    assert max(report["bbox"]) > 100
+
+
+def test_missing_photos_and_freecad_say_what_to_do(tmp_path, monkeypatch):
+    from photo2fcstd import cli
+    from photo2fcstd.errors import BuildError, CaptureError
+    with pytest.raises(CaptureError, match="cannot find"):
+        cli.main(["/no/such/photo.jpg", "--out", str(tmp_path / "x.FCStd")])
+    monkeypatch.setattr(cli, "FREECADCMD", "/nonexistent/FreeCADCmd")
+    with pytest.raises(BuildError, match="set FREECADCMD"):
+        cli.freecad_build(str(tmp_path / "spec.json"), str(tmp_path / "x.FCStd"))
