@@ -239,3 +239,24 @@ misleading statistic when the feature is near the voxel size (a 0.11 mm plate ca
 Two harness bugs worth remembering, both found here: an OpenCV camera basis must be
 `[right, down, forward]` and right-handed (`det = +1`), and with every camera above the
 horizon the space beneath the part is unobservable, so clip the grid at the board plane.
+
+## Do not intersect two independently-registered photo silhouettes
+
+Twice measured, twice lost:
+
+- A three-view visual hull from the photo masks scores 0.332 against 0.433 for the
+  plain pipeline, even choosing the best of 48 poses. With *truth* silhouettes the same
+  code reaches 0.823, so the loss is registration, not the idea.
+- Replacing the front width-staircase with the traced outline and intersecting it with
+  the side staircase - an attempt to get a real drawing and keep the two-view solid -
+  scores 0.218 against 0.226 for two staircases and 0.280 for the outline alone.
+
+Intersection is unforgiving: any misalignment between two views deletes correct
+material and nothing restores it. The modes survive precisely because they never
+combine two separately-framed silhouettes. Multi-view only pays once the views share a
+pose, which is what `carve.py` gets from the ChArUco board.
+
+So drawing every part **and** keeping the two-view solid is not available. It is a
+straight choice: `stations` keeps solid IoU 0.433 with 46% of parts drawing nothing,
+always-outline gives 100% coverage and sketch IoU 0.557 for solid IoU 0.364.
+`tests/test_regression.py` currently encodes the first.
