@@ -400,22 +400,28 @@ the part's width and the lowest angle the target survives. Shoot the lowest view
 will still accept - dropping the elevations from 30-68 degrees to 15-55 took the height error
 from 5.4 mm to 2.6 mm.
 
-**The rest of it is a formula, so it can be subtracted.** `carve.debias_height` trims the top of
-the hull by `w/2 * tan(e)`, taking `e` from the lowest view actually used and `w` from the width
-of the carved volume's own top face rather than its widest point - a tall narrow part like an
-L-bracket is overcorrected by 1.4 mm if you use the widest. Over seven shapes from a 3 mm plate
-to an 18 mm cube:
+**A correction for it was written, measured on real parts, and reverted.** Trimming the hull by
+`w/2 * tan(e)` fixed seven synthetic shapes beautifully - mean absolute error 1.49 mm to 0.46 mm,
+bias +1.49 mm to +0.11 mm. On 49 real PrintCAD parts carved through the same rendered board
+photos it made things worse:
 
-| | mean absolute error | bias |
+| | raw hull | with the correction |
 |---|---|---|
-| raw hull | 1.49 mm | +1.49 mm |
-| corrected by the widest section | 0.57 mm | -0.57 mm |
-| **corrected by the top face** (shipped) | **0.46 mm** | **+0.11 mm** |
+| mean bias | +0.20 mm | -0.61 mm |
+| mean absolute error | 0.30 mm | 0.65 mm |
+| median absolute error | **0.11 mm** | 0.55 mm |
+| within 1 mm | 44 of 49 | 39 of 49 |
 
-Three times less error and essentially no bias left. `from_photos` applies it right after
-carving, before any axis choice, so everything downstream sees a debiased volume. Seven shapes
-is enough to see that the correction works and far too few to tune its constant on, which is
-why the constant is derived rather than fitted.
+It helped 11 parts and hurt 35, and splitting on how flat the hull's top is did not rescue it.
+
+**The premise was wrong, not the arithmetic.** A 26x16x7 block centred on the board is the worst
+case for this artifact: wide, flat topped, and short, so a 15 degree view really cannot see past
+it. Real parts are none of those things, and sixteen views from 15 to 55 degrees already bound
+their height to 0.11 mm median. There was no bias left to remove.
+
+Seven hand-picked shapes are not a sample. This is the failure mode this repo already documents
+for thresholds - a change that improves a statistic on a small set and breaks the real one - and
+it survived a full test suite and a figure before the real measurement caught it.
 
 This is also the exact quantity free-space depth carving removes, which is why depth was worth
 0.063 on T-LESS: with a depth camera the correction is unnecessary, and without one it recovers
