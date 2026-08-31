@@ -145,3 +145,67 @@ Keep the modules - they are the data pipeline for a better-posed model - but the
 attempt should predict primitives directly (a sketch is a short program: DeepCAD,
 Vitruvion) or regress corner positions as keypoints with sub-point offsets, not label
 points. Enable the losing path with `P2F_LEARNED_CURVES=1`; it is off by default.
+
+## How to work on the ML parts
+
+Written for someone who is not an ML specialist. Each rule has the moment from this
+repo that earned it.
+
+**1. A number means nothing without a baseline.** Always compute what you get for free.
+Here the majority class ("straight") is 54%, so a model at 0.66 is barely doing
+anything, and 0.82 is the number that matters. Report them together, always.
+
+**2. Split by part, never by sample.** Fourteen views of the same part are not fourteen
+independent examples. Put every view of a part on one side of the split, or the model
+memorises the part and the score is fiction.
+
+**3. Get labels from geometry you already trust, not by hand.** The STEP files already
+say which edge is a line and which is an arc. Rasterise that sketch, trace it with the
+*same* `outline()` production uses, and label each traced point by point-to-segment
+distance. Exact supervision, zero labelling, and the input distribution matches
+production. Check the label quality (`median dist` should be well under a pixel).
+
+**4. Augment for the failure you are trying to fix.** The geometry assumes orthographic
+projection, which is why an angled photo of a hexagon traces as a pentagon. So the
+synthetic views apply a random homography - the model sees perspective during training.
+Augmentation is not decoration, it is where you inject the invariance you want.
+
+**5. Drop labels that have no right answer.** A point exactly where a line meets an arc
+belongs to both. Training on it teaches noise. Compute distance to each class
+separately and mark a point ambiguous when they are within a couple of pixels, then
+exclude it with `ignore_index=-100` - and compute the metrics on valid points only,
+otherwise you are just hiding the hard cases from yourself. This was worth several
+points of accuracy here.
+
+**6. Read the training curve before touching the model.**
+
+| what you see | what it means | what to do |
+|---|---|---|
+| train loss falling, test still rising at the end | underfit | more data, more epochs, more capacity |
+| train loss near zero, test flat or falling | overfit | stop earlier, augment more, shrink the model |
+| test score swinging wildly while train loss falls smoothly | training instability, not learning | usually normalisation - BatchNorm's running statistics were the culprit here, GroupNorm fixed it |
+
+**7. Save the best checkpoint, not the last one.** This repo's first run peaked at 0.820
+on epoch 28 and then overfit down to 0.800, and the saved file was the worse model.
+Checkpoint whenever validation improves.
+
+**8. Pose the problem so the labels are real.** The first attempt had three classes and
+forced 348 b-spline edges into "arc", a category they do not belong to. Collapsing to
+straight-vs-curved - and letting the existing fitter decide arc-vs-circle afterwards -
+took accuracy from 0.664 to 0.743 on its own. If a label is arbitrary, the model cannot
+learn it and you cannot trust the score.
+
+**9. The proxy is not the objective. Always close the loop.** 0.82 per-point accuracy
+lost end to end, 0.579 to 0.452 sketch IoU. Per-point labels cannot localise a corner
+the way `approxPolyDP` can, and a corner is a line endpoint. Never ship on the proxy
+metric; run the A/B on `sketch_score` with build checks, same as any threshold change.
+
+**10. Suspect your harness as much as your model.** An eval loop here stepped 64 while
+slicing 128, so test chunks overlapped and the predictions tensor came out twice too
+long. It crashed, which was lucky - a subtler version would have quietly reported a
+wrong accuracy. When a number surprises you, check the measurement first.
+
+**11. Choosing the output representation beats adding capacity.** Every gain here came
+from reformulating (binary labels, excluded boundaries, right normalisation), none from
+a bigger network. When something plateaus, ask what the model is being asked to
+predict before making it larger.
