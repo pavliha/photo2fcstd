@@ -7,6 +7,7 @@ FIELDS = ("elongation", "rectangularity", "solidity", "hole_frac", "min_over_max
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODEL_PATH = os.environ.get("P2F_DEPTH_MODEL", os.path.join(ROOT, "data", "depth_model.joblib"))
 PIXEL_PATH = os.environ.get("P2F_DEPTH_PIXEL_MODEL", os.path.join(ROOT, "data", "depth_pixel_model.joblib"))
+HYBRID_PATH = os.path.join(ROOT, "data", "depth_hybrid_model.joblib")
 USE_PIXELS = os.environ.get("P2F_DEPTH_PIXELS") == "1"
 ALLOW_BACKBONE = os.environ.get("P2F_EMBED_BACKBONE", "1") == "1"
 _CACHE = {}
@@ -50,10 +51,14 @@ def load():
 
 
 def load_pixels():
-    return load_from(PIXEL_PATH, "p") if USE_PIXELS else None
+    if not USE_PIXELS:
+        return None
+    if os.environ.get("P2F_DEPTH_HYBRID") == "1":
+        return load_from(HYBRID_PATH, "h")
+    return load_from(PIXEL_PATH, "p")
 
 
-def pixel_predict(views):
+def pixel_predict(views, views_events=None):
     model = load_pixels()
     if model is None:
         return None
@@ -62,6 +67,11 @@ def pixel_predict(views):
         vector = embed.for_views(views, ALLOW_BACKBONE)
     except Exception:
         return None
+    if vector is not None and model.get("kind") == "hybrid":
+        try:
+            vector = np.hstack([vector, np.array(features(views_events), float)])
+        except Exception:
+            return None
     if vector is None or len(vector) != model["dims"]:
         return None
     try:
@@ -75,15 +85,19 @@ def pixel_predict(views):
 
 def predict(views):
     """Return (ratio, low, high, coverage) or None. Bounds are conformally calibrated."""
-    from_pixels = pixel_predict(views)
+    from photo2fcstd import telemetry
+    try:
+        events = [telemetry.view_event(v) for v in views]
+    except Exception:
+        events = None
+    from_pixels = pixel_predict(views, events)
     if from_pixels is not None:
         return from_pixels
-    from photo2fcstd import telemetry
     model = load()
-    if model is None:
+    if model is None or events is None:
         return None
     try:
-        x = np.array([features([telemetry.view_event(v) for v in views])], float)
+        x = np.array([features(events)], float)
     except Exception:
         return None
     try:
