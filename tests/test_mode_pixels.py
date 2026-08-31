@@ -16,6 +16,7 @@ def model(**values):
 
 
 def test_disabled_by_default(monkeypatch):
+    assert not mode_pixels.ENABLED
     monkeypatch.setattr(mode_pixels, "ENABLED", False)
     assert mode_pixels.predict([{"source": "/p/a_1.jpg", "elongation": 1.0}], ["plan"]) is None
 

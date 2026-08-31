@@ -78,3 +78,12 @@ def test_oracle_depth_falls_through_for_an_unknown_part(monkeypatch):
     src = {"source": "/p/99999_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
     depth, note = modes.outline_depth(src, [], "plan", None)
     assert "oracle" not in note
+
+
+def test_a_learned_selector_may_not_route_to_stations(monkeypatch, dataset, photos_of):
+    from photo2fcstd import analysis, mode_pixels, modes
+    seen = {}
+    monkeypatch.setattr(mode_pixels, "predict", lambda specs, allowed: seen.setdefault("allowed", allowed))
+    views = [analysis.view(p) for p in photos_of("00523")[:3]]
+    modes.learned_mode(views)
+    assert "stations" not in seen["allowed"]
