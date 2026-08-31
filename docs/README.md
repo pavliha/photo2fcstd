@@ -4,6 +4,8 @@
   and where the remaining error actually is.
 - **[experiments.md](experiments.md)** - everything tried, kept or rejected, with the
   numbers. Read before re-running an idea.
+- **[metric-blind-spots.md](metric-blind-spots.md)** - what the scores cannot
+  distinguish, and which of those gaps matter.
 - **[decisions.md](decisions.md)** - the two open questions that need a human.
 - **[cadrille.md](cadrille.md)** - evaluating a published CAD-reconstruction model on
   these parts.
