@@ -7,7 +7,7 @@ FIELDS = ("elongation", "rectangularity", "solidity", "hole_frac", "min_over_max
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODEL_PATH = os.environ.get("P2F_DEPTH_MODEL", os.path.join(ROOT, "data", "depth_model.joblib"))
 PIXEL_PATH = os.environ.get("P2F_DEPTH_PIXEL_MODEL", os.path.join(ROOT, "data", "depth_pixel_model.joblib"))
-USE_PIXELS = os.environ.get("P2F_DEPTH_PIXELS", "1") == "1"
+USE_PIXELS = os.environ.get("P2F_DEPTH_PIXELS") == "1"
 ALLOW_BACKBONE = os.environ.get("P2F_EMBED_BACKBONE", "1") == "1"
 _CACHE = {}
 

@@ -1,9 +1,10 @@
 import pytest
 
 
-def test_pixel_head_is_used_when_it_has_a_vector(monkeypatch):
+def test_pixel_head_is_used_when_enabled_and_it_has_a_vector(monkeypatch):
     import numpy as np
     from photo2fcstd import depth_model, embed
+    monkeypatch.setattr(depth_model, "USE_PIXELS", True)
 
     class Head:
         def predict(self, x):
@@ -29,3 +30,13 @@ def test_a_wrong_sized_vector_is_refused(monkeypatch):
     monkeypatch.setattr(embed, "for_views", lambda views, allow: np.zeros(3))
     monkeypatch.setattr(depth_model, "_CACHE", {"p": {"kind": "pixels", "model": None, "offset": 0.1, "alpha": 0.2, "dims": 6}, "m": None})
     assert depth_model.predict([{"source": "/p/a_1.jpg", "elongation": 1.0}]) is None
+
+
+def test_pixel_head_is_off_by_default(monkeypatch):
+    import numpy as np
+    from photo2fcstd import depth_model, embed
+    called = []
+    monkeypatch.setattr(embed, "for_views", lambda views, allow: called.append(1) or np.zeros(6))
+    monkeypatch.setattr(depth_model, "_CACHE", {"m": None})
+    depth_model.predict([{"source": "/p/a_1.jpg", "elongation": 1.0}])
+    assert not called
