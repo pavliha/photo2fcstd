@@ -429,6 +429,26 @@ one place shading, highlights and hole ellipticity survive. Segmentation throws 
 where taking the first photo scores 0.574, and it draws from the worst of the three views 27% of
 the time. That is not a tilt problem, it is routing.
 
+**Fixing the routing is worth +0.038, and it is the only accuracy gain this line of work produced.**
+`view_model.py` scores each photo the way `axis_model` scores each axis and takes the best. On 300
+parts none of which the model was trained on:
+
+| arm | sketch IoU | skill | exact primitives |
+|---|---|---|---|
+| shipped rules | 0.565 | 0.148 | 23% |
+| **learned view choice** | **0.602** | **0.221** | **26%** |
+
++0.038 [+0.019, +0.056] over n=250 discriminating parts, changing the view on 109 of 295 and
+winning on 65 of those against 40 losses. Through FreeCAD both arms build 44 of 45 valid solids
+and fail on the same part, so the gain costs no null solids and no loose sketches. It is on by
+default; `P2F_VIEW_MODEL=0` restores the rules.
+
+The first run of this A/B reported exactly +0.0000 on every part. `P2F_VIEW_MODEL` was serving as
+both the feature flag and the model-path override, so setting it to 1 pointed the loader at a file
+named "1", `load()` returned None and the model silently fell back to the rules it was meant to
+replace. A flag that reads as enabled while doing nothing is the failure mode to watch for here -
+the A/B looked clean, it just measured the control twice.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
