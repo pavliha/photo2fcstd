@@ -40,11 +40,31 @@ Learned mode selection is worth ~0.001 of sketch IoU.
 ## Where the error actually is
 
 Against the orthographic silhouette, on trusted parts whose photo shows the extrusion
-face: capture (viewpoint plus matting) costs 0.212, our tracing and regularisation
-0.112, and the fact that a silhouette includes side walls the base face does not costs
-0.089. Threshold work lives in the middle term only. Perspective is the biggest one and
-only `capture.py` / `carve.py` address it - a photo of a bar seen edge-on does not
-contain its width, and no fitting recovers it.
+face: capture costs 0.212, our tracing and regularisation 0.112, and the fact that a
+silhouette includes side walls the base face does not costs 0.089. Threshold work lives
+in the middle term only.
+
+`tools/split_capture.py` breaks the capture term down further, and the answer is not
+what it looks like:
+
+| camera tilt off the face normal | orthographic | with perspective | real photo |
+|---|---|---|---|
+| 0 degrees | **0.946** | 0.930 | |
+| 8 degrees | 0.834 | 0.835 | |
+| 15 degrees | 0.799 | 0.795 | |
+| 30 degrees | 0.801 | 0.798 | |
+| measured photos | | | **0.814** |
+
+**Perspective is not the problem** - it costs 0.003 to 0.016 at any tilt, because a
+phone at arm's length from a 20 mm part is nearly orthographic already. **Matting is not
+the problem either**: real photos score 0.814 where matting-free synthetic views at the
+same apparent tilt score 0.834, so RMBG costs about 0.02.
+
+The whole capture term is **viewpoint tilt**. Eight degrees off-axis already costs 0.11.
+Shooting square to the face is worth about +0.13 with no code at all, and it is the
+cheapest improvement available to this project. The value of the ChArUco target is not
+undoing perspective, it is knowing the pose so the tilt can be corrected, plus giving
+scale and a measured depth.
 
 Depth cannot be a constant: the true depth/length ratio spans 0.055 to 0.503.
 
