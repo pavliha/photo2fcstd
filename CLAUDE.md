@@ -119,3 +119,29 @@ vastai destroy instance <ID>              # ALWAYS - billing runs until destroye
 Use on-demand, not interruptible, for anything longer than a few minutes; a preempted
 run costs more in wasted time than the spot discount saves. Ship the masks, not the
 photos - `~/.cache/photo2fcstd/masks` is 13 MB against gigabytes of JPEGs.
+
+## Learned curve segmentation was tried and lost
+
+`synth.py` + `curvenet.py` train a 1D CNN to label each contour point straight or
+curved, from silhouettes of the STEP sketches rasterised under random homographies
+(exact supervision, median label error 0.24 px). It reaches **0.82** per-point test
+accuracy against a 0.54 majority baseline, split by part.
+
+End to end it is clearly worse than `corner_runs`:
+
+| arm | sketch IoU | curve frac | elements/sketch |
+|---|---|---|---|
+| geometric (shipped) | **0.579** | 0.43 | 8.2 |
+| learned | 0.461 | 0.38 | 16.6 |
+| learned + minimum run length | 0.452 | 0.38 | 7.3 |
+
+Enforcing a minimum run length fixed the fragmentation and made IoU slightly worse, so
+the loss is not over-segmentation - the predicted boundaries are simply in the wrong
+places. Per-point classification is the wrong output for this: `approxPolyDP` localises
+a corner to a geometric extremum, while a per-point classifier gives a boundary fuzzy
+by several points, and a corner off by a few points moves a line endpoint visibly.
+
+Keep the modules - they are the data pipeline for a better-posed model - but the next
+attempt should predict primitives directly (a sketch is a short program: DeepCAD,
+Vitruvion) or regress corner positions as keypoints with sub-point offsets, not label
+points. Enable the losing path with `P2F_LEARNED_CURVES=1`; it is off by default.

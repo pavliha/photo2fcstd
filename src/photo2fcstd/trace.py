@@ -242,21 +242,88 @@ def arc_from_run(run, ccw=None):
     return {"type": "arc", "p0": on(run[0]), "p1": on(run[-1]), "cx": float(cx), "cy": float(cy), "r": float(r), "ccw": bool(ccw), "_run": run}
 
 
-def elements(raw, length_px):
-    runs = corner_runs(raw)
+LEARNED_CURVES = os.environ.get("P2F_LEARNED_CURVES") == "1"
+
+
+def majority_filter(y, w=9):
+    n = len(y)
+    pad = np.concatenate([y[-w:], y, y[:w]])
+    return np.array([np.bincount(pad[i:i + 2 * w + 1], minlength=2).argmax() for i in range(n)])
+
+
+def split_straight(seg, length_px, eps_frac=0.015):
+    import cv2
+    if len(seg) < 4:
+        return [seg]
+    pts = np.asarray(seg, np.float32)
+    poly = cv2.approxPolyDP(pts.reshape(-1, 1, 2), eps_frac * cv2.arcLength(pts, False), False).reshape(-1, 2)
+    cuts = sorted({0, len(seg) - 1} | {int(np.argmin(np.hypot(pts[:, 0] - q[0], pts[:, 1] - q[1]))) for q in poly})
+    return [seg[a:b + 1] for a, b in zip(cuts, cuts[1:]) if b - a >= 1]
+
+
+def absorb_short(spans, n, frac=0.04):
+    lo = max(int(frac * n), 12)
+    length = lambda s: (s[1] - s[0]) % n or n
+    while len(spans) > 1:
+        i = min(range(len(spans)), key=lambda j: length(spans[j]))
+        if length(spans[i]) >= lo:
+            break
+        j = (i - 1) % len(spans)
+        spans[j] = (spans[j][0], spans[i][1], spans[j][2])
+        spans.pop(i)
+    merged = [spans[0]]
+    for a, b, c in spans[1:]:
+        if c == merged[-1][2]:
+            merged[-1] = (merged[-1][0], b, c)
+        else:
+            merged.append((a, b, c))
+    if len(merged) > 1 and merged[0][2] == merged[-1][2]:
+        merged[0] = (merged[-1][0], merged[0][1], merged[0][2])
+        merged.pop()
+    return merged
+
+
+def learned_runs(raw, length_px):
+    from photo2fcstd import curvenet
+    y = curvenet.predict(raw)
+    if y is None:
+        return None
+    y = majority_filter(np.asarray(y, int))
+    n = len(y)
+    edges = [i for i in range(n) if y[i] != y[i - 1]]
+    if not edges:
+        spans = [(0, n, int(y[0]))]
+    else:
+        spans = [(edges[j], edges[(j + 1) % len(edges)], int(y[edges[j]])) for j in range(len(edges))]
+    spans = absorb_short(spans, n)
+    out = []
+    for a, b, cls in spans:
+        idx = list(range(a, b)) if b > a else list(range(a, n)) + list(range(0, b))
+        if len(idx) < 2:
+            continue
+        seg = np.asarray(raw, float)[idx]
+        if cls == 1 and len(seg) >= th.ARC_MIN_POINTS:
+            out.append(("curved", seg))
+        else:
+            out += [("straight", sub) for sub in split_straight(seg, length_px)]
+    return out or None
+
+
+def elements_from_runs(runs, length_px):
     els = []
-    for run in runs:
+    for kind, run in runs:
         chord = float(np.hypot(*(run[-1] - run[0])))
-        if len(run) >= th.ARC_MIN_POINTS and chord > th.ARC_MIN_CHORD_FRAC * length_px:
+        if kind == "curved" and len(run) >= th.ARC_MIN_POINTS and chord > 1e-6:
             cx, cy, r, rel, _ = fit_circle(run)
             span = arc_span(run, cx, cy)
-            cv = run[-1] - run[0]
-            sag = float(np.max(np.abs(cv[0] * (run[:, 1] - run[0][1]) - cv[1] * (run[:, 0] - run[0][0])) / max(chord, 1e-9)))
-            if rel * r < max(th.ARC_FIT_TOL * r, 1.2) and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG and sag > th.ARC_MIN_SAG_FRAC * chord:
+            if rel * r < max(0.05 * r, 2.0) and 5.0 < abs(span) < th.ARC_MAX_SPAN_DEG:
                 els.append(arc_from_run(run))
                 continue
         els.append({"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist()})
+    return els
 
+
+def merge_and_snap(els, length_px):
     def mergeable(a, b):
         if a["type"] != "arc" or b["type"] != "arc" or a["ccw"] != b["ccw"]:
             return False
@@ -291,6 +358,28 @@ def elements(raw, length_px):
     for e in merged:
         e.pop("_run", None)
     return merged
+
+
+def elements(raw, length_px):
+    learned = learned_runs(raw, length_px) if LEARNED_CURVES else None
+    if learned is not None:
+        els = elements_from_runs(learned, length_px)
+        return merge_and_snap(els, length_px)
+    runs = corner_runs(raw)
+    els = []
+    for run in runs:
+        chord = float(np.hypot(*(run[-1] - run[0])))
+        if len(run) >= th.ARC_MIN_POINTS and chord > th.ARC_MIN_CHORD_FRAC * length_px:
+            cx, cy, r, rel, _ = fit_circle(run)
+            span = arc_span(run, cx, cy)
+            cv = run[-1] - run[0]
+            sag = float(np.max(np.abs(cv[0] * (run[:, 1] - run[0][1]) - cv[1] * (run[:, 0] - run[0][0])) / max(chord, 1e-9)))
+            if rel * r < max(th.ARC_FIT_TOL * r, 1.2) and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG and sag > th.ARC_MIN_SAG_FRAC * chord:
+                els.append(arc_from_run(run))
+                continue
+        els.append({"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist()})
+
+    return merge_and_snap(els, length_px)
 
 
 def regularise_lines(els, length_px):

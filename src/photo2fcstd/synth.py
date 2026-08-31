@@ -3,8 +3,8 @@ import os
 
 import numpy as np
 
-CLASSES = ("line", "arc", "circle")
-LABEL = {"line": 0, "arc": 1, "circle": 2, "bsplinecurve": 1, "ellipse": 2}
+CLASSES = ("straight", "curved")
+LABEL = {"line": 0, "arc": 1, "circle": 1, "bsplinecurve": 1, "ellipse": 1}
 CANVAS = 768
 
 
@@ -54,18 +54,22 @@ def segment_distance(pts, a, b):
     return np.linalg.norm(pts - (a + t[:, None] * ab), axis=1)
 
 
+AMBIGUOUS_PX = 2.5
+
+
 def label_contour(contour, loops):
-    best = np.full(len(contour), np.inf)
-    lab = np.zeros(len(contour), int)
+    per = [np.full(len(contour), np.inf), np.full(len(contour), np.inf)]
     for loop in loops:
         for t, p in loop:
             cls = LABEL.get(t, 0)
             for i in range(len(p) - 1):
                 d = segment_distance(contour, p[i], p[i + 1])
-                hit = d < best
-                best[hit] = d[hit]
-                lab[hit] = cls
-    return lab, best
+                per[cls] = np.minimum(per[cls], d)
+    d0, d1 = per
+    lab = (d1 < d0).astype(int)
+    best = np.minimum(d0, d1)
+    ambiguous = np.abs(d0 - d1) < AMBIGUOUS_PX
+    return lab, best, ambiguous
 
 
 def sample(record, rng, n=CANVAS):
@@ -84,8 +88,8 @@ def sample(record, rng, n=CANVAS):
     contour = np.asarray(shape["raw"], float)
     if len(contour) < 12:
         return None
-    y, dist = label_contour(contour, loops)
-    return {"contour": contour, "label": y, "dist": dist, "n": n}
+    y, dist, amb = label_contour(contour, loops)
+    return {"contour": contour, "label": y, "dist": dist, "amb": amb, "n": n}
 
 
 def build(ideal_path, out_path, per_part=4, limit=None, seed=0):
@@ -103,7 +107,8 @@ def build(ideal_path, out_path, per_part=4, limit=None, seed=0):
                 s = None
             if s and (s["dist"] < 8.0).mean() > 0.85:
                 out.append({"part": k, "contour": s["contour"].round(2).tolist(),
-                            "label": s["label"].astype(int).tolist()})
+                            "label": s["label"].astype(int).tolist(),
+                            "amb": s["amb"].astype(np.uint8).tolist()})
     np.save(out_path, np.array(out, dtype=object), allow_pickle=True)
     return out
 
@@ -116,8 +121,9 @@ def demo():
     assert s is not None, "no sample"
     assert len(s["contour"]) == len(s["label"])
     assert (s["dist"] < 8.0).mean() > 0.8, s["dist"].mean()
-    print("synth self-check ok: part %s, %d contour points, labels %s, median dist %.2f px"
-          % (k, len(s["contour"]), np.bincount(s["label"], minlength=3).tolist(), np.median(s["dist"])))
+    print("synth self-check ok: part %s, %d points, labels %s, ambiguous %.1f%%, median dist %.2f px"
+          % (k, len(s["contour"]), np.bincount(s["label"], minlength=2).tolist(),
+             100 * s["amb"].mean(), np.median(s["dist"])))
 
 
 if __name__ == "__main__":
