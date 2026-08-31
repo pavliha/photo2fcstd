@@ -363,6 +363,72 @@ fitter entirely rather than feed it.
 
 `P2F_LEARNED_CORNERS=1` and `P2F_FILTERED_CORNERS=1` enable the losing paths; both are off.
 
+## Viewpoint tilt has +0.09 in it and the silhouette does not know the tilt
+
+The error budget blames 0.212 on capture and says all of it is viewpoint tilt. That was measured
+against the orthographic silhouette, so the first question is what it is worth against the
+sketch. Warping each photo's mask by a grid of 25 rectifying homographies and taking the best
+per part, over 78 trusted parts:
+
+| | all | discriminating |
+|---|---|---|
+| as shot | 0.528 | 0.539 |
+| best rectification per part | 0.647 | 0.630 |
+| **headroom** | **+0.119** | **+0.090** |
+
+60 of 78 parts want some correction and the median chosen tilt is 8 degrees. The score is a
+deterministic function of part and warp, so this is a real ceiling rather than a max over noise -
+an earlier permutation test of mine was ill-posed, because shuffling parts mixes their difficulty.
+
+**Nothing visible in a silhouette can find that warp.** Every image-only criterion, scored by
+choosing the warp it likes best and then measuring the sketch:
+
+| chooser | IoU | of the ceiling |
+|---|---|---|
+| as shot | 0.539 | - |
+| most symmetric | 0.479 | -67% |
+| most solid | 0.460 | -89% |
+| most right-angled | 0.437 | -114% |
+| most rectangular | 0.429 | -123% |
+| most parallel edges | 0.404 | -151% |
+| fewest elements | 0.354 | -206% |
+
+All of them are worse than leaving the photo alone, and no single fixed correction beats as-shot
+either. A random warp scores 0.447 against 0.528, so most warps hurt: this is not a search that
+needs a better prior, it is a quantity that is not in the data. A tilted square and an untilted
+trapezoid are the same picture.
+
+**Choosing among the three photos is better posed, and still does not work.** The ceiling is the
+same size and the choice is one of three rather than a continuum:
+
+| | discriminating |
+|---|---|
+| what ships today | 0.554 |
+| first photo | 0.574 |
+| learned selector, held out by part | 0.577 |
+| best of the three (oracle) | **0.642** |
+
+The learned selector picks the best view 47% of the time against 33% for chance - and against 48%
+for the pipeline as it already stands. Its apparent edge over what ships is not view selection
+getting better. PrintCAD's first photo is systematically the good one (0.578 against 0.508 and
+0.511, best of three 43% of the time against 29% and 28%), which is a capture convention of that
+dataset and not something a user's own photos would obey.
+
+**Measuring the tilt where it is genuinely measurable is not available either.** A circular hole
+images as an ellipse whose squash is the tilt outright, rather than a correlate of it. 12% of
+parts show one usable hole in some photo; requiring one in all three, so views can be compared,
+leaves **1 part in 250**.
+
+So the tilt term is real, large, and unreachable from the mask. Three independent attempts say
+the same thing, which is the point at which to stop trying variants. What is left is either pose
+from the board - already validated at 0.017 degrees, and the carve path's skill is 0.498 against
+the photo path's 0.212 - or the photo's pixels rather than its mask, which is untested and is the
+one place shading, highlights and hole ellipticity survive. Segmentation throws all of it away.
+
+**One thing to fix regardless: what ships is worse than trivial alternatives.** It scores 0.554
+where taking the first photo scores 0.574, and it draws from the worst of the three views 27% of
+the time. That is not a tilt problem, it is routing.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

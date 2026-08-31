@@ -1,0 +1,82 @@
+import glob
+import json
+import os
+import sys
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+from PIL import Image, ImageOps
+
+from photo2fcstd import overlay
+from photo2fcstd.bench import truth_of
+
+PHOTOS = os.path.expanduser("~/3DPrint/tools/data/printcad/PrintCAD/captured_img")
+OLD, NEW = "#b0522f", "#2f8f4e"
+
+
+def scores(run):
+    rows = (l.split() for l in open("runs/%s/results.txt" % run))
+    return {f[0]: float(f[2]) for f in rows if len(f) == 3 and f[2][0].isdigit()}
+
+
+def sources(run):
+    out = {}
+    for f in glob.glob("runs/%s/out/*.spec.json" % run):
+        spec = json.load(open(f))
+        src = spec.get("source") or (spec.get("outline") or {}).get("source")
+        out[os.path.basename(f).split(".")[0]] = os.path.basename(src) if isinstance(src, str) else None
+    return out
+
+
+def photo(name):
+    hits = glob.glob(os.path.join(PHOTOS, "*", name))
+    return hits[0] if hits else None
+
+
+def movers(a, b, sa, sb, want):
+    shared = [p for p in set(a) & set(b) if sa.get(p) and sb.get(p) and sa[p] != sb[p]]
+    ordered = sorted(shared, key=lambda p: b[p] - a[p])
+    return ordered[-want:][::-1] + ordered[:want]
+
+
+def cell(ax, part, run, src, score, colour, tag):
+    img = photo(src)
+    ax.imshow(ImageOps.exif_transpose(Image.open(img))) if img else ax.axis("off")
+    ax.set_xticks([]), ax.set_yticks([])
+    for s in ax.spines.values():
+        s.set_edgecolor(colour), s.set_linewidth(4)
+    ax.set_title("%s  %s\nsolid IoU %.2f" % (tag, src, score), fontsize=8, color=colour)
+
+
+def draw(parts, a, b, sa, sb, out):
+    fig, axes = plt.subplots(len(parts), 4, figsize=(13, 3.3 * len(parts)), squeeze=False)
+    fig.patch.set_facecolor("#faf8f5")
+    for row, part in zip(axes, parts):
+        cell(row[0], part, "vfirst", sa[part], a[part], OLD, "old rule")
+        cell(row[2], part, "vranker", sb[part], b[part], NEW, "ranker")
+        for ax, run in ((row[1], "pick_first"), (row[3], "pick_ranker")):
+            cand = "runs/%s/out/%s.stl" % (run, part)
+            c = overlay.compare(truth_of(part), cand)
+            overlay.draw(ax, c["views"]["face"], "")
+        row[0].set_ylabel("part %s\n%+.3f" % (part, b[part] - a[part]), fontsize=9)
+    fig.legend(handles=[Patch(color=(0.55, 0.55, 0.55), label="both"),
+                        Patch(color=(0.85, 0.15, 0.15), label="truth only"),
+                        Patch(color=(0.15, 0.35, 0.85), label="model only")],
+               loc="lower center", ncol=3, fontsize=9)
+    fig.suptitle("What changing the traced photo does to the solid", fontsize=13)
+    fig.tight_layout(rect=(0, 0.035, 1, 0.975))
+    fig.savefig(out, dpi=95, facecolor=fig.get_facecolor())
+    return out
+
+
+def main():
+    a, b = scores("pick_first"), scores("pick_ranker")
+    sa, sb = sources("pick_first"), sources("pick_ranker")
+    parts = movers(a, b, sa, sb, int(sys.argv[2]) if len(sys.argv) > 2 else 3)
+    print(draw(parts, a, b, sa, sb, sys.argv[1] if len(sys.argv) > 1 else "tools/view_ab_panel.png"))
+
+
+if __name__ == "__main__":
+    main()
