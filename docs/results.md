@@ -25,15 +25,28 @@ On trusted parts, measured with `sketch_score.py`:
 
 | | value |
 |---|---|
-| parts that emit a sketch at all | **46%** |
-| region IoU over all trusted parts | **0.269** |
-| region IoU over the parts that do draw | 0.587 |
+| parts that emit a sketch at all | **100%** |
+| region IoU over all trusted parts | **0.569** |
+| region IoU over the parts that do draw | 0.569 |
 | loop count exactly right | 81% |
 | curve fraction, ours against ideal | 0.43 / 0.51 |
-| solid IoU (routed modes) | 0.525 |
+| solid IoU | ~0.44 |
 
-The 46% is `stations`: it emits width staircases and no outline sketch, so region IoU is
-0.000 for those parts, not merely poor. See `docs/decisions.md`.
+Every part now draws; see `docs/decisions.md` for the trade that bought it.
+
+### Two things the region metric cannot see
+
+**Scrambled reference loops, now fixed.** A STEP wire lists its edges in topological
+order and each may run either way, so concatenating them as stored can scramble the
+ring. 698 of 1892 parts (37%) were affected, 315 of them trustworthy, and shapely filled
+the scrambled ring into a blob - part 00294 is a thin wire staple whose reference read as
+31% filled. `sketch_score.chain_edges` now walks the edges end to end. Correcting it
+moved the headline from 0.553 to **0.569**, so the bias was mild, but it was real.
+
+**Wire-thin parts.** Two thin outlines offset by one wire-width overlap almost nowhere,
+so region IoU is dominated by alignment and cannot reward a correct-looking sketch.
+00294 scores 0.055 with a faithful six-line chevron. A curve-distance measure would suit
+those parts; region IoU does not.
 
 ## The error budget
 

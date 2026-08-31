@@ -10,8 +10,27 @@ from shapely.ops import unary_union
 CURVES = ("arc", "circle", "ellipse", "bsplinecurve")
 
 
+def chain_edges(segments, tol_frac=0.02):
+    """Walk edges end to end. A STEP wire lists its edges in topological order and each
+    may run either way, so concatenating them as stored can scramble the ring."""
+    segs = [np.asarray(s, float) for s in segments if len(s) >= 2]
+    if len(segs) < 2:
+        return np.vstack(segs) if segs else np.zeros((0, 2))
+    chain = [segs.pop(0)]
+    while segs:
+        end = chain[-1][-1]
+        best = min(((min(np.linalg.norm(end - s[0]), np.linalg.norm(end - s[-1])), i,
+                     np.linalg.norm(end - s[-1]) < np.linalg.norm(end - s[0]))
+                    for i, s in enumerate(segs)), key=lambda t: t[0])
+        _, i, flip = best
+        s = segs.pop(i)
+        chain.append(s[::-1] if flip else s)
+    return np.vstack(chain)
+
+
 def ideal_rings(record):
-    return [np.array([p for e in loop for p in e["xy"]], float) for loop in record.get("loops", []) if loop]
+    return [chain_edges([e["xy"] for e in loop if e.get("xy")])
+            for loop in record.get("loops", []) if loop]
 
 
 def spec_rings(spec):
