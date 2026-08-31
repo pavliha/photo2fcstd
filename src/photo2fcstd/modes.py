@@ -58,8 +58,11 @@ def same_face(specs):
 
 
 def learned_mode(specs):
-    from photo2fcstd import mode_model, telemetry
+    from photo2fcstd import mode_model, mode_pixels, telemetry
     allowed = [m for m in ("stations", "profile", "plan", "revolve") if can_build(m, specs)]
+    from_pixels = mode_pixels.predict(specs, allowed)
+    if from_pixels is not None:
+        return from_pixels
     return mode_model.predict([telemetry.view_event(v) for v in specs], allowed)
 
 
@@ -107,7 +110,7 @@ def outline_source(specs, fallback):
 def select(specs, forced=None):
     if not specs:
         raise ValueError("no views to choose a mode from: the part has no photos")
-    if forced is None and LEARNED:
+    if forced is None and (LEARNED or os.environ.get("P2F_MODE_PIXELS") == "1"):
         predicted = learned_mode(specs)
         if predicted and can_build(predicted, specs):
             return predicted, source_for(predicted, specs)
