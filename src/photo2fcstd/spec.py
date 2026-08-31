@@ -1,8 +1,30 @@
+import math
 import os
 
 from photo2fcstd import modes
 from photo2fcstd import thresholds as th
 from photo2fcstd.trace import joins, kinds_of, primitives
+
+
+def loop_area(loop):
+    if loop["type"] == "circle":
+        return math.pi * loop["r"] ** 2
+    pts = [e["p0"] for e in loop["elements"]]
+    if len(pts) < 3:
+        return 0.0
+    n = len(pts)
+    return abs(sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))) / 2.0
+
+
+def traced_outline(view, min_fill=th.MIN_OUTLINE_FILL):
+    """Trace a view into loops, or None when regularising collapses it to no area."""
+    raw = view["shape"]["raw"]
+    cx = sum(p[0] for p in raw) / len(raw)
+    cy = sum(p[1] for p in raw) / len(raw)
+    loops = primitives(modes.centred_loops(view, cx, cy), view["length_px"])
+    if not loops or loop_area(loops[0]) < min_fill * view["length_px"] ** 2:
+        return None
+    return loops
 
 
 def scale_of(views, mm_per_px, length_mm):
@@ -77,10 +99,18 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
                 % (R, [round(r, 2) for r in rings], len(revolve_spec["holes"])))
         views = {"front": src}
     elif mode_sel in ("profile", "plan"):
-        raw = src["shape"]["raw"]
-        cx = sum(p[0] for p in raw) / len(raw)
-        cy = sum(p[1] for p in raw) / len(raw)
-        loops = primitives(modes.centred_loops(src, cx, cy), src["length_px"])
+        loops = traced_outline(src)
+        if loops is None:
+            for alt in sorted(others, key=lambda v: -v["shape"]["rectangularity"]):
+                loops = traced_outline(alt)
+                if loops is not None:
+                    log("outline of %s collapsed to no area, using %s instead"
+                        % (os.path.basename(src["source"]), os.path.basename(alt["source"])))
+                    src, others = alt, [v for v in specs if v is not alt]
+                    break
+        if loops is None:
+            raise ValueError("every view of this part traces to an outline with no area: "
+                             "the silhouette is too thin to regularise, reshoot it square to the face")
         depth, note = modes.outline_depth(src, others, mode_sel, thickness_px)
         outline_spec = {"source": src["source"], "loops": loops, "depth_px": depth, "depth_note": note}
         log("sketch: %s%s" % (", ".join("circle r=%.0f" % l["r"] if l["type"] == "circle"

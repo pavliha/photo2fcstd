@@ -18,6 +18,8 @@ Type a caliper reading straight into a cell. Without `--length-mm`, `--mm-per-px
 there is no scale to apply, so the cells hold pixels and say so &mdash; set `scale` to mm/px later and
 the whole body follows.
 
+Next steps, with the evidence behind them: [PLAN.md](PLAN.md).
+
 ## How it works
 
 1. **Cut out** — RMBG-2.0 mattes the part (shadows and same-hue backgrounds defeat colour rules).
