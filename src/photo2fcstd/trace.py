@@ -223,6 +223,57 @@ def corner_runs(raw, eps_frac=0.015):
     return runs
 
 
+LEARNED_CORNERS = os.environ.get("P2F_LEARNED_CORNERS") == "1"
+
+
+def runs_between(pts, corners):
+    idx = sorted({int(i) for i in corners})
+    if len(idx) < 2:
+        return None
+    out = []
+    for j, c in enumerate(idx):
+        d = idx[(j + 1) % len(idx)]
+        run = pts[c:d + 1] if d > c else np.vstack([pts[c:], pts[:d + 1]])
+        out.append(run.astype(float))
+    return out
+
+
+def cornernet_runs(raw):
+    """Split the contour at the corners the heatmap predicts instead of the ones approxPolyDP finds."""
+    from photo2fcstd import cornernet
+    pts = np.asarray(raw, float)
+    corners = cornernet.predict(pts)
+    if corners is None or len(corners) < 2:
+        return None
+    near = [int(np.argmin(np.hypot(pts[:, 0] - q[0], pts[:, 1] - q[1]))) for q in corners]
+    return runs_between(pts, near)
+
+
+FILTERED_CORNERS = os.environ.get("P2F_FILTERED_CORNERS") == "1"
+KEEP_CORNER = 0.25
+
+
+def filtered_runs(raw, keep=KEEP_CORNER):
+    """approxPolyDP's corner positions, with the ones the heatmap does not believe removed.
+
+    Predicting corners outright loses end to end even at 0.84 F1, because approxPolyDP places
+    a corner it does find more accurately (0.0034 of the diagonal against 0.0055) and a
+    displaced corner moves a line endpoint. What approxPolyDP does badly is fire too often,
+    at 0.48 precision, and that is the half a classifier can fix without touching a position.
+    """
+    from photo2fcstd import cornernet
+    import cv2
+    pts = np.asarray(raw, np.float32)
+    h = cornernet.heatmap(pts)
+    if h is None:
+        return None
+    poly = cv2.approxPolyDP(pts.reshape(-1, 1, 2), 0.015 * cv2.arcLength(pts, True), True).reshape(-1, 2)
+    near = [int(np.argmin(np.hypot(pts[:, 0] - q[0], pts[:, 1] - q[1]))) for q in poly]
+    span = max(len(pts) // 100, 2)
+    kept = [i for i in near if h[max(0, i - span):i + span + 1].max() >= keep]
+    return runs_between(np.asarray(raw, float), kept) if len(kept) >= 2 else None
+
+
 MIN_ELLIPSE_POINTS = 12
 
 
@@ -365,7 +416,8 @@ def elements(raw, length_px):
     if learned is not None:
         els = elements_from_runs(learned, length_px)
         return merge_and_snap(els, length_px)
-    runs = corner_runs(raw)
+    runs = ((cornernet_runs(raw) if LEARNED_CORNERS else None)
+            or (filtered_runs(raw) if FILTERED_CORNERS else None) or corner_runs(raw))
     els = []
     for run in runs:
         chord = float(np.hypot(*(run[-1] - run[0])))

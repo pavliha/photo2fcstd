@@ -3,6 +3,19 @@ import os
 from photo2fcstd import thresholds as th
 
 LEARNED = os.environ.get("P2F_LEARNED_MODES") == "1"
+VIEW_PICK = os.environ.get("P2F_VIEW_PICK", "first")
+
+
+def pick_view(specs):
+    if VIEW_PICK == "largest":
+        return max(specs, key=lambda v: v["shape"]["bbox"][0] * v["shape"]["bbox"][1])
+    if VIEW_PICK == "rectangular":
+        return max(specs, key=lambda v: v["shape"]["rectangularity"])
+    if VIEW_PICK == "symmetric":
+        return max(specs, key=lambda v: (len(v["symmetric"]), v["shape"]["solidity"]))
+    if VIEW_PICK == "solid":
+        return max(specs, key=lambda v: v["shape"]["solidity"])
+    return specs[0]
 
 
 def is_elevation(v):
@@ -41,8 +54,8 @@ def source_for(mode, specs):
         least_rect = min(specs, key=lambda v: v["shape"]["rectangularity"])
         return holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else least_rect
     if mode == "plan":
-        return holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else specs[0]
-    return specs[0]
+        return holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else pick_view(specs)
+    return pick_view(specs)
 
 
 def select(specs, forced=None):

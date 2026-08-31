@@ -89,7 +89,9 @@ def sample(record, rng, n=CANVAS):
     if len(contour) < 12:
         return None
     y, dist, amb = label_contour(contour, loops)
-    return {"contour": contour, "label": y, "dist": dist, "amb": amb, "n": n}
+    heat, corners = corner_heatmap(contour, loops)
+    return {"contour": contour, "label": y, "dist": dist, "amb": amb, "n": n,
+            "heat": heat, "corners": corners}
 
 
 def build(ideal_path, out_path, per_part=4, limit=None, seed=0):
@@ -108,7 +110,9 @@ def build(ideal_path, out_path, per_part=4, limit=None, seed=0):
             if s and (s["dist"] < 8.0).mean() > 0.85:
                 out.append({"part": k, "contour": s["contour"].round(2).tolist(),
                             "label": s["label"].astype(int).tolist(),
-                            "amb": s["amb"].astype(np.uint8).tolist()})
+                            "amb": s["amb"].astype(np.uint8).tolist(),
+                            "heat": s["heat"].round(4).tolist(),
+                            "corners": s["corners"].round(2).tolist()})
     np.save(out_path, np.array(out, dtype=object), allow_pickle=True)
     return out
 
@@ -128,3 +132,35 @@ def demo():
 
 if __name__ == "__main__":
     demo()
+
+
+CORNER_SIGMA_PX = 6.0
+
+
+def loop_corners(loops):
+    """Where one primitive hands over to the next - the points a line endpoint has to land on."""
+    out = []
+    for loop in loops:
+        pts = [p for _, p in loop if len(p) >= 2]
+        if not pts:
+            continue
+        if len(pts) == 1:
+            continue
+        out += [p[0] for p in pts]
+    return np.asarray(out, float) if out else np.zeros((0, 2))
+
+
+def corner_heatmap(contour, loops, sigma=CORNER_SIGMA_PX):
+    """A soft target on the contour, peaked where a corner is.
+
+    Labelling each point straight or curved was tried and lost end to end: a per-point
+    boundary is fuzzy by several points, and a corner off by a few points moves a line
+    endpoint visibly. A peak can be decoded to a position between two points, which is what
+    `approxPolyDP` gives and what the fitter actually consumes.
+    """
+    c = np.asarray(contour, float)
+    corners = loop_corners(loops)
+    if len(corners) == 0 or len(c) < 3:
+        return np.zeros(len(c)), corners
+    d = np.linalg.norm(c[:, None, :] - corners[None, :, :], axis=2).min(axis=1)
+    return np.exp(-0.5 * (d / sigma) ** 2), corners

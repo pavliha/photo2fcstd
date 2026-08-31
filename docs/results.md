@@ -314,6 +314,55 @@ Degradation is graceful, which is the difference between this and the two-view i
 that failed: those registered each photo independently, which is many degrees of error, and
 intersection deletes correct material that nothing restores.
 
+## Predicting corners loses too, and now we know what the fitter actually wants
+
+The note left after the per-point classifier said the next attempt should regress corner
+positions rather than label points, because `approxPolyDP` localises a corner to a geometric
+extremum while a classifier gives a boundary fuzzy by several points. So: `cornernet.py`
+predicts a heatmap over the contour, peaked at the STEP sketch's own edge endpoints, decoded
+by peak-picking with a weighted centroid - a position between two points, which is what the
+fitter consumes. Same 1D dilated CNN, 195k parameters, seven minutes on a laptop.
+
+On the proxy it wins by a mile, measured against what `approxPolyDP` gives for free:
+
+| | precision | recall | F1 | median offset |
+|---|---|---|---|---|
+| approxPolyDP | 0.480 | 0.742 | 0.583 | **0.0034** of the diagonal |
+| learned heatmap | **0.866** | **0.820** | **0.842** | 0.0055 |
+
+End to end on 163 discriminating parts it loses, and the interval excludes zero:
+
+| arm | sketch IoU | skill | exact primitives |
+|---|---|---|---|
+| **approxPolyDP** (shipped) | **0.548** | **0.212** | **20%** |
+| learned corners | 0.505 | 0.138 | 13% |
+| approxPolyDP positions, learned filter | 0.505 | 0.138 | 20% |
+
+Learned corners: -0.043 [-0.061, -0.025]. Filtered: -0.043 [-0.063, -0.024].
+
+**The proxy table says why.** `approxPolyDP` localises a corner it finds almost twice as
+tightly, and only fires too often. Over-firing looked free, because `merge_and_snap` recombines
+collinear runs, so the obvious synthesis was to keep `approxPolyDP`'s precise positions and let
+the model delete its false positives. That arm changed only 57 of 196 parts - and lost on 40 of
+the 57 it touched.
+
+Which settles what the label was wrong about. A corner in the STEP file is where one primitive
+hands over to the next. A corner the fitter wants is **wherever a run becomes fittable by a
+single primitive**, and those are not the same set: splitting a long spline into two arcs needs
+a split point that is not a vertex of anything. `approxPolyDP`'s extra corners are not false
+positives, they are the fitter doing its job, and a model trained to call them wrong makes the
+drawing worse while scoring 0.84 on its own terms.
+
+That is rule 8 - pose the problem so the labels are real - and it is the third time in this
+project that a contour-labelling proxy has failed to transfer. Two different output
+representations have now lost end to end from strong proxy scores, for the same underlying
+reason: **the supervision is available from the STEP file, and the STEP file does not know what
+the fitter needs.** A fourth variant on this theme is not worth running. If a learned component
+is going to help here it has to be trained against the fitter's own objective, or replace the
+fitter entirely rather than feed it.
+
+`P2F_LEARNED_CORNERS=1` and `P2F_FILTERED_CORNERS=1` enable the losing paths; both are off.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
