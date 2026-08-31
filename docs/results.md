@@ -314,6 +314,44 @@ Degradation is graceful, which is the difference between this and the two-view i
 that failed: those registered each photo independently, which is many degrees of error, and
 intersection deletes correct material that nothing restores.
 
+## The capture path runs, measured without a camera
+
+`carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
+ever been executed end to end, because measuring it needs photos with the board in them and
+neither dataset has any. `capture_check.py` renders them instead - the board is planar, so a
+homography maps it into any view exactly - which exercises detection, pose and the carve
+together and leaves only optics and matting untested.
+
+Two things it found:
+
+**The board must be laid out by a rotation, not a reflection.** Its printed frame runs x right
+and y down, which is left-handed in 2D, so placing it along world +x and +y and shooting from
+above renders every view mirrored. The detector then finds three phantom markers out of
+thirty-five and no pose at all. Turning the board over about its x axis fixes it and keeps the
+part above the board where `carve` expects it. This is the same class of bug as the
+left-handed camera basis already recorded here.
+
+**Pose is not the limit; the board's detection floor is.** With that fixed:
+
+| | |
+|---|---|
+| views solved | 16 of 16 |
+| rotation error | 0.016 degrees median, 0.052 worst |
+| position error | 0.064 mm median, 0.50 worst |
+
+That is two orders of magnitude inside the 2 degrees the pose sweep above says we can afford,
+so registration is a solved problem once the board is in frame. But the board stops being
+detectable below about **15 degrees** of elevation, and a silhouette taken that low bounds a
+part's height only to within `width / 2 * tan(elevation)`. For a 16 mm wide part that is 2.1 mm,
+and the measured overshoot is 2.6 mm on a 7 mm tall box, while the two in-plane extents come
+back to within 1.6 mm.
+
+So silhouette carving from a board **systematically overestimates height**, by an amount set by
+the part's width and the lowest angle the target survives. Shoot the lowest views the detector
+will still accept - dropping the elevations from 30-68 degrees to 15-55 took the height error
+from 5.4 mm to 2.6 mm - and treat the remainder as a known bias. It is also the exact quantity
+free-space depth carving removes, which is why depth was worth 0.063 on T-LESS.
+
 ## The metric has a baseline, and nobody had computed it
 
 Region IoU is scale-invariant and dihedral-aligned, so **any circle matches any circle at
