@@ -101,6 +101,18 @@ and works at inference time with no dataset at all.
 This is the only item that scales beyond PrintCAD, so it is the one worth real research time once
 the instrument and the metric are trustworthy.
 
+## Verdicts, measured
+
+| hypothesis | outcome |
+|---|---|
+| mode selection is worth chasing | **confirmed.** Oracle gap +0.094 [+0.070, +0.120]; routing the stations fallback to plan captured +0.048 offline on 1860 parts |
+| a learned selector beats the rules | **confirmed, once powered.** +0.016 [+0.008, +0.024] against the strong "always plan" baseline on 949 held-out parts with folds grouped by geometry. The earlier "inconclusive" verdict came from 99 parts, not from the method |
+| which photo we trace matters | **confirmed, and it is the largest lever found.** +0.082 available on 411 parts; a ranker over eight silhouette statistics takes +0.031 [+0.017, +0.046] out of fold |
+| a cheap rule would do instead | **refuted.** Most rectangular is harmful (-0.048), largest area is neutral, least elongated gives +0.022 - a quarter of what the ranker takes |
+| the model can predict its own reliability | **refuted.** Features give AUC 0.633, a direct failure classifier 0.622, and re-projecting the model onto its own photos 0.581. Only a low-recall warning is defensible: 60% precision at 21% recall |
+| duplicates were inflating our numbers | **refuted.** 8.6% of parts have a geometric twin; grouped splits change the learned-selector gain by 0.003 |
+| we overfitted to PrintCAD's photo style | **no evidence.** T-LESS through the same pipeline scores 0.428 [0.367, 0.489] against 0.462 on PrintCAD |
+
 ## Not doing, and why
 
 - **More threshold tuning.** Measured at +0.007, inside the noise floor.
