@@ -258,6 +258,16 @@ not close: 0.95-0.99 for the right axis against 0.00-0.01 for the two edge views
 where all three answers are equally right, the three scores land within 0.01 of each other,
 so the model is not merely confident everywhere.
 
-**Carving does not yet beat a single photo for sketching.** It ties it. The oracle says
-another 0.15 is available if the axis were chosen correctly on the remaining third, so
-that choice, not the carving, is what limits this path.
+**Carving now beats a single photo for sketching.** It used to tie it. Both paths measured
+on the same 397 held-out parts, so this is a like-for-like comparison and not two numbers
+from two different sets:
+
+| | region IoU |
+|---|---|
+| photo path | 0.600 |
+| carve, thinnest-extent axis | 0.668 |
+| **carve, learned axis** | **0.757** |
+| carve, oracle axis | 0.785 |
+
+Carving wins on 70% of parts. The axis choice, not the carving, was what held this path
+back: it was worth more than the carving itself was over a single photo.
