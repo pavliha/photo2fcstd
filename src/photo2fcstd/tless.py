@@ -69,6 +69,24 @@ def fuse_object(obj_id, every=40, limit=None, voxel_mm=0.5, stride=2, erode_px=N
     return pts, trimesh.load(model_path(obj_id))
 
 
+def carve_object_with_depth(obj_id, every=60, voxel_mm=0.8, margin=6.0, free_space_mm=6.0, min_votes=2):
+    import trimesh
+    from photo2fcstd import fuse as F
+    pairs = views_of(obj_id, every=every)
+    masks = masks_of(pairs)
+    depths = depths_of(pairs, obj_id)
+    keep = [i for i, m in enumerate(masks) if m is not None and m.sum() > 200]
+    if len(keep) < 3:
+        return None, None
+    mesh = trimesh.load(model_path(obj_id))
+    lo, hi = mesh.bounds
+    bounds = [(float(lo[i]) - margin, float(hi[i]) + margin) for i in range(3)]
+    carved = F.carve_with_depth([pairs[i][0] for i in keep], [masks[i] for i in keep],
+                                [depths[i] for i in keep], voxel_mm=voxel_mm,
+                                bounds=bounds, free_space_mm=free_space_mm, min_votes=min_votes)
+    return carved, mesh
+
+
 def masks_of(pairs):
     import cv2
     return [cv2.imread(p, cv2.IMREAD_GRAYSCALE) > 127 for _, p in pairs]

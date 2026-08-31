@@ -81,3 +81,57 @@ def demo():
 
 if __name__ == "__main__":
     demo()
+
+
+FREE_SPACE_MM = 2.0
+
+
+def carve_with_depth(views, masks, depths, voxel_mm=0.8, bounds=None, allow_misses=1,
+                     free_space_mm=FREE_SPACE_MM, erode_px=ERODE_PX, min_votes=2):
+    """Silhouette carving, then remove voxels the depth maps prove are empty.
+
+    A voxel closer to the camera than the measured surface has nothing in front of it,
+    so it is free space. That is how a cavity gets carved: its interior is in front of
+    the surface behind it, which no silhouette can express. `min_votes` views must agree
+    before a voxel is removed, so one noisy depth pixel cannot delete real surface.
+    """
+    from photo2fcstd import carve as C
+    carved = C.carve(views, masks, voxel_mm=voxel_mm, bounds=bounds, allow_misses=allow_misses)
+    if carved is None:
+        return None
+    pts = carved["points_mm"]
+    votes = np.zeros(len(pts), int)
+    for view, d, m in zip(views, depths, masks):
+        if d is None:
+            continue
+        uv = C.project(pts, view)
+        h, w = d.shape
+        u = np.round(uv[:, 0]).astype(int)
+        v = np.round(uv[:, 1]).astype(int)
+        on = (u >= 0) & (u < w) & (v >= 0) & (v < h)
+        if not on.any():
+            continue
+        # only trust depth well inside the mask: at the silhouette edge the pixel is
+        # background, which sits far behind the part and would delete real surface
+        inside = trim(m, erode_px) if m is not None else None
+        seen = np.zeros(len(pts), float)
+        seen[on] = d[v[on], u[on]]
+        if inside is not None:
+            ok = np.zeros(len(pts), bool)
+            ok[on] = inside[v[on], u[on]]
+            seen[~ok] = 0.0
+        import cv2
+        R, _ = cv2.Rodrigues(np.asarray(view["rvec"], float))
+        t = np.asarray(view["tvec"], float).reshape(3)
+        z = (pts @ R.T + t)[:, 2]
+        votes += on & (seen > 0) & (z < seen - free_space_mm)
+    alive = votes < min_votes
+    kept = pts[alive]
+    if not len(kept):
+        return carved
+    out = dict(carved)
+    out["points_mm"] = kept
+    out["extents_mm"] = np.ptp(kept, axis=0) + voxel_mm
+    out["volume_mm3"] = float(len(kept) * voxel_mm ** 3)
+    out["removed_by_depth"] = int((~alive).sum())
+    return out

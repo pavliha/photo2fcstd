@@ -151,3 +151,43 @@ tighter than 2x. Depth is not in an uncalibrated photo of a part seen face-on. T
 - `figures/current_results.png` - six parts spanning the quality range, with what we draw
   beside what the STEP file contains.
 - `figures/cadrille_fixed.png` - the cadrille evaluation, see `docs/cadrille.md`.
+
+## Carving, measured on real photographs
+
+`carve_check.py` proves the geometry on synthetic views; T-LESS proves it on real ones.
+That dataset ships what the ChArUco target was for - 30 objects, 1296 views each,
+`cam_K` and `cam_R`/`cam_t` per view, ground-truth masks and CAD models - so
+`tless.py` needs no capture session at all.
+
+30 objects, 22 views each, 0.8 mm voxels, scored at 1.5 mm against the CAD:
+
+| | mean IoU | median | above 0.8 |
+|---|---|---|---|
+| silhouette carving | 0.719 | 0.729 | 10 of 30 |
+| **plus depth free space** | **0.782** | 0.773 | 12 of 30 |
+
+For comparison the photo-to-sketch pipeline reaches about 0.43 solid IoU on PrintCAD and
+0.527 with the best possible mode choice. Carving with known poses is most of the way to
+double that, and the synthetic estimate (0.736 mean) was fair rather than flattering.
+
+### Depth carves what a silhouette cannot
+
+A visual hull fills every concavity, because a cavity has no silhouette. Accuracy tracks
+convexity almost exactly: the worst objects are volume/convex-hull 0.19 to 0.42, the best
+0.86 to 0.89. `fuse.carve_with_depth` removes any voxel that sits in front of a measured
+surface, which is precisely the geometry the hull is blind to:
+
+| | silhouette | plus depth |
+|---|---|---|
+| concave objects (convexity < 0.5, n=7) | 0.506 | **0.640** |
+| convex objects (n=23) | 0.784 | **0.825** |
+
+Two details make the difference between this working and not:
+
+- **Only trust depth well inside the mask.** At a silhouette edge the depth pixel is the
+  table, far behind the voxel, so real surface reads as free space and gets deleted. With
+  that bug present no tolerance value helped at all - a convex object still fell from
+  0.917 to 0.770 at a 15 mm tolerance.
+- **Require two views to agree.** One noisy depth pixel must not delete a voxel. Going
+  from one vote to two recovered the convex objects (0.854 to 0.914) while keeping nearly
+  all the concave gain.
