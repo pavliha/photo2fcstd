@@ -44,13 +44,19 @@ a +0.01 change is detectable.
 delta and the run's own resolution. Its first use caught a real +0.031 [+0.013, +0.050] from the
 parallel commits between `v17` and `ci_check` — a change neither of us had measured.
 
-## 2. Prove the metric path on a real part
+## 2. Prove the metric path on real photographs
 
-`--rectify` and `photo2fcstd-carve` are validated only against synthetic boards and a simulated box.
-Every millimetre figure quoted for them comes from geometry we generated ourselves.
+`--rectify` and `photo2fcstd-carve` were validated only against synthetic boards and a simulated
+box. Every millimetre figure quoted for them came from geometry we generated ourselves.
 
-**Needs:** the printed ChArUco sheet, the OpenIPC camera on it, 12–20 photos including low grazing
-angles.
+This does not need photos we shoot. [BOP](https://bop.felk.cvut.cz/datasets/) publishes exactly the
+required thing: **T-LESS** is 30 industrial, textureless, largely symmetric parts — the hard case
+for silhouettes — photographed on a calibrated turntable with CAD models in millimetres and a pose
+per image. `photo2fcstd-bop` feeds those poses to the same carving code and reports the error
+against the CAD model per dimension, over 30 real objects.
+
+The printed target remains worth one session of shooting, for two things BOP cannot cover: the
+ChArUco pose recovery end to end, and your own parts.
 
 **Done when:** the carved model is compared against the caliper readings we already hold, and the
 error is stated in millimetres per dimension. If it is worse than the two-photo path, say so and
