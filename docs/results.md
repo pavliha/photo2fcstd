@@ -288,3 +288,28 @@ on the 241 parts that trace as a real outline rather than a single circle it is 
 0.745, with carving winning 74% of them.
 
 The axis choice, not the carving, was what held this path back.
+
+**But this is not a fair fight, and the gap is smaller than it looks.** The photo path gets
+three real photos through RMBG. The carve path gets sixteen analytically exact poses and
+silhouettes rasterised straight from the truth mesh - no capture, no matting, no pose error.
+`carve_check` was built to test the geometry without capture, which is the right tool for
+that job, but it is the wrong number to put beside a real-photo pipeline.
+
+Carving with the silhouettes right and only the poses wrong, over 150 real-outline parts:
+
+| rotation error | IoU | cost |
+|---|---|---|
+| exact | 0.738 | - |
+| 0.5 degrees | 0.723 | -0.015 |
+| 1 degree | 0.704 | -0.033 |
+| 2 degrees | 0.686 | -0.051 |
+| 5 degrees | 0.574 | -0.164 |
+
+The photo path scores 0.590 on this stratum, so **carving stays ahead as long as pose is good
+to about 2 degrees and loses below 5.** A ChArUco board resolves pose far better than that, so
+the advantage is real - but the honest expectation on real photos is around 0.70, not 0.74,
+and the remaining matting cost of roughly 0.02 takes it lower still.
+
+Degradation is graceful, which is the difference between this and the two-view intersections
+that failed: those registered each photo independently, which is many degrees of error, and
+intersection deletes correct material that nothing restores.
