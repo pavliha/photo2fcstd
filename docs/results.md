@@ -398,8 +398,28 @@ back to within 1.6 mm.
 So silhouette carving from a board **systematically overestimates height**, by an amount set by
 the part's width and the lowest angle the target survives. Shoot the lowest views the detector
 will still accept - dropping the elevations from 30-68 degrees to 15-55 took the height error
-from 5.4 mm to 2.6 mm - and treat the remainder as a known bias. It is also the exact quantity
-free-space depth carving removes, which is why depth was worth 0.063 on T-LESS.
+from 5.4 mm to 2.6 mm.
+
+**The rest of it is a formula, so it can be subtracted.** `carve.debias_height` trims the top of
+the hull by `w/2 * tan(e)`, taking `e` from the lowest view actually used and `w` from the width
+of the carved volume's own top face rather than its widest point - a tall narrow part like an
+L-bracket is overcorrected by 1.4 mm if you use the widest. Over seven shapes from a 3 mm plate
+to an 18 mm cube:
+
+| | mean absolute error | bias |
+|---|---|---|
+| raw hull | 1.49 mm | +1.49 mm |
+| corrected by the widest section | 0.57 mm | -0.57 mm |
+| **corrected by the top face** (shipped) | **0.46 mm** | **+0.11 mm** |
+
+Three times less error and essentially no bias left. `from_photos` applies it right after
+carving, before any axis choice, so everything downstream sees a debiased volume. Seven shapes
+is enough to see that the correction works and far too few to tune its constant on, which is
+why the constant is derived rather than fitted.
+
+This is also the exact quantity free-space depth carving removes, which is why depth was worth
+0.063 on T-LESS: with a depth camera the correction is unnecessary, and without one it recovers
+most of what depth would have given for the height.
 
 ## The metric has a baseline, and nobody had computed it
 
