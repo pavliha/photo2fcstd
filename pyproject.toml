@@ -36,6 +36,7 @@ photo2fcstd-insight = "photo2fcstd.insight:run"
 photo2fcstd-carve = "photo2fcstd.carve_cli:run"
 photo2fcstd-doctor = "photo2fcstd.doctor:run"
 photo2fcstd-target = "photo2fcstd.make_target:run"
+photo2fcstd-target-screen = "photo2fcstd.make_target:screen_run"
 photo2fcstd-bop = "photo2fcstd.bop_cli:run"
 photo2fcstd-train-modes = "photo2fcstd.mode_model:run"
 

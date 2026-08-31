@@ -69,6 +69,11 @@ Two commands use the printed target (`make_target.py`) to get what photographs a
     photo2fcstd part1.jpg part2.jpg --rectify --out=part.FCStd
     photo2fcstd-carve shot*.jpg --out=part.FCStd --voxel-mm=0.4
 
+**No printer?** `photo2fcstd-target-screen` writes a PNG to display full screen on a monitor,
+phone or tablet lying flat. Measure one square on the glass with a caliper and pass it:
+`--rectify --square-mm=11.4`. The same flag rescues a print that came out at the wrong size, and
+any ChArUco board of the same dictionary and layout works — measure it and say so.
+
 `--rectify` finds the board in each photo, flattens the perspective onto the board plane and takes
 the scale from it (0.05 mm/px, ~0.03 mm reprojection error), so no `--length-mm` is needed.
 

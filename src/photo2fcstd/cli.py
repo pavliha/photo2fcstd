@@ -27,6 +27,9 @@ def parse(argv):
                    help="force how the part is modelled instead of deciding from the photos")
     p.add_argument("--rectify", action="store_true",
                    help="find the ChArUco target in each photo, flatten the perspective and take the scale from it")
+    p.add_argument("--square-mm", type=float, metavar="MM",
+                   help="size of one target square as you measured it - needed when the target is shown on a screen "
+                        "or printed at the wrong scale (default: %.1f)" % 15.0)
     scale = p.add_argument_group("scale (pick one, or the sheet stays in pixels)")
     scale.add_argument("--mm-per-px", type=float, metavar="MM", help="millimetres per pixel, if you already know it")
     scale.add_argument("--length-mm", type=float, metavar="MM", help="the part's longest dimension, measured with a caliper")
@@ -67,6 +70,13 @@ def readable(paths):
 
 def main(argv):
     a = parse(argv)
+    if a.square_mm:
+        os.environ["P2F_SQUARE_MM"] = str(a.square_mm)
+        import importlib
+        from photo2fcstd import capture, make_target, rectify
+        for module in (make_target, rectify, capture):
+            importlib.reload(module)
+        print("target squares taken as %.2f mm" % a.square_mm)
     out = os.path.abspath(a.out)
     readable(a.photos)
     kw = {k: v for k, v in (("min_step_px", a.min_step_px), ("grad", a.grad), ("tail", a.tail)) if v is not None}

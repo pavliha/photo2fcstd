@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
 
+import os
+
 DICT = cv2.aruco.DICT_4X4_50
 COLS, ROWS = 7, 10
-SQUARE_MM = 15.0
-MARKER_MM = 11.0
+NOMINAL_SQUARE_MM = 15.0
+SQUARE_MM = float(os.environ.get("P2F_SQUARE_MM", NOMINAL_SQUARE_MM))
+MARKER_MM = SQUARE_MM * 11.0 / 15.0
 DPI = 300
 MM_PER_INCH = 25.4
 
@@ -106,3 +109,19 @@ def run():
         return
     print("wrote %s: squares measure %.2f mm on the page (want %.1f)" % (out, square, SQUARE_MM))
     print("print at 100% with no scaling, then confirm one square with your caliper")
+
+
+def screen(path="charuco_target_screen.png", pixels=1600):
+    from PIL import Image
+    art = Image.fromarray(board_image(pixels // COLS))
+    art.save(path)
+    return path, art.width // COLS
+
+
+def screen_run():
+    import sys
+    out = sys.argv[1] if len(sys.argv) > 1 else "charuco_target_screen.png"
+    path, cell_px = screen(out)
+    print("wrote %s" % path)
+    print("show it full screen on a monitor, phone or tablet lying flat, then measure one square")
+    print("with your caliper and pass that number: photo2fcstd ... --rectify --square-mm=<measured>")
