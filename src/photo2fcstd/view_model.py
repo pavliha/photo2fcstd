@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-MODEL_PATH = os.environ.get("P2F_VIEW_MODEL", os.path.join(ROOT, "data", "view_model.joblib"))
+MODEL_PATH = os.environ.get("P2F_VIEW_MODEL_PATH", os.path.join(ROOT, "data", "view_model.joblib"))
 FIELDS = ("rect", "sol", "elong", "ellipse_rms", "hole_frac", "stroke", "nholes", "area")
 _CACHE = {}
 

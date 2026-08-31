@@ -6,6 +6,9 @@ FIELDS = ("elongation", "rectangularity", "solidity", "hole_frac", "min_over_max
           "ellipse_rms", "stroke_px", "length_px", "stations")
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODEL_PATH = os.environ.get("P2F_DEPTH_MODEL", os.path.join(ROOT, "data", "depth_model.joblib"))
+PIXEL_PATH = os.environ.get("P2F_DEPTH_PIXEL_MODEL", os.path.join(ROOT, "data", "depth_pixel_model.joblib"))
+USE_PIXELS = os.environ.get("P2F_DEPTH_PIXELS", "1") == "1"
+ALLOW_BACKBONE = os.environ.get("P2F_EMBED_BACKBONE", "1") == "1"
 _CACHE = {}
 
 
@@ -28,22 +31,53 @@ def features(events):
     return row
 
 
-def load():
-    if "m" in _CACHE:
-        return _CACHE["m"]
+def load_from(path, slot):
+    if slot in _CACHE:
+        return _CACHE[slot]
     model = None
-    if os.path.exists(MODEL_PATH):
+    if os.path.exists(path):
         try:
             import joblib
-            model = joblib.load(MODEL_PATH)
+            model = joblib.load(path)
         except Exception:
             model = None
-    _CACHE["m"] = model
+    _CACHE[slot] = model
     return model
+
+
+def load():
+    return load_from(MODEL_PATH, "m")
+
+
+def load_pixels():
+    return load_from(PIXEL_PATH, "p") if USE_PIXELS else None
+
+
+def pixel_predict(views):
+    model = load_pixels()
+    if model is None:
+        return None
+    from photo2fcstd import embed
+    try:
+        vector = embed.for_views(views, ALLOW_BACKBONE)
+    except Exception:
+        return None
+    if vector is None or len(vector) != model["dims"]:
+        return None
+    try:
+        point = float(model["model"].predict(np.array([vector], float))[0])
+    except Exception:
+        return None
+    off = model["offset"]
+    return (float(np.exp(point)), float(np.exp(point - off)), float(np.exp(point + off)),
+            1.0 - model.get("alpha", 0.2))
 
 
 def predict(views):
     """Return (ratio, low, high, coverage) or None. Bounds are conformally calibrated."""
+    from_pixels = pixel_predict(views)
+    if from_pixels is not None:
+        return from_pixels
     from photo2fcstd import telemetry
     model = load()
     if model is None:
