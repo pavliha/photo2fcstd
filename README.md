@@ -48,6 +48,27 @@ A single uncalibrated photo has no scale and no metric perspective. Consequently
   corners is ill-conditioned at phone distances (one part's three photos implied aspects 0.63,
   0.22 and 1.34). Use the target.
 
+## Metric capture: the ChArUco target
+
+Two commands use the printed target (`make_target.py`) to get what photographs alone cannot give.
+
+    photo2fcstd part1.jpg part2.jpg --rectify --out=part.FCStd
+    photo2fcstd-carve shot*.jpg --out=part.FCStd --voxel-mm=0.4
+
+`--rectify` finds the board in each photo, flattens the perspective onto the board plane and takes
+the scale from it (0.05 mm/px, ~0.03 mm reprojection error), so no `--length-mm` is needed.
+
+`photo2fcstd-carve` is the multi-view path. The board gives every photo a pose *and* millimetres, so
+the part is space-carved in real space: calibrate intrinsics across the views, solvePnP per view,
+carve a voxel grid against the silhouettes, then the horizontal cross-section becomes the sketch and
+the carved height becomes the depth &mdash; **measured, not guessed**. On a synthetic 20&times;12&times;6 mm box
+from 12 views it builds 20.0 &times; 11.5 &times; 7.5 mm, fully constrained.
+
+The visual hull is a superset by construction, so extents come out 0&ndash;2 mm large and shrink as views
+are added; concave features (a bowl's interior) are invisible to silhouettes and still need the
+sketch modes. Shoot 10&ndash;20 photos around the part including low, grazing angles &mdash; those are what
+pin the height.
+
 ## Benchmark
 
     photo2fcstd-bench v11 --jobs 8        # 200 PrintCAD parts, real photos, ~4 min

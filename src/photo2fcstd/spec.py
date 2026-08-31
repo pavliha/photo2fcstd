@@ -6,6 +6,10 @@ from photo2fcstd.trace import primitives
 
 
 def scale_of(views, mm_per_px, length_mm):
+    measured = [v["mm_per_px"] for v in views.values() if v.get("mm_per_px")]
+    if mm_per_px is None and length_mm is None and measured:
+        value = sum(measured) / len(measured)
+        return value, "measured from the ChArUco target in the photo (%.4f mm/px)" % value
     if mm_per_px is not None:
         return mm_per_px, "from --mm-per-px (rectified photo or known scale)"
     if length_mm is not None:
@@ -24,10 +28,6 @@ def rescale_side(views):
     return f
 
 
-def not_degenerate(e):
-    return (e["p0"][0] != e["p1"][0] or e["p0"][1] != e["p1"][1]) and (e["type"] != "arc" or e["r"] > 0)
-
-
 def rounded_loops(loops, rnd):
     out = []
     for loop in loops:
@@ -37,10 +37,7 @@ def rounded_loops(loops, rnd):
         elements = [dict(e, p0=[rnd(e["p0"][0]), rnd(e["p0"][1])], p1=[rnd(e["p1"][0]), rnd(e["p1"][1])],
                          **({"cx": rnd(e["cx"]), "cy": rnd(e["cy"]), "r": rnd(e["r"])} if e["type"] == "arc" else {}))
                     for e in loop["elements"]]
-        kept = [e for e in elements if not_degenerate(e)]
-        elements = kept if len(kept) >= 2 else elements
-        out.append(dict(loop, elements=elements, kinds=[k for k, e in zip(loop["kinds"], elements)] if len(elements) == len(loop["kinds"]) else loop["kinds"][:len(elements)],
-                        joins=loop["joins"][:len(elements)]))
+        out.append(dict(loop, elements=elements))
     return out
 
 

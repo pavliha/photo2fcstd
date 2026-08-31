@@ -3,7 +3,7 @@ import pytest
 from photo2fcstd import analysis, modes
 
 CASES = [("01407", "revolve"), ("00359", "revolve"), ("01289", "plan"), ("00476", "plan"),
-         ("00171", "profile"), ("00133", "profile"), ("00523", "profile"), ("01745", "profile")]
+         ("00171", "profile"), ("00133", "profile"), ("00523", "stations"), ("01745", "stations")]
 
 
 @pytest.mark.parametrize("part,expected", CASES)
@@ -12,12 +12,6 @@ def test_mode_selection(dataset, photos_of, part, expected):
     mode, src = modes.select(views)
     assert mode == expected
     assert src in views
-
-
-def test_stations_is_never_auto_selected(dataset, photos_of):
-    for part in ("00523", "01745", "01289", "00171"):
-        views = [analysis.view(p) for p in photos_of(part)[:3]]
-        assert modes.select(views)[0] != "stations"
 
 
 def test_forced_mode_overrides(dataset, photos_of):

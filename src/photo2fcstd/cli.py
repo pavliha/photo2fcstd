@@ -26,6 +26,7 @@ def parse(argv):
     p.add_argument("--tail", type=float)
     p.add_argument("--segment", default="rmbg", choices=("rmbg", "auto", "dark"))
     p.add_argument("--spec-only", action="store_true")
+    p.add_argument("--rectify", action="store_true", help="find the ChArUco target in each photo, flatten the perspective and take the scale from it")
     return p.parse_args(argv)
 
 
@@ -44,7 +45,10 @@ def main(argv):
     a = parse(argv)
     out = os.path.abspath(a.out)
     kw = {k: v for k, v in (("min_step_px", a.min_step_px), ("grad", a.grad), ("tail", a.tail)) if v is not None}
-    views = [analysis.view(p, segment=a.segment, **kw) for p in a.photos[:3]]
+    views = [analysis.view(p, segment=a.segment, rectify=a.rectify, **kw) for p in a.photos[:3]]
+    if a.rectify:
+        found = sum(1 for v in views if v.get("mm_per_px"))
+        print("rectified %d of %d photos from the target" % (found, len(views)))
     doc = spec.assemble(views, name=a.name or os.path.splitext(os.path.basename(out))[0], mode=a.mode,
                         mm_per_px=a.mm_per_px, length_mm=a.length_mm, thickness_px=a.thickness_px,
                         rim_px=a.rim_px, stl=os.path.abspath(a.stl) if a.stl else None)

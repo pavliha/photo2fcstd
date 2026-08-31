@@ -125,7 +125,7 @@ def upright_mask(mask):
 def outline(mask, eps_frac=0.008, min_hole=0.002):
     import cv2
     m = mask.astype(np.uint8) * 255
-    cs, hier = cv2.findContours(m, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    cs, hier = cv2.findContours(m, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     outer_i = max(range(len(cs)), key=lambda i: cv2.contourArea(cs[i]))
     c = cs[outer_i]
     area = cv2.contourArea(c)
@@ -218,8 +218,13 @@ def corner_runs(raw, eps_frac=0.015):
     return runs
 
 
-def ellipse_ok(f):
-    return f is not None and f["rms"] < max(0.03 * f["b"], 3.0) and f["aspect"] > 0.5
+MIN_ELLIPSE_POINTS = 12
+
+
+def ellipse_ok(f, n_points=None):
+    if f is None or (n_points is not None and n_points < MIN_ELLIPSE_POINTS):
+        return False
+    return f["rms"] < max(0.03 * f["b"], 3.0) and f["aspect"] > 0.5
 
 
 def arc_from_run(run, ccw):

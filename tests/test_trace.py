@@ -63,3 +63,15 @@ def test_symmetrize_mirrors_a_nearly_symmetric_mask():
 def test_merge_collinear_drops_redundant_points():
     pts = np.array([[0, 0], [50, 0], [100, 0], [100, 50], [0, 50]], float)
     assert len(merge_collinear(pts, 5.0)) == 4
+
+
+def test_a_rectangle_is_not_a_circle():
+    poly, shape = outline(rect())
+    assert len(shape["raw"]) >= 12
+    loops = primitives([shape["raw"]], 160)
+    assert loops[0]["type"] == "loop"
+
+
+def test_a_disc_is_still_a_circle():
+    poly, shape = outline(disc())
+    assert primitives([shape["raw"]], 200)[0]["type"] == "circle"
