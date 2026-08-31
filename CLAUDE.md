@@ -71,3 +71,44 @@ unconstrained sketches.
 
 `valid` in a build report means a non-null solid with volume; a shape can be
 `isValid()` and still be nothing.
+
+## Renting a GPU (vast.ai)
+
+`vastai` is installed and authenticated. Check `vastai show user --raw` for the balance
+before planning anything - it is small, and a top-end card empties it in under an hour.
+
+**Know which part is actually slow before renting.** In this repo the GPU work is
+narrow:
+
+| job | bound by | rent a GPU? |
+|---|---|---|
+| RMBG segmentation of the photo set | GPU | yes - 71 min locally for 5,713 photos, minutes on a 4090/5090. Already cached, so only for a new dataset or a different matting model |
+| `synth.py` data generation | CPU (OpenCV rasterise + trace) | only for the vCPU count - 133 s for 13.7k samples on 8 cores, ~6x faster on a 48-core box |
+| `curvenet.py` training | trivial - 195k params, seconds an epoch | no |
+| the benchmark, tracing, scoring, FreeCAD | CPU | no |
+
+So a bigger card does not make the current work finish sooner. Rent when the model
+grows into something real (an image-to-CAD sequence model), when re-segmenting a new
+photo set, or when generating synthetic data at a scale where vCPU count dominates -
+in that last case sort on `cpu_cores`, not `dlperf`.
+
+**Pick on value, not on the top of the list.** `-o 'dlperf-'` puts a B200 at
+$7.50/hr first; an RTX 5090 at $0.40/hr has roughly a third of the dlperf for a
+nineteenth of the price, so it wins on `dlperf/$` by about 2x. Unless a job genuinely
+needs 180 GB of VRAM, a 5090 or 4090 is the right machine.
+
+```bash
+vastai search offers 'reliability>0.95 num_gpus=1 gpu_ram>=16 dph_total<0.5 inet_down>100' \
+  -o 'dlperf-' --limit 10
+vastai create instance <OFFER_ID> --image pytorch/pytorch:2.1.0-cuda12.1-cudnn8-devel \
+  --disk 40 --ssh --direct --label photo2fcstd
+vastai show instances                     # wait for 'running'
+vastai copy local:./data C.<ID>:/workspace/data
+ssh -p <PORT> root@<HOST>                 # host/port from: vastai ssh-url <ID>
+vastai copy C.<ID>:/workspace/out local:./out
+vastai destroy instance <ID>              # ALWAYS - billing runs until destroyed
+```
+
+Use on-demand, not interruptible, for anything longer than a few minutes; a preempted
+run costs more in wasted time than the spot discount saves. Ship the masks, not the
+photos - `~/.cache/photo2fcstd/masks` is 13 MB against gigabytes of JPEGs.
