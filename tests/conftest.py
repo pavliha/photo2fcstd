@@ -20,3 +20,11 @@ def dataset():
 @pytest.fixture(scope="session")
 def photos_of():
     return photos
+
+
+@pytest.fixture(scope="session")
+def freecad():
+    from photo2fcstd.settings import FREECADCMD
+    if not os.path.exists(FREECADCMD):
+        pytest.skip("FreeCAD not found (set FREECADCMD)")
+    return FREECADCMD

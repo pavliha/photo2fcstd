@@ -9,13 +9,6 @@ from photo2fcstd import analysis, cli, spec
 from photo2fcstd.settings import FREECADCMD
 
 
-@pytest.fixture(scope="session")
-def freecad():
-    if not os.path.exists(FREECADCMD):
-        pytest.skip("FreeCAD not found (set FREECADCMD)")
-    return FREECADCMD
-
-
 def build(part, tmp_path, photos_of, **kw):
     tmp_path = pathlib.Path(tmp_path)
     tmp_path.mkdir(parents=True, exist_ok=True)
