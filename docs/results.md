@@ -449,6 +449,55 @@ named "1", `load()` returned None and the model silently fell back to the rules 
 replace. A flag that reads as enabled while doing nothing is the failure mode to watch for here -
 the A/B looked clean, it just measured the control twice.
 
+## Pixels do not know the tilt either, and the thresholds have not moved
+
+Two hypotheses followed from the view-choice result, and both lost.
+
+**Pixels instead of the mask.** Segmentation discards shading across a face, specular highlights
+and the ellipticity of an oblique hole, which is where foreshortening physically lives, so a CNN
+on the photo crop should beat statistics of its silhouette. `pixel_data.py` builds masked
+greyscale crops plus the mask as a second channel, `pixel_train.py` scores each of the three views
+and takes the best - the same per-candidate framing that worked for the carve axis and the view
+choice. 1014 parts, split by part into train/val/test, epoch chosen on val.
+
+On the 157 test parts **neither** model was trained on:
+
+| chooser | agrees with the best view | sketch IoU |
+|---|---|---|
+| chance | 0.33 | 0.564 |
+| first photo | 0.40 | 0.589 |
+| **silhouette statistics** (shipped) | 0.56 | **0.631** |
+| pixels | 0.57 | 0.622 |
+| oracle | 1.00 | 0.669 |
+
+Pixels minus silhouette is -0.009 [-0.030, +0.011]. A dead heat: they disagree on 74 of 157 parts
+and split them 36 to 35. Whatever the mask loses, the model cannot use.
+
+An ensemble looked promising because the two disagree so often, and it is the one place the
+agreement metric and the objective come apart cleanly: averaging the two scores lifts agreement
+from 0.56 to **0.61** and moves sketch IoU by **+0.0015 [-0.0082, +0.0108]**. Picking the right
+photo more often stops paying once the wrong photos being avoided are the ones that were nearly as
+good anyway. Reporting the agreement alone would have looked like a win.
+
+Read against the first 243-part run, where pixels scored 0.49 agreement and looked beaten, this is
+also a reminder that a model on 182 training parts says nothing: the same architecture on 659 went
+to 0.57 and drew level. The first run's conclusion was noise in both directions.
+
+**The thresholds after the view change.** Every empirical constant was jointly tuned when the
+pipeline drew from an oblique photo 27% of the time; the shipped selector changed which image
+reaches the tracer on 109 of 295 parts, so those constants were fitted to a distribution that no
+longer exists. Six of them, three values each, on the same 160 parts with both arms regenerating
+specs:
+
+| | |
+|---|---|
+| shipped | 0.645 |
+| best single change (`HOLE_FRAC_VISIBLE` 0.08) | 0.644 |
+| every other change | -0.004 to -0.006 |
+
+Not one is positive. The constants were at a local optimum under the old input distribution and
+they are still at one under the new, which is a stronger statement than the original tuning made.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

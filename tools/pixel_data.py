@@ -53,18 +53,18 @@ def one(part):
         return None
 
 
-def main():
-    scored = json.load(open(os.path.join(ROOT, "data", "view_ceiling.json")))
-    parts = [k for k, v in scored.items() if sum(1 for p in v["per_view"] if p) == 3]
+def main(limit=1200):
+    """Crops do not need labels, so build them for every candidate part and join later."""
+    import photo2fcstd.sketch_score as SS
+    ideal = json.load(open(os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json")))
+    parts = [p for p in sorted(ideal) if SS.trustworthy(ideal[p])]
+    parts = bench.with_photos(parts)[0][:limit]
     with Pool(5) as pool:
         rows = [r for r in pool.map(one, parts) if r]
     X = np.stack([r["x"] for r in rows])
-    y = np.array([int(np.argmax([p["iou"] for p in scored[r["part"]]["per_view"]])) for r in rows])
-    ious = np.array([[p["iou"] for p in scored[r["part"]]["per_view"]] for r in rows])
-    np.savez_compressed(os.path.join(ROOT, "data", "pixel_views.npz"),
-                        X=X, y=y, iou=ious, parts=np.array([r["part"] for r in rows]))
-    print("%d parts, X %s, best-view distribution %s"
-          % (len(rows), X.shape, np.bincount(y, minlength=3).tolist()))
+    np.savez_compressed(os.path.join(ROOT, "data", "pixel_crops.npz"),
+                        X=X, parts=np.array([r["part"] for r in rows]))
+    print("%d parts with three usable crops, X %s" % (len(rows), X.shape))
 
 
 if __name__ == "__main__":
