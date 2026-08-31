@@ -34,6 +34,26 @@ def view(path, min_step_px=None, grad=STEP_GRAD, tail=TAIL, segment="rmbg", rect
     if shape["round"] or shape["roundish"]:
         shape["ellipse"] = f
         shape["rings"] = rings_of(img, mask, angle, f)
+    return _view_body(img, mask, angle, shape, poly, sym_axes, path, scale, min_step_px, grad, tail)
+
+
+def view_from_mask(mask, name="mask", min_step_px=None, grad=STEP_GRAD, tail=TAIL):
+    """The same view a photo produces, built from an already-segmented mask."""
+    mask, angle = upright_mask(mask)
+    mask, sym_axes = symmetrize(mask)
+    poly, shape = outline(mask)
+    raw = np.array(shape["raw"])
+    f = fit_ellipse(raw)
+    enough = len(raw) >= MIN_ELLIPSE_POINTS
+    shape["round"] = bool(f and enough and f["rms"] < th.ROUND_RMS * f["b"] and f["aspect"] > th.ROUND_ASPECT)
+    shape["roundish"] = bool(f and enough and f["rms"] < th.ROUNDISH_RMS * f["b"] and f["aspect"] > th.ROUNDISH_ASPECT)
+    shape["ellipse_rms"] = float(f["rms"] / f["b"]) if f else 1.0
+    if shape["round"] or shape["roundish"]:
+        shape["ellipse"] = f
+    return _view_body(None, mask, angle, shape, poly, sym_axes, name, None, min_step_px, grad, tail)
+
+
+def _view_body(img, mask, angle, shape, poly, sym_axes, path, scale, min_step_px, grad, tail):
     y, w = trim(*widths(mask), tail=tail)
     z = (y - y[0]) * -1.0
     st = stations(z, w, min_step_px or max(8.0, 0.04 * len(w)), grad)

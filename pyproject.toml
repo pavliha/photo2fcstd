@@ -38,6 +38,7 @@ photo2fcstd-target = "photo2fcstd.make_target:run"
 photo2fcstd-target-screen = "photo2fcstd.make_target:screen_run"
 photo2fcstd-bop = "photo2fcstd.bop_cli:run"
 photo2fcstd-train-modes = "photo2fcstd.mode_model:run"
+photo2fcstd-train-views = "photo2fcstd.view_rank:run"
 
 [tool.setuptools.packages.find]
 where = ["src"]

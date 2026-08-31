@@ -3,10 +3,15 @@ import os
 from photo2fcstd import thresholds as th
 
 LEARNED = os.environ.get("P2F_LEARNED_MODES") == "1"
-VIEW_PICK = os.environ.get("P2F_VIEW_PICK", "first")
+VIEW_PICK = os.environ.get("P2F_VIEW_PICK", "ranker")
 
 
 def pick_view(specs):
+    if VIEW_PICK == "ranker":
+        from photo2fcstd import view_rank
+        ranked = view_rank.best(specs)
+        if ranked is not None:
+            return ranked
     if VIEW_PICK == "largest":
         return max(specs, key=lambda v: v["shape"]["bbox"][0] * v["shape"]["bbox"][1])
     if VIEW_PICK == "rectangular":
@@ -82,7 +87,9 @@ def select(specs, forced=None):
         return "revolve", max(round_views, key=lambda v: v["shape"]["ellipse"]["aspect"])
     if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE:
         return ("plan" if flat else "profile"), holed
-    return ("plan" if flat else "profile"), least_rect
+    if flat:
+        return "plan", pick_view(specs)
+    return "profile", least_rect
 
 
 def station_views(specs):
