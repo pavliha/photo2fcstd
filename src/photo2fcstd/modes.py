@@ -122,10 +122,22 @@ def edge_on_depth(src, views):
             % (os.path.basename(view["source"]), aspect))
 
 
+def predicted_depth(src, others):
+    from photo2fcstd import depth_model
+    ratio = depth_model.ratio([src] + list(others))
+    if ratio is None:
+        return None
+    return (ratio * src["length_px"],
+            "depth predicted from the silhouettes at %.3f of length - typically within 2x, measure it (px units)" % ratio)
+
+
 def outline_depth(src, others, mode, thickness_px):
     if thickness_px is not None:
         return thickness_px, "thickness from --thickness-px (px units)"
     if mode == "plan":
+        learned = predicted_depth(src, others)
+        if learned is not None:
+            return learned
         return (th.PLATE_FRAC * src["length_px"],
                 "plate thickness: NOT visible when every photo shows the same face, guessed as %.0f%% of length - set it from a caliper (px units)"
                 % (th.PLATE_FRAC * 100))
@@ -135,6 +147,9 @@ def outline_depth(src, others, mode, thickness_px):
         width = max(st["width"] for st in other["stations"])
         return (width * extent / other["length_px"],
                 "extrusion length = width of %s scaled by the profile extent (px units)" % os.path.basename(other["source"]))
+    learned = predicted_depth(src, others)
+    if learned is not None:
+        return learned
     measured = edge_on_depth(src, [src] + list(others))
     if measured is not None:
         return measured

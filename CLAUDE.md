@@ -260,3 +260,33 @@ So drawing every part **and** keeping the two-view solid is not available. It is
 straight choice: `stations` keeps solid IoU 0.433 with 46% of parts drawing nothing,
 always-outline gives 100% coverage and sketch IoU 0.557 for solid IoU 0.364.
 `tests/test_regression.py` currently encodes the first.
+
+## Depth is predicted, not guessed
+
+`depth_model.py` predicts `log(depth / length)` from the silhouette features of the
+photos, trained on the 889 trusted prisms whose STEP file gives the true extrusion
+depth. Gradient boosting on tabular features - the data is small and wide, so trees,
+not a network.
+
+Measured on 178 parts held out of training:
+
+| | median \|log\| error | within 2x |
+|---|---|---|
+| best constant | 1.045 | 35% |
+| geometric estimate (0.46 x edge-on aspect) | 1.118 | 28% |
+| **learned** | **0.457** | **62%** |
+
+End to end on 41 held-out outline parts the solid IoU goes from 0.404 to 0.483, better
+on 23 and worse on 9.
+
+Note the geometric estimator committed earlier is **worse than a constant** at this
+scale; it looked better on 98 parts and did not hold on 889. It stays only as the
+fallback when sklearn and joblib are missing. A direct measurement from a second
+elevation still takes priority over both - never override an observation with a prior.
+
+`data/depth_model.joblib` is gitignored like the other model artefacts, so a fresh
+clone falls back to the geometric estimate until you run `tools/depth_data.py` then
+`tools/depth_train.py` to rebuild it. This is the one learned
+component that beat its A/B, and the reason is the same rule as before: depth is a
+single scalar with exact ground truth that geometry genuinely cannot observe, whereas
+curve segmentation needed a boundary position that per-point labels cannot express.
