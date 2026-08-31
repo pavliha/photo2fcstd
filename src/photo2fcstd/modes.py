@@ -23,7 +23,8 @@ def same_face(specs):
 
 def learned_mode(specs):
     from photo2fcstd import mode_model, telemetry
-    return mode_model.predict([telemetry.view_event(v) for v in specs])
+    allowed = [m for m in ("stations", "profile", "plan", "revolve") if can_build(m, specs)]
+    return mode_model.predict([telemetry.view_event(v) for v in specs], allowed)
 
 
 def can_build(mode, specs):

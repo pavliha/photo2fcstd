@@ -54,23 +54,72 @@ def cross_validated(rows, seed=0):
     return list(predicted)
 
 
+def outcome_targets(rows):
+    return np.array([[r["iou_per_mode"].get(m, np.nan) for m in MODES] for r in rows], float)
+
+
+def cross_validated_regression(rows, seed=0):
+    from sklearn.ensemble import RandomForestRegressor
+    from sklearn.model_selection import KFold
+    X, Y = matrix(rows), outcome_targets(rows)
+    predicted = np.empty(len(rows), dtype=object)
+    for train, test in KFold(5, shuffle=True, random_state=seed).split(X):
+        heads = {}
+        for j, mode in enumerate(MODES):
+            usable = train[np.isfinite(Y[train, j])]
+            if len(usable) < 10:
+                continue
+            head = RandomForestRegressor(n_estimators=300, min_samples_leaf=3, random_state=seed)
+            head.fit(X[usable], Y[usable, j])
+            heads[mode] = head
+        for i in test:
+            buildable = [m for j, m in enumerate(MODES) if m in heads and np.isfinite(Y[i, j])]
+            if not buildable:
+                predicted[i] = rows[i]["label"]
+                continue
+            predicted[i] = max(buildable, key=lambda m: heads[m].predict(X[i:i + 1])[0])
+    return list(predicted)
+
+
 def train(rows, seed=0):
     from sklearn.ensemble import RandomForestClassifier
     model = RandomForestClassifier(n_estimators=400, min_samples_leaf=2, random_state=seed, class_weight="balanced")
     model.fit(matrix(rows), [r["label"] for r in rows])
-    return model
+    return {"kind": "classifier", "model": model}
+
+
+def train_regression(rows, seed=0):
+    from sklearn.ensemble import RandomForestRegressor
+    X, Y = matrix(rows), outcome_targets(rows)
+    heads = {}
+    for j, mode in enumerate(MODES):
+        usable = np.isfinite(Y[:, j])
+        if usable.sum() < 10:
+            continue
+        head = RandomForestRegressor(n_estimators=300, min_samples_leaf=3, random_state=seed)
+        head.fit(X[usable], Y[usable, j])
+        heads[mode] = head
+    return {"kind": "regression", "heads": heads}
 
 
 _CACHED = {}
 
 
-def predict(views):
+def predict(views, allowed=None):
     import joblib
     if not os.path.exists(MODEL_PATH):
         return None
     if MODEL_PATH not in _CACHED:
         _CACHED[MODEL_PATH] = joblib.load(MODEL_PATH)
-    return str(_CACHED[MODEL_PATH].predict(np.array([features(views)], float))[0])
+    saved = _CACHED[MODEL_PATH]
+    x = np.array([features(views)], float)
+    if isinstance(saved, dict) and saved.get("kind") == "regression":
+        heads = {m: h for m, h in saved["heads"].items() if allowed is None or m in allowed}
+        if not heads:
+            return None
+        return max(heads, key=lambda m: heads[m].predict(x)[0])
+    model = saved["model"] if isinstance(saved, dict) else saved
+    return str(model.predict(x)[0])
 
 
 def main(argv):
@@ -78,12 +127,16 @@ def main(argv):
     p.add_argument("dataset", nargs="?", default=os.path.join(ROOT, "data", "mode_labels.json"))
     p.add_argument("--out", default=MODEL_PATH)
     p.add_argument("--rules-run", default="v12")
+    p.add_argument("--regression", action="store_true", help="save per-mode outcome heads instead of a classifier")
     a = p.parse_args(argv)
     rows = json.load(open(a.dataset))
     oracle = float(np.mean([r["iou_per_mode"][r["label"]] for r in rows]))
     cv = cross_validated(rows)
     learned = evaluate(rows, cv)
     accuracy = float(np.mean([m == r["label"] for r, m in zip(rows, cv)]))
+    reg = cross_validated_regression(rows)
+    reg_iou = evaluate(rows, reg)
+    reg_acc = float(np.mean([m == r["label"] for r, m in zip(rows, reg)]))
     from photo2fcstd.insight import results
     rules = results(a.rules_run)
     rule_iou = float(np.mean([iou_of(r, rules[r["part"]][0]) for r in rows if r["part"] in rules]))
@@ -91,11 +144,12 @@ def main(argv):
     print("mode selection on %d parts" % len(rows))
     print("  rules      accuracy %.0f%%   mean IoU %.3f" % (100 * rule_acc, rule_iou))
     print("  learned CV accuracy %.0f%%   mean IoU %.3f" % (100 * accuracy, learned))
+    print("  per-mode regression, argmax: accuracy %.0f%%   mean IoU %.3f" % (100 * reg_acc, reg_iou))
     print("  oracle                        mean IoU %.3f" % oracle)
     import joblib
-    joblib.dump(train(rows), a.out)
-    print("  wrote %s" % a.out)
-    model = train(rows)
+    joblib.dump(train_regression(rows) if a.regression else train(rows), a.out)
+    print("  wrote %s (%s)" % (a.out, "per-mode regression" if a.regression else "classifier"))
+    model = train(rows)["model"]
     names = [f + "_v%d" % i for i in range(3) for f in list(VIEW_FIELDS) + ["ellipse_aspect", "round", "roundish", "stroke_frac", "symmetry"]] + \
             ["rect_spread", "solidity_spread", "elongation_ratio", "max_hole_frac", "round_views", "n_views"]
     top = sorted(zip(model.feature_importances_, names), reverse=True)[:8]
