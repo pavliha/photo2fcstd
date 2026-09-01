@@ -1,0 +1,31 @@
+{
+ "axis_model": {
+  "in": 0.8925,
+  "out": 0.2857142857142857,
+  "n_out": 21,
+  "baseline": 0.3333333333333333
+ },
+ "depth_model_shipped": {
+  "baseline_note": "best constant fitted on the same set",
+  "in": 0.435,
+  "out": 1.1168657498129504,
+  "baseline": 0.3135321507216151,
+  "n_out": 21,
+  "coverage": 0.23809523809523808
+ },
+ "depth_model_tabular": {
+  "baseline_note": "best constant fitted on the same set",
+  "in": 0.435,
+  "out": 0.2359672928548072,
+  "baseline": 0.3135321507216151,
+  "n_out": 21,
+  "coverage": 1.0
+ },
+ "view_model": {
+  "baseline": 0.3333333333333333,
+  "in": 0.5603112840466926,
+  "n_in": 771,
+  "out": null,
+  "note": "T-LESS has no view triples of one object from one setup, so this is untested out of distribution"
+ }
+}

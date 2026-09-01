@@ -95,3 +95,44 @@ so a part with no answer can be refused rather than guessed.
 2 next: it is the only one where something shipping today is unknown.
 3 then: a live ambiguity with no measured harm yet, but it makes 4's audit ill-defined until settled.
 4 last: the deepest, and the only one that is ongoing work rather than a fix.
+
+
+---
+
+# Status: all four implemented
+
+| step | outcome |
+|---|---|
+| 1. audible fallbacks | done - 14 silent returns annotated, 0 left, 4 tests |
+| 2. audit the shipped depth path | done - **it loses to a constant, and to its own fallback** |
+| 3. one view selector | done - the two are indistinguishable, so the shadowing was removed, not a winner picked |
+| 4. routine OOD audit | done - `tools/ood_audit.py` and `tests/test_ood.py` |
+
+**What each step actually found, as opposed to what it was expected to find.**
+
+*Step 1* was meant to be housekeeping. It immediately surfaced a live fallback nobody had noticed:
+scoring a single view makes `embed.for_views` fail every time, because it wants three image paths and
+gets one, so any per-view experiment silently uses the tabular depth model.
+
+*Step 2* was expected to confirm an earlier result and reversed it. The DINOv3 pixel path - the one
+that runs on a real photograph - scores 1.117 median absolute log error against a T-LESS constant's
+0.314, with its conformal band covering 24% where it claims 80%. The tabular fallback scores 0.236
+and over-covers. The path we ship is the worse of the two off-distribution, and the earlier
+"depth loses to a constant" note was about the fallback because bare masks gave `embed` nothing to
+work with.
+
+*Step 3* was expected to produce a winner and produced a tie: +0.008 [-0.018, +0.034] over 261
+discriminating parts, agreeing with each other on 61%. The first attempt at this comparison was
+invalid - it rebuilt view dicts from cached statistics, so `view_rank` saw a fabricated bounding box
+and a symmetry count of zero, which are two of the eight features it reads.
+
+*Step 4* is the only one whose value is preventative rather than immediate. `tests/test_ood.py`
+pins each documented score within 0.06 and asserts two specific properties: that the axis classifier
+still fails out of distribution and is still covered by `section_constancy`, and that the shipped
+depth path is still worse than its fallback. If either stops being true the suite fails and someone
+has to update the documentation deliberately.
+
+**Left open.** Whether the depth pixel path's failure is the backbone or the head - the embedding
+norm cannot say, being 1.7 for every T-LESS object because the vectors are L2 normalised. And
+whether `view_model` survives a change of dataset, which needs three views of one object from one
+setup, and T-LESS does not provide them.

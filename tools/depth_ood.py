@@ -68,7 +68,7 @@ def main(limit=30):
                          "embed_norm": None if vec is None else float(np.linalg.norm(vec))})
         except Exception:
             continue
-    json.dump(rows, open(os.path.join(ROOT, "data", "depth_ood.json"), "w"))
+    json.dump(rows, open(os.path.join(ROOT, "data", "depth_ood_%s.json" % ARM), "w"))
     if not rows:
         print("no T-LESS objects produced both a prediction and a truth ratio")
         return
