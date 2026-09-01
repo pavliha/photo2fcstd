@@ -10,7 +10,7 @@ made.
 
 | # | item | blocked by | size |
 |---|---|---|---|
-| A1 | Characterise which arcs get split | code | small |
+| ~~A1~~ | ~~Characterise which arcs get split~~ - **done**, see below | - | - |
 | A2 | Test whether simplification eps is the binding knob on perfect input | code | small |
 | A3 | Try arc fitting before polygon simplification, not after | code | medium |
 | A4 | Decide the `bsplinecurve` policy | code | small |
@@ -45,9 +45,17 @@ Already closed off, do not repeat: loosening the gates is not selective (fires o
 no curve at all, 57% of parts that have one; structure -0.036 [-0.070, -0.002]); per-point curve
 classification lost 0.579 to 0.452; direct primitive prediction lost twice.
 
-**A1. Characterise which arcs get split.** For each ground-truth arc, whether the tracer reproduced
-it, against span, radius, arc length in pixels and neighbours. **Done when** there is a table saying
-which arcs survive and which do not. Everything else in section A is guesswork until this exists.
+**A1. DONE.** `tools/arc_survival.py`, 555 matched elements over 180 parts. Circles survive 98% of
+the time, b-splines 54%, arcs **26%**, and only 3% of real lines come out curved. The arc loss is
+entirely on shallow ones: **0% below 30 degrees of sweep**, 13% at 30-60, rising to 68% past 240;
+and by radius, 62% at 10-25 px falling to 5% past 150 px. The cliff is where `ARC_MIN_SPAN_DEG = 40`
+puts it.
+
+This is a precision/recall setting rather than a bug, and it reframes the rest of section A: sweep
+and sagitta are exactly the quantities that cannot separate a shallow arc from a straight edge,
+which is why loosening the gate fires on 54% of parts that have no curve at all. A fix must bring
+evidence a straight line would not have - neighbouring geometry, symmetry, a longer run - not a
+lower threshold on the same quantity.
 
 **A2. Test whether simplification eps is the binding knob on perfect input.** An earlier sweep
 patched `outline`'s eps rather than `corner_runs`' and all four arms returned an identical 0.639 -

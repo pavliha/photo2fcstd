@@ -94,6 +94,42 @@ Note what it does *not* say. It is a ceiling on this decomposition only, and `ap
 fitting is the same geometric prior that beat every learned replacement so far - so a fourth attempt
 at replacing it needs a reason this case differs, and "there is headroom" is not one.
 
+## Which arcs the tracer loses: shallow ones, and the gate says so
+
+`tools/arc_survival.py` matches every ground-truth element to the primitives the tracer drew, in
+the pixel frame of a perfect rasterised face, over 180 parts and 555 matched elements:
+
+| ground truth | n | reproduced as a curve |
+|---|---|---|
+| circle | 33 | **98%** |
+| bsplinecurve | 96 | 54% |
+| arc | 149 | **26%** |
+| line | 275 | 3% drawn curved |
+
+Circles are fine. Arcs are the defect, and the loss is entirely on the shallow ones:
+
+| arc sweep | n | kept | | arc radius | n | kept |
+|---|---|---|---|---|---|---|
+| 0-15 deg | 6 | **0%** | | 0-10 px | 12 | 0% |
+| 15-30 | 14 | **0%** | | 10-25 px | 25 | **62%** |
+| 30-60 | 40 | 13% | | 25-60 px | 40 | 34% |
+| 60-120 | 53 | 31% | | 60-150 px | 39 | 20% |
+| 120-240 | 33 | 45% | | >150 px | 33 | **5%** |
+| >240 | 3 | 68% | | | | |
+
+The cliff sits exactly where `ARC_MIN_SPAN_DEG = 40` puts it, and a large-radius short-sweep arc is
+geometrically almost a straight line, which is the same fact from the other side.
+
+**This is a precision/recall setting, not a bug.** Only 3% of real lines come out curved, and that
+precision is what loosening the gate destroys: the looser gate fires on 54% of parts whose sketch
+has no curve at all, because sweep and sagitta are exactly the quantities that cannot separate a
+shallow arc from a straight edge. Any fix has to bring evidence a straight line would not have -
+neighbouring geometry, symmetry, a longer run - rather than a lower threshold on the same
+quantity.
+
+It also bounds A4: b-splines are reproduced as curves 54% of the time, better than arcs, so they
+are not the unreachable mass.
+
 ## Mode selection and coverage are finished
 
 Measured on 197 trusted parts with photos, every one draws a sketch and `stations` is never chosen,
