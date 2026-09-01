@@ -1098,6 +1098,40 @@ Two smaller things the same exercise turned up, both in code written the same ho
 | 16 views but none below 36 degrees | reshoot: height is bounded by the lowest view |
 | 5 views from one side | reshoot: too few, and a 274 degree arc never looked from |
 
+## Running the rig end to end: two blockers the synthetic tests could not reach
+
+Rendered board photographs were written to disk as JPEGs and put through the real entry points -
+`photo2fcstd-preflight` then `photo2fcstd-carve` - rather than through arrays built in memory. Two
+things broke that every previous validation had passed.
+
+**The board path could not load an image.** `trace.load` returns float32 in 0..1 and the aruco
+detector requires uint8, and `carve.from_photos` hands one straight to the other. The path had only
+ever seen in-memory uint8, so 16-of-16 poses at 0.016 degrees said nothing about it. Fixed at the
+detector boundary with `rectify.as_uint8`.
+
+**The segmenter picks the target, not the part.** RMBG returns the whole ChArUco board as the
+salient object - it is a large high-contrast pattern and a part is small and plain. On a 26 x 16 x 7
+mm block the mask was 23% not-part, and carving from it gave the board's own extents,
+105 x 150 x 120 mm, with a null solid at the end. This is the single thing standing between the rig
+and a usable model.
+
+**Differencing against a rendered board does not fix it**, and the reason is specific. The render
+aligns well - median difference zero on a part-free frame - but a checkerboard is all edges, so
+sub-pixel misregistration lights 26% of board pixels above any useful threshold. Those artifacts
+connect along the square boundaries into one mesh spanning the board, so the largest connected
+component is always the artifacts rather than the part: recall stayed at or below 6% across opening
+kernels from 3 to 15 and tolerances from 60 to 100. Taking the minimum difference over a small
+search window, the usual cure for misregistration, takes recall to zero instead - a dark part
+sitting on a dark square matches the square next to it.
+
+What is needed is a comparison robust to a two-pixel shift but not to a part on a same-coloured
+square. Height is the discriminator and it is already available: the part is the only thing above
+the board plane. That is a plane sweep rather than a difference image, and it is the next piece of
+work on the capture path.
+
+`capture.part_mask` raises `NotImplementedError` with that reasoning attached rather than returning
+a mask that looks plausible and is not.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

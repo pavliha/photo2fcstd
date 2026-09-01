@@ -107,3 +107,51 @@ def demo():
 
 if __name__ == "__main__":
     demo()
+
+
+def board_quad(view):
+    """The printed target's four corners in the image, from a solved pose."""
+    from photo2fcstd.make_target import COLS, ROWS, SQUARE_MM
+    w, h = COLS * SQUARE_MM, ROWS * SQUARE_MM
+    plane = np.float32([[0, 0, 0], [w, 0, 0], [w, h, 0], [0, h, 0]])
+    uv, _ = cv2.projectPoints(plane, view["rvec"], view["tvec"], view["K"], view["dist"])
+    return uv.reshape(-1, 2)
+
+
+def board_render(view, shape, texture=None):
+    """What the target alone would look like from this pose."""
+    from photo2fcstd.make_target import COLS, ROWS, SQUARE_MM, board
+    if texture is None:
+        px = 12
+        art = board().generateImage((int(COLS * SQUARE_MM * px), int(ROWS * SQUARE_MM * px)))
+        texture = cv2.cvtColor(art, cv2.COLOR_GRAY2BGR) if art.ndim == 2 else art
+    ph, pw = texture.shape[:2]
+    src = np.float32([[0, 0], [pw, 0], [pw, ph], [0, ph]])
+    H = cv2.getPerspectiveTransform(src, board_quad(view).astype(np.float32))
+    return cv2.warpPerspective(texture, H, (shape[1], shape[0]), borderValue=(255, 255, 255))
+
+
+def part_mask(image, view, texture=None, tol=60, min_frac=0.0002):
+    """Not usable yet. Kept because the problem it fails at is real and has to be solved.
+
+    A saliency segmenter picks the target, not the part: on a rendered capture RMBG returned the
+    whole board, 23% of its mask was not the part, and carving from that produced the board's own
+    105 x 150 mm extents instead of a 26 mm part. The pose says exactly where the board is and what
+    it should look like, so differencing against a render ought to leave the part behind.
+
+    It does not, for a reason worth recording. The render aligns well - median difference zero on a
+    part-free frame - but 26% of board pixels still differ by more than 60 because a checkerboard is
+    all edges and sub-pixel misregistration lights every one of them. Those artifacts connect along
+    the square boundaries into a single mesh spanning the board, so the largest connected component
+    is always the artifacts: recall never exceeded 6% across opening kernels of 3 to 15 and
+    tolerances of 60 to 100. Taking the minimum difference over a small search window, the standard
+    cure for misregistration, drops recall to zero instead - a dark part over a dark square matches
+    the square next door.
+
+    What is needed is a comparison that is robust to a two-pixel shift without also being robust to
+    a part sitting on a same-coloured square. Height is the obvious discriminator and it is
+    available: the part is the only thing above the board plane. That is a plane-sweep, not a
+    difference image.
+    """
+    raise NotImplementedError(
+        "part_mask does not work yet; see docs/results.md on segmenting the part from the target")
