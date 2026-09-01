@@ -144,21 +144,42 @@ def outline(mask, eps_frac=0.008, min_hole=None):
                          "solidity": float(area / max(hull_area, 1)), "bbox": (w, h), "holes": [h_.tolist() for h_ in holes],
                          "hole_frac": float(hole_area / max(area, 1)), "raw": c.reshape(-1, 2).astype(float).tolist(), "raw_holes": raw_holes}
 
+def reflect_richer_half(shape, holes, axis):
+    n = shape.shape[axis]
+    half = n // 2
+    take = lambda a, first: (a[:, :half] if first else a[:, n - half:]) if axis == 1 else (a[:half] if first else a[n - half:])
+    first_area = int(take(holes, True).sum())
+    second_area = int(take(holes, False).sum())
+    keep_first = first_area >= second_area
+    def rebuild(a):
+        chosen = take(a, keep_first)
+        mirrored = np.flip(chosen, axis=axis)
+        out = a.copy()
+        if axis == 1:
+            out[:, :half], out[:, n - half:] = (chosen, mirrored) if keep_first else (mirrored, chosen)
+        else:
+            out[:half], out[n - half:] = (chosen, mirrored) if keep_first else (mirrored, chosen)
+        return out
+    return rebuild(shape), rebuild(holes)
+
+
 def symmetrize(mask, min_iou=0.93):
     filled = ndimage.binary_fill_holes(mask)
     holes = filled & ~mask
     ys, xs = np.nonzero(filled)
     y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
     crop = filled[y0:y1, x0:x1]
+    hole_crop = holes[y0:y1, x0:x1]
     axes = []
     for axis in (1, 0):
         f = np.flip(crop, axis=axis)
         if (crop & f).sum() / max((crop | f).sum(), 1) >= min_iou:
-            crop = crop | f
+            crop, hole_crop = reflect_richer_half(crop, hole_crop, axis)
             axes.append("x" if axis == 1 else "y")
-    out = filled.copy()
+    out, out_holes = filled.copy(), holes.copy()
     out[y0:y1, x0:x1] = crop
-    return out & ~holes, axes
+    out_holes[y0:y1, x0:x1] = hole_crop
+    return out & ~(out_holes & out), axes
 
 
 def fit_circle(pts):
@@ -169,6 +190,97 @@ def fit_circle(pts):
     rms = float(np.sqrt(np.mean((np.hypot(x - cx, y - cy) - r) ** 2)))
     w, h = np.ptp(x), np.ptp(y)
     return float(cx), float(cy), r, rms / r, float(min(w, h) / max(w, h, 1e-9))
+
+
+SYMMETRY_TOL = float(os.environ.get("P2F_SYMMETRY", "0"))
+RADIUS_TOL = float(os.environ.get("P2F_RADIUS_UNIFY", "0"))
+
+
+def mirror_score(pts, axis, centre):
+    """Region overlap between a loop and its own reflection, 1.0 when perfectly symmetric."""
+    from shapely.geometry import Polygon
+    try:
+        p = Polygon(np.asarray(pts, float))
+        if not p.is_valid or p.area <= 0:
+            return 0.0
+    except Exception:
+        return 0.0
+    q = np.asarray(pts, float).copy()
+    q[:, axis] = 2 * centre - q[:, axis]
+    try:
+        m = Polygon(q)
+        u = p.union(m).area
+        return float(p.intersection(m).area / u) if u else 0.0
+    except Exception:
+        return 0.0
+
+
+def symmetrise(pts, axis, centre, rounds=4):
+    """Average every point with its reflected partner, so a near-symmetric loop becomes exact.
+
+    Nearest-partner pairing is not an involution - a maps to b without b mapping to a - so one
+    pass leaves the loop partly asymmetric and it has to be iterated to settle.
+    """
+    q = np.asarray(pts, float).copy()
+    for _ in range(rounds):
+        mirrored = q.copy()
+        mirrored[:, axis] = 2 * centre - mirrored[:, axis]
+        d = np.linalg.norm(q[:, None, :] - mirrored[None, :, :], axis=2)
+        q = (q + mirrored[d.argmin(axis=1)]) / 2.0
+    return q
+
+
+def symmetrise_loops(loops, tol):
+    """Make an almost-symmetric traced outline exactly symmetric.
+
+    69% of real sketches are mirror-symmetric to within 0.95 region IoU and the median is exactly
+    1.000, so a traced outline that is nearly symmetric almost certainly should be. Tracing noise
+    breaks it: two fillets that are one radius in the part come back as two radii in the drawing.
+    """
+    if not loops:
+        return loops
+    outer = np.asarray(loops[0], float)
+    if len(outer) < 8:
+        return loops
+    best = None
+    for axis in (0, 1):
+        centre = float(outer[:, axis].mean())
+        sc = mirror_score(outer, axis, centre)
+        if sc >= tol and (best is None or sc > best[0]):
+            best = (sc, axis, centre)
+    if best is None:
+        return loops
+    _, axis, centre = best
+    return [symmetrise(np.asarray(lp, float), axis, centre).tolist() if len(lp) >= 8 else lp
+            for lp in loops]
+
+
+def unify_radii(els, tol):
+    """Snap arc radii that are within tol of each other onto their shared mean.
+
+    A part is drilled and filleted with a small set of tools: 49% of real curved edges share a
+    radius with another edge of the same sketch, and on 27% of parts every curve does.
+    """
+    arcs = [e for e in els if e.get("type") == "arc" and e.get("r")]
+    if len(arcs) < 2:
+        return els
+    r = np.array([e["r"] for e in arcs], float)
+    order = np.argsort(r)
+    groups, cur = [], [order[0]]
+    for i in order[1:]:
+        if abs(r[i] - r[cur[-1]]) <= tol * max(r[i], r[cur[-1]]):
+            cur.append(i)
+        else:
+            groups.append(cur)
+            cur = [i]
+    groups.append(cur)
+    for g in groups:
+        if len(g) < 2:
+            continue
+        mean = float(np.mean([r[i] for i in g]))
+        for i in g:
+            arcs[i]["r"] = mean
+    return els
 
 
 def snap_rectilinear(pts, tol_deg=12.0, lock=None):
@@ -434,6 +546,32 @@ def elements(raw, length_px):
     return merge_and_snap(els, length_px)
 
 
+def rectangularise(els, fill_tol=0.92, side_tol=0.06):
+    if any(e["type"] != "line" for e in els) or len(els) < 4:
+        return els
+    pts = np.array([e["p0"] for e in els], float)
+    lo, hi = pts.min(axis=0), pts.max(axis=0)
+    box = (hi - lo)
+    if min(box) <= 0:
+        return els
+    area = 0.5 * abs(sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1]
+                         for i in range(len(pts))))
+    if area / (box[0] * box[1]) < fill_tol:
+        return els
+    slack = side_tol * max(box)
+    on_edge = np.minimum(np.abs(pts - lo), np.abs(pts - hi)).min(axis=1)
+    if on_edge.max() > slack:
+        return els
+    corners = [[lo[0], lo[1]], [hi[0], lo[1]], [hi[0], hi[1]], [lo[0], hi[1]]]
+    order = corners if _signed_area(pts) > 0 else corners[::-1]
+    return [{"type": "line", "p0": order[i], "p1": order[(i + 1) % 4]} for i in range(4)]
+
+
+def _signed_area(pts):
+    return 0.5 * sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1]
+                     for i in range(len(pts)))
+
+
 def merge_line_elements(els, min_len, tol_deg=6.0):
     if len(els) < 3:
         return els
@@ -533,6 +671,8 @@ def fit_ellipse(pts):
 
 def primitives(raw_loops, length_px, circle_aspect=0.7):
     out = []
+    if SYMMETRY_TOL > 0:
+        raw_loops = symmetrise_loops(raw_loops, SYMMETRY_TOL)
     outer = fit_ellipse(np.asarray(raw_loops[0], float))
     hole_aspect = 0.7 * outer["aspect"] if ellipse_ok(outer) else 0.5
     for j, raw in enumerate(raw_loops):
@@ -541,7 +681,9 @@ def primitives(raw_loops, length_px, circle_aspect=0.7):
         if ellipse_ok(f) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect):
             out.append({"type": "circle", "cx": f["cx"], "cy": f["cy"], "r": f["a"]})
             continue
-        els = regularise_lines(elements(raw, length_px), length_px)
+        els = rectangularise(regularise_lines(elements(raw, length_px), length_px))
+        if RADIUS_TOL > 0:
+            els = unify_radii(els, RADIUS_TOL)
         out.append({"type": "loop", "elements": els, "kinds": kinds_of(els), "joins": joins(els)})
     return out
 
