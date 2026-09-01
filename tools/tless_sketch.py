@@ -43,8 +43,8 @@ def cross_section(mesh, axis):
     return rings
 
 
-def prismatic(mesh, axis, tol=0.12):
-    """Is the cross-section constant enough that a single sketch describes the part?"""
+def section_variation(mesh, axis):
+    """How much the cross-section area changes along an axis. Low means one sketch describes it."""
     n = np.zeros(3)
     n[axis] = 1.0
     lo, hi = mesh.bounds[0][axis], mesh.bounds[1][axis]
@@ -53,17 +53,25 @@ def prismatic(mesh, axis, tol=0.12):
         o = mesh.bounds.mean(axis=0).copy()
         o[axis] = lo + t * (hi - lo)
         try:
-            sec = mesh.section(plane_origin=o, plane_normal=n)
-            planar, _ = sec.to_planar()
+            planar, _ = mesh.section(plane_origin=o, plane_normal=n).to_planar()
             areas.append(max(p.area for p in planar.polygons_full))
         except Exception:
-            return False
-    a = np.array(areas)
-    return bool(a.min() > 0 and (a.max() - a.min()) / a.max() < tol)
+            return 1.0
+    a = np.array(areas, float)
+    return float((a.max() - a.min()) / a.max()) if a.max() > 0 else 1.0
 
 
-def sketch_of(carved, name):
-    ax = int(np.argmax(MODEL.predict_proba(axis_model.features(carved))[:, 1]))
+def reference_axis(mesh, tol=0.20):
+    """The axis a single sketch can describe, or None. T-LESS parts are not prisms like
+    PrintCAD's - their section varies 0.09 to 0.78 depending on direction - so the reference
+    has to be the direction that is closest to constant, not whichever one we happen to pick."""
+    v = [section_variation(mesh, a) for a in (0, 1, 2)]
+    best = int(np.argmin(v))
+    return (best, v[best]) if v[best] < tol else (None, min(v))
+
+
+def sketch_of(carved, name, axis=None):
+    ax = int(np.argmax(MODEL.predict_proba(axis_model.features(carved))[:, 1])) if axis is None else axis
     perm = {0: [1, 2, 0], 1: [2, 0, 1], 2: [0, 1, 2]}[ax]
     cc = dict(carved)
     cc["points_mm"] = carved["points_mm"][:, perm]
@@ -73,12 +81,14 @@ def sketch_of(carved, name):
 def one(obj_id):
     try:
         mesh = trimesh.load(tless.model_path(obj_id))
-        real = tless.carve_object(obj_id, every=EVERY, voxel_mm=0.8)
+        ax, var = reference_axis(mesh)
+        if ax is None:
+            return None
+        real, _ = tless.carve_object(obj_id, every=EVERY, voxel_mm=0.8)
         if real is None or len(real["points_mm"]) < 200:
             return None
-        spec_r, ax = sketch_of(real, "obj%02d" % obj_id)
-        if not prismatic(mesh, ax):
-            return None
+        chosen = int(np.argmax(MODEL.predict_proba(axis_model.features(real))[:, 1]))
+        spec_r, _ = sketch_of(real, "obj%02d" % obj_id, axis=ax)
         rings = cross_section(mesh, ax)
         if not rings:
             return None
@@ -89,10 +99,10 @@ def one(obj_id):
         try:
             masks = [CC.silhouette(mesh, v) for v in views]
             synth = C.carve(views, masks, voxel_mm=0.8)
-            spec_s, _ = sketch_of(synth, "obj%02d" % obj_id) if synth is not None else (None, None)
+            spec_s, _ = sketch_of(synth, "obj%02d" % obj_id, axis=ax) if synth is not None else (None, None)
         except Exception:
             spec_s = None
-        out = {"obj": obj_id, "axis": ax,
+        out = {"obj": obj_id, "axis": ax, "variation": var, "axis_model_agreed": chosen == ax,
                "real": SS.score_one(spec_r, record)["region_iou"],
                "trivial": SS.trivial_score(record)}
         if spec_s is not None:
@@ -111,8 +121,9 @@ def main():
         return
     keen = [r for r in rows if 1 - r["trivial"] >= 0.15]
     both = [r for r in keen if "synth" in r]
-    print("%d of 30 T-LESS objects are prismatic and drew a sketch, %d discriminating\n"
-          % (len(rows), len(keen)))
+    print("%d of 30 T-LESS objects have an axis one sketch can describe, %d discriminating" % (len(rows), len(keen)))
+    print("the axis model picked that same axis on %.0f%% of them\n"
+          % (100 * np.mean([r["axis_model_agreed"] for r in rows])))
     print("  %-34s %8s" % ("", "sketch IoU"))
     print("  %-34s %8.3f" % ("a circle, ignoring the photos", np.mean([r["trivial"] for r in keen])))
     print("  %-34s %8.3f" % ("carved from real photographs", np.mean([r["real"] for r in keen])))

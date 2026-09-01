@@ -101,6 +101,40 @@ and works at inference time with no dataset at all.
 This is the only item that scales beyond PrintCAD, so it is the one worth real research time once
 the instrument and the metric are trustworthy.
 
+## What the night of 31 August shipped
+
+Two changes, each proven on parts the model had never seen, because it turned out that was the
+only way to prove anything here.
+
+| | held out | full set |
+|---|---|---|
+| pixel depth head | +0.040 [+0.024, +0.056] on 481 parts | -0.013, which is contamination |
+| pixel mode selector | +0.080 [+0.063, +0.097] on 620 parts | +0.089 |
+| both, against the evening's starting point | | **+0.077 [+0.066, +0.089]**, 0.463 -> 0.541 |
+
+Sketches came through unharmed: region IoU 0.593 -> 0.630, exact primitive reproductions
+260 -> 301, and 1871 of 1873 parts still emit a sketch.
+
+### Four invalid comparisons, in four different directions
+
+The measurements were wrong more often than the code was, and each was wrong differently.
+
+- **A second change landed mid-experiment.** The first depth A/B compared two arms whose code
+  snapshots differed, because the parallel session shipped a view model between them. Diffing
+  `runs/<name>/code` is now the first step after any surprising delta.
+- **The metric had a blind spot.** A mode selector scored +0.115 by routing 23% of parts to
+  stations, which wins voxel IoU with a staircase of widths and emits no sketch at all. A
+  docstring had already forbidden it; eleven tests caught the violation.
+- **The integration silently dropped a component.** Turning the selector on bypassed the outline
+  view model, which showed up as a sketch loss on parts whose mode had not changed.
+- **The bench scored models on their own training data.** Both depth heads are trained on all 1908
+  photographed parts. Served in-sample the silhouette GBM recites - median x1.16 against its own
+  out-of-fold x1.67 - and beats a head that generalises better. This one reversed a revert.
+
+The rule that follows: a learned component is compared only on parts excluded from its training
+set, using the held-out model files and id lists in `data/`. A full-set number for a learned
+component measures memory, not skill.
+
 ## Verdicts, measured
 
 | hypothesis | outcome |
