@@ -180,6 +180,32 @@ Adding a b-spline primitive is a separate and larger question nobody has asked f
 n=59 through FreeCAD. The four failures are two different faults and should not be reported as one
 number:
 
+**Diagnosis so far, shared by B1 and B2.** Three of the four have self-intersecting or overlapping
+traced loops: 00011 (two self-intersections, solver returns -2), 00086 (two self-intersections plus
+two overlapping pairs), 00061 (one overlapping pair). 00039 has no geometric fault and is separate.
+But 22% of all specs have such a fault and **10 of 13 still build a valid solid**, so refusing them
+would sacrifice ten working parts to fix three - a guard is the wrong shape of fix.
+
+Splitting further: 00011 is valid when every arc is replaced by its chord, so its arcs cross;
+00086 is invalid even as chords, so its *polyline* self-intersects. Two different faults again.
+
+**A genuine invariant violation was found and fixed on the way, and it explains none of them.**
+`arc_from_run` projects each run's endpoints onto its own fitted circle, so a corner shared by two
+arcs became two different points; regularisation keeps one, leaving the other arc's endpoint off its
+own circle. **43% of emitted arcs were out by more than 1% of the radius, the worst by 21%** -
+FreeCAD was being handed a centre, a radius and two endpoints that disagreed. `trace.reconcile_arcs`
+moves the centre onto the chord's perpendicular bisector, so both endpoints lie on the circle
+exactly and no endpoint moves.
+
+Measured on 133 discriminating parts with both arms regenerated and built: region IoU **-0.0001
+[-0.0008, +0.0005]**, structure **+0.0000** (an arc stays an arc, so primitive counts cannot move),
+valid solids 125 either way, unsolved sketches 3 either way. **And all four faults persist
+unchanged.** Kept as a correctness invariant, not as an improvement - it buys nothing measurable
+and costs nothing measurable.
+
+**The remaining cause is the polyline, not the arcs.** That is where B1 and B2 should resume:
+regularisation moves points across one another, and no arc-level fix reaches it.
+
 **B1. The two that produce nothing.** 00011 and 00039; the sketch solver returns -2 and -5.
 **Done when** the cause is named and either fixed or refused loudly, as `traced_outline` already
 does for a collapsed outline.

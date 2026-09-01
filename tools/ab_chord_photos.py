@@ -1,4 +1,8 @@
-"""Run merging on real photographs, with a build check, before it ships.
+"""Arc reconciliation on real photographs, with a build check.
+
+Set the flag for *both* arms on every job. A pool worker is reused, so patching the control arm
+only leaves that worker patched for every later job and both arms measure the control - which is
+what produced a null agreeing to four decimals, builds included.
 
 Perfect-input arms said +0.0030 structure with no precision cost. That is measured on rasterised
 faces; thresholds here are jointly tuned and several changes have improved a statistic and broken
@@ -13,14 +17,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 IDEAL = json.load(open(os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json")))
 FREECAD = os.environ.get("FREECADCMD", os.path.expanduser("~/Code/FreeCAD/build/release/bin/FreeCADCmd"))
-ARMS = {"shipped": 0, "merge3": 3}
+ARMS = {"before": False, "reconciled": True}
 CURVED = ("arc", "circle", "ellipse", "bsplinecurve")
 
 
 def one(args):
     part, arm = args
     from photo2fcstd import analysis, bench, sketch_score as SS, spec as spec_mod, trace
-    trace.MERGE_RUNS = ARMS[arm]
+    trace.RECONCILE_ARCS = ARMS[arm]
     try:
         views = [analysis.view(p) for p in bench.photos_of(part)[:3]]
         doc = spec_mod.assemble(views, name=part, log=lambda *a: None)
@@ -64,7 +68,7 @@ def main(limit=160):
     for part, arm, v in rows:
         by.setdefault(arm, {})[part] = v
     keen = [p for p in parts if all("region_iou" in by[a].get(p, {}) for a in ARMS)
-            and by["shipped"][p]["discriminating"]]
+            and by["before"][p]["discriminating"]]
     print("  n=%d discriminating parts, specs regenerated for both arms\n" % len(keen))
     print("  %-10s %9s %9s %10s %10s %9s" % ("arm", "IoU", "structure", "curves", "elements t", "exact"))
     for arm in ARMS:
@@ -73,11 +77,11 @@ def main(limit=160):
               % (arm, np.mean([d[p]["region_iou"] for p in keen]), np.mean([d[p]["structure"] for p in keen]),
                  np.mean([d[p]["curve_mine"] for p in keen]), np.mean([d[p]["elements"] for p in keen]),
                  100 * np.mean([d[p]["exact"] for p in keen])))
-    print("  %-10s %9s %9s %10.2f" % ("really", "-", "-", np.mean([by["shipped"][p]["curve_ideal"] for p in keen])))
+    print("  %-10s %9s %9s %10.2f" % ("really", "-", "-", np.mean([by["before"][p]["curve_ideal"] for p in keen])))
     for key in ("region_iou", "structure"):
-        d = np.array([by["merge3"][p][key] - by["shipped"][p][key] for p in keen])
+        d = np.array([by["reconciled"][p][key] - by["before"][p][key] for p in keen])
         m, lo, hi = stats.mean_ci(d)
-        print("\n  %-12s merge3 vs shipped %+.4f [%+.4f, %+.4f]" % (key, m, lo, hi))
+        print("\n  %-12s reconciled vs before %+.4f [%+.4f, %+.4f]" % (key, m, lo, hi))
     print("\n  building both arms through FreeCAD...")
     for arm in ARMS:
         specs = {p: by[arm][p]["spec"] for p in keen}

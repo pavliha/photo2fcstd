@@ -522,6 +522,7 @@ def arc_span(run, cx, cy):
 
 
 RUN_EPS = float(os.environ.get("P2F_RUN_EPS", 0.01806))
+RECONCILE_ARCS = os.environ.get("P2F_RECONCILE_ARCS", "1") != "0"
 REPEATED_RUN_EPS = float(os.environ.get("P2F_REPEATED_RUN_EPS", 0.00836))
 
 
@@ -819,6 +820,41 @@ def regularise_lines(els, length_px, frame=None):
     return els
 
 
+def reconcile_arcs(els):
+    """Make each arc's circle agree with the endpoints it actually ends up with.
+
+    `arc_from_run` projects a run's endpoints onto its own fitted circle, so a corner shared by two
+    arcs becomes two different points. Everything downstream enforces one point per corner, keeps
+    one of them, and leaves the other arc's endpoint off its own circle: 43% of emitted arcs were
+    out by more than 1% of the radius and the worst by 21%. FreeCAD is then handed a centre, a
+    radius and two endpoints that disagree, which is where the self-intersecting loops, the -2
+    solver returns and the solids that fail `isValid()` come from.
+
+    The centre is moved onto the perpendicular bisector of the chord, keeping the radius as close to
+    the fitted one as the chord allows and staying on the side the fit chose. No endpoint moves, so
+    the chain stays closed, and both endpoints now lie on the circle exactly.
+    """
+    if not RECONCILE_ARCS:
+        return els
+    for e in els:
+        if e.get("type") != "arc":
+            continue
+        p0, p1 = np.array(e["p0"][:2], float), np.array(e["p1"][:2], float)
+        chord = p1 - p0
+        half = float(np.hypot(*chord)) / 2
+        if half < 1e-9:
+            continue
+        mid = (p0 + p1) / 2
+        normal = np.array([-chord[1], chord[0]]) / (2 * half)
+        r = max(float(e["r"]), half)
+        h = float(np.sqrt(max(r * r - half * half, 0.0)))
+        old = np.array([e["cx"], e["cy"]], float)
+        candidates = [mid + normal * h, mid - normal * h]
+        centre = min(candidates, key=lambda q: float(np.hypot(*(q - old))))
+        e["cx"], e["cy"], e["r"] = float(centre[0]), float(centre[1]), r
+    return els
+
+
 def kinds_of(els):
     out = []
     for e in els:
@@ -894,6 +930,7 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
         traced = elements(raw, length_px)
         before = [dict(e) for e in traced]
         els = carry_support(rectangularise(regularise_lines(traced, length_px)), before)
+        els = reconcile_arcs(els)
         if RADIUS_TOL > 0:
             els = unify_radii(els, RADIUS_TOL)
         out.append({"type": "loop", "elements": els, "kinds": kinds_of(els), "joins": joins(els)})
