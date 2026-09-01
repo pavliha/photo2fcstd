@@ -131,27 +131,46 @@ def board_render(view, shape, texture=None):
     return cv2.warpPerspective(texture, H, (shape[1], shape[0]), borderValue=(255, 255, 255))
 
 
-def part_mask(image, view, texture=None, tol=60, min_frac=0.0002):
-    """Not usable yet. Kept because the problem it fails at is real and has to be solved.
+def clear_quad(view):
+    """The plain patch of the target in this image - where the part is meant to stand."""
+    from photo2fcstd.make_target import clear_rect_mm
+    x0, y0, x1, y1 = clear_rect_mm()
+    pts = np.float32([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]])
+    uv, _ = cv2.projectPoints(pts, view["rvec"], view["tvec"], view["K"], view["dist"])
+    return uv.reshape(-1, 2)
 
-    A saliency segmenter picks the target, not the part: on a rendered capture RMBG returned the
-    whole board, 23% of its mask was not the part, and carving from that produced the board's own
-    105 x 150 mm extents instead of a 26 mm part. The pose says exactly where the board is and what
-    it should look like, so differencing against a render ought to leave the part behind.
 
-    It does not, for a reason worth recording. The render aligns well - median difference zero on a
-    part-free frame - but 26% of board pixels still differ by more than 60 because a checkerboard is
-    all edges and sub-pixel misregistration lights every one of them. Those artifacts connect along
-    the square boundaries into a single mesh spanning the board, so the largest connected component
-    is always the artifacts: recall never exceeded 6% across opening kernels of 3 to 15 and
-    tolerances of 60 to 100. Taking the minimum difference over a small search window, the standard
-    cure for misregistration, drops recall to zero instead - a dark part over a dark square matches
-    the square next door.
+def plane_homography(src_view, dst_view):
+    """The map between two images that is exact for points on the board and wrong for everything else."""
+    return cv2.getPerspectiveTransform(board_quad(src_view).astype(np.float32),
+                                       board_quad(dst_view).astype(np.float32))
 
-    What is needed is a comparison that is robust to a two-pixel shift without also being robust to
-    a part sitting on a same-coloured square. Height is the obvious discriminator and it is
-    available: the part is the only thing above the board plane. That is a plane-sweep, not a
-    difference image.
+
+def part_mask(image, view, threshold=160, min_frac=0.0002, open_px=5):
+    """The part, as the dark thing standing on the target's plain middle.
+
+    Five appearance-based attempts to separate a part from a checkerboard beneath it failed: a
+    saliency segmenter returns the whole board, differencing against a rendered board reaches 0.04
+    IoU, and parallax between real photographs reaches 0.00 - all defeated by the pattern's edges
+    under sub-pixel misalignment, which connect into one mesh spanning the board.
+
+    Clearing the middle of the target removes the problem rather than fighting it. The border
+    markers still solve every pose, and a plain threshold inside the cleared patch reaches 0.92 IoU
+    at 92% recall with no false positives, unchanged from a threshold of 140 to 180 - a number that
+    does not need tuning is a sign the difficulty was in the design, not the algorithm.
     """
-    raise NotImplementedError(
-        "part_mask does not work yet; see docs/results.md on segmenting the part from the target")
+    from photo2fcstd.rectify import as_uint8
+    img = as_uint8(image)
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) if img.ndim == 3 else img
+    region = np.zeros(gray.shape, np.uint8)
+    cv2.fillConvexPoly(region, clear_quad(view).astype(np.int32), 1)
+    mask = (gray < threshold) & (region > 0)
+    mask = cv2.morphologyEx(mask.astype(np.uint8), cv2.MORPH_OPEN,
+                            np.ones((open_px, open_px), np.uint8)) > 0
+    n, labels, stats, _ = cv2.connectedComponentsWithStats(mask.astype(np.uint8), 8)
+    if n <= 1:
+        return mask
+    areas = stats[1:, cv2.CC_STAT_AREA]
+    if areas.max() < min_frac * mask.size:
+        return np.zeros_like(mask)
+    return labels == (1 + int(np.argmax(areas)))

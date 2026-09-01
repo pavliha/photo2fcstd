@@ -12,14 +12,40 @@ DPI = 300
 MM_PER_INCH = 25.4
 
 
+CLEAR_X = (0.28, 0.72)
+CLEAR_Y = (0.33, 0.67)
+
+
+def clear_rect_mm():
+    """The plain patch in the middle of the target, in board millimetres.
+
+    A part standing on a checkerboard cannot be separated from it by appearance: a saliency
+    segmenter returns the whole board, differencing against a render reaches 0.04 IoU and parallax
+    between real views reaches 0.00, because every method is defeated by the pattern's edges under
+    sub-pixel misalignment. Leaving the middle blank removes the problem rather than fighting it -
+    the border markers still solve every pose, and the part sits on plain paper where a threshold
+    reaches 0.92.
+    """
+    w, h = COLS * SQUARE_MM, ROWS * SQUARE_MM
+    return (CLEAR_X[0] * w, CLEAR_Y[0] * h, CLEAR_X[1] * w, CLEAR_Y[1] * h)
+
+
 def board():
     return cv2.aruco.CharucoBoard((COLS, ROWS), SQUARE_MM, MARKER_MM,
                                   cv2.aruco.getPredefinedDictionary(DICT))
 
 
+def clear_centre(img, w_px, h_px):
+    x0, y0, x1, y1 = (int(CLEAR_X[0] * w_px), int(CLEAR_Y[0] * h_px),
+                      int(CLEAR_X[1] * w_px), int(CLEAR_Y[1] * h_px))
+    img[y0:y1, x0:x1] = 255
+    return img
+
+
 def render(path):
     px = lambda mm: int(round(mm * DPI / MM_PER_INCH))
     img = board().generateImage((px(COLS * SQUARE_MM), px(ROWS * SQUARE_MM)))
+    img = clear_centre(img, img.shape[1], img.shape[0])
     margin = px(10.0)
     sheet = np.full((img.shape[0] + 2 * margin, img.shape[1] + 2 * margin), 255, np.uint8)
     sheet[margin:margin + img.shape[0], margin:margin + img.shape[1]] = img

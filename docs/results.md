@@ -1098,39 +1098,51 @@ Two smaller things the same exercise turned up, both in code written the same ho
 | 16 views but none below 36 degrees | reshoot: height is bounded by the lowest view |
 | 5 views from one side | reshoot: too few, and a 274 degree arc never looked from |
 
-## Running the rig end to end: two blockers the synthetic tests could not reach
+## Running the rig end to end, and why the target had to change
 
-Rendered board photographs were written to disk as JPEGs and put through the real entry points -
-`photo2fcstd-preflight` then `photo2fcstd-carve` - rather than through arrays built in memory. Two
-things broke that every previous validation had passed.
+Rendered board photographs written to disk as JPEGs and pushed through the real entry points -
+`photo2fcstd-preflight` then `photo2fcstd-carve` - rather than arrays built in memory. Two failures
+that every previous validation had passed.
 
 **The board path could not load an image.** `trace.load` returns float32 in 0..1 and the aruco
 detector requires uint8, and `carve.from_photos` hands one straight to the other. The path had only
 ever seen in-memory uint8, so 16-of-16 poses at 0.016 degrees said nothing about it. Fixed at the
 detector boundary with `rectify.as_uint8`.
 
-**The segmenter picks the target, not the part.** RMBG returns the whole ChArUco board as the
-salient object - it is a large high-contrast pattern and a part is small and plain. On a 26 x 16 x 7
-mm block the mask was 23% not-part, and carving from it gave the board's own extents,
-105 x 150 x 120 mm, with a null solid at the end. This is the single thing standing between the rig
-and a usable model.
+**The segmenter returns the target, not the part.** RMBG picks the whole ChArUco board as the
+salient object - it is large and high-contrast, a part is small and plain. On a 26 x 16 x 7 mm block
+23% of the mask was not the part, and carving from it produced the board's own 105 x 150 x 120 mm
+with a null solid.
 
-**Differencing against a rendered board does not fix it**, and the reason is specific. The render
-aligns well - median difference zero on a part-free frame - but a checkerboard is all edges, so
-sub-pixel misregistration lights 26% of board pixels above any useful threshold. Those artifacts
-connect along the square boundaries into one mesh spanning the board, so the largest connected
-component is always the artifacts rather than the part: recall stayed at or below 6% across opening
-kernels from 3 to 15 and tolerances from 60 to 100. Taking the minimum difference over a small
-search window, the usual cure for misregistration, takes recall to zero instead - a dark part
-sitting on a dark square matches the square next to it.
+Five ways to separate the two by appearance, and what each gave:
 
-What is needed is a comparison robust to a two-pixel shift but not to a part on a same-coloured
-square. Height is the discriminator and it is already available: the part is the only thing above
-the board plane. That is a plane sweep rather than a difference image, and it is the next piece of
-work on the capture path.
+| method | IoU with the true silhouette |
+|---|---|
+| RMBG saliency | returns the board |
+| difference against a rendered board | 0.04 |
+| ... with openings from 3 to 15 px | 0.02 to 0.04, recall never above 6% |
+| ... with min-over-shift, the usual cure for misregistration | 0.00 |
+| parallax between real photographs through the plane homography | 0.00 |
 
-`capture.part_mask` raises `NotImplementedError` with that reasoning attached rather than returning
-a mask that looks plausible and is not.
+They fail for one reason. A checkerboard is all edges, so any sub-pixel misalignment lights 26 to
+38% of board pixels, and those artifacts connect along the square boundaries into a single mesh
+spanning the board - the largest connected component is never the part. The plane homography is
+exact where it applies (median difference zero on a part-free frame) and it does not help, which
+rules out registration as the cause.
+
+**So the target changed instead.** `make_target` now clears the middle of the board, leaving the
+markers around the border. The part stands on plain paper:
+
+| | poses solved | mask IoU | recall | false positives |
+|---|---|---|---|---|
+| full checkerboard | 12 of 12 | 0.00 to 0.04 | under 6% | over 90% |
+| **cleared centre** | **12 of 12** | **0.92** | **92%** | **0%** |
+
+The border markers solve every pose exactly as before, and a plain threshold inside the cleared
+patch does the rest. It gives the same answer from a threshold of 140 to 180, and a constant that
+does not need tuning is the sign that the difficulty was in the design rather than the algorithm.
+
+Reprint the target: `photo2fcstd-target`.
 
 ## The capture path runs, measured without a camera
 

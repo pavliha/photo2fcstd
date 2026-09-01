@@ -47,13 +47,13 @@ photograph. Sixteen views average that error out.
 **Do worry about the target being visible.** A pose is solved per photograph from the board alone.
 A frame where the part hides the target is a frame that does not count.
 
-## Known blocker
+## Stand the part in the middle
 
-**Carving from board photographs does not work yet.** The segmenter returns the target rather than
-the part - a ChArUco board is a large high-contrast pattern and a part is small and plain - so a
-carve from real board photographs produces the board's dimensions and a null solid. `preflight` will
-still tell you whether your capture is good, and it is worth shooting a set now so the fix can be
-measured against real images rather than renders. See `docs/results.md` for what has been tried.
+The target has a blank patch in the centre and the part goes in it. That is not cosmetic: a part
+standing on the printed pattern cannot be told apart from it by any appearance-based method we
+tried - five of them, all defeated by the checkerboard's edges - while a part on plain paper
+separates at 0.92 IoU with a threshold that needs no tuning. If the part sits on the markers, the
+carve gets the board instead of the part.
 
 ## Before you carve
 
