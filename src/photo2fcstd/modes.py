@@ -113,7 +113,8 @@ def select(specs, forced=None):
     if forced is None and (LEARNED or os.environ.get("P2F_MODE_PIXELS") == "1"):
         predicted = learned_mode(specs)
         if predicted and can_build(predicted, specs):
-            return predicted, source_for(predicted, specs)
+            source = source_for(predicted, specs)
+            return predicted, (source if predicted == "revolve" else outline_source(specs, source))
     holed = max(specs, key=lambda v: v["shape"]["hole_frac"])
     least_rect = min(specs, key=lambda v: v["shape"]["rectangularity"])
     if forced == "profile":

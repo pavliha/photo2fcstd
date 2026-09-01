@@ -87,3 +87,25 @@ def test_a_learned_selector_may_not_route_to_stations(monkeypatch, dataset, phot
     views = [analysis.view(p) for p in photos_of("00523")[:3]]
     modes.learned_mode(views)
     assert "stations" not in seen["allowed"]
+
+
+def test_the_learned_path_keeps_the_view_model(monkeypatch, dataset, photos_of):
+    from photo2fcstd import analysis, mode_pixels, modes
+    views = [analysis.view(p) for p in photos_of("00523")[:3]]
+    monkeypatch.setattr(mode_pixels, "predict", lambda specs, allowed: "plan")
+    monkeypatch.setattr(modes, "LEARNED", True)
+    seen = {}
+    monkeypatch.setattr(modes, "outline_source", lambda specs, fallback: seen.setdefault("used", fallback))
+    modes.select(views)
+    assert "used" in seen
+
+
+def test_revolve_from_the_learned_path_skips_the_outline_view_model(monkeypatch, dataset, photos_of):
+    from photo2fcstd import analysis, mode_pixels, modes
+    views = [analysis.view(p) for p in photos_of("00008")[:3]]
+    monkeypatch.setattr(mode_pixels, "predict", lambda specs, allowed: "revolve")
+    monkeypatch.setattr(modes, "LEARNED", True)
+    called = []
+    monkeypatch.setattr(modes, "outline_source", lambda specs, fallback: called.append(1) or fallback)
+    mode, _ = modes.select(views)
+    assert mode == "revolve" and not called
