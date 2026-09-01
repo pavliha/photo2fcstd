@@ -18,6 +18,8 @@ One afternoon, one part, thirty to fifty frames:
 
 1. `photo2fcstd-target` and print it. The centre is deliberately blank so the part sits in it
    without the pattern showing through the silhouette.
+0. **Lie the part flat, face up.** The label is the board's own normal, so a part stood on edge is
+   silently mislabelled and nothing downstream can detect it.
 2. Put a part in the cleared middle. Any part with a flat face is fine; a few different parts is
    better than many frames of one, because the head is held out by part.
 3. Shoot deliberately across the range that matters: square on, then roughly 5, 10, 15, 20, 25 and
