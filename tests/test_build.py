@@ -20,7 +20,7 @@ def build(part, tmp_path, photos_of, **kw):
     return doc, cli.freecad_build(spec_path, out), out
 
 
-@pytest.mark.parametrize("part", ["00476", "01407", "00523"])
+@pytest.mark.parametrize("part", ["00476", "01407", "00523", "00011", "00061"])
 def test_model_is_solid_and_fully_constrained(dataset, freecad, photos_of, tmp_path, part):
     doc, report, out = build(part, tmp_path, photos_of)
     assert report["valid"] and report["solids"] == 1
@@ -69,3 +69,47 @@ def test_missing_photos_and_freecad_say_what_to_do(tmp_path, monkeypatch):
     monkeypatch.setattr(cli, "FREECADCMD", "/nonexistent/FreeCADCmd")
     with pytest.raises(BuildError, match="set FREECADCMD"):
         cli.freecad_build(str(tmp_path / "spec.json"), str(tmp_path / "x.FCStd"))
+
+
+BATCH = ["00476", "01407", "00523", "00011", "00061", "00133", "00171", "00308", "00359", "01289"]
+VALID_FLOOR = 1.0
+
+
+def test_a_sample_of_parts_still_builds(dataset, freecad, photos_of, tmp_path):
+    """Every part in this batch must yield a real solid.
+
+    Both wins in this area - dropping holes that straddle the boundary, and the Horizontal
+    constraint duplicating a coordinate pin - showed up only in a build, never in a spec-level
+    number, and nothing in the suite went red when they were broken. The floor is 100% rather than
+    a fraction because at 90% a single regression in ten parts sits exactly on the line and passes.
+    """
+    import json
+    import pathlib
+    import subprocess
+
+    from photo2fcstd import analysis, spec
+
+    tmp_path = pathlib.Path(tmp_path)
+    rows = []
+    for part in BATCH:
+        views = [analysis.view(p) for p in photos_of(part)[:3]]
+        doc = spec.assemble(views, name=part, log=lambda *a: None)
+        sp = tmp_path / (part + ".spec.json")
+        json.dump(doc, open(sp, "w"))
+        rows.append("%s\t%s" % (sp, tmp_path / (part + ".FCStd")))
+    listing = tmp_path / "list.txt"
+    listing.write_text("\n".join(rows))
+    build_py = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                            "src", "photo2fcstd", "build.py")
+    proc = subprocess.run([FREECADCMD, build_py], env=dict(os.environ, P2F_LIST=str(listing)),
+                          capture_output=True, text=True, timeout=1800)
+    reports = {}
+    for line in proc.stdout.splitlines():
+        if line.startswith("BATCH "):
+            _, name, blob = line.split(" ", 2)
+            reports[name] = json.loads(blob)
+    assert len(reports) == len(BATCH), (len(reports), proc.stderr[-400:])
+    valid = [k for k, r in reports.items() if r.get("valid")]
+    assert len(valid) >= VALID_FLOOR * len(BATCH), sorted(set(reports) - set(valid))
+    free = [(k, n) for k, r in reports.items() for n, sk in r.get("sketches", {}).items() if sk.get("dof")]
+    assert not free, free

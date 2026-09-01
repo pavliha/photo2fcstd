@@ -59,7 +59,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | A3 | Arc fitting before simplification - *demoted, addresses 29%* | code | medium |
 | ~~B1~~ | ~~Two sketches that fail to solve~~ - **00011 fixed, 00039 remains** | - | - |
 | ~~B2~~ | ~~Solids with volume that `isValid()` rejects~~ - **00061 fixed, 00086 is nested holes** | - | - |
-| B3 | Build validity in the regression test | code | small |
+| ~~B3~~ | ~~Build validity in the regression test~~ - **done** | - | - |
 | B4 | One redundant constraint | code | small |
 | D1 | Verify the `params` note states the depth band honestly | code | small |
 | D2 | Refuse a solid when the depth band is uninformative | code | small |
@@ -269,9 +269,15 @@ does for a collapsed outline.
 volume, so these pass the repo's own check while being wrong. **Done when** the geometry fault is
 identified and the report stops calling them valid.
 
-**B3. Build validity in the regression test.** The suite covers spec generation; nothing goes red
-when a spec stops building. **Done when** a small sample builds through FreeCAD in CI and a null
-solid fails the suite.
+**B3. DONE.** A build test already existed over three parts. It now also covers **00011 and 00061**,
+the two fixed this session, so either regression turns the suite red. Added
+`test_a_sample_of_parts_still_builds`: ten parts through one FreeCADCmd process, asserting every one
+yields a real solid and no sketch keeps a free degree of freedom.
+
+**The floor is 100%, not 90%.** At 90% a single regression in ten parts sits exactly on the line and
+passes - which is what the first version of this test did, found only by running it with
+`P2F_DROP_STRAY_HOLES=0` to check it could fail at all. Both directions are verified: green
+normally, red with the guard disabled. Costs about 50 seconds; the suite is 269 tests in 171 s.
 
 **B4. The redundant constraint.** One across 61 sketches. **Done when** traced to what emits it.
 
