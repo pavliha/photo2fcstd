@@ -149,6 +149,29 @@ The rule that follows: a learned component is compared only on parts excluded fr
 set, using the held-out model files and id lists in `data/`. A full-set number for a learned
 component measures memory, not skill.
 
+## Where the remaining error actually lives
+
+Measured on runs/final, worst quartile 467 parts averaging 0.213:
+
+| cause | worst quartile | all parts |
+|---|---|---|
+| bad sketch, region IoU under 0.4 | 57% | 30% |
+| mode choice costs more than 0.10 | 27% | 18% |
+| depth off by more than 1.5x | 23% | 16% |
+| misses two or more holes | 4% | 3% |
+| no cause identified | 20% | |
+
+The bad sketch dominates, so it was split twice more. Of the parts whose sketch scores
+under 0.4, **86% have no good view at all** - all three photographs score under 0.4 - and
+only 12% could be rescued by tracing a different one. Taking those parts back to the raw
+contour before any regularisation: **89% are still under 0.4 unregularised**, and only 6%
+are cases where regularisation destroys a good trace.
+
+So the worst quartile is a capture problem. Not mode selection, not depth, not the
+tracing code, and not view choice among the three photographs we have. The shape is not
+in the photographs. That is the same wall the tilt work hit from the other side, and the
+board is the answer to both.
+
 ## Verdicts, measured
 
 | hypothesis | outcome |

@@ -25,11 +25,9 @@ def oracle_depth(src):
 
 
 def pick_view(specs):
-    if VIEW_PICK == "ranker":
-        from photo2fcstd import view_rank
-        ranked = view_rank.best(specs)
-        if ranked is not None:
-            return ranked
+    """The hand-written fallbacks. The learned selectors live in `outline_source`, which is the
+    one place that decision is made; putting the ranker here as well meant two models raced for it
+    and the loser's answer was silently thrown away."""
     if VIEW_PICK == "largest":
         return max(specs, key=lambda v: v["shape"]["bbox"][0] * v["shape"]["bbox"][1])
     if VIEW_PICK == "rectangular":
@@ -88,7 +86,14 @@ USE_VIEW_MODEL = os.environ.get("P2F_VIEW_MODEL", "1") != "0"
 
 
 def outline_source(specs, fallback):
-    """Which photo to draw the outline from.
+    """Which photo to draw the outline from - the single entry point for that decision.
+
+    Two learned selectors exist for it. `view_rank` was reachable only through
+    `P2F_VIEW_PICK=ranker`, and this function used to run `view_model` over the top of whatever
+    `pick_view` returned, so the ranker computed a view that was then discarded. On 261
+    discriminating parts they are indistinguishable - view_rank minus view_model is
+    +0.008 [-0.018, +0.034] and they agree with each other on 61% of parts - so there is no winner
+    to keep, only a shadowing to remove. `P2F_VIEW_PICK=ranker` now actually selects the ranker.
 
     The rules below pick the worst of three views 27% of the time. Scoring each view the way the
     carve axis is scored and taking the best is worth +0.038 [+0.019, +0.056] of sketch IoU on
@@ -100,7 +105,13 @@ def outline_source(specs, fallback):
     the capture problem that is a choice between real photographs rather than a quantity the mask
     does not contain.
     """
-    if not USE_VIEW_MODEL or len(specs) < 2:
+    if len(specs) < 2:
+        return fallback
+    if VIEW_PICK == "ranker":
+        from photo2fcstd import view_rank
+        ranked = view_rank.best(specs)
+        return ranked if ranked is not None else fallback
+    if not USE_VIEW_MODEL:
         return fallback
     from photo2fcstd import view_model
     i = view_model.choose(specs)
