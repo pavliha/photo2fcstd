@@ -554,6 +554,15 @@ The band comes from conformalised quantile regression, so its coverage is guaran
 rather than hoped for: **83% of true depths fall inside the 80% band**. Plain quantile
 regression covered only 55%, which is why the calibration step matters.
 
+**On the shipped pixel path the band is a constant.** `pixel_predict` has no quantile heads: it
+returns `exp(point +/- offset)` with a fixed offset, so **46 of 47 measured parts report exactly a
+3.20x spread**. Marginal coverage still holds, so "80% of the time between X and Y" is honest on
+average, but the interval carries no per-part information and cannot say which parts are uncertain.
+The tabular fallback does have real per-part quantiles (5x to 145x on four sampled parts); the 10x
+median quoted below is that model's, not the shipped one's. A further consequence: the note calls a
+depth usable only under a 2.0x spread, so the pixel path can **never** report a usable depth - 0 of
+47 parts did.
+
 **The bands are wide, and that is the real finding.** The median 80% band spans about
 **10x**, and only a couple of percent of parts get a band tighter than 2x. Depth simply
 is not in an uncalibrated photo of a part seen face-on, and the point estimate being

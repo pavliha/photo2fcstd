@@ -60,8 +60,8 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~B1~~ | ~~Two sketches that fail to solve~~ - **00011 fixed, 00039 remains** | - | - |
 | ~~B2~~ | ~~Solids with volume that `isValid()` rejects~~ - **00061 fixed, 00086 is nested holes** | - | - |
 | ~~B3~~ | ~~Build validity in the regression test~~ - **done** | - | - |
-| B4 | One redundant constraint | code | small |
-| D1 | Verify the `params` note states the depth band honestly | code | small |
+| ~~B4~~ | ~~One redundant constraint~~ - **gone with B1** | - | - |
+| ~~D1~~ | ~~Verify the depth note~~ - **done, and the band is constant** | - | - |
 | D2 | Refuse a solid when the depth band is uninformative | code | small |
 | D3 | Use a second view's depth | code | medium |
 | F1 | Audit every gate for backwards confidence | code | medium |
@@ -279,7 +279,9 @@ passes - which is what the first version of this test did, found only by running
 `P2F_DROP_STRAY_HOLES=0` to check it could fail at all. Both directions are verified: green
 normally, red with the guard disabled. Costs about 50 seconds; the suite is 269 tests in 171 s.
 
-**B4. The redundant constraint.** One across 61 sketches. **Done when** traced to what emits it.
+**B4. DONE - it was the same fault as B1.** Zero redundant and zero conflicting constraints across
+61 sketches now, where there was one before. It was a Horizontal/Vertical duplicating a coordinate
+pin, the same class the B1 fix removed.
 
 ## C. Needs photographs
 
@@ -307,11 +309,34 @@ dimensionless. **Done when** the behaviour is deliberate rather than incidental.
 **median 80% band spans about 10x**. So "a sketch you can edit" is largely delivered; "a model you
 can build from" is not. PrintCAD-specific: 0.348 on T-LESS against 0.314 for a constant there.
 
-**D1.** Verify the `params` note states the range and says whether the number is worth building
-from. **Done when** read on a real output rather than assumed.
+**D1. DONE, and it turned up something worse than a wording problem.** The note is honest in form -
+47 of 54 specs carry, for example, *"depth predicted from the silhouettes: 57.5 px, 80% of the time
+between 32.1 and 103.0 (3.2x spread, too wide to trust, put a caliper on it)"*, which states the
+estimate, the coverage, the interval, the spread and a verdict.
 
-**D2.** Refuse when the band is uninformative - a 10x band is not a dimension. **Done when** a
-threshold exists, chosen by measurement.
+But **46 of those 47 parts report exactly 3.20x**, because `depth_model.pixel_predict` - the shipped
+path - has no quantile heads. It returns `exp(point ± offset)`, a fixed +/-0.576 in log space, so
+every part gets the same multiplier. The interval is conformally calibrated for *marginal* coverage,
+so "80% of the time" is honest on average, but it carries **no per-part information at all**: it
+cannot tell you which parts are uncertain, which is exactly what a reader assumes it is for. The
+tabular fallback does have real per-part quantiles (5x to 145x across four sampled parts), which is
+why the one gate-refused part reads 40.2x.
+
+Second consequence: the note's own threshold for "good enough to build from" is a spread under 2.0,
+and 3.20 exceeds it. **The pixel path can never say a depth is usable** - 0 of 47 parts did.
+
+**D1 is closed; the finding becomes D4.**
+
+**D2.** Refuse when the band is uninformative. Partly moot: the note already says "too wide to
+trust" and does so for 100% of parts on the shipped path. The open question is whether the pad
+should still be built from a number the pipeline itself calls untrustworthy. **Done when** that is a
+deliberate decision rather than the default.
+
+**D4. Give the pixel head a real interval, or stop printing one.** A constant 3.20x band dressed as
+a per-part prediction is worse than no band, because it invites a reader to compare parts by it.
+Either fit quantile heads on the embedding as the tabular model does, or report the point estimate
+with a single global caveat. **Done when** either the band varies per part with coverage checked on
+held-out data, or the per-part phrasing is removed.
 
 **D3.** Use a second view. Depth is not in one face-on photograph, but a capture has three. **Done
 when** it is known whether an edge-on view narrows the band. The hand-written edge-on estimator lost
