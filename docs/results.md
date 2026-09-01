@@ -409,7 +409,29 @@ same size and the choice is one of three rather than a continuum:
 | best of the three (oracle) | **0.642** |
 
 The learned selector picks the best view 47% of the time against 33% for chance - and against 48%
-for the pipeline as it already stands. Its apparent edge over what ships is not view selection
+for the pipeline as it already stands.
+
+**The view model was checked for the failure that caught the axis model, and does not have it.**
+Both were trained on PrintCAD alone, and PrintCAD shoots its good photo first: photo 1 scores 0.578
+against 0.508 and 0.511 and is the best of three 43% of the time. A selector that learned that
+convention rather than what a good view looks like would collapse on anyone else's photographs.
+
+On 771 parts it never trained on, split by whether the convention holds:
+
+| subset | n | agrees | model | first-photo rule | chance | oracle |
+|---|---|---|---|---|---|---|
+| all | 771 | 0.56 | 0.632 | 0.590 | - | 0.681 |
+| photo 1 is the best view | 324 | 0.60 | 0.659 | 0.706 | - | 0.706 |
+| **photo 1 is not the best** | 447 | 0.53 | **0.612** | 0.506 | 0.550 | 0.663 |
+
+It answers "photo 1" 38% of the time against a true rate of 42%, so it is not defaulting to the
+convention, and on the 447 parts where the convention fails it beats chance by 0.062 and the
+first-photo rule by 0.106, taking 55% of the headroom available there. It learned something about
+what a usable view looks like rather than which slot it sits in.
+
+That is not proof it survives a different camera and lighting - every photograph here is still
+PrintCAD's - but it rules out the specific way the axis model broke.
+ Its apparent edge over what ships is not view selection
 getting better. PrintCAD's first photo is systematically the good one (0.578 against 0.508 and
 0.511, best of three 43% of the time against 29% and 28%), which is a capture convention of that
 dataset and not something a user's own photos would obey.
