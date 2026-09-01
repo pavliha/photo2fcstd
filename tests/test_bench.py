@@ -59,3 +59,19 @@ def test_untrustworthy_parts_are_excluded_from_the_sketch_delta(tmp_path, monkey
     mine = {"a": {"region_iou": 0.50, "trustworthy": True},
             "b": {"region_iou": 0.90, "trustworthy": False}}
     assert "1 shared parts" in bench.sketch_delta("old", mine)
+
+
+def test_flattered_counts_high_scores_with_missing_detail():
+    from photo2fcstd import bench
+    sketches = {
+        "a": {"trustworthy": True, "region_iou": 0.9, "counts_mine": {"line": 1}, "counts_ideal": {"line": 60}},
+        "b": {"trustworthy": True, "region_iou": 0.9, "counts_mine": {"line": 8}, "counts_ideal": {"line": 8}},
+        "c": {"trustworthy": True, "region_iou": 0.4, "counts_mine": {"line": 1}, "counts_ideal": {"line": 60}},
+        "d": {"trustworthy": False, "region_iou": 0.9, "counts_mine": {"line": 1}, "counts_ideal": {"line": 60}},
+    }
+    assert bench.flattered(sketches) == (1, 2)
+
+
+def test_flattered_is_empty_without_counts():
+    from photo2fcstd import bench
+    assert bench.flattered({"a": {"trustworthy": True, "region_iou": 0.9}}) == (0, 0)

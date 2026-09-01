@@ -217,6 +217,21 @@ def sketch_delta(baseline, sketches):
                "" if got["significant"] else " - indistinguishable from zero"))
 
 
+def flattered(sketches, score_min=0.8, drawn_max=0.5):
+    """Parts scoring well while drawing a fraction of the primitives the part has."""
+    hit = total = 0
+    for r in sketches.values():
+        if not r.get("trustworthy") or r.get("region_iou") is None:
+            continue
+        mine = sum(r.get("counts_mine", {}).values()) if isinstance(r.get("counts_mine"), dict) else 0
+        ideal = sum(r.get("counts_ideal", {}).values()) if isinstance(r.get("counts_ideal"), dict) else 0
+        if not mine or not ideal or r["region_iou"] <= score_min:
+            continue
+        total += 1
+        hit += int(mine / ideal < drawn_max)
+    return hit, total
+
+
 def sketch_line(sketches):
     if not sketches:
         return ""
@@ -238,6 +253,11 @@ def sketch_line(sketches):
         return line
     triv = sum(r["trivial"] for r in keen) / len(keen)
     got = sum(r["region_iou"] for r in keen) / len(keen)
+    hit, total = flattered(sketches)
+    if total:
+        line += ("\n  of the %d parts scoring over 0.8, %d (%.0f%%) draw under half the primitives "
+                 "the part has - a high score there is the outline agreeing, not the features"
+                 % (total, hit, 100.0 * hit / total))
     return line + ("\n  against the baseline: drawing one circle and ignoring the photo scores %.3f "
                    "on the %d parts that can tell the difference, where this run scores %.3f (skill %.3f)"
                    % (triv, len(keen), got, (got - triv) / max(1.0 - triv, 1e-9)))
