@@ -32,10 +32,12 @@ def test_a_wrong_sized_vector_is_refused(monkeypatch):
     assert depth_model.predict([{"source": "/p/a_1.jpg", "elongation": 1.0}]) is None
 
 
-def test_pixel_head_is_off_by_default(monkeypatch):
+def test_pixel_head_is_on_by_default_and_switchable_off(monkeypatch):
     import numpy as np
     from photo2fcstd import depth_model, embed
+    assert depth_model.USE_PIXELS
     called = []
+    monkeypatch.setattr(depth_model, "USE_PIXELS", False)
     monkeypatch.setattr(embed, "for_views", lambda views, allow: called.append(1) or np.zeros(6))
     monkeypatch.setattr(depth_model, "_CACHE", {"m": None})
     depth_model.predict([{"source": "/p/a_1.jpg", "elongation": 1.0}])
