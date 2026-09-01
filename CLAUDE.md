@@ -250,6 +250,13 @@ For comparison the photo pipeline reaches about 0.43 solid IoU and its best poss
 mode choice 0.527. Carving roughly doubles that, and the depth is measured rather than
 guessed, so it is where the remaining accuracy is.
 
+**Both halves of the capture term have now been measured, and neither is large.** Pose from
+a detected board is good to 0.016 degrees where the budget allows 2, and eight pixels of
+correlated boundary wander - far worse than RMBG - costs only 0.074 of sketch IoU, leaving
+carving ahead of the photo path even then. Sixteen views average matting error out, because
+a voxel survives only where every silhouette agrees. Expected on real photographs: about
+0.715 sketch IoU against the photo path's 0.602.
+
 **Size the voxel to the smallest feature you care about - about a quarter of it.** The
 default `VOXEL_MM = 0.4` cannot resolve anything under roughly 1.6 mm, and a quarter of
 these parts are thinner than that. Relative extent error on the thin axis is a

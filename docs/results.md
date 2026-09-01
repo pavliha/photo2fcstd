@@ -536,6 +536,42 @@ this codebase can express. Against a trivial circle at 0.455 the photo path scor
 skill of 0.221, where carving from known poses scores 0.726 for 0.498. The next real gain is a
 different input, not a better estimator on this one.
 
+## Carving's advantage is not an artifact of perfect input
+
+Every carve number here comes from silhouettes rasterised straight from the truth mesh, which is
+the right tool for testing geometry and the wrong number to compare against a real-photo pipeline.
+Pose error was swept earlier. This is the other half of the capture term, and it needed no new
+photographs: displace each silhouette's boundary by a spatially correlated random field - signed
+distance to the edge, plus smooth noise, re-thresholded - which wanders along an edge the way a
+matting model does rather than eroding uniformly.
+
+Over 110 real-outline parts, 16 views, exact poses:
+
+| boundary displacement | sketch IoU | cost | exact primitives |
+|---|---|---|---|
+| none | 0.734 | - | 25% |
+| 1 px | 0.723 | -0.011 | 27% |
+| 2 px | 0.716 | -0.019 | 25% |
+| 4 px | 0.705 | -0.030 | 22% |
+| 8 px | 0.661 | -0.074 | 15% |
+
+**Carving is barely sensitive to matting.** Eight pixels of boundary wander - far worse than RMBG
+produces - still leaves it at 0.661 against the photo path's 0.602 on comparable parts. Sixteen
+views average the error out: a voxel survives only where every silhouette agrees, and independent
+boundary noise rarely agrees.
+
+That completes the carve error budget, and both halves are small at realistic magnitudes:
+
+| term | measured cost |
+|---|---|
+| pose, from a detected ChArUco board (0.016 degrees) | negligible; 1 degree would cost 0.033 |
+| matting, at a realistic 2 px | 0.019 |
+| **expected on real photographs** | **about 0.715** |
+
+Against the photo path's 0.602 that is **+0.11**, and it is now an estimate built from two measured
+degradation curves rather than an extrapolation from clean synthetic input. The board rig is worth
+building.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
