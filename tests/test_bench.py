@@ -75,3 +75,15 @@ def test_flattered_counts_high_scores_with_missing_detail():
 def test_flattered_is_empty_without_counts():
     from photo2fcstd import bench
     assert bench.flattered({"a": {"trustworthy": True, "region_iou": 0.9}}) == (0, 0)
+
+
+def test_the_frozen_split_shares_no_part_and_no_geometry_group():
+    import json
+    import os
+    if not (os.path.exists("data/tune_ids.txt") and os.path.exists("data/test_ids.txt")):
+        return
+    groups = json.load(open("data/part_groups.json"))
+    tune = set(open("data/tune_ids.txt").read().split())
+    test = set(open("data/test_ids.txt").read().split())
+    assert tune and test and not (tune & test)
+    assert not ({groups.get(p, -1) for p in tune} & {groups.get(p, -1) for p in test})

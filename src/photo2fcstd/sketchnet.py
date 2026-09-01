@@ -106,7 +106,17 @@ def match(pred, true):
     return linear_sum_assignment(cost)
 
 
-def build_model(width=32):
+def build_model(width=32, spatial=True):
+    """A slot decoder attending over the feature map, not a global average.
+
+    The first version ended its encoder with `AdaptiveAvgPool2d(1)` and regressed 24 primitives from
+    the resulting single vector. It learned to emit the right *number* of primitives - 41% against
+    the tracer's 40% - and put them in the wrong places, 0.32 of the sketch box out, for 0.455 region
+    IoU against 0.755. Count survives global averaging and position does not, which is exactly the
+    failure that shape predicts, and the reason DETR decodes slots by attending over the spatial map
+    instead.
+    """
+    import torch
     import torch.nn as nn
 
     class Net(nn.Module):
@@ -116,15 +126,31 @@ def build_model(width=32):
                 return nn.Sequential(nn.Conv2d(i, o, 3, stride=s, padding=1),
                                      nn.GroupNorm(8, o), nn.GELU())
             w = width
+            self.spatial = spatial
             self.body = nn.Sequential(block(1, w), block(w, w * 2), block(w * 2, w * 4),
-                                      block(w * 4, w * 8), block(w * 8, w * 8),
-                                      nn.AdaptiveAvgPool2d(1), nn.Flatten())
-            self.head = nn.Sequential(nn.Linear(w * 8, 512), nn.GELU(), nn.Dropout(0.1),
-                                      nn.Linear(512, SLOTS * (1 + len(TYPES) + PARAMS)))
+                                      block(w * 4, w * 8))
+            d = w * 8
+            self.d = d
+            if not spatial:
+                self.pool = nn.AdaptiveAvgPool2d(1)
+                self.head = nn.Sequential(nn.Linear(d, 512), nn.GELU(), nn.Dropout(0.1),
+                                          nn.Linear(512, SLOTS * (1 + len(TYPES) + PARAMS)))
+                return
+            self.pos = nn.Parameter(torch.randn(1, 64, d) * 0.02)
+            self.slots = nn.Parameter(torch.randn(1, SLOTS, d) * 0.02)
+            layer = nn.TransformerDecoderLayer(d_model=d, nhead=8, dim_feedforward=4 * d,
+                                               dropout=0.1, batch_first=True, norm_first=True)
+            self.decoder = nn.TransformerDecoder(layer, num_layers=3)
+            self.head = nn.Linear(d, 1 + len(TYPES) + PARAMS)
 
         def forward(self, x):
-            y = self.head(self.body(x)).reshape(-1, SLOTS, 1 + len(TYPES) + PARAMS)
-            import torch
-            return torch.cat([y[..., :1], y[..., 1:1 + len(TYPES)], y[..., 1 + len(TYPES):]], -1)
+            f = self.body(x)
+            if not self.spatial:
+                y = self.head(self.pool(f).flatten(1))
+                return y.reshape(-1, SLOTS, 1 + len(TYPES) + PARAMS)
+            b = f.shape[0]
+            tokens = f.flatten(2).transpose(1, 2) + self.pos[:, :f.shape[-1] * f.shape[-2]]
+            q = self.slots.expand(b, -1, -1)
+            return self.head(self.decoder(q, tokens))
 
     return Net()

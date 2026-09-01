@@ -153,6 +153,25 @@ def compare(a, b):
             "dev_mean": dev_mean, "dev_p95": dev_p95}
 
 
+def primitive_f1(mine, ideal):
+    """Precision and recall over primitive counts, so over-drawing and under-drawing cost alike.
+
+    Region IoU rewards an outline that agrees and cannot see a missing feature; exact-count
+    rewards precision and gives nothing for getting close. This scores both directions of the
+    same error with one number, matching primitives type by type.
+    """
+    drawn = sum(mine.values()) if mine else 0
+    wanted = sum(ideal.values()) if ideal else 0
+    if not drawn or not wanted:
+        return {"precision": 0.0, "recall": 0.0, "f1": 0.0, "drawn": drawn, "wanted": wanted}
+    matched = sum(min(mine.get(k, 0), ideal.get(k, 0)) for k in set(mine) | set(ideal))
+    precision = matched / drawn
+    recall = matched / wanted
+    f1 = 0.0 if precision + recall == 0 else 2 * precision * recall / (precision + recall)
+    return {"precision": float(precision), "recall": float(recall), "f1": float(f1),
+            "drawn": drawn, "wanted": wanted}
+
+
 def counts_of_spec(spec):
     c = {}
     if spec.get("revolve"):
@@ -200,6 +219,7 @@ def score_one(spec, record):
             "missing": cmp["missing"], "extra": cmp["extra"],
             "dev_mean": cmp["dev_mean"], "dev_p95": cmp["dev_p95"],
             "loops_mine": len(rings), "loops_ideal": record.get("n_loops", 0),
+            "primitive_f1": primitive_f1(mc, ic),
             "curve_frac_mine": curve_fraction(mc), "curve_frac_ideal": curve_fraction(ic),
             "counts_mine": mc, "counts_ideal": ic, "prism": bool(record.get("prism")),
             "trustworthy": trustworthy(record)}

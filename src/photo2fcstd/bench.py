@@ -253,6 +253,15 @@ def sketch_line(sketches):
         return line
     triv = sum(r["trivial"] for r in keen) / len(keen)
     got = sum(r["region_iou"] for r in keen) / len(keen)
+    scored = [r["primitive_f1"] for r in sketches.values()
+              if r.get("trustworthy") and isinstance(r.get("primitive_f1"), dict) and r["primitive_f1"]["wanted"]]
+    if scored:
+        mean, lo, hi = stats.mean_ci([r["f1"] for r in scored])
+        line += ("\n  primitive F1 %.3f [%.3f, %.3f] on %d parts (precision %.3f, recall %.3f) - "
+                 "drawing too much and too little cost the same here"
+                 % (mean, lo, hi, len(scored),
+                    sum(r["precision"] for r in scored) / len(scored),
+                    sum(r["recall"] for r in scored) / len(scored)))
     hit, total = flattered(sketches)
     if total:
         line += ("\n  of the %d parts scoring over 0.8, %d (%.0f%%) draw under half the primitives "
