@@ -57,7 +57,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~A8~~ | ~~Merge runs before fitting~~ - **measured, reverted** | - | - |
 | **A7** | **Give the fitter evidence a straight line lacks** | code | large |
 | A3 | Arc fitting before simplification - *demoted, addresses 29%* | code | medium |
-| B1 | Two sketches that fail to solve - *00011 remains, 00039 separate* | code | small |
+| ~~B1~~ | ~~Two sketches that fail to solve~~ - **00011 fixed, 00039 remains** | - | - |
 | ~~B2~~ | ~~Solids with volume that `isValid()` rejects~~ - **00061 fixed, 00086 is nested holes** | - | - |
 | B3 | Build validity in the regression test | code | small |
 | B4 | One redundant constraint | code | small |
@@ -230,7 +230,37 @@ to move the number the product is actually judged on.
 smaller holes. The flat loop model has no way to say "material inside a hole", so that is a
 representation limit, not a defect to fix here.
 
-**B1. The two that produce nothing.** 00011 and 00039; the sketch solver returns -2 and -5.
+**B1. PARTLY DONE - 00011 fixed.** Its sketch carried `DistanceX` on 11 vertices and `DistanceY` on
+11, pinning every coordinate, **and** Horizontal/Vertical on lines whose endpoints were already
+pinned. FreeCAD flagged constraint 37, a `Vertical`, as redundant and returned -2. The builder
+already skipped Horizontal/Vertical next to tangent joins; it now also skips them when both
+endpoints of the line are coordinate-pinned in the relevant axis, which is the case that was
+missed.
+
+End to end on the same 59 parts as the recorded baseline:
+
+| | before | after |
+|---|---|---|
+| documents built | 59/59 | 59/59 |
+| **with a real solid** | 55 (93%) | **57 (97%)** |
+| **sketches that solve** | 59/61 | **60/61** |
+| free degrees of freedom | 0 | 0 |
+| region IoU / structure / exact | 0.659 / 0.742 / 27% | 0.658 / 0.738 / 27% |
+
+Quality unchanged, two more parts usable. Combined with B2 the sample goes 93% to 97% valid.
+
+**00039 still returns -5** with nothing flagged redundant or conflicting: 6 lines and 4 arcs, 33
+constraints against 44 degrees of freedom by hand count, so it is exactly determined and the solver
+still fails - most likely singular rather than over-constrained. Not diagnosed.
+
+**A correction to an earlier claim.** This repository's sketches were described as "genuinely
+constrained, not fixed points" on the strength of 38.8 constraints per 12.7 geometry. That ratio is
+high *because* most vertices carry both a DistanceX and a DistanceY from the origin: the sketches
+are dimension-driven but coordinate-pinned, which is closer to fixed points than that phrasing
+suggested. They are fully constrained and they are editable through the spreadsheet, but a person
+would not call this a well-constrained sketch.
+
+ 00011 and 00039; the sketch solver returns -2 and -5.
 **Done when** the cause is named and either fixed or refused loudly, as `traced_outline` already
 does for a collapsed outline.
 

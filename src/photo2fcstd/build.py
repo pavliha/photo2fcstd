@@ -176,12 +176,14 @@ def add_loop(sk, loop, prefix, mpp):
         if want_y:
             bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, ids[i], ends[i][0], p0[1] * mpp)), prefix + "_y%d" % i)
     last_line = max((i for i, e in enumerate(els) if e["type"] == "line"), default=-1)
+    pinned = {i: (wx, wy) for i, wx, wy in vertex_dims(loop)}
     for i, e in enumerate(els):
         if e["type"] == "line":
             tangent_neighbour = jn[i] == "T" or jn[(i + 1) % n] == "T" or i == last_line
-            if kinds[i] == "H" and not tangent_neighbour:
+            a, b = pinned.get(i, (False, False)), pinned.get((i + 1) % n, (False, False))
+            if kinds[i] == "H" and not tangent_neighbour and not (a[1] and b[1]):
                 sk.addConstraint(Sketcher.Constraint("Horizontal", ids[i]))
-            elif kinds[i] == "V" and not tangent_neighbour:
+            elif kinds[i] == "V" and not tangent_neighbour and not (a[0] and b[0]):
                 sk.addConstraint(Sketcher.Constraint("Vertical", ids[i]))
         else:
             want_centre, want_radius = arc_dims(loop, i)
