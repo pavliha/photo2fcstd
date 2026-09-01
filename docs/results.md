@@ -751,6 +751,44 @@ It is not doing nothing, it is doing as much harm as good - straightening a genu
 costs about what tidying a nearly-square one gains. The 2.7 points of extra edges it can help are
 simply outnumbered by the 16.7% it can hurt. Reverted.
 
+## Three CAD priors, all real in the truth, all losing when applied after tracing
+
+Manufactured parts are axis-aligned, mirror-symmetric, and drilled with a small set of tools.
+All three are true of the reference sketches:
+
+| prior | how strong in the real sketches |
+|---|---|
+| edges within 2 degrees of a multiple of 90 | 72.6% (already exploited) |
+| adding multiples of 45 | +2.7 points |
+| outlines mirror-symmetric to within 0.95 | **69%**, median exactly 1.000 |
+| curved edges sharing a radius with another | **49%**, all of them on 27% of parts |
+
+Symmetry and shared radii are far stronger priors than the 45-degree one. All three lose end to
+end, on 198 discriminating parts:
+
+| arm | sketch IoU | exact primitives | verdict |
+|---|---|---|---|
+| **shipped** | **0.647** | **29%** | - |
+| snap to multiples of 45 | 0.645 | 26% | -0.001 to -0.006 |
+| enforce mirror symmetry | 0.626 | 24% | **-0.021 [-0.031, -0.012]** |
+| unify near-equal arc radii | 0.627 | 28% | **-0.019 [-0.029, -0.011]** |
+
+**The prior is about the part; the correction is applied to the tracing.** Symmetry changed 106
+parts and split them 37 to 69. When one side of an outline traces well and the other badly - which
+is the normal case, since the two sides face the camera differently - averaging them drags the good
+side down to meet the bad one. The constraint is true of the object and false of the evidence, and
+applying it blindly after the fact spends a correct side to repair an incorrect one.
+
+Radius unification fails the same way: two arcs that share a radius in the part are fitted from
+different numbers of pixels at different foreshortening, so the better fit gets pulled toward the
+worse. Exact primitives barely moves (-1.0 points) because the radii were never what made a sketch
+wrong, and IoU drops because the geometry moved.
+
+None of this says the priors are useless. It says a prior has to enter where the evidence is
+weighed - during fitting, with each side weighted by how well it was seen - not as a post-process
+that treats both sides as equally trustworthy. That is a different piece of machinery from a
+threshold, and it is the honest form of "the model should understand symmetry".
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
