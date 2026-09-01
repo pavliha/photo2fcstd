@@ -192,6 +192,122 @@ def fit_circle(pts):
     return float(cx), float(cy), r, rms / r, float(min(w, h) / max(w, h, 1e-9))
 
 
+SYMMETRY_TOL = float(os.environ.get("P2F_SYMMETRY", "0"))
+RADIUS_TOL = float(os.environ.get("P2F_RADIUS_UNIFY", "0"))
+
+
+def mirror_score(pts, axis, centre):
+    """Region overlap between a loop and its own reflection, 1.0 when perfectly symmetric."""
+    from shapely.geometry import Polygon
+    try:
+        p = Polygon(np.asarray(pts, float))
+        if not p.is_valid or p.area <= 0:
+            return 0.0
+    except Exception:
+        return 0.0
+    q = np.asarray(pts, float).copy()
+    q[:, axis] = 2 * centre - q[:, axis]
+    try:
+        m = Polygon(q)
+        u = p.union(m).area
+        return float(p.intersection(m).area / u) if u else 0.0
+    except Exception:
+        return 0.0
+
+
+def symmetrise(pts, axis, centre, rounds=4):
+    """Average every point with its reflected partner, so a near-symmetric loop becomes exact.
+
+    Nearest-partner pairing is not an involution - a maps to b without b mapping to a - so one
+    pass leaves the loop partly asymmetric and it has to be iterated to settle.
+    """
+    q = np.asarray(pts, float).copy()
+    for _ in range(rounds):
+        mirrored = q.copy()
+        mirrored[:, axis] = 2 * centre - mirrored[:, axis]
+        d = np.linalg.norm(q[:, None, :] - mirrored[None, :, :], axis=2)
+        q = (q + mirrored[d.argmin(axis=1)]) / 2.0
+    return q
+
+
+def symmetrise_loops(loops, tol):
+    """Make an almost-symmetric traced outline exactly symmetric.
+
+    69% of real sketches are mirror-symmetric to within 0.95 region IoU and the median is exactly
+    1.000, so a traced outline that is nearly symmetric almost certainly should be. Tracing noise
+    breaks it: two fillets that are one radius in the part come back as two radii in the drawing.
+    """
+    if not loops:
+        return loops
+    outer = np.asarray(loops[0], float)
+    if len(outer) < 8:
+        return loops
+    best = None
+    for axis in (0, 1):
+        centre = float(outer[:, axis].mean())
+        sc = mirror_score(outer, axis, centre)
+        if sc >= tol and (best is None or sc > best[0]):
+            best = (sc, axis, centre)
+    if best is None:
+        return loops
+    _, axis, centre = best
+    return [symmetrise(np.asarray(lp, float), axis, centre).tolist() if len(lp) >= 8 else lp
+            for lp in loops]
+
+
+def unify_radii(els, tol):
+    """Snap arc radii that are within tol of each other onto their shared mean.
+
+    A part is drilled and filleted with a small set of tools: 49% of real curved edges share a
+    radius with another edge of the same sketch, and on 27% of parts every curve does.
+    """
+    arcs = [e for e in els if e.get("type") == "arc" and e.get("r")]
+    if len(arcs) < 2:
+        return els
+    r = np.array([e["r"] for e in arcs], float)
+    order = np.argsort(r)
+    groups, cur = [], [order[0]]
+    for i in order[1:]:
+        if abs(r[i] - r[cur[-1]]) <= tol * max(r[i], r[cur[-1]]):
+            cur.append(i)
+        else:
+            groups.append(cur)
+            cur = [i]
+    groups.append(cur)
+    for g in groups:
+        if len(g) < 2:
+            continue
+        mean = float(np.mean([r[i] for i in g]))
+        for i in g:
+            arcs[i]["r"] = mean
+    return els
+
+
+def snap_angles(pts, tol_deg=4.0, step=15.0, lock=None):
+    pts = np.asarray(pts, float).copy()
+    n = len(pts)
+    lock = lock or [False] * n
+    for _ in range(3):
+        for i in range(n):
+            j = (i + 1) % n
+            if lock[i] or lock[j]:
+                continue
+            a, b = pts[i], pts[j]
+            d = b - a
+            length = float(np.hypot(*d))
+            if length < 1e-6:
+                continue
+            ang = np.degrees(np.arctan2(d[1], d[0]))
+            target = round(ang / step) * step
+            if abs(target % 90) < 1e-6 or abs(ang - target) > tol_deg:
+                continue
+            mid = (a + b) / 2
+            t = np.radians(target)
+            half = 0.5 * length * np.array([np.cos(t), np.sin(t)])
+            pts[i], pts[j] = mid - half, mid + half
+    return pts
+
+
 def snap_rectilinear(pts, tol_deg=12.0, lock=None):
     pts = np.asarray(pts, float).copy()
     n = len(pts)
@@ -580,6 +696,8 @@ def fit_ellipse(pts):
 
 def primitives(raw_loops, length_px, circle_aspect=0.7):
     out = []
+    if SYMMETRY_TOL > 0:
+        raw_loops = symmetrise_loops(raw_loops, SYMMETRY_TOL)
     outer = fit_ellipse(np.asarray(raw_loops[0], float))
     hole_aspect = 0.7 * outer["aspect"] if ellipse_ok(outer) else 0.5
     for j, raw in enumerate(raw_loops):
@@ -589,6 +707,8 @@ def primitives(raw_loops, length_px, circle_aspect=0.7):
             out.append({"type": "circle", "cx": f["cx"], "cy": f["cy"], "r": f["a"]})
             continue
         els = rectangularise(regularise_lines(elements(raw, length_px), length_px))
+        if RADIUS_TOL > 0:
+            els = unify_radii(els, RADIUS_TOL)
         out.append({"type": "loop", "elements": els, "kinds": kinds_of(els), "joins": joins(els)})
     return out
 
