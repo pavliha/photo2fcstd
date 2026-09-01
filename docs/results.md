@@ -833,6 +833,34 @@ A constraint predictor worth having would have to see the evidence the tracing t
 contour points supported each edge and how confidently - rather than the fitted primitives. That is
 a change to what the tracer records, not a model that can be bolted onto its output.
 
+**So the tracer was changed to record it, and it did not help.** `support_of` now stores, for every
+element, how many contour points backed it, the RMS residual of the fit against those points, the
+run's span and chord, and its straightness; `carry_support` follows each element through
+regularisation so the numbers survive to the spec. It is pure metadata - all 174 tests pass
+unchanged, no geometry moves. With those features and their neighbour ratios added:
+
+| constraint | majority | geometry only | with support |
+|---|---|---|---|
+| angle class | 0.471 | 0.442 | 0.452 |
+| equal length | 0.586 | **0.614** | **0.617** |
+| parallel | 0.862 | 0.843 | 0.852 |
+| perpendicular | 0.912 | 0.920 | 0.922 |
+| equal radius | 0.937 | 0.916 | 0.934 |
+
+Every constraint improves, by 0.002 to 0.018, and not one crosses its baseline. The evidence was
+the obvious missing ingredient and it is not enough.
+
+**Two readings survive this and the measurement cannot separate them.** Either the signal genuinely
+is not in silhouette-derived data - consistent with the tilt result, where six criteria and two
+learned models all failed to recover a quantity the mask does not contain - or 62% label alignment
+leaves too much noise to detect a real effect. Both fit. What would separate them is better labels,
+and the alignment fails precisely where our tracing and the truth disagree about how many edges the
+part has, which is not a labelling bug but the pipeline being wrong.
+
+The support metadata stays, recorded and unused by the pipeline. It costs a few numpy operations per
+element, it is the foundation any future attempt needs, and it is now visible in the spec for anyone
+debugging why an edge came out where it did.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

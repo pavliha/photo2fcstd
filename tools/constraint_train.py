@@ -10,6 +10,7 @@ from sklearn.model_selection import GroupKFold  # noqa: E402
 from photo2fcstd import constraints as K  # noqa: E402
 
 rows = json.load(open(os.path.join(ROOT, "data", "constraint_rows.json")))
+WITH_SUPPORT = os.environ.get("P2F_WITH_SUPPORT", "0") == "1"
 
 
 def edge_feats(els, i, diag):
@@ -19,12 +20,22 @@ def edge_feats(els, i, diag):
     prev, nxt = els[i - 1], els[(i + 1) % len(els)]
     pa, na = K.edge_angle(prev), K.edge_angle(nxt)
     turn = lambda x, y: abs(((x - y + 90) % 180) - 90) if (x is not None and y is not None) else -1
-    return [L, -1 if a is None else min(a, 180 - a), -1 if a is None else abs(a - 90),
+    geom = [L, -1 if a is None else min(a, 180 - a), -1 if a is None else abs(a - 90),
             -1 if a is None else abs(a - round(a / 15.0) * 15.0),
             float(e.get("type") == "line"), float(e.get("r", 0.0)) / max(diag, 1e-9),
             turn(a, pa), turn(a, na),
             K.edge_length(prev) / max(diag, 1e-9), K.edge_length(nxt) / max(diag, 1e-9),
             float(len(els)), float(i) / max(len(els), 1)]
+    if not WITH_SUPPORT:
+        return geom
+    sup = lambda x: (x.get("support") or {})
+    s_, sp, sn = sup(e), sup(prev), sup(nxt)
+    g = lambda d, k: float(d.get(k, -1.0))
+    return geom + [g(s_, "points"), g(s_, "residual"), g(s_, "span_px"), g(s_, "chord_px"),
+                   g(s_, "straightness"),
+                   g(s_, "points") / max(g(sp, "points"), 1.0),
+                   g(s_, "points") / max(g(sn, "points"), 1.0),
+                   g(s_, "residual") - g(sp, "residual"), g(s_, "residual") - g(sn, "residual")]
 
 
 def main():
@@ -63,7 +74,8 @@ def main():
               % (name, len(y), base, np.mean(pred == y),
                  "LEARNS" if np.mean(pred == y) > base + 0.02 else "no better than the baseline"))
 
-    print("held out 5-fold, split by part\n")
+    print("held out 5-fold, split by part, features %s support\n"
+          % ("WITH" if WITH_SUPPORT else "without"))
     cv(Xa, ya, ga, "angle class")
     for kind in ("equal_length", "parallel", "perpendicular", "equal_radius"):
         s = kindp == kind
