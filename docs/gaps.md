@@ -57,8 +57,8 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~A8~~ | ~~Merge runs before fitting~~ - **measured, reverted** | - | - |
 | **A7** | **Give the fitter evidence a straight line lacks** | code | large |
 | A3 | Arc fitting before simplification - *demoted, addresses 29%* | code | medium |
-| B1 | Two sketches that fail to solve | code | small |
-| B2 | Two solids with volume that `isValid()` rejects | code | medium |
+| B1 | Two sketches that fail to solve - *00011 remains, 00039 separate* | code | small |
+| ~~B2~~ | ~~Solids with volume that `isValid()` rejects~~ - **00061 fixed, 00086 is nested holes** | - | - |
 | B3 | Build validity in the regression test | code | small |
 | B4 | One redundant constraint | code | small |
 | D1 | Verify the `params` note states the depth band honestly | code | small |
@@ -205,6 +205,30 @@ and costs nothing measurable.
 
 **The remaining cause is the polyline, not the arcs.** That is where B1 and B2 should resume:
 regularisation moves points across one another, and no arc-level fix reaches it.
+
+**B2. PARTLY DONE - 00061 fixed, and it was a third fault again.** Neither the arc invariant nor
+self-intersection was the cause. `00061` had a 204 px hole lying **entirely across the outer
+boundary** (100% of its area shared with the outer loop) and `00086` two holes crossing it at 14%
+and 4%. A hole that straddles the boundary makes the padded face invalid, which is exactly how a
+part reaches a build report as a solid with real volume that `isValid()` rejects.
+
+`trace.drop_stray_holes` removes any loop not contained in the outer one, and `trace.keep_simple`
+falls back to the unregularised elements when regularisation folds a loop through itself. Measured
+on 133 discriminating parts, both arms regenerated and built:
+
+| arm | valid solid | unsolved | IoU | structure | curves | elements t |
+|---|---|---|---|---|---|---|
+| before | 125 (94%) | 3 | 0.603 | 0.695 | 1.96 | 0.610 |
+| **guards** | **129 (97%)** | 3 | 0.604 | 0.688 | 1.83 | 0.630 |
+
+**Four more parts produce a usable solid.** IoU +0.0015 [-0.0003, +0.0037] and structure -0.0062
+[-0.0174, +0.0040], both within noise; curves fall 0.13 per sketch because some dropped holes
+carried arcs, and those holes were invalid anyway. **Shipped** - it is the first change this session
+to move the number the product is actually judged on.
+
+`00086` still fails, and not from a bug: its loops are **nested** - a circle hole containing two
+smaller holes. The flat loop model has no way to say "material inside a hole", so that is a
+representation limit, not a defect to fix here.
 
 **B1. The two that produce nothing.** 00011 and 00039; the sketch solver returns -2 and -5.
 **Done when** the cause is named and either fixed or refused loudly, as `traced_outline` already

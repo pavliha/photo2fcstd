@@ -523,6 +523,8 @@ def arc_span(run, cx, cy):
 
 RUN_EPS = float(os.environ.get("P2F_RUN_EPS", 0.01806))
 RECONCILE_ARCS = os.environ.get("P2F_RECONCILE_ARCS", "1") != "0"
+KEEP_SIMPLE = os.environ.get("P2F_KEEP_SIMPLE", "1") != "0"
+DROP_STRAY_HOLES = os.environ.get("P2F_DROP_STRAY_HOLES", "1") != "0"
 REPEATED_RUN_EPS = float(os.environ.get("P2F_REPEATED_RUN_EPS", 0.00836))
 
 
@@ -820,6 +822,85 @@ def regularise_lines(els, length_px, frame=None):
     return els
 
 
+def loop_ring(loop, steps=16):
+    """Sample a loop into points, whatever primitives it is made of."""
+    if loop.get("type") == "circle":
+        a = np.linspace(0, 2 * np.pi, 4 * steps)
+        return np.stack([loop["cx"] + loop["r"] * np.cos(a), loop["cy"] + loop["r"] * np.sin(a)], axis=1)
+    pts = []
+    for e in loop.get("elements", []):
+        if e["type"] == "line":
+            pts.append(np.array(e["p0"][:2], float))
+            continue
+        c = np.array([e["cx"], e["cy"]], float)
+        a0 = np.arctan2(e["p0"][1] - c[1], e["p0"][0] - c[0])
+        a1 = np.arctan2(e["p1"][1] - c[1], e["p1"][0] - c[0])
+        if e.get("ccw", True) and a1 < a0:
+            a1 += 2 * np.pi
+        if not e.get("ccw", True) and a1 > a0:
+            a1 -= 2 * np.pi
+        a = np.linspace(a0, a1, steps)
+        pts += list(np.stack([c[0] + e["r"] * np.cos(a), c[1] + e["r"] * np.sin(a)], axis=1))
+    return np.array(pts, float) if pts else np.zeros((0, 2))
+
+
+def drop_stray_holes(loops):
+    """Remove holes that are not inside the outer loop.
+
+    A hole straddling the boundary makes the padded face invalid, which is how a part reaches a
+    build report as a solid with real volume that `isValid()` rejects - 00061 has a 204 px hole
+    lying entirely across the outer edge, 00086 has two crossing it. The rest of the loop set is
+    fine, so dropping the stray hole is the whole repair.
+    """
+    if not DROP_STRAY_HOLES or len(loops) < 2:
+        return loops
+    try:
+        from shapely.geometry import Polygon
+    except Exception:
+        return loops
+    rings = [loop_ring(l) for l in loops]
+    polys = [Polygon(r) if len(r) >= 4 else None for r in rings]
+    polys = [p if p is not None and p.is_valid else None for p in polys]
+    outer = max((k for k in range(len(polys)) if polys[k] is not None),
+                key=lambda k: polys[k].area, default=None)
+    if outer is None:
+        return loops
+    kept, taken = [], []
+    for k, loop in enumerate(loops):
+        if k != outer and polys[k] is not None and not polys[k].within(polys[outer]):
+            continue
+        if k != outer and polys[k] is not None:
+            twin = any(polys[k].equals(q) or (polys[k].intersection(q).area
+                       > 0.98 * max(polys[k].area, q.area)) for q in taken)
+            if twin:
+                continue
+            taken.append(polys[k])
+        kept.append(loop)
+    return kept
+
+
+def is_simple(els):
+    """Does this chain of elements enclose a region without crossing itself?"""
+    pts = [e["p0"][:2] for e in els if "p0" in e]
+    if len(pts) < 4:
+        return True
+    try:
+        from shapely.geometry import Polygon
+        return bool(Polygon(np.array(pts, float)).is_valid)
+    except Exception:
+        return True
+
+
+def keep_simple(regularised, original):
+    """Regularisation may fold a loop back through itself; when it does, keep what went in.
+
+    H/V snapping and angle snapping move vertices independently, so a short feature can invert and
+    the polyline cross itself two to four elements later - 00086 does exactly this. The fold is not
+    detectable from the silhouette statistics, only from the loop, which is why the check is here.
+    """
+    return original if is_simple(original) and not is_simple(regularised) else regularised
+
+
 def reconcile_arcs(els):
     """Make each arc's circle agree with the endpoints it actually ends up with.
 
@@ -930,11 +1011,11 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
         traced = elements(raw, length_px)
         before = [dict(e) for e in traced]
         els = carry_support(rectangularise(regularise_lines(traced, length_px)), before)
-        els = reconcile_arcs(els)
+        els = reconcile_arcs(keep_simple(els, traced) if KEEP_SIMPLE else els)
         if RADIUS_TOL > 0:
             els = unify_radii(els, RADIUS_TOL)
         out.append({"type": "loop", "elements": els, "kinds": kinds_of(els), "joins": joins(els)})
-    return out
+    return drop_stray_holes(out)
 
 def concentric_edges(gray, mask, f, r_lo=0.15, r_hi=0.92, min_prom=0.25):
     from scipy.signal import find_peaks
