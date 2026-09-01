@@ -388,3 +388,36 @@ def test_a_dark_pocket_is_left_alone():
     filled = np.zeros((200, 200), bool)
     filled[40:160, 40:160] = True
     assert recover_holes(image, filled).sum() == filled.sum()
+
+
+def test_a_disc_keeps_its_own_orientation():
+    from photo2fcstd.trace import box_angle
+    yy, xx = np.mgrid[0:200, 0:200]
+    disc = ((yy - 100) ** 2 + (xx - 100) ** 2) < 80 ** 2
+    assert box_angle(disc) is None
+
+
+def test_a_square_gets_a_box_angle():
+    from photo2fcstd.trace import box_angle
+    square = np.zeros((200, 200), bool)
+    square[50:150, 50:150] = True
+    assert box_angle(square) is not None
+
+
+def test_reflection_slivers_are_not_kept_as_holes():
+    from photo2fcstd.trace import symmetrize
+    mask = np.zeros((200, 200), bool)
+    mask[40:160, 40:160] = True
+    mask[100:102, 60:63] = False
+    out, axes = symmetrize(mask)
+    assert axes
+    assert out[95:107, 55:70].all()
+
+
+def test_a_real_hole_survives_the_speck_filter():
+    from photo2fcstd.trace import symmetrize
+    mask = np.zeros((200, 200), bool)
+    mask[40:160, 40:160] = True
+    mask[80:120, 60:90] = False
+    out, _ = symmetrize(mask)
+    assert not out[85:115, 65:85].any()

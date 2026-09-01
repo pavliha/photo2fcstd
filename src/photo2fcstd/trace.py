@@ -149,12 +149,19 @@ def segment_any(a, mode="rmbg"):
 DEGENERATE_PCA = 0.85
 
 
+BOX_FILL_MIN = 0.90
+
+
 def box_angle(mask):
+    """The min-area box angle, but only for a shape that actually fills a box."""
     import cv2
     contours, _ = cv2.findContours(mask.astype(np.uint8) * 255, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if not contours:
         return None
-    (_, _), (w, h), deg = cv2.minAreaRect(max(contours, key=cv2.contourArea))
+    contour = max(contours, key=cv2.contourArea)
+    (_, _), (w, h), deg = cv2.minAreaRect(contour)
+    if w <= 0 or h <= 0 or float(cv2.contourArea(contour)) / (w * h) < BOX_FILL_MIN:
+        return None
     if w < h:
         deg += 90.0
     return float(((deg + 90.0) % 180.0) - 90.0)
@@ -212,6 +219,20 @@ def reflect_richer_half(shape, holes, axis):
     return rebuild(shape), rebuild(holes)
 
 
+def drop_speck_holes(holes, area, min_frac=None):
+    """Reflection can leave slivers a few pixels wide; they are not features."""
+    limit = (th.MIN_HOLE_FRAC if min_frac is None else min_frac) * max(area, 1)
+    labelled, count = ndimage.label(holes)
+    if count == 0:
+        return holes
+    keep = np.zeros_like(holes)
+    for i in range(1, count + 1):
+        blob = labelled == i
+        if blob.sum() >= limit:
+            keep |= blob
+    return keep
+
+
 def symmetrize(mask, min_iou=0.93):
     filled = ndimage.binary_fill_holes(mask)
     holes = filled & ~mask
@@ -229,7 +250,7 @@ def symmetrize(mask, min_iou=0.93):
     out, out_holes = filled.copy(), holes.copy()
     out[y0:y1, x0:x1] = crop
     out_holes[y0:y1, x0:x1] = hole_crop
-    return out & ~(out_holes & out), axes
+    return out & ~(drop_speck_holes(out_holes & out, out.sum())), axes
 
 
 def fit_circle(pts):
@@ -455,7 +476,11 @@ def arc_span(run, cx, cy):
     return float(np.degrees(ang[-1] - ang[0]))
 
 
-def corner_runs(raw, eps_frac=0.015):
+RUN_EPS = 0.015
+
+
+def corner_runs(raw, eps_frac=None):
+    eps_frac = RUN_EPS if eps_frac is None else eps_frac
     import cv2
     pts = np.asarray(raw, np.float32)
     poly = cv2.approxPolyDP(pts.reshape(-1, 1, 2), eps_frac * cv2.arcLength(pts, True), True).reshape(-1, 2)
