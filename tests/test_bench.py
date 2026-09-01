@@ -1,0 +1,61 @@
+from photo2fcstd import bench
+
+
+class FakePool:
+    def __init__(self, n):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+    def map(self, fn, args):
+        return [(a[0], "plan", {}) for a in args]
+
+
+def stub(monkeypatch, tmp_path, built):
+    monkeypatch.setattr(bench, "ROOT", str(tmp_path))
+    monkeypatch.setattr(bench, "Pool", FakePool)
+    monkeypatch.setattr(bench, "with_photos", lambda parts: (list(parts), []))
+    monkeypatch.setattr(bench, "warm_masks", lambda parts: (len(parts), 0))
+    monkeypatch.setattr(bench, "sketch_scores", lambda run_dir, **k: {})
+    monkeypatch.setattr(bench, "build_all", lambda *a, **k: built.append(1) or 0)
+
+
+def test_sketch_only_stops_before_freecad(tmp_path, monkeypatch):
+    built = []
+    stub(monkeypatch, tmp_path, built)
+    summary = bench.run_bench("sk", 1, ["00001"], sketch_only=True)
+    assert not built
+    assert "no solids built" in summary
+
+
+def test_sketch_delta_is_paired_against_the_baseline_run(tmp_path, monkeypatch):
+    monkeypatch.setattr(bench, "ROOT", str(tmp_path))
+    base = tmp_path / "runs" / "old"
+    base.mkdir(parents=True)
+    theirs = {"a": {"region_iou": 0.40, "trustworthy": True},
+              "b": {"region_iou": 0.60, "trustworthy": True}}
+    mine = {"a": {"region_iou": 0.50, "trustworthy": True},
+            "b": {"region_iou": 0.70, "trustworthy": True}}
+    monkeypatch.setattr(bench, "sketch_scores", lambda run_dir, **k: theirs)
+    line = bench.sketch_delta("old", mine)
+    assert "+0.100" in line and "2 shared parts" in line
+
+
+def test_sketch_delta_is_silent_without_a_baseline():
+    assert bench.sketch_delta(None, {"a": {"region_iou": 0.5, "trustworthy": True}}) == ""
+
+
+def test_untrustworthy_parts_are_excluded_from_the_sketch_delta(tmp_path, monkeypatch):
+    monkeypatch.setattr(bench, "ROOT", str(tmp_path))
+    base = tmp_path / "runs" / "old"
+    base.mkdir(parents=True)
+    theirs = {"a": {"region_iou": 0.40, "trustworthy": True},
+              "b": {"region_iou": 0.10, "trustworthy": False}}
+    monkeypatch.setattr(bench, "sketch_scores", lambda run_dir, **k: theirs)
+    mine = {"a": {"region_iou": 0.50, "trustworthy": True},
+            "b": {"region_iou": 0.90, "trustworthy": False}}
+    assert "1 shared parts" in bench.sketch_delta("old", mine)

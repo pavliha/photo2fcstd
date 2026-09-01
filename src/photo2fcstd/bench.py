@@ -199,6 +199,24 @@ def sketch_scores(run_dir, ideal_path=IDEAL_SKETCHES):
     return out
 
 
+def sketch_delta(baseline, sketches):
+    if not baseline:
+        return ""
+    path = baseline if os.path.isdir(baseline) else os.path.join(ROOT, "runs", baseline)
+    if not os.path.isdir(path):
+        return ""
+    theirs = sketch_scores(path)
+    pick = lambda rows: {k: float(v["region_iou"]) for k, v in rows.items()
+                         if v.get("trustworthy") and v.get("region_iou") is not None}
+    before, after = pick(theirs), pick(sketches)
+    got = stats.paired_delta(before, after)
+    if not got:
+        return ""
+    return ("\n  sketch vs %s: %+.3f [%+.3f, %+.3f] on %d shared parts%s"
+            % (os.path.basename(path.rstrip("/")), got["delta"], got["lo"], got["hi"], got["n"],
+               "" if got["significant"] else " - indistinguishable from zero"))
+
+
 def sketch_line(sketches):
     if not sketches:
         return ""
@@ -247,7 +265,7 @@ def summarise(name, scored, elapsed, baseline=None, sketches=None):
     return line + sketch_line(sketches or {})
 
 
-def run_bench(name, jobs, parts, mode=None, baseline=None):
+def run_bench(name, jobs, parts, mode=None, baseline=None, sketch_only=False):
     run_dir = os.path.join(ROOT, "runs", name)
     if os.path.exists(run_dir):
         raise SystemExit("runs/%s exists" % name)
@@ -269,6 +287,18 @@ def run_bench(name, jobs, parts, mode=None, baseline=None):
     for part, _, event in rows:
         events.record(part, **event)
     print("stage 2 specs: %d in %.0f s" % (sum(1 for v in specs.values() if v != "none"), time.time() - t1), flush=True)
+    if sketch_only:
+        events.write()
+        sketches = sketch_scores(run_dir)
+        for part, row in sketches.items():
+            events.record(part, sketch=row)
+        events.write()
+        summary = "runs/%s: %d specs in %.0f s, no solids built\n  %s" % (
+            name, sum(1 for v in specs.values() if v != "none"), time.time() - t0,
+            sketch_line(sketches) + sketch_delta(baseline, sketches))
+        open(os.path.join(run_dir, "summary.txt"), "w").write(summary + "\n")
+        print(summary)
+        return summary
     t2 = time.time()
     print("stage 3 build: %d models in %.0f s" % (build_all(run_dir, parts, jobs), time.time() - t2), flush=True)
     for part, report in build_reports(run_dir).items():
@@ -305,8 +335,10 @@ def main(argv):
     p.add_argument("--mode", choices=("stations", "profile", "plan", "revolve"),
                    help="force every part through one modelling mode")
     p.add_argument("--baseline", help="an earlier run to compare against, paired per part")
+    p.add_argument("--sketch-only", action="store_true",
+                   help="stop after the sketches; skip FreeCAD and the solid score")
     a = p.parse_args(argv)
-    run_bench(a.name, a.jobs, open(a.ids).read().split(), a.mode, a.baseline)
+    run_bench(a.name, a.jobs, open(a.ids).read().split(), a.mode, a.baseline, a.sketch_only)
 
 
 def run():

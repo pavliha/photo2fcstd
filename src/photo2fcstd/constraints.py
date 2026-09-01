@@ -117,6 +117,25 @@ def of_sketch(loops):
             "perpendicular": perpendicular_pairs(els)}
 
 
+def element_span(els):
+    """Each element as a (start, end) pair, so a distance can be to the segment not its midpoint."""
+    out = []
+    for e in els:
+        if e.get("type") == "circle":
+            c = np.array([e["cx"], e["cy"]], float)
+            out.append((c, c))
+        else:
+            out.append((np.array(e.get("p0", [0, 0]), float), np.array(e.get("p1", [0, 0]), float)))
+    return out
+
+
+def point_to_segment(p, a, b):
+    ab = b - a
+    denom = float(ab @ ab)
+    t = 0.0 if denom < 1e-12 else float(np.clip((p - a) @ ab / denom, 0.0, 1.0))
+    return float(np.linalg.norm(p - (a + t * ab)))
+
+
 def element_midpoints(els):
     out = []
     for e in els:
@@ -131,38 +150,45 @@ def element_midpoints(els):
 
 
 def align(mine, ideal):
-    """Match each traced element to an ideal one, under the pose that best overlaps the two.
+    """Match each traced element to an ideal one, searching the eight dihedral poses.
 
-    Labels are only worth training on if this correspondence is right, so it reuses the dihedral
-    search `sketch_score` already uses to compare sketches, then matches on midpoint distance in
-    the shared normalised frame. Returns (partner index, distance) per traced element, with the
-    distance in units of the sketch diagonal so it can be thresholded.
+    Two earlier versions of this were wrong in instructive ways. Matching midpoint to midpoint
+    scored a traced edge as unmatched whenever the tracer split one ideal edge in two, since the
+    halves' midpoints sit far from the whole edge's midpoint - 43% matched. Matching by position
+    along the loop threw the geometry away and did worse, 21%, because a traced loop's element
+    lengths are distributed quite differently from the truth's. Distance from a traced midpoint to
+    the ideal *segment*, under the pose that minimises it, handles both.
     """
-    import shapely.affinity as aff
-    from shapely.geometry import Polygon
-    from photo2fcstd.sketch_score import DIHEDRAL, normalise, posed
+    from photo2fcstd.sketch_score import DIHEDRAL
 
-    a, b = element_midpoints(mine), element_midpoints(ideal)
+    a = element_midpoints(mine)
+    b = element_midpoints(ideal)
     if len(a) == 0 or len(b) == 0:
-        return np.zeros(0, int), np.zeros(0)
+        return np.zeros(0, int), np.ones(0)
 
-    def frame(pts):
-        lo, hi = pts.min(axis=0), pts.max(axis=0)
+    def frame(pts, ref):
+        lo, hi = ref.min(axis=0), ref.max(axis=0)
         k = 1.0 / max(np.max(hi - lo), 1e-9)
         return (pts - (lo + hi) / 2) * k
 
-    fa, fb = frame(a), frame(b)
+    fa = frame(a, a)
+    spans = element_span(ideal)
+    ends = np.array([[p, q] for p, q in spans], float)
+    fb0 = frame(ends[:, 0, :], b)
+    fb1 = frame(ends[:, 1, :], b)
+
     best = None
     for sx, sy, swap in DIHEDRAL:
-        q = fa * np.array([sx, sy])
+        q = fa * np.array([sx, sy], float)
         if swap:
             q = q[:, ::-1]
-        d = np.linalg.norm(q[:, None, :] - fb[None, :, :], axis=2)
+        d = np.array([[point_to_segment(q[i], fb0[j], fb1[j]) for j in range(len(fb0))]
+                      for i in range(len(q))])
+        partner = d.argmin(axis=1)
         cost = float(d.min(axis=1).mean())
         if best is None or cost < best[0]:
-            best = (cost, d)
-    d = best[1]
-    return d.argmin(axis=1), d.min(axis=1)
+            best = (cost, partner, d.min(axis=1))
+    return best[1], best[2]
 
 
 def labels_for(mine_loops, ideal_loops, max_dist=0.05):
