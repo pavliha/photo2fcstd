@@ -447,7 +447,9 @@ combine two separately-framed silhouettes. Multi-view only pays once the views s
 pose, which is what `carve.py` gets from the ChArUco board.
 
 So drawing every part **and** keeping the two-view solid is not available. It is a
-straight choice: `stations` keeps solid IoU 0.433 with 46% of parts drawing nothing,
+straight choice - though as measured now, `stations` is never chosen and coverage is 100%, so this
+paragraph describes the code before the mode allowed-list fix: `stations` kept solid IoU 0.433 with
+46% of parts drawing nothing,
 always-outline gives 100% coverage and sketch IoU 0.557 for solid IoU 0.364.
 `tests/test_regression.py` currently encodes the first.
 
