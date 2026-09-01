@@ -983,6 +983,42 @@ model was trained on, -0.0012 [-0.010, +0.007], with identical agreement at 0.51
 misled the analysis and not the model, which is the more embarrassing of the two outcomes and the
 easier one to miss.
 
+## The notches are lost before regularisation, not by it
+
+Part 00911 is a square with four notched corners. The square-on photograph resolves them clearly -
+they are plainly in the mask - and the drawing is a plain four-line square. `rectangularise`
+replaces a nearly-rectangular loop with its bounding rectangle, and on this part it turns 8 elements
+into 4, so it looked like the culprit.
+
+It is not, and two measurements say so.
+
+**Loosening it does not recover the notches.** With the fill threshold at 0.995 or a cap of five
+elements, 00911 goes from 4 elements to 6 against a truth of **12**, and its IoU falls from 0.959 to
+0.933. The tracer had already lost 12 to 8 before `rectangularise` ran; the pass takes the last
+four, not the first four.
+
+**And it earns its place elsewhere.** Over 235 discriminating parts, loosening it changes 8 and
+costs 0.9 points of exact primitives:
+
+| arm | sketch IoU | exact primitives | elements |
+|---|---|---|---|
+| **shipped, fill 0.92** | **0.643** | **26%** | 9.43 |
+| fill 0.97 | 0.643 | 25% | 9.46 |
+| fill 0.995 | 0.643 | 25% | 9.47 |
+| at most 5 elements | 0.643 | 25% | 9.45 |
+| the real sketches | - | 100% | 11.88 |
+
+Of the eight parts that change, six get worse and two lose their exact-primitive match. A pass that
+turns a nearly-rectangular outline into an exact rectangle is right more often than it is wrong.
+
+**The sweep also missed the part that motivated it** - 00911 sits outside the 280 parts sampled - so
+the threshold was measured on parts it barely touches. Checking the motivating part directly is what
+showed the fix does not work, and it should have come first.
+
+The real deficit is upstream, in corner detection: 9.43 elements against 11.88, and 1.49 curves
+against 5.13. That is the same wall four attempts have already failed against, and `rectangularise`
+is not a way around it.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

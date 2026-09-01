@@ -49,12 +49,20 @@ def main(part="00911"):
     ax[2, -1].axis("on")
     frame(ax[2, -1], "the sketch the part has")
     ax[0, -1].text(0.0, 0.9, "part %s" % part, fontsize=13, fontweight="bold", va="top")
-    ax[0, -1].text(0.0, 0.74,
-                   "the mask is a correct silhouette\nof the box as photographed.\n\n"
-                   "every view shows top and sides,\nso every outline is a 3D profile\n"
-                   "rather than the base face.",
-                   fontsize=9.5, va="top")
-    fig.suptitle("All three photographs of one part: the silhouette is right, the viewpoint is not",
+    ax[0, -1].text(0.0, 0.76,
+                   "Before the mode fix, views 2 and 3\nreturned no sketch at all and scored\n"
+                   "0.00. The selector took view 1 at 0.80\nbecause it was the only one that drew.",
+                   fontsize=9, va="top", color="#b32d2e")
+    ax[0, -1].text(0.0, 0.46,
+                   "Now all three draw and it takes a\n0.96 view. View 2 is the square-on shot\n"
+                   "and its silhouette has the notches.",
+                   fontsize=9, va="top", color="#1a7f37")
+    ax[0, -1].text(0.0, 0.20,
+                   "The drawing still loses them: four\nlines, no notches, and IoU 0.97 anyway\n"
+                   "because they carry almost no area.",
+                   fontsize=9, va="top", color="#111")
+    fig.suptitle("Part 00911 after the mode fix: every photograph now produces a sketch\n"
+                 "the two that scored 0.00 were never bad views, they were never drawn",
                  fontsize=12.5)
     plt.tight_layout(rect=(0, 0, 1, 0.955))
     out = os.path.join(ROOT, "docs", "figures", "one_part_views.png")
