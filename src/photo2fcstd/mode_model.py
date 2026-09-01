@@ -122,7 +122,19 @@ def predict(views, allowed=None):
             return None
         return max(heads, key=lambda m: heads[m].predict(x)[0])
     model = saved["model"] if isinstance(saved, dict) else saved
-    return str(model.predict(x)[0])
+    if allowed is None:
+        return str(model.predict(x)[0])
+    classes = [str(c) for c in getattr(model, "classes_", [])]
+    keep = [i for i, c in enumerate(classes) if c in allowed]
+    if not keep:
+        fallback.note("mode_model", "trained on %s, none of which is allowed here" % classes)
+        return None
+    try:
+        probs = model.predict_proba(x)[0]
+    except Exception as exc:
+        fallback.note("mode_model", "predict_proba failed: %s" % exc)
+        return None
+    return classes[max(keep, key=lambda i: probs[i])]
 
 
 def main(argv):

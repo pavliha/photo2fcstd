@@ -305,3 +305,51 @@ def test_every_loop_shares_the_part_frame():
     assert len(angles) >= 6
     spread = [min(abs(a - 20.0), abs(a - 20.0 - 90.0), abs(a - 20.0 + 90.0)) for a in angles]
     assert max(spread) < 3.0, sorted(spread)
+
+
+def rotate_mask(mask, deg):
+    from scipy import ndimage
+    return ndimage.rotate(mask.astype(np.uint8), deg, reshape=True, order=0) > 0
+
+
+def test_a_square_is_not_uprighted_onto_its_diagonal():
+    from photo2fcstd.trace import upright_mask
+    square = np.zeros((160, 160), bool)
+    square[30:130, 30:130] = True
+    out, angle = upright_mask(rotate_mask(square, 3.0))
+    ys, xs = np.nonzero(out)
+    w, h = xs.max() - xs.min(), ys.max() - ys.min()
+    assert abs(w - h) / max(w, h) < 0.12
+    assert min(abs(angle), abs(abs(angle) - 90.0)) < 8.0
+
+
+def test_an_elongated_part_still_uses_its_long_axis():
+    from photo2fcstd.trace import upright_mask
+    bar = np.zeros((200, 200), bool)
+    bar[60:140, 90:110] = True
+    out, _ = upright_mask(rotate_mask(bar, 30.0))
+    ys, xs = np.nonzero(out)
+    assert (ys.max() - ys.min()) > 2.5 * (xs.max() - xs.min())
+
+
+def test_a_trapezoid_from_perspective_is_squared_up():
+    from photo2fcstd.trace import square_quadrilateral
+    els = line_loop([(0.0, 0.0), (100.0, 10.0), (100.0, 70.0), (0.0, 90.0)])
+    out = square_quadrilateral(els)
+    assert len(out) == 4
+    sides = [np.hypot(*np.subtract(e["p1"], e["p0"])) for e in out]
+    assert abs(sides[0] - sides[2]) < 1e-6 and abs(sides[1] - sides[3]) < 1e-6
+    angles = [np.degrees(np.arctan2(*np.subtract(e["p1"], e["p0"])[::-1])) % 90.0 for e in out]
+    assert max(min(a, 90.0 - a) for a in angles) < 1e-6
+
+
+def test_a_strongly_tapered_wedge_is_left_alone():
+    from photo2fcstd.trace import square_quadrilateral
+    els = line_loop([(0.0, 0.0), (100.0, 0.0), (100.0, 80.0), (0.0, 20.0)])
+    assert square_quadrilateral(els) is els
+
+
+def test_squaring_only_touches_four_sided_loops():
+    from photo2fcstd.trace import square_quadrilateral
+    els = line_loop([(0.0, 0.0), (50.0, 0.0), (100.0, 20.0), (100.0, 70.0), (0.0, 90.0)])
+    assert square_quadrilateral(els) is els

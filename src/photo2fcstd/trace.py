@@ -115,6 +115,20 @@ def segment_any(a, mode="rmbg"):
     return {"dark": segment, "auto": segment_auto}.get(mode, segment_rmbg)(a)
 
 
+DEGENERATE_PCA = 0.85
+
+
+def box_angle(mask):
+    import cv2
+    contours, _ = cv2.findContours(mask.astype(np.uint8) * 255, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return None
+    (_, _), (w, h), deg = cv2.minAreaRect(max(contours, key=cv2.contourArea))
+    if w < h:
+        deg += 90.0
+    return float(((deg + 90.0) % 180.0) - 90.0)
+
+
 def upright_mask(mask):
     ys, xs = np.nonzero(mask)
     pts = np.column_stack([xs, ys]).astype(float)
@@ -122,6 +136,10 @@ def upright_mask(mask):
     vals, vecs = np.linalg.eigh(np.cov(pts.T))
     major = vecs[:, int(np.argmax(vals))]
     angle = np.degrees(np.arctan2(major[0], major[1]))
+    if float(min(vals) / max(max(vals), 1e-12)) > DEGENERATE_PCA:
+        boxed = box_angle(mask)
+        if boxed is not None:
+            angle = -boxed
     rotated = ndimage.rotate(mask.astype(np.uint8), -angle, reshape=True, order=0) > 0
     return rotated, float(angle)
 
@@ -680,6 +698,35 @@ def elements(raw, length_px):
         if "support" not in e and e.get("_run") is not None:
             e["support"] = support_of(e["_run"], e, length_px)
     return merge_and_snap(els, length_px)
+
+
+def square_quadrilateral(els, frame=0.0, convex_tol=0.97, taper_tol=0.35):
+    if len(els) != 4 or any(e["type"] != "line" for e in els):
+        return els
+    pts = np.array([e["p0"] for e in els], float)
+    area = abs(_signed_area(pts))
+    if area <= 0:
+        return els
+    import cv2
+    hull = cv2.convexHull(pts.astype(np.float32))
+    if area / max(float(cv2.contourArea(hull)), 1e-9) < convex_tol:
+        return els
+    sides = np.array([np.hypot(*(pts[(i + 1) % 4] - pts[i])) for i in range(4)])
+    pairs = [(sides[0], sides[2]), (sides[1], sides[3])]
+    for a, b in pairs:
+        if abs(a - b) / max(a, b, 1e-9) > taper_tol:
+            return els
+    width, height = float(np.mean(pairs[0])), float(np.mean(pairs[1]))
+    centre = pts.mean(axis=0)
+    t = np.radians(frame)
+    u = np.array([np.cos(t), np.sin(t)])
+    v = np.array([-np.sin(t), np.cos(t)])
+    corners = [centre - u * width / 2 - v * height / 2, centre + u * width / 2 - v * height / 2,
+               centre + u * width / 2 + v * height / 2, centre - u * width / 2 + v * height / 2]
+    if _signed_area(pts) < 0:
+        corners = corners[::-1]
+    return [{"type": "line", "p0": corners[i].tolist(), "p1": corners[(i + 1) % 4].tolist()}
+            for i in range(4)]
 
 
 def rectangularise(els, fill_tol=0.92, side_tol=0.06):
