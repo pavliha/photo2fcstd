@@ -1,4 +1,4 @@
-"""The chord-gate change on real photographs, with a build check, before it ships.
+"""Run merging on real photographs, with a build check, before it ships.
 
 Perfect-input arms said +0.0030 structure with no precision cost. That is measured on rasterised
 faces; thresholds here are jointly tuned and several changes have improved a statistic and broken
@@ -13,16 +13,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 IDEAL = json.load(open(os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json")))
 FREECAD = os.environ.get("FREECADCMD", os.path.expanduser("~/Code/FreeCAD/build/release/bin/FreeCADCmd"))
-ARMS = {"shipped": {"ARC_MIN_CHORD_FRAC": 0.03, "ARC_MIN_CHORD_PX": 0.0},
-        "abs8px": {"ARC_MIN_CHORD_FRAC": 0.0, "ARC_MIN_CHORD_PX": 8.0}}
+ARMS = {"shipped": 0, "merge3": 3}
 CURVED = ("arc", "circle", "ellipse", "bsplinecurve")
 
 
 def one(args):
     part, arm = args
-    from photo2fcstd import analysis, bench, sketch_score as SS, spec as spec_mod, thresholds as th
-    for k, v in ARMS[arm].items():
-        setattr(th, k, v)
+    from photo2fcstd import analysis, bench, sketch_score as SS, spec as spec_mod, trace
+    trace.MERGE_RUNS = ARMS[arm]
     try:
         views = [analysis.view(p) for p in bench.photos_of(part)[:3]]
         doc = spec_mod.assemble(views, name=part, log=lambda *a: None)
@@ -77,9 +75,9 @@ def main(limit=160):
                  100 * np.mean([d[p]["exact"] for p in keen])))
     print("  %-10s %9s %9s %10.2f" % ("really", "-", "-", np.mean([by["shipped"][p]["curve_ideal"] for p in keen])))
     for key in ("region_iou", "structure"):
-        d = np.array([by["abs8px"][p][key] - by["shipped"][p][key] for p in keen])
+        d = np.array([by["merge3"][p][key] - by["shipped"][p][key] for p in keen])
         m, lo, hi = stats.mean_ci(d)
-        print("\n  %-12s abs8px vs shipped %+.4f [%+.4f, %+.4f]" % (key, m, lo, hi))
+        print("\n  %-12s merge3 vs shipped %+.4f [%+.4f, %+.4f]" % (key, m, lo, hi))
     print("\n  building both arms through FreeCAD...")
     for arm in ARMS:
         specs = {p: by[arm][p]["spec"] for p in keen}

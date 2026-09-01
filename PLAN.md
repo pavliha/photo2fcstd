@@ -2,31 +2,53 @@
 
 ## Where we are
 
-Measured on 200 PrintCAD parts (real hand-held photos, no fiducial), scale-free voxel IoU against
-the STEP-derived truth:
+The objective is **primitive F1**: drawn primitives matched against the ideal sketch's, type by
+type, over a denominator that never moves. Region IoU is secondary - it rewards an outline that
+agrees and is blind to a missing feature, which is how a circle scored 0.95 on a scalloped disc.
 
-| | value | 95 % CI |
+Measured on `data/test_ids.txt`, 246 parts with trustworthy truth that nothing has been fitted on:
+
+| | value |
+|---|---|
+| primitive F1, fitted thresholds | **0.612** |
+| primitive F1, hand-picked thresholds | 0.566 |
+| paired gain from fitting | +0.045 [+0.026, +0.065] |
+| region IoU, full photographed set | 0.629 [0.611, 0.646] |
+| what a perfect sketch and true depth score | 0.918 |
+
+A sketch-only run over all 1908 parts takes five minutes; a full run with solids takes twenty-two.
+
+### What is shipped, and what it was worth
+
+| component | held out | on by default |
 |---|---|---|
-| mean IoU | 0.432 | [0.400, 0.466] |
-| oracle mode selection would add | +0.094 | [+0.070, +0.120] |
-| learned mode selection, held out | −0.030 | [−0.063, +0.002] |
-| paired A/B resolution at n=200 | ±0.007 | |
+| depth from frozen DINOv3 features | +0.040 [+0.024, +0.056] | yes |
+| mode selection from the same features | +0.080 [+0.063, +0.097] | yes |
+| fitted thresholds, eight of them | +0.045 [+0.026, +0.065] | yes |
+| keeping detail on feature-bearing contours | +0.006 [+0.003, +0.008] | yes |
 
-Every sketch is fully constrained, the sheet is in millimetres, a full benchmark run takes 172 s
-locally and 88 s on a rented 4090 box.
+### What was measured and declined
 
-Three facts drive everything below.
+Every one of these looked large as an oracle and collapsed when a selector had to find it without
+the answer. They are listed so nobody pays for them twice.
 
-1. **The oracle gap is real and large.** Picking the best of the four modes per part is worth
-   +0.094 — more than every geometry improvement of the last two days combined.
-2. **The instrument is underpowered.** A 200-part paired comparison resolves ±0.007. Detecting a
-   +0.01 improvement needs ~426 parts. Several experiments already run below that threshold were
-   unfalsifiable, including the held-out learned-selector result, whose CI crosses zero.
-3. **A third of the labels carry no signal.** Of 200 oracle labels, 9 % are unlearnable (no mode
-   reaches 0.2) and 26 % are ties decided by less than 0.05. The honest ceiling is ~0.518, not the
-   raw oracle 0.527.
+| idea | oracle | what a selector actually got |
+|---|---|---|
+| choosing which photo to trace | +0.082, about half of it noise | +0.004 [-0.001, +0.009] end to end |
+| carrying nine view-and-mode hypotheses | +0.081 | pipeline already picks the best 61% of the time |
+| a per-part simplification tolerance | +0.059 | +0.004 [-0.010, +0.019], 7% of the headroom |
+| undoing viewpoint tilt | +0.090 | 11% from pixels, and the target is mostly undetermined |
+| rotational symmetry, five attempts | exact on synthetic gears | nothing on photographs |
+| a bigger head on the same features | | +0.000 [-0.003, +0.004] |
 
-## 1. Fix the instrument first
+### What actually limits it
+
+Not modelling. Of the parts whose sketch scores under 0.4, **86% have no good view among the three
+photographs** and **89% are still under 0.4 traced raw**, before any regularisation. Thirteen per
+cent of parts cannot be reproduced by extruding their own ideal sketch, so their ceiling is not 1.0
+and never was. The remaining work is capture, or accepting the scope.
+
+## 1. Fix the instrument first - done
 
 Nothing else is worth running until the benchmark can detect what we are chasing.
 
@@ -44,7 +66,7 @@ a +0.01 change is detectable.
 delta and the run's own resolution. Its first use caught a real +0.031 [+0.013, +0.050] from the
 parallel commits between `v17` and `ci_check` — a change neither of us had measured.
 
-## 2. Prove the metric path on real photographs
+## 2. Prove the metric path on real photographs - done on T-LESS, board still unshot
 
 `--rectify` and `photo2fcstd-carve` were validated only against synthetic boards and a simulated
 box. Every millimetre figure quoted for them came from geometry we generated ourselves.
@@ -62,7 +84,7 @@ ChArUco pose recovery end to end, and your own parts.
 error is stated in millimetres per dimension. If it is worse than the two-photo path, say so and
 keep the two-photo path.
 
-## 3. Score sketches, not solids
+## 3. Score sketches, not solids - done, and it is now the primary objective
 
 Every headline number is voxel IoU — whether the *solid* matches. The requirement was an editable
 sketch. `ideal_sketches.py` already holds the true primitives for all 1907 parts and
@@ -76,7 +98,7 @@ a sketch at all, the region IoU of that sketch against the ideal one with a CI, 
 reproduce its exact primitive counts. On the 200-part set: 97 of 200 emit a sketch, region IoU
 0.583 [0.503, 0.664] on the 55 with trustworthy ground truth, 16 exact.
 
-## 4. Reformulate mode selection
+## 4. Reformulate mode selection - done, +0.080 held out
 
 Only after 1. Classification throws away most of the signal — a quarter of the labels are near-ties
 and the model is punished for choosing between equally good answers.
@@ -91,7 +113,7 @@ and the model is punished for choosing between equally good answers.
 **Done when:** a held-out comparison on ≥426 parts shows a CI that excludes zero. The switch stays
 off until then.
 
-## 5. Self-supervision from the photos
+## 5. Self-supervision from the photos - not started, and the consistency signal measured weak
 
 The photos are their own supervision: a candidate model is right if it explains all views. Crude
 64-direction silhouette consistency already gave +0.010. Done properly — differentiable silhouette

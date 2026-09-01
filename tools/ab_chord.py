@@ -24,21 +24,13 @@ from photo2fcstd import sketch_score as SS  # noqa: E402
 import tracer_ceiling as TC  # noqa: E402
 
 CURVED = ("arc", "circle", "ellipse", "bsplinecurve")
-ARMS = {
-    "shipped":      {"ARC_MIN_CHORD_FRAC": 0.03, "ARC_MIN_CHORD_PX": 0.0},
-    "frac/2":       {"ARC_MIN_CHORD_FRAC": 0.015, "ARC_MIN_CHORD_PX": 0.0},
-    "frac/4":       {"ARC_MIN_CHORD_FRAC": 0.0075, "ARC_MIN_CHORD_PX": 0.0},
-    "abs 12 px":    {"ARC_MIN_CHORD_FRAC": 0.0, "ARC_MIN_CHORD_PX": 12.0},
-    "abs 8 px":     {"ARC_MIN_CHORD_FRAC": 0.0, "ARC_MIN_CHORD_PX": 8.0},
-    "abs 5 px":     {"ARC_MIN_CHORD_FRAC": 0.0, "ARC_MIN_CHORD_PX": 5.0},
-}
+ARMS = {"shipped": 0, "merge 2": 2, "merge 3": 3, "merge 4": 4}
 
 
 def one(args):
     part, arm = args
-    from photo2fcstd import analysis, spec as spec_mod, thresholds as th
-    for k, v in ARMS[arm].items():
-        setattr(th, k, v)
+    from photo2fcstd import analysis, spec as spec_mod, trace
+    trace.MERGE_RUNS = ARMS[arm]
     rec = TC.IDEAL[part]
     try:
         mask = TC.rasterise(rec)
