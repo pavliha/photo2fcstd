@@ -522,7 +522,6 @@ def arc_span(run, cx, cy):
 
 
 RUN_EPS = float(os.environ.get("P2F_RUN_EPS", 0.01806))
-MERGE_RUNS = int(os.environ.get("P2F_MERGE_RUNS", 0))
 REPEATED_RUN_EPS = float(os.environ.get("P2F_REPEATED_RUN_EPS", 0.00836))
 
 
@@ -688,53 +687,9 @@ def carry_support(final, original):
     return final
 
 
-def arc_gates(run, length_px):
-    """The production arc test, as a predicate, so merging can ask it of a candidate union."""
-    chord = float(np.hypot(*(run[-1] - run[0])))
-    if len(run) < th.ARC_MIN_POINTS or chord <= th.ARC_MIN_CHORD_FRAC * length_px:
-        return False
-    cx, cy, r, rel, _ = fit_circle(run)
-    span = arc_span(run, cx, cy)
-    cv = run[-1] - run[0]
-    sag = float(np.max(np.abs(cv[0] * (run[:, 1] - run[0][1]) - cv[1] * (run[:, 0] - run[0][0]))
-                       / max(chord, 1e-9)))
-    return bool(rel * r < max(th.ARC_FIT_TOL * r, 1.2)
-                and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG
-                and sag > th.ARC_MIN_SAG_FRAC * chord)
-
-
-def merge_runs(runs, length_px, limit=None):
-    """Join consecutive runs that only fail the sweep gate because a corner split them.
-
-    A 60 degree arc broken into three runs presents each with 20 degrees and every one fails
-    ARC_MIN_SPAN_DEG, which is why 42% of runs are refused for sweep and why arc recovery falls as
-    parts get more complex. A union is only accepted when it passes the *same* gates whole, so this
-    loosens nothing: it asks the question of the right span of contour.
-    """
-    limit = MERGE_RUNS if limit is None else limit
-    if limit < 2:
-        return runs
-    out, i = [], 0
-    while i < len(runs):
-        best = None
-        for k in range(min(limit, len(runs) - i), 1, -1):
-            union = np.concatenate(runs[i:i + k])
-            if arc_gates(union, length_px) and not arc_gates(runs[i], length_px):
-                best = (k, union)
-                break
-        if best:
-            out.append(best[1])
-            i += best[0]
-        else:
-            out.append(runs[i])
-            i += 1
-    return out
-
-
 def elements(raw, length_px):
     repeated = boundary_period(raw)
     runs = corner_runs(raw, REPEATED_RUN_EPS if repeated else None)
-    runs = merge_runs(runs, length_px)
     els = []
     for run in runs:
         chord = float(np.hypot(*(run[-1] - run[0])))

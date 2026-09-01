@@ -153,6 +153,21 @@ quantity.
 It also bounds A4: b-splines are reproduced as curves 54% of the time, better than arcs, so they
 are not the unreachable mass.
 
+## Perfect-input gains have twice failed to survive a photograph
+
+Two arc changes were measured on perfect rasterised faces, both improved it with a confidence
+interval clear of zero, and both broke models when regenerated from real photographs and built:
+
+| change | perfect input | on photographs | builds |
+|---|---|---|---|
+| chord gate absolute, not part-relative | +0.0030 structure [+0.0010, +0.0057] | -0.0045 [-0.0135, +0.0025] | valid 125 to 123, unsolved 3 to 6 |
+| merge runs before fitting | +0.0132 [+0.0037, +0.0226] | +0.0170 [-0.0051, +0.0396] | valid 124 to 121, unsolved 3 to 6, **build ~50x slower** |
+
+Both reverted. Treat a perfect-input measurement as a **screen** that says whether a mechanism
+exists, never as evidence to ship on, and never run an arc A/B without regenerating specs from
+photographs and building them. A census of 3,384 runs also shows where arcs actually die: 42% fail
+`ARC_MIN_SPAN_DEG`, 23% fail the circle fit, and the chord gate fires on **one run in 3,384**.
+
 ## Mode selection and coverage are finished
 
 Measured on 197 trusted parts with photos, every one draws a sketch and `stations` is never chosen,

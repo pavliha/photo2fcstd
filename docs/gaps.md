@@ -54,6 +54,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | # | item | blocked by | size |
 |---|---|---|---|
 | ~~A6~~ | ~~Arc chord gate relative to the run~~ - **measured, reverted** | - | - |
+| ~~A8~~ | ~~Merge runs before fitting~~ - **measured, reverted** | - | - |
 | **A7** | **Give the fitter evidence a straight line lacks** | code | large |
 | A3 | Arc fitting before simplification - *demoted, addresses 29%* | code | medium |
 | B1 | Two sketches that fail to solve | code | small |
@@ -114,6 +115,47 @@ why chord size is not the limit and why recovery tracks complexity - more corner
 Note run merging was tried and reverted once already (-0.013 IoU), but that merged *fitted arcs*;
 this would merge runs *before* fitting. File as A8 and measure the split count against arc sweep
 first.
+
+**A8. MEASURED AND REVERTED.** A census of 3,384 contour runs on perfect input says where arcs
+actually die:
+
+| outcome | runs | share |
+|---|---|---|
+| **sweep under 40 deg** | 1425 | **42%** (64% of all rejections) |
+| accepted as an arc | 1153 | 34% |
+| circle fit too loose | 769 | 23% |
+| too flat (sagitta) | 35 | 1% |
+| chord too short for the part | **1** | **0%** |
+
+That last row retro-explains A6: the chord gate fires on one outer-contour run in 3,384, so its
+small measured effect must have come almost entirely from hole contours, where a chord is short
+relative to the whole part.
+
+Since sweep is the killer and 29% of lost arcs are split into pieces that each fall under it,
+`merge_runs` joined consecutive runs when the union passed the **same** gates whole - loosening
+nothing, just asking the question of the right span of contour. On perfect input, n=407:
+
+| arm | curves | recovered | false/part | structure |
+|---|---|---|---|---|
+| shipped | 3.50 | 26% | 0.04 | 0.802 |
+| merge 3 | 4.61 | **34%** | 0.15 | **+0.0132 [+0.0037, +0.0226]** |
+
+Four times A6's effect. On real photographs, n=132, both arms regenerated and built:
+
+| arm | IoU | structure | curves | valid solid | unsolved | build time |
+|---|---|---|---|---|---|---|
+| shipped | 0.605 | 0.696 | 1.95 | 124 (94%) | 3 | ~2 min |
+| merge 3 | 0.592 | 0.713 | 2.61 | **121 (92%)** | **6** | **~1 hour** |
+
+Structure +0.0170 [-0.0051, +0.0396] and IoU -0.0123 [-0.0314, +0.0090], neither significant and
+pointing opposite ways. It loses three working solids, doubles the unsolved sketches, and makes
+FreeCAD roughly **fifty times slower** - merged arcs produce geometry the solver labours over.
+Reverted.
+
+**The pattern across A6 and A8 is the finding.** Both improved perfect-input metrics with tight
+confidence intervals, and both broke models on real photographs. A gain measured on rasterised
+faces did not survive contact with a photograph either time. Any future arc work must carry a build
+check, and perfect-input numbers should be treated as a *screen*, never as evidence to ship on.
 
 **A7. Give the fitter evidence a straight line does not have.** If A6 fails or falls short, this is
 what is left, and it follows from the ruled-out list above: the discriminant has to be something
