@@ -336,6 +336,13 @@ which used exactly that thinnest view, lost to a constant.
 `data/depth_model.joblib` is gitignored like the other model artefacts, so a fresh clone
 falls back to the geometric estimate until `tools/` rebuilds it.
 
+**It does not survive a different dataset.** On T-LESS it scores 0.348 median absolute log error
+against 0.314 for the best constant there, having beaten a constant two to one on PrintCAD. The
+ratios differ outright - 0.055 to 0.503 here, 0.377 to 1.561 there - so the model under-predicts
+having learned the range it was shown. The conformal band covered 100% against a claimed 80%, but
+at 19.8x median width that is uninformative rather than robust, and conformal guarantees do not
+survive a change of distribution anyway. Treat the point estimate as PrintCAD-specific.
+
 ## A collapsed outline falls back, then refuses
 
 Regularising can flatten a thin silhouette to nothing: H/V snapping plus collinear

@@ -656,6 +656,36 @@ It ships as a warning on the spec rather than a silent fallback, because when a 
 constant-section axis there is no better rule to fall back to. The honest output is a drawing plus
 a note saying no single sketch describes this part.
 
+## Every model here was trained on PrintCAD, and it shows
+
+The axis classifier's collapse on T-LESS prompted an audit of the other two learned components
+against the same question: did it learn the task, or the dataset?
+
+| component | in distribution | on T-LESS | verdict |
+|---|---|---|---|
+| view choice | 0.56 agreement, +0.038 IoU | not testable (T-LESS has no view triples) | survives its convention test |
+| axis choice | 89% correct | 29% against 33% chance | **learned the dataset** |
+| depth ratio | 0.435 median \|log\|, constant 1.045 | 0.348, constant **0.314** | **loses to a constant** |
+
+**The depth model is beaten by the best constant on T-LESS**, 0.348 against 0.314 median absolute
+log error, and 81% within 2x against 90%. On PrintCAD it beat a constant by a factor of two.
+
+The cause is label shift rather than anything subtle. PrintCAD's depth-to-length ratios run 0.055
+to 0.503 - thin plates and brackets - while T-LESS's run 0.377 to 1.561, because those are chunky
+industrial housings. The model predicts 0.125 to 1.185 and systematically under-predicts, having
+learned the range it was shown. A constant is hard to beat on a narrow target, and easy to beat on
+a wide one, which is exactly why the PrintCAD comparison flattered it.
+
+Its conformal band still covered the truth 100% of the time against a claimed 80%, but at a median
+width of **19.8x** that is over-coverage by being uninformative, not by being robust. Conformal
+guarantees hold under exchangeability, which a different dataset breaks outright; the coverage here
+is luck, not the theorem.
+
+**The view model is the one that survived, and it was checked deliberately rather than assumed.**
+The general lesson is that split-by-part, which this repo has been careful about since the start,
+protects against memorising a part and does nothing about memorising a dataset. Every learned
+component here has exactly one dataset behind it.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
