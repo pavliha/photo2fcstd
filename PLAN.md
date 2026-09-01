@@ -115,6 +115,20 @@ only way to prove anything here.
 Sketches came through unharmed: region IoU 0.593 -> 0.630, exact primitive reproductions
 260 -> 301, and 1871 of 1873 parts still emit a sketch.
 
+### Where the remaining headroom is not
+
+Two things were checked before stopping, and both came back negative in a useful way.
+
+- **A stronger mode head buys nothing.** Gradient boosting on 128 principal components scores
+  0.577 against ridge's 0.577, +0.000 [-0.003, +0.004]. The 0.038 still separating the selector
+  from its oracle is not a modelling shortfall on these features; ridge already extracts what the
+  embeddings contain. Closing it needs different information.
+- **Tilt is mostly invisible, even in pixels.** With warp-oracle labels extended from 80 parts to
+  699, ridge on the photo the warp acts on recovers +0.021 [+0.006, +0.036] of sketch IoU, which
+  is 11% of the ceiling. That beats every silhouette criterion, all of which recovered 1% or less
+  and most of which were negative, so pixels do see something the mask cannot. The other 89% is
+  not visible from a single photograph and needs the board.
+
 ### Four invalid comparisons, in four different directions
 
 The measurements were wrong more often than the code was, and each was wrong differently.
