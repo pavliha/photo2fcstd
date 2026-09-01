@@ -1,7 +1,13 @@
 import numpy as np
 import pytest
 
-from photo2fcstd import capture, capture_check as CK
+from photo2fcstd import capture, capture_check as CK, make_target
+
+
+def cleared_texture():
+    tex = CK.board_texture()
+    ph, pw = tex.shape[:2]
+    return make_target.clear_centre(tex.copy(), pw, ph)
 
 
 def test_the_board_quad_follows_the_pose():
@@ -33,5 +39,5 @@ def test_a_bare_target_yields_no_part():
     still yield nothing."""
     view = CK.board_views(1, radius=max(CK.board_mm()) * 1.6,
                           elevations=CK.DETECTABLE_ELEV[:1])[0]
-    img, _ = CK.render_view(view, CK.board_texture())
+    img, _ = CK.render_view(view, cleared_texture())
     assert capture.part_mask(img, capture.pose(img)).sum() == 0
