@@ -1019,6 +1019,50 @@ The real deficit is upstream, in corner detection: 9.43 elements against 11.88, 
 against 5.13. That is the same wall four attempts have already failed against, and `rectangularise`
 is not a way around it.
 
+## Choosing the corner tolerance per part: it buys overlap and costs the drawing
+
+`approxPolyDP` takes one global tolerance, so it cannot be loose enough for a large outline and
+tight enough for a small notch on it. Part 00911's four corner notches survive at 0.010 and are gone
+at the shipped 0.015 - twelve corners against eight - and that single constant is behind both
+standing deficits, 8.6 elements against 10.5 and 1.5 curves against 5.1.
+
+The ceiling is real. Over 522 discriminating parts at five tolerances, choosing the best per part is
+worth **+0.024 [+0.020, +0.028]**, the shipped value is best on only 13%, and the oracle lands at
+10.68 elements against a truth of 11.53 - so the tolerance genuinely controls the deficit.
+
+**Posing it as selection was the right call and measurably so.** The two learned components here
+that work choose among a few candidates labelled by the end-to-end score; the five that failed
+predict geometric properties labelled by correspondence to a reference, which is only 62% reliable.
+Following the first pattern:
+
+| formulation | picks the best tolerance | against the shipped constant |
+|---|---|---|
+| 5-way classifier, n=159 | 38% | -0.0008 |
+| 5-way classifier, n=522 | 52% | +0.0047 [-0.0001, +0.0095] |
+| **per-candidate scoring, n=522** | **57%** | **+0.0072 [+0.0024, +0.0121]** |
+
+More data moved it from nothing to marginal; scoring candidates independently rather than as one
+five-way choice moved it from marginal to significant, on the same data.
+
+**And on held-out parts it still loses where it matters.** Over 296 parts the selector never saw:
+
+| arm | sketch IoU | exact primitives | elements |
+|---|---|---|---|
+| **shipped, one tolerance** | 0.602 | **32%** | 8.61 |
+| learned per part | **0.606** | 27% | 12.35 |
+| the real sketches | - | 100% | 10.54 |
+
++0.0047 [+0.0010, +0.0085] of IoU for **-4.6 points of exact primitives**. The element count tells
+the story: the shipped constant undershoots at 8.61 and the selector overshoots at 12.35. It does
+not find the right number, it trades one error for the opposite one, and the extra elements buy
+boundary overlap while breaking primitive matches. That is the arc-gate trade again - more elements,
+wrong elements - and region IoU is the metric that cannot see the difference.
+
+It changed 150 of 238 parts and split them 82 to 68, which is close to a coin flip on which parts it
+helps. Kept behind `P2F_EPS_MODEL=1`, off by default: unlike the contour-labelling attempts this one
+has a measured positive on one axis and a documented reason it is not enough, which is worth having
+for anyone who returns to the element deficit.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

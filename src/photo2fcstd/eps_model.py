@@ -21,6 +21,25 @@ ENABLED = os.environ.get("P2F_EPS_MODEL", "0") == "1"
 _CACHE = {}
 
 
+def per_candidate(view, contour, counts):
+    """One row per tolerance, describing that tolerance rather than the part alone.
+
+    The 5-way classifier has to learn each tolerance's behaviour from scratch; scoring candidates
+    independently shares strength across them and gives five rows per part instead of one. That is
+    the framing both learned components here that worked already use.
+    """
+    base = features_for(view, contour, counts)
+    n = np.array(counts, float)
+    rows = []
+    for i, e in enumerate(CANDIDATES):
+        c = float(counts[i])
+        rows.append(base + [e, c, c / max(n.max(), 1.0), c - float(np.median(n)),
+                            float(i), abs(c - float(np.median(n))),
+                            c / max(float(counts[max(i - 1, 0)]), 1.0),
+                            c / max(float(counts[min(i + 1, len(counts) - 1)]), 1.0)])
+    return np.asarray(rows, float)
+
+
 def features_for(view, contour, counts):
     """The part's own shape, plus how much the element count moves as the tolerance changes.
 
@@ -83,8 +102,8 @@ def choose(view, contour):
         return None
     try:
         counts = element_counts(contour, view["length_px"])
-        x = np.array([features_for(view, contour, counts)], float)
-        return float(CANDIDATES[int(np.argmax(m.predict_proba(x)[0]))])
+        x = per_candidate(view, contour, counts)
+        return float(CANDIDATES[int(np.argmax(m.predict_proba(x)[:, 1]))])
     except Exception as exc:
         from photo2fcstd import fallback
         fallback.note("eps_model", "scoring failed: %s" % exc)
