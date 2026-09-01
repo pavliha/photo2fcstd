@@ -126,6 +126,23 @@ Simplification is not what loses them. Sweeping `trace.RUN_EPS` over a 16x range
 106 lost arcs only 29% collapse to a single line; **71% survive as two or more pieces and are
 refused by the fitter**. The arcs reach the decision intact.
 
+The tracer does not fail at arcs so much as **saturate**. Pooling trusted and untrusted parts
+(n=416), it recovers 99% of curves on parts that have one, 89% on parts with two or three - 321 of
+416 parts - and draws 0.08 false curves on the 134 that have none. Recovery then falls to 45% at
+4-7 real curves, 33% at 8-15 and 23% past 16, while drawn curves creep from 0.99 to only 6.37. The
+defect lives entirely in the ~23% of parts with four or more curves, and complexity selects them,
+not `trustworthy()`.
+
+A likely mechanism, untested: `trace.py:696` requires `chord > ARC_MIN_CHORD_FRAC * length_px`
+before a run is considered as an arc at all - a fraction of **the whole part**. On a complex part
+every arc is a small share of it. The sagitta test beside it is relative to the local chord; only
+this one is global. That is item A6.
+
+Quote the ceiling **excluding b-spline parts**. They are 15% of the set, 94% of their curves are
+b-splines, and they score 0% exact because there is no b-spline primitive to emit - so they inflate
+the deficit without being fixable by any arc work. Excluding them it is 1.66 against 3.83, not 1.76
+against 5.19.
+
 **This is a precision/recall setting, not a bug.** Only 3% of real lines come out curved, and that
 precision is what loosening the gate destroys: the looser gate fires on 54% of parts whose sketch
 has no curve at all, because sweep and sagitta are exactly the quantities that cannot separate a

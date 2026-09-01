@@ -13,8 +13,9 @@ made.
 | ~~A1~~ | ~~Characterise which arcs get split~~ - **done**, see below | - | - |
 | ~~A2~~ | ~~Is simplification the binding knob~~ - **done, it is not** | - | - |
 | A3 | Try arc fitting before polygon simplification, not after | code | medium |
-| A4 | Decide the `bsplinecurve` policy | code | small |
-| A5 | Re-run the tracer ceiling on the 45% untrusted parts | code | small |
+| ~~A4~~ | ~~b-spline policy~~ - **done**, they cap 15% of parts at 0% exact | - | - |
+| ~~A5~~ | ~~Ceiling on the untrusted 45%~~ - **done**, it is complexity not trust |
+| **A6** | **Make the arc chord gate relative to the run, not the part** | code | medium |
 | B1 | Fix the two sketches that fail to solve | code | small |
 | B2 | Fix the two solids with volume that `isValid()` rejects | code | medium |
 | B3 | Put build validity in the regression test | code | small |
@@ -84,14 +85,49 @@ survive simplification as multi-piece polylines and are refused afterwards, and 
 change barely moves curve count. So reordering addresses at most the 29% minority. **Done when**
 measured, but expect little; the accept/reject decision is the real subject.
 
-**A4. Decide the `bsplinecurve` policy.** 328 of 2,163 ground-truth elements are b-splines; the
-pipeline has no primitive for them and the scorer counts them as curves, so part of the "missing
-3.5 arcs" may be unreachable by construction. Forcing them into "arc" cost 8 points when tried.
-**Done when** the ceiling in A is restated separately for parts with and without b-splines.
+**A4. DONE.** Restating the ceiling by whether the real sketch contains b-splines (n=180):
 
-**A5. Re-run the tracer ceiling on the untrusted 45%.** Everything is measured on the trusted
-subset. **Done when** it is known whether the arc deficit is the same there or an artefact of which
-parts `trustworthy()` admits.
+| | n | curves drawn | really | recovered | structure | exact |
+|---|---|---|---|---|---|---|
+| no b-splines | 153 | 1.66 | 3.83 | 43% | 0.787 | **39%** |
+| has b-splines | 27 | 2.33 | 12.93 | 18% | 0.577 | **0%** |
+
+The 27 b-spline parts are 15% of the set and **94% of their curves are b-splines**. They score 0%
+exact and cannot do otherwise - there is no b-spline primitive to emit. So the headline deficit was
+inflated by them: on the other 85% it is 1.66 against 3.83, not 1.76 against 5.19. **Policy: quote
+the arc ceiling excluding b-spline parts, and treat their `exact` as unreachable rather than as a
+defect.** Adding a b-spline primitive is a separate, larger question nobody has asked for.
+
+**A5. DONE - and it is complexity, not trust.** Untrusted parts recover 71% of their curves against
+the trusted set's 34% (n=236 against 180), but they are far simpler: 1.72 real curves against 5.19.
+Pooling both sets, n=416, recovery against how many curves the sketch really has:
+
+| real curves | n | drawn | really | recovered | structure |
+|---|---|---|---|---|---|
+| 0 | 134 | 0.08 | 0 | - | 0.815 |
+| 1 | 80 | 0.99 | 1.00 | **99%** | 0.842 |
+| 2-3 | 107 | 1.88 | 2.11 | **89%** | 0.852 |
+| 4-7 | 52 | 2.21 | 4.92 | 45% | 0.654 |
+| 8-15 | 24 | 3.33 | 10.17 | 33% | 0.635 |
+| >=16 | 19 | 6.37 | 28.21 | **23%** | 0.544 |
+
+**The tracer is not bad at arcs. It saturates.** It finds essentially every curve when there are
+one to three (99% and 89%, on 321 of 416 parts) and draws 0.08 false curves on the 134 parts that
+have none. As real curves rise from 1 to 28, drawn curves rise only from 0.99 to 6.37.
+
+So the arc defect is confined to the ~23% of parts with four or more curves, and `trustworthy()` is
+not what selects them - complexity is.
+
+**A6. Make the arc chord gate relative to the run, not the part.** A5's saturation has a mechanism.
+`trace.py:696` requires `chord > ARC_MIN_CHORD_FRAC * length_px` before a run is even *considered*
+as an arc - a fraction of **the whole part's extent**. On a part with 28 curves every arc is a small
+share of the part and is rejected before any fitting happens, which is the same fact as A1's "share
+of the loop's perimeter" table (15% kept below 0.02, 48% at 0.05-0.15). The sagitta test beside it
+is already relative to the local chord; only this one is global.
+
+**Done when** an A/B on the same parts, regenerating both arms, reports curve recovery **and** the
+false-curve rate on the 134 zero-curve parts, since precision is what the earlier gate loosening
+destroyed. Shipped or reverted on `verdict`, with a build check.
 
 ## B. Builds
 
