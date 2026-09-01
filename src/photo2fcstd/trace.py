@@ -411,57 +411,6 @@ def merge_and_snap(els, length_px):
     return merged
 
 
-MERGE_RUNS = os.environ.get("P2F_MERGE_RUNS", "0") == "1"
-MERGE_MAX_RUNS = 6
-
-
-def arc_over(run, length_px):
-    """Accept a run as an arc, or return None. The same gates the per-run path applies."""
-    chord = float(np.hypot(*(run[-1] - run[0])))
-    if len(run) < th.ARC_MIN_POINTS or chord <= th.ARC_MIN_CHORD_FRAC * length_px:
-        return None
-    cx, cy, r, rel, _ = fit_circle(run)
-    span = arc_span(run, cx, cy)
-    cv = run[-1] - run[0]
-    sag = float(np.max(np.abs(cv[0] * (run[:, 1] - run[0][1]) - cv[1] * (run[:, 0] - run[0][0]))
-                       / max(chord, 1e-9)))
-    if (rel * r < max(th.ARC_FIT_TOL * r, 1.2)
-            and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG
-            and sag > th.ARC_MIN_SAG_FRAC * chord):
-        return arc_from_run(run)
-    return None
-
-
-def merged_runs(runs, length_px, max_runs=MERGE_MAX_RUNS):
-    """Fit an arc across consecutive runs before falling back to a line per run.
-
-    `approxPolyDP` puts its corners at geometric extrema, which on a curve means along it: an arc
-    arrives as several short flat chords, each too straight for any gate to accept. We find 1.61
-    curves per sketch where the real sketches average 3.26 that are longer than 5% of the diagonal,
-    and loosening the gates instead raised the curve count while dropping exact primitives from
-    26% to 18% - more curves, fitted to the wrong fragments. This tries the union first, longest
-    span wins, so a real arc is recovered whole and a genuine corner still breaks the run.
-    """
-    out, i = [], 0
-    while i < len(runs):
-        best = None
-        for k in range(min(max_runs, len(runs) - i), 1, -1):
-            joined = np.vstack([runs[i]] + [r[1:] for r in runs[i + 1:i + k]])
-            got = arc_over(joined, length_px)
-            if got is not None:
-                best = (k, got)
-                break
-        if best:
-            out.append(best[1])
-            i += best[0]
-            continue
-        got = arc_over(runs[i], length_px)
-        out.append(got if got is not None
-                   else {"type": "line", "p0": runs[i][0].tolist(), "p1": runs[i][-1].tolist()})
-        i += 1
-    return out
-
-
 def elements(raw, length_px):
     learned = learned_runs(raw, length_px) if LEARNED_CURVES else None
     if learned is not None:
@@ -469,8 +418,6 @@ def elements(raw, length_px):
         return merge_and_snap(els, length_px)
     runs = ((cornernet_runs(raw) if LEARNED_CORNERS else None)
             or (filtered_runs(raw) if FILTERED_CORNERS else None) or corner_runs(raw))
-    if MERGE_RUNS:
-        return merge_and_snap(merged_runs(runs, length_px), length_px)
     els = []
     for run in runs:
         chord = float(np.hypot(*(run[-1] - run[0])))

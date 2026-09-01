@@ -498,6 +498,44 @@ specs:
 Not one is positive. The constants were at a local optimum under the old input distribution and
 they are still at one under the new, which is a stronger statement than the original tuning made.
 
+## The curve gap survives four attempts, and the photo path is saturated
+
+Real sketches average 5.13 curve edges; we draw 1.49. Only 21% of those real curves are shorter
+than 5% of the sketch diagonal and the median is 12.8%, so about 3.26 per sketch are large enough
+to see. Four different attempts to close that gap have now lost end to end:
+
+| attempt | curves | exact primitives | sketch IoU |
+|---|---|---|---|
+| **shipped** | 1.49 | **25%** | **0.648** |
+| loosen the arc gates | 3.07 | 19% | 0.633 |
+| loosen further | 3.63 | 18% | 0.631 |
+| fit arcs across consecutive runs | 1.64 | 24% | 0.635 |
+| learned per-point curve labels | - | - | 0.452 |
+
+The run-merging attempt was the best-motivated of them: `approxPolyDP` places corners at geometric
+extrema, which on a curve means along it, so an arc arrives as several short flat chords no gate
+can accept. On a synthetic circle chopped into 8 runs it recovers 2 arcs instead of 8 lines. On
+real traces it fired on 64 of 213 parts and cost 0.033 of IoU on exactly those, -0.0125
+[-0.021, -0.005] overall. The mechanism is real and the fix is not.
+
+**Taken together the photo path is saturated.** In one session, on the same metric with the same
+protocol:
+
+| change | result |
+|---|---|
+| learned view choice | **+0.038, shipped** |
+| pixels instead of the mask | -0.009, tie |
+| ensembling both | +0.0015, nothing |
+| re-sweeping six thresholds | nothing positive |
+| loosening arc gates | -0.013 |
+| merging runs into arcs | -0.013 |
+
+One win in six, and the win was a routing bug rather than a modelling gain. The remaining error is
+not reachable by thresholds, fitting heuristics or selection models - the three kinds of change
+this codebase can express. Against a trivial circle at 0.455 the photo path scores 0.602 for a
+skill of 0.221, where carving from known poses scores 0.726 for 0.498. The next real gain is a
+different input, not a better estimator on this one.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
