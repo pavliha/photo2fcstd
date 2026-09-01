@@ -88,6 +88,19 @@ USE_VIEW_MODEL = os.environ.get("P2F_VIEW_MODEL", "1") != "0"
 EDGE_ON_RATIO = float(os.environ.get("P2F_EDGE_ON_RATIO", 3.0))
 
 
+def stat(view, key):
+    """A selection statistic, taken before regularisation when the view carries one.
+
+    Selection used to read the statistics that tracing produces, so a change to symmetry or
+    simplification moved which photograph got traced; three pixels of sliver once cost a part
+    0.95 down to 0.45 that way.
+    """
+    picked = view.get("select") or {}
+    if key in picked:
+        return picked[key]
+    return view["elongation"] if key == "elongation" else view["shape"][key]
+
+
 def not_edge_on(chosen, specs, ratio=EDGE_ON_RATIO):
     """Veto a view that is far more elongated than the flattest available."""
     allowed = face_on(specs, ratio)
@@ -105,8 +118,8 @@ def face_on(specs, ratio=EDGE_ON_RATIO):
     """
     if len(specs) < 2:
         return specs
-    flattest = min(v["elongation"] for v in specs)
-    kept = [v for v in specs if v["elongation"] <= ratio * max(flattest, 1e-6)]
+    flattest = min(stat(v, "elongation") for v in specs)
+    kept = [v for v in specs if stat(v, "elongation") <= ratio * max(flattest, 1e-6)]
     return kept or specs
 
 

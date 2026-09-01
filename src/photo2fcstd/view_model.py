@@ -16,10 +16,14 @@ _CACHE = {}
 
 
 def stats_of_view(view):
+    """Read the pre-regularisation statistics when the view carries them."""
     s = view["shape"]
-    return {"rect": s["rectangularity"], "sol": s["solidity"], "elong": view["elongation"],
-            "ellipse_rms": s["ellipse_rms"], "hole_frac": s["hole_frac"],
-            "stroke": s["stroke_px"], "nholes": len(s["holes"]), "area": float(view["length_px"])}
+    picked = view.get("select") or {}
+    get = lambda key, default: picked.get(key, default)
+    return {"rect": get("rectangularity", s["rectangularity"]), "sol": get("solidity", s["solidity"]),
+            "elong": get("elongation", view["elongation"]), "ellipse_rms": s["ellipse_rms"],
+            "hole_frac": get("hole_frac", s["hole_frac"]), "stroke": get("stroke_px", s["stroke_px"]),
+            "nholes": get("nholes", len(s["holes"])), "area": float(get("length_px", view["length_px"]))}
 
 
 def features(per_view):

@@ -23,6 +23,7 @@ def view(path, min_step_px=None, grad=STEP_GRAD, tail=TAIL, segment="rmbg", rect
             mask, angle = upright_mask(segment_any(img, "rmbg" if segment == "rmbg" else segment))
     if scale is None:
         mask, angle = upright_mask(segment_photo(path) if segment == "rmbg" else segment_any(img, segment))
+    selection = selection_stats(mask)
     mask, sym_axes = symmetrize(mask)
     poly, shape = outline(mask)
     raw = np.array(shape["raw"])
@@ -34,12 +35,15 @@ def view(path, min_step_px=None, grad=STEP_GRAD, tail=TAIL, segment="rmbg", rect
     if shape["round"] or shape["roundish"]:
         shape["ellipse"] = f
         shape["rings"] = rings_of(img, mask, angle, f)
-    return _view_body(img, mask, angle, shape, poly, sym_axes, path, scale, min_step_px, grad, tail)
+    record = _view_body(img, mask, angle, shape, poly, sym_axes, path, scale, min_step_px, grad, tail)
+    record["select"] = selection
+    return record
 
 
 def view_from_mask(mask, name="mask", min_step_px=None, grad=STEP_GRAD, tail=TAIL):
     """The same view a photo produces, built from an already-segmented mask."""
     mask, angle = upright_mask(mask)
+    selection = selection_stats(mask)
     mask, sym_axes = symmetrize(mask)
     poly, shape = outline(mask)
     raw = np.array(shape["raw"])
@@ -51,6 +55,25 @@ def view_from_mask(mask, name="mask", min_step_px=None, grad=STEP_GRAD, tail=TAI
     if shape["round"] or shape["roundish"]:
         shape["ellipse"] = f
     return _view_body(None, mask, angle, shape, poly, sym_axes, name, None, min_step_px, grad, tail)
+
+
+def selection_stats(mask):
+    """Shape statistics taken before any regularisation, for choosing a view or a mode.
+
+    Selection used to read the same statistics that tracing produces, so a change to
+    symmetry or simplification moved which photograph got traced. Three pixels of
+    reflection sliver once cost a part 0.95 down to 0.45 that way. These come from the
+    upright mask and nothing downstream can perturb them.
+    """
+    _, shape = outline(mask)
+    ys, xs = np.nonzero(mask)
+    height = float(ys.max() - ys.min() + 1)
+    width = float(xs.max() - xs.min() + 1)
+    return {"rectangularity": shape["rectangularity"], "solidity": shape["solidity"],
+            "hole_frac": shape["hole_frac"], "stroke_px": shape["stroke_px"],
+            "nholes": len(shape["holes"]), "bbox": shape["bbox"],
+            "elongation": round(max(height, width) / max(min(height, width), 1.0), 2),
+            "length_px": max(height, width)}
 
 
 def _view_body(img, mask, angle, shape, poly, sym_axes, path, scale, min_step_px, grad, tail):

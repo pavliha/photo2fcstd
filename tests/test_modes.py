@@ -128,3 +128,31 @@ def test_uniformly_elongated_views_are_all_kept():
     from photo2fcstd import modes
     specs = [{"elongation": 8.0, "source": "a"}, {"elongation": 9.0, "source": "b"}]
     assert len(modes.face_on(specs)) == 2
+
+
+def test_selection_statistics_survive_a_change_to_regularisation():
+    from photo2fcstd import modes
+    view = {"select": {"elongation": 4.0, "hole_frac": 0.2, "rectangularity": 0.8},
+            "elongation": 99.0, "shape": {"hole_frac": 0.9, "rectangularity": 0.1}}
+    assert modes.stat(view, "elongation") == 4.0
+    assert modes.stat(view, "hole_frac") == 0.2
+    assert modes.stat(view, "rectangularity") == 0.8
+
+
+def test_a_view_without_selection_statistics_still_works():
+    from photo2fcstd import modes
+    view = {"elongation": 4.0, "shape": {"hole_frac": 0.2}}
+    assert modes.stat(view, "elongation") == 4.0
+    assert modes.stat(view, "hole_frac") == 0.2
+
+
+def test_the_view_model_prefers_the_pre_regularisation_statistics():
+    from photo2fcstd import view_model
+    view = {"select": {"rectangularity": 0.8, "solidity": 0.9, "elongation": 2.0, "hole_frac": 0.1,
+                       "stroke_px": 5.0, "nholes": 3, "length_px": 100.0},
+            "elongation": 99.0, "length_px": 1.0,
+            "shape": {"rectangularity": 0.1, "solidity": 0.1, "ellipse_rms": 0.3,
+                      "hole_frac": 0.9, "stroke_px": 1.0, "holes": []}}
+    got = view_model.stats_of_view(view)
+    assert got["rect"] == 0.8 and got["elong"] == 2.0 and got["nholes"] == 3
+    assert got["ellipse_rms"] == 0.3
