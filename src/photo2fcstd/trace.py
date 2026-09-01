@@ -544,8 +544,55 @@ def merge_and_snap(els, length_px):
         on = lambda q: (c + (np.asarray(q, float) - c) / max(np.hypot(*(np.asarray(q, float) - c)), 1e-9) * e["r"]).tolist()
         e["p0"], e["p1"] = on(run[0]), on(run[-1])
     for e in merged:
+        if e.get("_run") is not None:
+            e["support"] = support_of(e["_run"], e, length_px)
         e.pop("_run", None)
     return merged
+
+
+def support_of(run, element, length_px):
+    """How much contour evidence stands behind one fitted element, and how well it fits.
+
+    The tracer fits a line or an arc to a run of contour points and then keeps only the endpoints.
+    That discards the one thing needed to tell a well-seen edge from a badly-seen one, which is why
+    a constraint predictor built on the fitted geometry alone could not beat its majority baseline:
+    where the trace is close the answer is already known, and where it is wrong nothing in the
+    output says so.
+    """
+    run = np.asarray(run, float)
+    n = len(run)
+    if n < 2:
+        return {"points": n, "residual": 0.0, "span_px": 0.0, "chord_px": 0.0, "straightness": 1.0}
+    steps = np.linalg.norm(np.diff(run, axis=0), axis=1)
+    span = float(steps.sum())
+    chord = float(np.linalg.norm(run[-1] - run[0]))
+    if element["type"] == "line":
+        a, b = np.asarray(element["p0"], float), np.asarray(element["p1"], float)
+        d = b - a
+        L2 = float(d @ d)
+        if L2 < 1e-12:
+            res = 0.0
+        else:
+            t = np.clip((run - a) @ d / L2, 0.0, 1.0)
+            res = float(np.sqrt(np.mean(np.linalg.norm(run - (a + t[:, None] * d), axis=1) ** 2)))
+    else:
+        c = np.array([element["cx"], element["cy"]], float)
+        res = float(np.sqrt(np.mean((np.linalg.norm(run - c, axis=1) - element["r"]) ** 2)))
+    return {"points": int(n), "residual": float(res / max(length_px, 1e-9)),
+            "span_px": span / max(length_px, 1e-9), "chord_px": chord / max(length_px, 1e-9),
+            "straightness": float(chord / max(span, 1e-9))}
+
+
+def carry_support(final, original):
+    """Copy each element's evidence onto whatever regularisation turned it into."""
+    if not original:
+        return final
+    mid = lambda e: (np.asarray(e.get("p0", [0, 0]), float) + np.asarray(e.get("p1", [0, 0]), float)) / 2
+    src = np.array([mid(e) for e in original], float)
+    for e in final:
+        d = np.linalg.norm(src - mid(e), axis=1)
+        e["support"] = dict(original[int(d.argmin())].get("support") or {})
+    return final
 
 
 def elements(raw, length_px):
@@ -566,8 +613,12 @@ def elements(raw, length_px):
             if rel * r < max(th.ARC_FIT_TOL * r, 1.2) and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG and sag > th.ARC_MIN_SAG_FRAC * chord:
                 els.append(arc_from_run(run))
                 continue
-        els.append({"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist()})
-
+        line = {"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist(), "_run": run}
+        line["support"] = support_of(run, line, length_px)
+        els.append(line)
+    for e in els:
+        if "support" not in e and e.get("_run") is not None:
+            e["support"] = support_of(e["_run"], e, length_px)
     return merge_and_snap(els, length_px)
 
 
@@ -706,7 +757,9 @@ def primitives(raw_loops, length_px, circle_aspect=0.7):
         if ellipse_ok(f) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect):
             out.append({"type": "circle", "cx": f["cx"], "cy": f["cy"], "r": f["a"]})
             continue
-        els = rectangularise(regularise_lines(elements(raw, length_px), length_px))
+        traced = elements(raw, length_px)
+        before = [dict(e) for e in traced]
+        els = carry_support(rectangularise(regularise_lines(traced, length_px)), before)
         if RADIUS_TOL > 0:
             els = unify_radii(els, RADIUS_TOL)
         out.append({"type": "loop", "elements": els, "kinds": kinds_of(els), "joins": joins(els)})

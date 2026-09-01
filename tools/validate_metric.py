@@ -66,3 +66,22 @@ def main(limit=120):
 
 if __name__ == "__main__":
     main(int(sys.argv[1]) if len(sys.argv) > 1 else 120)
+
+
+def ceilings(out_path="data/metric_ceiling.json", limit=None):
+    parts = [p for p in sorted(IDEAL) if SS.trustworthy(IDEAL[p])]
+    parts = parts[:limit] if limit else parts
+    out = {}
+    for i, part in enumerate(parts):
+        mesh = solid_of(part)
+        if mesh is None:
+            continue
+        try:
+            value, _ = score.best_iou(truth_of(part), mesh)
+        except Exception:
+            continue
+        out[part] = float(value)
+        if (i + 1) % 100 == 0:
+            print("  %d/%d" % (i + 1, len(parts)), file=sys.stderr, flush=True)
+    json.dump(out, open(out_path, "w"))
+    print("wrote %s: %d parts, mean ceiling %.3f" % (out_path, len(out), np.mean(list(out.values()))))
