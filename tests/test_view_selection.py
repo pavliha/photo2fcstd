@@ -30,8 +30,9 @@ def test_the_ranker_flag_actually_selects_the_ranker(monkeypatch):
             calls.append(len(specs))
             return specs[-1]
 
+    import photo2fcstd.view_rank as vr
     monkeypatch.setattr(modes, "VIEW_PICK", "ranker")
-    monkeypatch.setitem(__import__("sys").modules, "photo2fcstd.view_rank", Stub)
+    monkeypatch.setattr(vr, "best", Stub.best)
     specs = three()
     assert modes.outline_source(specs, specs[0]) is specs[-1]
     assert calls == [3]
