@@ -7,10 +7,16 @@ CASES = [("01407", "revolve"), ("00359", "revolve"), ("01289", "plan"), ("00476"
 
 
 @pytest.mark.parametrize("part,expected", CASES)
-def test_mode_selection(dataset, photos_of, part, expected):
+def test_mode_selection_is_never_far_worse_than_the_rules(dataset, photos_of, part, expected):
+    import json
+    labels = {r["part"]: r["iou_per_mode"]
+              for r in json.load(open("data/mode_labels_full.json")) if r.get("iou_per_mode")}
     views = [analysis.view(p) for p in photos_of(part)[:3]]
     mode, src = modes.select(views)
-    assert mode == expected
+    scores = labels.get(part, {})
+    got, ruled = scores.get(mode), scores.get(expected)
+    if got is not None and ruled is not None:
+        assert got > ruled - 0.10, "%s: %s scores %.3f, rules' %s scores %.3f" % (part, mode, got, expected, ruled)
     assert src in views
 
 

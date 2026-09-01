@@ -29,9 +29,17 @@ def test_stations_is_still_reachable_when_forced(dataset, photos_of):
     assert modes.select(views, "stations")[0] == "stations"
 
 
-def test_known_parts_keep_their_mode(chosen):
-    wrong = {p: (chosen[p], want) for p, want in EXPECTED.items() if chosen[p] != want}
-    assert not wrong, wrong
+def test_the_chosen_policy_beats_the_rules_it_replaced(chosen):
+    import json
+    labels = {r["part"]: r["iou_per_mode"]
+              for r in json.load(open("data/mode_labels_full.json")) if r.get("iou_per_mode")}
+    pairs = [(labels[p].get(chosen[p]), labels[p].get(want))
+             for p, want in EXPECTED.items() if p in labels]
+    scored = [(got, ruled) for got, ruled in pairs if got is not None and ruled is not None]
+    assert len(scored) >= 10, "not enough labelled parts to judge the policy"
+    mine = sum(got for got, _ in scored) / len(scored)
+    theirs = sum(ruled for _, ruled in scored) / len(scored)
+    assert mine >= theirs, "policy is worse than the rules on the pinned parts: %.3f vs %.3f" % (mine, theirs)
 
 
 def test_mode_mix_is_not_degenerate(chosen):

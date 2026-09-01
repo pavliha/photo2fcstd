@@ -110,7 +110,7 @@ def outline_source(specs, fallback):
 def select(specs, forced=None):
     if not specs:
         raise ValueError("no views to choose a mode from: the part has no photos")
-    if forced is None and (LEARNED or os.environ.get("P2F_MODE_PIXELS") == "1"):
+    if forced is None and (LEARNED or os.environ.get("P2F_MODE_PIXELS", "1") == "1"):
         predicted = learned_mode(specs)
         if predicted and can_build(predicted, specs):
             source = source_for(predicted, specs)

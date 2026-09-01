@@ -5,7 +5,7 @@ import numpy as np
 from photo2fcstd.settings import PACKAGE_ROOT
 
 MODEL_PATH = os.environ.get("P2F_MODE_PIXEL_MODEL", os.path.join(PACKAGE_ROOT, "data", "mode_pixel_model.joblib"))
-ENABLED = os.environ.get("P2F_MODE_PIXELS") == "1"
+ENABLED = os.environ.get("P2F_MODE_PIXELS", "1") == "1"
 ALLOW_BACKBONE = os.environ.get("P2F_EMBED_BACKBONE", "1") == "1"
 _CACHE = {}
 
