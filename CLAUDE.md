@@ -53,9 +53,16 @@ a local optimum, so a lone change is usually neutral or worse. When you touch on
   this repo has already rejected improved a statistic and broke models.
 - 160 parts is enough to see a trend, too few to trust a 1-vs-2 difference.
 
-Results already established, so nobody re-runs them: loosening the arc gates closes
-the curve gap (0.45 to 0.60 against an ideal 0.59) but buys no accuracy and breaks 12
-of 160 models. Deriving arc direction correctly is neutral at the shipped gates.
+Results already established, so nobody re-runs them: loosening the arc gates is closed,
+having now lost on both metrics. It appeared to close the curve *fraction* gap (0.45 to
+0.60 against an ideal 0.59), but that was an aggregate illusion - the looser gate fires
+on 54% of parts whose real sketch has no curve at all and 57% of parts that do have one,
+so it is not selective, and per-part curve *count* agreement gets worse (-0.074
+[-0.141, -0.009]). Structure overall is -0.036 [-0.070, -0.002], IoU -0.013, exact 26%
+to 19%, and it breaks 12 of 160 models. The tracer draws 1.61 curved primitives against
+a real 5.17, and no threshold recovers the rest: at the resolution these photos trace, a
+shallow arc and a noisy straight line are not distinguishable, which makes this a capture
+problem, not a gate problem. Deriving arc direction correctly is neutral at the shipped gates.
 Learned mode selection is worth ~0.001 of sketch IoU.
 
 ## Where the error actually is
