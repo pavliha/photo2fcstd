@@ -29,17 +29,31 @@ def sample(rng):
     return picked
 
 
-def score(name, ids, config, jobs):
+def scorable(ids):
+    """Every part in the set with trustworthy truth - the denominator never moves."""
+    import json
+    from photo2fcstd import sketch_score as SS
+    ideal = json.load(open("data/printcad_ideal_sketches_all.json"))
+    parts = open(ids).read().split()
+    return {p for p in parts if p in ideal and SS.trustworthy(ideal[p])
+            and sum((ideal[p].get("counts") or {}).values()) > 0}
+
+
+def score(name, ids, config, jobs, denominator):
     env = dict(os.environ, **{k: str(v) for k, v in config.items()})
     run = os.path.join("runs", name)
     shutil.rmtree(run, ignore_errors=True)
     subprocess.run([os.path.expanduser("~/3DPrint/.venv/bin/photo2fcstd-bench"), name,
                     "--jobs", str(jobs), "--ids", ids, "--sketch-only"],
                    env=env, capture_output=True, check=False)
-    rows = [r["primitive_f1"]["f1"] for r in bench.sketch_scores(run).values()
-            if r.get("trustworthy") and isinstance(r.get("primitive_f1"), dict) and r["primitive_f1"]["wanted"]]
+    got = bench.sketch_scores(run)
+    total = 0.0
+    for part in denominator:
+        row = got.get(part) or {}
+        value = row.get("primitive_f1")
+        total += float(value["f1"]) if isinstance(value, dict) and value.get("wanted") else 0.0
     shutil.rmtree(run, ignore_errors=True)
-    return (sum(rows) / len(rows)) if rows else 0.0, len(rows)
+    return total / max(len(denominator), 1), len(got)
 
 
 def main():
@@ -48,13 +62,15 @@ def main():
     jobs = int(sys.argv[3]) if len(sys.argv) > 3 else 9
     rng = random.Random(7)
     history = json.load(open(RESULTS)) if os.path.exists(RESULTS) else []
-    base, n = score("tune_base", ids, {}, jobs)
-    print("defaults: primitive F1 %.4f on %d parts" % (base, n), flush=True)
+    denominator = scorable(ids)
+    base, n = score("tune_base", ids, {}, jobs, denominator)
+    print("defaults: primitive F1 %.4f over a fixed %d parts (%d produced a sketch)"
+          % (base, len(denominator), n), flush=True)
     for i in range(trials):
         config = sample(rng)
         started = time.time()
-        value, count = score("tune_try", ids, config, jobs)
-        history.append({"config": config, "f1": value, "parts": count})
+        value, count = score("tune_try", ids, config, jobs, denominator)
+        history.append({"config": config, "f1": value, "parts": count, "denominator": len(denominator)})
         json.dump(history, open(RESULTS, "w"), indent=1)
         best = max(history, key=lambda r: r["f1"])
         print("%3d/%d  F1 %.4f  best %.4f  (%.0f s)" % (i + 1, trials, value, best["f1"], time.time() - started), flush=True)

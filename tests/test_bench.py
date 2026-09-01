@@ -1,3 +1,5 @@
+import pytest
+
 from photo2fcstd import bench
 
 
@@ -87,3 +89,16 @@ def test_the_frozen_split_shares_no_part_and_no_geometry_group():
     test = set(open("data/test_ids.txt").read().split())
     assert tune and test and not (tune & test)
     assert not ({groups.get(p, -1) for p in tune} & {groups.get(p, -1) for p in test})
+
+
+def test_a_missing_part_counts_as_zero_not_as_absent(tmp_path, monkeypatch):
+    import sys
+    sys.path.insert(0, "tools")
+    import tune_thresholds as tt
+    monkeypatch.setattr(tt.bench, "sketch_scores", lambda run: {
+        "a": {"trustworthy": True, "primitive_f1": {"f1": 1.0, "wanted": 4}}})
+    monkeypatch.setattr(tt.subprocess, "run", lambda *a, **k: None)
+    monkeypatch.setattr(tt.shutil, "rmtree", lambda *a, **k: None)
+    value, count = tt.score("x", "ids", {}, 1, {"a", "b", "c"})
+    assert value == pytest.approx(1.0 / 3)
+    assert count == 1
