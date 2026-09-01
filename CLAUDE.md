@@ -276,6 +276,39 @@ from reformulating (binary labels, excluded boundaries, right normalisation), no
 a bigger network. When something plateaus, ask what the model is being asked to
 predict before making it larger.
 
+## Tilt is in the pixels, and the silhouette throws it away
+
+The whole capture term is viewpoint tilt, and until now the only way to know a photo's tilt was a
+ChArUco board in the frame. It turns out the photograph itself carries it. Measured on 3,132 real
+T-LESS frames over 30 objects with dataset poses as truth, **held out by object**, predicting the
+part's face normal in camera coordinates - which is exactly what a rectifying homography needs:
+
+| arm | MAE | median | within 10 deg |
+|---|---|---|---|
+| constant (what you get free) | 22.6 deg | 20.7 | 20% |
+| nine silhouette statistics | 16.7 | 15.0 | 34% |
+| DINOv3 on the binary mask | 8.5 | 6.3 | 70% |
+| **DINOv3 on the part's pixels** | **4.8** | **3.6** | **89%** |
+
+Shading is worth **3.6 deg [3.4, 3.9]** beyond the silhouette. Both arms get the identical crop box
+from the dataset mask, so the only difference is whether the crop holds the photograph or its
+silhouette. The turntable background contributes nothing (+0.05 deg [-0.05, +0.15]), so this is
+shading on the part, not scenery - which is what makes it plausible on a part sitting on a desk.
+
+Note this is the third kind of learned component, and it is neither of the two in the section
+above: it does not select among candidates, but nor does it replace a geometric step, because there
+is no geometric step here to replace. The pipeline currently has no tilt estimate at all.
+
+**Pose the target in camera coordinates.** Expressed in the object's own frame the azimuth is
+arbitrary from one object to the next, and every arm ties the constant at 48 deg. That was a badly
+posed target, not a negative result - the same trap as the three-class curve labels.
+
+**Not yet established, and do not quote it as if it were**: that this transfers to PrintCAD photos
+(the depth model beat a constant two to one here and lost on T-LESS, so cross-dataset transfer is
+the known failure mode), and that rectifying by a 4.8 deg estimate improves the drawing. The tilt
+table says a residual of 4.8 deg should land near 0.88 against the 0.814 real photos score now, but
+that is an interpolation, not a measurement.
+
 ## Carving is the strongest path, and it is validated synthetically
 
 `carve.py` needs the ChArUco board in the photos, so it cannot be measured on the
