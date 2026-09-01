@@ -115,3 +115,16 @@ def test_revolve_from_the_learned_path_skips_the_outline_view_model(monkeypatch,
     monkeypatch.setattr(modes, "outline_source", lambda specs, fallback: called.append(1) or fallback)
     mode, _ = modes.select(views)
     assert mode == "revolve" and not called
+
+
+def test_an_edge_on_view_is_not_offered_to_the_view_model():
+    from photo2fcstd import modes
+    specs = [{"elongation": 3.0, "source": "a"}, {"elongation": 2.6, "source": "b"},
+             {"elongation": 22.4, "source": "c"}]
+    assert [v["source"] for v in modes.face_on(specs)] == ["a", "b"]
+
+
+def test_uniformly_elongated_views_are_all_kept():
+    from photo2fcstd import modes
+    specs = [{"elongation": 8.0, "source": "a"}, {"elongation": 9.0, "source": "b"}]
+    assert len(modes.face_on(specs)) == 2

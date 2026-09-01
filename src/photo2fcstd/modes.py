@@ -85,6 +85,31 @@ def source_for(mode, specs):
 USE_VIEW_MODEL = os.environ.get("P2F_VIEW_MODEL", "1") != "0"
 
 
+EDGE_ON_RATIO = 3.0
+
+
+def not_edge_on(chosen, specs, ratio=EDGE_ON_RATIO):
+    """Veto a view that is far more elongated than the flattest available."""
+    allowed = face_on(specs, ratio)
+    if chosen in allowed or not allowed:
+        return chosen
+    return min(allowed, key=lambda v: v["elongation"])
+
+
+def face_on(specs, ratio=EDGE_ON_RATIO):
+    """Drop views that are far more elongated than the flattest one - those are edge-on.
+
+    A flat part photographed on its edge gives a sliver whose outline is not the shape of the
+    part, and no amount of tracing recovers it. Part 00901 was traced from a view at elongation
+    22 while two views at 3 were available.
+    """
+    if len(specs) < 2:
+        return specs
+    flattest = min(v["elongation"] for v in specs)
+    kept = [v for v in specs if v["elongation"] <= ratio * max(flattest, 1e-6)]
+    return kept or specs
+
+
 def outline_source(specs, fallback):
     """Which photo to draw the outline from - the single entry point for that decision.
 
@@ -110,9 +135,9 @@ def outline_source(specs, fallback):
     if VIEW_PICK == "ranker":
         from photo2fcstd import view_rank
         ranked = view_rank.best(specs)
-        return ranked if ranked is not None else fallback
+        return not_edge_on(ranked if ranked is not None else fallback, specs)
     if not USE_VIEW_MODEL:
-        return fallback
+        return not_edge_on(fallback, specs)
     from photo2fcstd import view_model
     i = view_model.choose(specs)
     return specs[i] if i is not None else fallback

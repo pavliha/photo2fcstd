@@ -1212,42 +1212,45 @@ failing rather than the sample being small. "Save the best checkpoint" assumes t
 improves at some point; when it does not, the thing to check is whether the final weights fit the
 training set.
 
-## Pretraining on SketchGraphs clears gate 1
+## Pretraining on SketchGraphs does not clear gate 1, and the first verdict was a metric artifact
 
-`sketchnet` learns its training parts almost perfectly and takes 40% of that across a part split,
-because 967 parts is not a sample for a set predictor. SketchGraphs holds 15 million real CAD
-sketches whose entities are exactly the primitives we predict, so the shortage is fixable rather
-than fundamental.
+`sketchnet` was data-limited on 967 parts, so SketchGraphs was brought in: `sketchgraphs_bridge`
+converts Onshape entities to our line / arc / circle, scales them into the canvas `synth` uses and
+renders them the same way, and 96% of sketches convert. Both corpora are drawn as strokes, since
+pretraining from line drawings to filled silhouettes would transfer nothing. 60000 sketches from the
+validation split alone is 62 times the PrintCAD sample.
 
-`sketchgraphs_bridge` converts them: Onshape entities to our line / arc / circle, scaled into the
-same canvas `synth` uses, rendered the same way. **96% of sketches convert.** Both corpora are drawn
-as strokes rather than filled silhouettes, so that pretraining and fine-tuning see the same kind of
-image - a filled shape and a line drawing are different distributions and pretraining across them
-would transfer nothing.
+**Pretraining moves the count metric and not the drawing.** On held-out parts:
 
-60000 sketches from the validation split alone, which is 62 times the PrintCAD sample:
+| | region IoU | right number of primitives | endpoint error |
+|---|---|---|---|
+| **geometric tracer** | **0.755** | 40% | - |
+| sketchnet on PrintCAD alone | - | 37% | - |
+| sketchnet pretrained then tuned | 0.455 | 41% | 0.320 |
 
-| | right number of primitives, held-out parts |
-|---|---|
-| geometric tracer | 34% |
-| sketchnet, trained on PrintCAD alone | 37% |
-| **sketchnet, pretrained on SketchGraphs then fine-tuned** | **46%** |
+Gate 1 was first judged on primitive count, where pretraining took 37% to 46% and the tracer scored
+34%, and that was recorded as a pass. It is not one. **Count is nearly independent of whether the
+geometry is right**: a model satisfies it by emitting the right number of arbitrary primitives, and
+that is what this one does. `docs/figures/sketchnet.png` shows it plainly - on a rectangle it
+predicts four primitives, correct, and draws four disconnected segments at random angles; on an
+H-shaped part it predicts thirteen against twelve and draws a scatter of fragments. The tracer draws
+both exactly.
 
-Pretraining is worth **9 points**, and the way it earns them is visible in the training fit: from
-scratch the model reaches 94% on the parts it trained on, and after pretraining only 87%. It
-memorises less and generalises more, which is what a larger corpus is supposed to buy.
+The evidence was already in hand and misread. Endpoint error was reported as 0.285 of the sketch box
+an hour before the figure was rendered, and taken as a sign of overfitting rather than of outputs
+that are not geometry at all. Scored properly the gap is 0.755 against 0.455 of region IoU, and the
+two methods are level on count, 40% against 41%.
 
-The tracer emits 35.17 elements against a truth of 7.62 on these renders - it fragments, which is
-the over-segmentation behind the 9.4-against-11.9 element deficit measured on photographs.
+**Pretraining did work, on the thing it was asked to do.** Training fit fell from 94% to 87% while
+held-out count rose, which is a corpus reducing memorisation. The formulation is still the only one
+here that needs no correspondence to the truth. What is missing is a loss that penalises a primitive
+for being in the wrong place - Hungarian matching on a geometric cost supplies the assignment, but
+the parameter term is a smooth L1 on normalised coordinates, which at 24 slots is too weak to hold a
+drawing together.
 
-**One measurement was nearly reported unfairly.** With both corpora rendered as strokes, the tracer
-scored 12% - but it is built for a filled silhouette and was being handed a line drawing. Rebuilding
-the same test parts as filled renders and rerunning it gives 34%. Comparing two methods requires
-giving each the input it was designed for, not the input that happens to be loaded.
-
-Gate 1 asked whether a model can beat the geometric tracer on clean renders. It can, once it has
-enough sketches. Gate 2 is the homography, gate 3 is transfer to photographs, and the honest prior
-from the two dataset-transfer collapses measured earlier is still that gate 3 is where this fails.
+One measurement was also nearly reported unfairly: with everything rendered as strokes the tracer
+scores 12%, but it is built for a filled silhouette. Rebuilding the same test parts filled gives 34%
+on count and 0.755 region IoU. Each method has to be given the input it was designed for.
 
 ## The capture path runs, measured without a camera
 
