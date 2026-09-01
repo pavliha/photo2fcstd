@@ -60,10 +60,47 @@ on 54% of parts whose real sketch has no curve at all and 57% of parts that do h
 so it is not selective, and per-part curve *count* agreement gets worse (-0.074
 [-0.141, -0.009]). Structure overall is -0.036 [-0.070, -0.002], IoU -0.013, exact 26%
 to 19%, and it breaks 12 of 160 models. The tracer draws 1.61 curved primitives against
-a real 5.17, and no threshold recovers the rest: at the resolution these photos trace, a
-shallow arc and a noisy straight line are not distinguishable, which makes this a capture
-problem, not a gate problem. Deriving arc direction correctly is neutral at the shipped gates.
+a real 5.17, and no threshold recovers the rest - but that is the tracer, not the photograph:
+given a perfect drawing of the true face it still finds only 1.76. See the next section. Deriving arc direction correctly is neutral at the shipped gates.
 Learned mode selection is worth ~0.001 of sketch IoU.
+
+## The missing arcs are the tracer's, not the photograph's
+
+The whole remaining structural gap is curves. Straight elements come out at 6.22 per sketch against
+a real 6.78; curved ones at 1.61 against 5.17. So `curves` and `elements` are not two defects, they
+are one: about three and a half missing curved primitives, which the tracer replaces with straight
+pieces.
+
+`tools/tracer_ceiling.py` settles where that comes from by handing the tracer a perfect drawing -
+the ideal sketch rasterised from its own `xy` samples, square on, no walls, no tilt, no matting,
+nothing to segment - on the same 180 parts the photo pipeline is measured on:
+
+| | perfect drawing in | photographs in | really there |
+|---|---|---|---|
+| curved primitives | **1.76** | 1.62 | **5.19** |
+| elements | 12.82 | 7.84 | 11.98 |
+| region IoU | 0.694 | 0.645 | |
+| exact primitives | 33% | 26% | |
+
+**Perfect input recovers 1.76 curves against a photograph's 1.62.** The arcs are not being lost to
+tilt, matting or resolution - the information is all there and the tracer does not use it. On
+perfect input it produces roughly the right number of elements (12.82 against 11.98) with the wrong
+*types*, splitting each arc into short straight pieces.
+
+This is the largest identified headroom left in the pipeline and it is entirely in code. It also
+corrects the arc-gate section above, which said arc recovery was capture-limited.
+
+Note what it does *not* say. It is a ceiling on this decomposition only, and `approxPolyDP` plus arc
+fitting is the same geometric prior that beat every learned replacement so far - so a fourth attempt
+at replacing it needs a reason this case differs, and "there is headroom" is not one.
+
+## Mode selection and coverage are finished
+
+Measured on 197 trusted parts with photos, every one draws a sketch and `stations` is never chosen,
+so the "straight choice" described further down - 46% of parts drawing nothing - no longer binds; it
+was written before the mode allowed-list fix. And scoring every allowed mode for every part, the
+chosen mode is already the best for 79% of them: a perfect oracle is worth **+0.0003 region IoU
+[-0.022, +0.023]** and +0.022 structure. There is nothing left in mode choice.
 
 ## Where the error actually is
 
