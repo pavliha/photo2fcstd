@@ -303,6 +303,20 @@ is no geometric step here to replace. The pipeline currently has no tilt estimat
 arbitrary from one object to the next, and every arm ties the constant at 48 deg. That was a badly
 posed target, not a negative result - the same trap as the three-class curve labels.
 
+**But it cannot be cashed in by rectifying the photo.** Rendering 115 trusted parts square on and
+at 15 degrees, as the full solid silhouette and as the bare base face, separates the two things
+tilt does. Projective distortion of the face, which a homography removes, costs **-0.009
+[-0.026, +0.008]** - indistinguishable from zero. The side walls coming into view, which no 2D warp
+removes because the information is not in the image, cost **-0.084 [-0.114, -0.058]**. Rectifying
+the solid silhouette by the *true* normal scores -0.013 [-0.028, +0.002]: no help even with a
+perfect angle. This is the same fact as "perspective costs 0.003 to 0.016 at any tilt" in the table
+above, followed through to its consequence.
+
+So the value of a tilt estimate is **telling the photographer to reshoot**, not correcting the
+photo - which is the +0.13 that shooting square was always worth, now available without a ChArUco
+board in the frame. Its other plausible use is choosing among the photos already taken, which is
+the shape of problem the two learned winners solve.
+
 **Not yet established, and do not quote it as if it were**: that this transfers to PrintCAD photos
 (the depth model beat a constant two to one here and lost on T-LESS, so cross-dataset transfer is
 the known failure mode), and that rectifying by a 4.8 deg estimate improves the drawing. The tilt
