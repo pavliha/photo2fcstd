@@ -183,9 +183,9 @@ def upright_mask(mask):
 
 
 def boundary_period(pts, min_peaks=None, min_prominence=None, max_peaks=60, min_amplitude=None):
-    min_peaks = int(os.environ.get("P2F_PERIOD_MIN_PEAKS", 6)) if min_peaks is None else min_peaks
-    min_prominence = float(os.environ.get("P2F_PERIOD_PROMINENCE", 0.012)) if min_prominence is None else min_prominence
-    min_amplitude = float(os.environ.get("P2F_PERIOD_AMPLITUDE", 0.03)) if min_amplitude is None else min_amplitude
+    min_peaks = int(os.environ.get("P2F_PERIOD_MIN_PEAKS", 7)) if min_peaks is None else min_peaks
+    min_prominence = float(os.environ.get("P2F_PERIOD_PROMINENCE", 0.02492)) if min_prominence is None else min_prominence
+    min_amplitude = float(os.environ.get("P2F_PERIOD_AMPLITUDE", 0.06429)) if min_amplitude is None else min_amplitude
     """How many repeated features sit on this contour, or None if it is not periodic.
 
     A gear, a scalloped disc or a perforated rim has a radius that rises and falls a fixed
@@ -212,7 +212,7 @@ def boundary_period(pts, min_peaks=None, min_prominence=None, max_peaks=60, min_
     return len(peaks) if min_peaks <= len(peaks) <= max_peaks else None
 
 
-CIRCLE_VETO_AMPLITUDE = float(os.environ.get("P2F_CIRCLE_VETO_AMPLITUDE", 0.10))
+CIRCLE_VETO_AMPLITUDE = float(os.environ.get("P2F_CIRCLE_VETO_AMPLITUDE", 0.19944))
 
 
 def feature_amplitude(pts):
@@ -458,7 +458,7 @@ def fit_directions(pts, frame=0.0, step=15.0, tol_deg=10.0, max_shift=0.08):
 
 
 def snap_angles(pts, tol_deg=None, step=15.0, lock=None, frame=0.0):
-    tol_deg = float(os.environ.get("P2F_ANGLE_TOL", 4.0)) if tol_deg is None else tol_deg
+    tol_deg = float(os.environ.get("P2F_ANGLE_TOL", 3.36602)) if tol_deg is None else tol_deg
     pts = np.asarray(pts, float).copy()
     n = len(pts)
     lock = lock or [False] * n
@@ -521,8 +521,8 @@ def arc_span(run, cx, cy):
     return float(np.degrees(ang[-1] - ang[0]))
 
 
-RUN_EPS = float(os.environ.get("P2F_RUN_EPS", 0.015))
-REPEATED_RUN_EPS = float(os.environ.get("P2F_REPEATED_RUN_EPS", 0.004))
+RUN_EPS = float(os.environ.get("P2F_RUN_EPS", 0.01806))
+REPEATED_RUN_EPS = float(os.environ.get("P2F_REPEATED_RUN_EPS", 0.00836))
 
 
 def corner_runs(raw, eps_frac=None):

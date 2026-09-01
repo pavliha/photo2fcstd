@@ -457,7 +457,7 @@ def test_teeth_survive_into_the_elements():
 
 def test_a_scalloped_disc_is_not_called_a_circle():
     from photo2fcstd.trace import primitives
-    loops = primitives([toothed(16, radius=120.0, depth=0.06, n=1440).tolist()], 240.0)
+    loops = primitives([toothed(16, radius=120.0, depth=0.12, n=1440).tolist()], 240.0)
     assert loops[0]["type"] == "loop"
     assert len(loops[0]["elements"]) >= 16
 

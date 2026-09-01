@@ -85,7 +85,7 @@ def source_for(mode, specs):
 USE_VIEW_MODEL = os.environ.get("P2F_VIEW_MODEL", "1") != "0"
 
 
-EDGE_ON_RATIO = float(os.environ.get("P2F_EDGE_ON_RATIO", 3.0))
+EDGE_ON_RATIO = float(os.environ.get("P2F_EDGE_ON_RATIO", 2.95755))
 
 
 def stat(view, key):
