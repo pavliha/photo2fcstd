@@ -12,13 +12,16 @@ _CACHE = {}
 
 def load():
     if "m" not in _CACHE:
+        from photo2fcstd import fallback
         model = None
-        if os.path.exists(MODEL_PATH):
+        if not os.path.exists(MODEL_PATH):
+            fallback.note("mode_pixels", "no model at %s" % MODEL_PATH)
+        else:
             try:
                 import joblib
                 model = joblib.load(MODEL_PATH)
-            except Exception:
-                model = None
+            except Exception as exc:
+                fallback.note("mode_pixels", "could not load %s: %s" % (MODEL_PATH, exc))
         _CACHE["m"] = model
     return _CACHE["m"]
 
@@ -30,14 +33,18 @@ def scores(views):
     from photo2fcstd import embed
     try:
         vector = embed.for_views(views, ALLOW_BACKBONE)
-    except Exception:
+    except Exception as exc:
+        from photo2fcstd import fallback
+        fallback.note("mode_pixels", str(exc))
         return None
     if vector is None or len(vector) != model["dims"]:
         return None
     x = np.array([vector], float)
     try:
         return {mode: float(head.predict(x)[0]) for mode, head in model["heads"].items()}
-    except Exception:
+    except Exception as exc:
+        from photo2fcstd import fallback
+        fallback.note("mode_pixels", str(exc))
         return None
 
 

@@ -39,13 +39,16 @@ def features(per_view):
 def load():
     if "m" in _CACHE:
         return _CACHE["m"]
+    from photo2fcstd import fallback
     m = None
-    if os.path.exists(MODEL_PATH):
+    if not os.path.exists(MODEL_PATH):
+        fallback.note("view_model", "no model at %s" % MODEL_PATH)
+    else:
         try:
             import joblib
             m = joblib.load(MODEL_PATH)
-        except Exception:
-            m = None
+        except Exception as exc:
+            fallback.note("view_model", "could not load %s: %s" % (MODEL_PATH, exc))
     _CACHE["m"] = m
     return m
 
@@ -58,5 +61,7 @@ def choose(views):
     try:
         x = features([stats_of_view(v) for v in views])
         return int(np.argmax(m.predict_proba(x)[:, 1]))
-    except Exception:
+    except Exception as exc:
+        from photo2fcstd import fallback
+        fallback.note("view_model", "scoring failed: %s" % exc)
         return None

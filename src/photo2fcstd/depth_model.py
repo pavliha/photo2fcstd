@@ -32,6 +32,12 @@ def features(events):
     return row
 
 
+def _give_up(reason):
+    from photo2fcstd import fallback
+    fallback.note("depth_model", reason)
+    return None
+
+
 def load_from(path, slot):
     if slot in _CACHE:
         return _CACHE[slot]
@@ -40,7 +46,8 @@ def load_from(path, slot):
         try:
             import joblib
             model = joblib.load(path)
-        except Exception:
+        except Exception as exc:
+            _give_up("could not load %s: %s" % (path, exc))
             model = None
     _CACHE[slot] = model
     return model
@@ -65,19 +72,21 @@ def pixel_predict(views, views_events=None):
     from photo2fcstd import embed
     try:
         vector = embed.for_views(views, ALLOW_BACKBONE)
-    except Exception:
-        return None
+    except Exception as exc:
+        return _give_up("embedding failed: %s" % exc)
     if vector is not None and model.get("kind") == "hybrid":
         try:
             vector = np.hstack([vector, np.array(features(views_events), float)])
-        except Exception:
-            return None
-    if vector is None or len(vector) != model["dims"]:
-        return None
+        except Exception as exc:
+            return _give_up("hybrid feature join failed: %s" % exc)
+    if vector is None:
+        return _give_up("no embedding for these views, falling through to the tabular model")
+    if len(vector) != model["dims"]:
+        return _give_up("embedding is %d dims, model wants %d" % (len(vector), model["dims"]))
     try:
         point = float(model["model"].predict(np.array([vector], float))[0])
-    except Exception:
-        return None
+    except Exception as exc:
+        return _give_up("pixel model failed: %s" % exc)
     off = model["offset"]
     return (float(np.exp(point)), float(np.exp(point - off)), float(np.exp(point + off)),
             1.0 - model.get("alpha", 0.2))
@@ -88,18 +97,21 @@ def predict(views):
     from photo2fcstd import telemetry
     try:
         events = [telemetry.view_event(v) for v in views]
-    except Exception:
+    except Exception as exc:
+        _give_up("view telemetry failed: %s" % exc)
         events = None
     from_pixels = pixel_predict(views, events)
     if from_pixels is not None:
         return from_pixels
     model = load()
-    if model is None or events is None:
-        return None
+    if model is None:
+        return _give_up("no tabular model")
+    if events is None:
+        return _give_up("view telemetry unavailable")
     try:
         x = np.array([features(events)], float)
-    except Exception:
-        return None
+    except Exception as exc:
+        return _give_up("feature build failed: %s" % exc)
     try:
         if not isinstance(model, dict):
             return float(np.exp(model.predict(x)[0])), None, None, None
@@ -108,8 +120,8 @@ def predict(views):
                 float(np.exp(model["lo"].predict(x)[0] - off)),
                 float(np.exp(model["hi"].predict(x)[0] + off)),
                 1.0 - model.get("alpha", 0.2))
-    except Exception:
-        return None
+    except Exception as exc:
+        return _give_up("tabular model failed: %s" % exc)
 
 
 def ratio(views):

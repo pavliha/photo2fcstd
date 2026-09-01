@@ -54,13 +54,16 @@ def features(carved):
 def load():
     if "m" in _CACHE:
         return _CACHE["m"]
+    from photo2fcstd import fallback
     model = None
-    if os.path.exists(MODEL_PATH):
+    if not os.path.exists(MODEL_PATH):
+        fallback.note("axis_model", "no model at %s" % MODEL_PATH)
+    else:
         try:
             import joblib
             model = joblib.load(MODEL_PATH)
-        except Exception:
-            model = None
+        except Exception as exc:
+            fallback.note("axis_model", "could not load %s: %s" % (MODEL_PATH, exc))
     _CACHE["m"] = model
     return model
 
@@ -73,5 +76,7 @@ def predict_axis(carved):
     try:
         scores = model.predict_proba(features(carved))[:, 1]
         return int(np.argmax(scores))
-    except Exception:
+    except Exception as exc:
+        from photo2fcstd import fallback
+        fallback.note("axis_model", "scoring failed: %s" % exc)
         return None
