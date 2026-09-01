@@ -77,8 +77,18 @@ def view_model_scores():
     return out
 
 
+def mode_model_scores():
+    """Off by default and worth about 0.001 in distribution; recorded so the audit covers every
+    learned component rather than only the ones that turned out to matter."""
+    from photo2fcstd import modes
+    return {"baseline": None, "in": None, "out": None,
+            "note": "disabled (modes.LEARNED=%s); worth ~0.001 in distribution, never audited out"
+                    % modes.LEARNED}
+
+
 def main():
     report = {"axis_model": axis_model_scores(),
+              "mode_model": mode_model_scores(),
               "depth_model_shipped": depth_scores("shipped"),
               "depth_model_tabular": depth_scores("tabular"),
               "view_model": view_model_scores()}
@@ -88,6 +98,9 @@ def main():
     for name, r in report.items():
         b = r.get("baseline")
         i, o = r.get("in"), r.get("out")
+        if r.get("in") is None and r.get("out") is None:
+            print("  %-14s %10s %10s %10s  %s" % (name, "-", "-", "-", "disabled, unaudited"))
+            continue
         if name.startswith("depth_model"):
             verdict = "LOSES to a constant" if (o is not None and b is not None and o > b) else "holds"
             fmt = lambda x: "-" if x is None else "%.3f" % x

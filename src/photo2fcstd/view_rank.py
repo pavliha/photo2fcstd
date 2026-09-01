@@ -50,7 +50,11 @@ def train(rows, seed=0):
 
 def rank(views):
     import joblib
-    if len(views) < 2 or not os.path.exists(MODEL_PATH):
+    from photo2fcstd import fallback
+    if len(views) < 2:
+        return None
+    if not os.path.exists(MODEL_PATH):
+        fallback.note("view_rank", "no model at %s" % MODEL_PATH)
         return None
     if MODEL_PATH not in _CACHED:
         _CACHED[MODEL_PATH] = joblib.load(MODEL_PATH)

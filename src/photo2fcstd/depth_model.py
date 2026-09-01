@@ -32,6 +32,36 @@ def features(events):
     return row
 
 
+CENTRE_PATH = os.path.join(ROOT, "data", "embed_centre.npz")
+GATE = os.environ.get("P2F_EMBED_GATE", "1") == "1"
+
+
+def embedding_is_familiar(vector):
+    """Is this embedding anywhere near the images the head was fitted on?
+
+    DINOv3 vectors are L2 normalised, so norm says nothing. Cosine distance to the centre of the
+    training photographs does: PrintCAD sits at a median 0.371 from its own centre and T-LESS at
+    0.839, with **no** T-LESS image inside PrintCAD's 95th percentile. The pixel head is not wrong
+    about those parts so much as never asked - it extrapolates into a region it never saw, which is
+    why it predicts 0.108 to 0.480 where the truth runs 0.377 to 1.561. Out there the tabular model
+    is the better answer, 0.236 against 1.117.
+    """
+    if not GATE or not os.path.exists(CENTRE_PATH):
+        return True
+    try:
+        ref = _CACHE.get("centre")
+        if ref is None:
+            ref = dict(np.load(CENTRE_PATH))
+            _CACHE["centre"] = ref
+        v = np.asarray(vector, float)
+        per = v.reshape(-1, len(ref["centre"])) if v.size % len(ref["centre"]) == 0 else v.reshape(1, -1)
+        per = per / np.maximum(np.linalg.norm(per, axis=1, keepdims=True), 1e-9)
+        d = float(np.median(1.0 - per @ np.asarray(ref["centre"], float)))
+        return d <= float(ref["p95"]) * 1.1
+    except Exception:
+        return True
+
+
 def _give_up(reason):
     from photo2fcstd import fallback
     fallback.note("depth_model", reason)
@@ -83,6 +113,8 @@ def pixel_predict(views, views_events=None):
         return _give_up("no embedding for these views, falling through to the tabular model")
     if len(vector) != model["dims"]:
         return _give_up("embedding is %d dims, model wants %d" % (len(vector), model["dims"]))
+    if not embedding_is_familiar(vector):
+        return _give_up("these photographs sit outside the range the pixel head was fitted on")
     try:
         point = float(model["model"].predict(np.array([vector], float))[0])
     except Exception as exc:

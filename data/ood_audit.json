@@ -5,13 +5,19 @@
   "n_out": 21,
   "baseline": 0.3333333333333333
  },
+ "mode_model": {
+  "baseline": null,
+  "in": null,
+  "out": null,
+  "note": "disabled (modes.LEARNED=False); worth ~0.001 in distribution, never audited out"
+ },
  "depth_model_shipped": {
   "baseline_note": "best constant fitted on the same set",
   "in": 0.435,
-  "out": 1.1168657498129504,
+  "out": 0.2359672928548072,
   "baseline": 0.3135321507216151,
   "n_out": 21,
-  "coverage": 0.23809523809523808
+  "coverage": 1.0
  },
  "depth_model_tabular": {
   "baseline_note": "best constant fitted on the same set",

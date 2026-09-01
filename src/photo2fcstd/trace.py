@@ -283,7 +283,66 @@ def unify_radii(els, tol):
     return els
 
 
-def snap_angles(pts, tol_deg=4.0, step=15.0, lock=None):
+def dominant_frame(pts):
+    pts = np.asarray(pts, float)
+    n = len(pts)
+    if n < 3:
+        return 0.0
+    weight, angle = [], []
+    for i in range(n):
+        d = pts[(i + 1) % n] - pts[i]
+        length = float(np.hypot(*d))
+        if length <= 0:
+            continue
+        weight.append(length)
+        angle.append(np.degrees(np.arctan2(d[1], d[0])) % 90.0)
+    if not weight:
+        return 0.0
+    weight, angle = np.array(weight), np.radians(np.array(angle) * 4.0)
+    mean = np.arctan2((weight * np.sin(angle)).sum(), (weight * np.cos(angle)).sum())
+    return float((np.degrees(mean) / 4.0) % 90.0)
+
+
+def fit_directions(pts, frame=0.0, step=15.0, tol_deg=10.0, max_shift=0.08):
+    pts = np.asarray(pts, float)
+    n = len(pts)
+    if n < 3:
+        return pts
+    edges = np.array([pts[(i + 1) % n] - pts[i] for i in range(n)])
+    lengths = np.hypot(edges[:, 0], edges[:, 1])
+    if not np.all(lengths > 0):
+        return pts
+    angles = np.degrees(np.arctan2(edges[:, 1], edges[:, 0]))
+    targets = np.round((angles - frame) / step) * step + frame
+    keep = np.abs(((angles - targets + 180) % 360) - 180) > tol_deg
+    targets[keep] = angles[keep]
+    u = np.column_stack([np.cos(np.radians(targets)), np.sin(np.radians(targets))])
+    prefix = np.zeros((n, n))
+    for i in range(1, n):
+        prefix[i, :i] = 1.0
+    A = np.zeros((2 * n + 2, n))
+    b = np.zeros(2 * n + 2)
+    origin = pts[0]
+    for axis in (0, 1):
+        A[axis * n:(axis + 1) * n] = prefix * u[:, axis]
+        b[axis * n:(axis + 1) * n] = pts[:, axis] - origin[axis]
+    weight = 10.0 * float(np.sum(lengths))
+    A[2 * n] = weight * u[:, 0]
+    A[2 * n + 1] = weight * u[:, 1]
+    solved, *_ = np.linalg.lstsq(A, b, rcond=None)
+    if np.any(solved <= 0):
+        return pts
+    out = np.zeros_like(pts)
+    out[0] = origin
+    for i in range(1, n):
+        out[i] = out[i - 1] + solved[i - 1] * u[i - 1]
+    span = max(float(np.ptp(pts[:, 0])), float(np.ptp(pts[:, 1])), 1e-6)
+    if float(np.abs(out - pts).max()) > max_shift * span:
+        return pts
+    return out
+
+
+def snap_angles(pts, tol_deg=4.0, step=15.0, lock=None, frame=0.0):
     pts = np.asarray(pts, float).copy()
     n = len(pts)
     lock = lock or [False] * n
@@ -298,8 +357,8 @@ def snap_angles(pts, tol_deg=4.0, step=15.0, lock=None):
             if length < 1e-6:
                 continue
             ang = np.degrees(np.arctan2(d[1], d[0]))
-            target = round(ang / step) * step
-            if abs(target % 90) < 1e-6 or abs(ang - target) > tol_deg:
+            target = round((ang - frame) / step) * step + frame
+            if abs(ang - target) > tol_deg:
                 continue
             mid = (a + b) / 2
             t = np.radians(target)
@@ -678,7 +737,9 @@ def regularise_lines(els, length_px):
     keep = list(range(len(els)))
     if all(e["type"] == "line" for e in els):
         pts = merge_collinear(snap_rectilinear(pts), 0.015 * length_px)
-        pts = snap_rectilinear(snap_angles(snap_rectilinear(pts)))
+        frame = dominant_frame(pts)
+        pts = snap_angles(snap_rectilinear(pts), tol_deg=7.0, frame=frame)
+        pts = fit_directions(pts, frame=frame)
         return [{"type": "line", "p0": pts[i].tolist(), "p1": pts[(i + 1) % len(pts)].tolist()} for i in range(len(pts))]
     pts = snap_rectilinear(pts, lock=lock)
     for i, e in enumerate(els):
@@ -689,7 +750,9 @@ def regularise_lines(els, length_px):
     els = merge_line_elements(els, 0.015 * length_px)
     pts = np.array([e["p0"] for e in els], float)
     lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
-    pts = snap_rectilinear(snap_angles(pts, lock=lock), lock=lock)
+    frame = dominant_frame(pts)
+    pts = snap_angles(pts, tol_deg=7.0, lock=lock, frame=frame)
+    pts = snap_angles(pts, tol_deg=7.0, lock=lock, frame=frame)
     for i, e in enumerate(els):
         if e["type"] == "arc":
             pts[i], pts[(i + 1) % len(els)] = e["p0"], e["p1"]

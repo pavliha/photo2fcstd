@@ -67,6 +67,8 @@ def vectors_for(paths, allow_backbone=True):
     cold = [p for p, f in hits.items() if not os.path.exists(f)]
     if cold:
         if not allow_backbone:
+            from photo2fcstd import fallback
+            fallback.note("embed", "%d images uncached and the backbone is disabled" % len(cold))
             return None
         computed = embed_images([crop(p) for p in cold])
         os.makedirs(cache_dir("embeddings"), exist_ok=True)
@@ -78,7 +80,13 @@ def vectors_for(paths, allow_backbone=True):
 def for_views(views, allow_backbone=True):
     ordered = sorted(views, key=lambda v: -v["elongation"])[:3]
     paths = [v["source"] for v in ordered]
-    if len(paths) < 3 or not all(os.path.exists(p) for p in paths):
+    if len(paths) < 3:
+        from photo2fcstd import fallback
+        fallback.note("embed", "needs three views, given %d" % len(paths))
+        return None
+    if not all(os.path.exists(p) for p in paths):
+        from photo2fcstd import fallback
+        fallback.note("embed", "view sources are not readable image paths")
         return None
     got = vectors_for(paths, allow_backbone)
     return None if got is None else got.reshape(-1)

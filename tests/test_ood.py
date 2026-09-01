@@ -10,7 +10,7 @@ REPORT = os.path.join(DATA, "ood_audit.json")
 
 DOCUMENTED = {
     "axis_model": {"in": 0.892, "out": 0.286},
-    "depth_model_shipped": {"out": 1.117},
+    "depth_model_shipped": {"out": 0.236},
     "depth_model_tabular": {"out": 0.236},
     "view_model": {"in": 0.560},
 }
@@ -50,11 +50,14 @@ def test_the_gate_catches_a_dataset_specific_component():
     assert section_constancy(prism, 2) >= PRISM_CONSTANCY
 
 
-def test_the_shipped_depth_path_is_worse_than_its_fallback_off_distribution():
+def test_the_embedding_gate_keeps_the_two_depth_paths_level():
+    """Ungated, the pixel path scored 1.117 against the tabular 0.236 out of distribution. The
+    gate refuses embeddings far from the photographs the head was fitted on, so the shipped path
+    now falls back and matches. If they diverge again the gate has stopped working."""
     r = report()
     a, b = r.get("depth_model_shipped"), r.get("depth_model_tabular")
     if not (a and b and a.get("out") and b.get("out")):
         pytest.skip("both depth arms not recorded")
-    assert a["out"] > b["out"], (
-        "the pixel path no longer loses to the tabular one out of distribution - if this is a real "
-        "improvement, update CLAUDE.md and DOCUMENTED")
+    assert a["out"] <= b["out"] + 0.05, (
+        "the shipped depth path is drifting away from its fallback out of distribution (%.3f vs "
+        "%.3f) - check the embedding gate" % (a["out"], b["out"]))

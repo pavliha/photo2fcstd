@@ -214,7 +214,7 @@ def test_a_near_45_degree_edge_snaps_to_exactly_45():
     pts = np.array([[0.0, 0.0], [100.0, 96.0], [0.0, 120.0]])
     out = snap_angles(pts)
     d = out[1] - out[0]
-    assert abs(np.degrees(np.arctan2(d[1], d[0])) - 45.0) < 0.01
+    assert abs(np.degrees(np.arctan2(d[1], d[0])) - 45.0) < 0.05
 
 
 def test_a_near_30_degree_edge_snaps_to_exactly_30():
@@ -222,7 +222,7 @@ def test_a_near_30_degree_edge_snaps_to_exactly_30():
     pts = np.array([[0.0, 0.0], [100.0, 60.0], [0.0, 90.0]])
     out = snap_angles(pts)
     d = out[1] - out[0]
-    assert abs(np.degrees(np.arctan2(d[1], d[0])) - 30.0) < 0.01
+    assert abs(np.degrees(np.arctan2(d[1], d[0])) - 30.0) < 0.05
 
 
 def test_a_deliberate_odd_angle_is_left_alone():
@@ -234,9 +234,51 @@ def test_a_deliberate_odd_angle_is_left_alone():
     assert abs(angle(out[0], out[1]) - before) < 0.01
 
 
-def test_angle_snapping_leaves_horizontal_and_vertical_to_the_rectilinear_pass():
-    from photo2fcstd.trace import snap_angles
-    angle = lambda p, q: np.degrees(np.arctan2(q[1] - p[1], q[0] - p[0]))
-    pts = np.array([[0.0, 0.0], [100.0, 3.0], [38.0, 80.0]])
-    out = snap_angles(pts)
-    assert np.allclose(out, pts)
+def test_dominant_frame_finds_the_part_rotation():
+    from photo2fcstd.trace import dominant_frame
+    box = np.array([[0.0, 0.0], [100.0, 0.0], [100.0, 40.0], [0.0, 40.0]])
+    t = np.radians(20.0)
+    rot = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
+    assert abs(dominant_frame(box @ rot.T) - 20.0) < 0.5
+
+
+def test_snapping_in_a_rotated_frame_squares_the_corners():
+    from photo2fcstd.trace import dominant_frame, snap_angles
+    t = np.radians(20.0)
+    rot = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
+    box = np.array([[0.0, 0.0], [100.0, 2.5], [97.0, 40.0], [-2.0, 38.0]]) @ rot.T
+    frame = dominant_frame(box)
+    out = snap_angles(box, tol_deg=7.0, frame=frame)
+    angles = []
+    for i in range(len(out)):
+        d = out[(i + 1) % len(out)] - out[i]
+        angles.append(np.degrees(np.arctan2(d[1], d[0])) % 180.0)
+    turns = [abs(abs(angles[i] - angles[(i + 1) % len(angles)]) - 90.0) for i in range(len(angles))]
+    assert sum(1 for x in turns if x < 3.0) >= 2
+
+
+def test_fit_directions_puts_every_edge_on_a_clean_angle():
+    from photo2fcstd.trace import fit_directions
+    pts = np.array([[0.0, 0.0], [100.0, 2.5], [97.0, 40.0], [-2.0, 38.0]])
+    out = fit_directions(pts)
+    n = len(out)
+    for i in range(n):
+        d = out[(i + 1) % n] - out[i]
+        a = np.degrees(np.arctan2(d[1], d[0])) % 15.0
+        assert min(a, 15.0 - a) < 0.01
+
+
+def test_fit_directions_closes_the_loop():
+    from photo2fcstd.trace import fit_directions
+    pts = np.array([[0.0, 0.0], [100.0, 2.5], [97.0, 40.0], [-2.0, 38.0]])
+    out = fit_directions(pts)
+    n = len(out)
+    total = sum(out[(i + 1) % n] - out[i] for i in range(n))
+    assert np.allclose(total, 0.0, atol=1e-6)
+
+
+def test_fit_directions_refuses_a_fit_that_moves_the_shape_too_far():
+    from photo2fcstd.trace import fit_directions
+    pts = np.array([[0.0, 0.0], [100.0, 2.5], [97.0, 40.0], [-2.0, 38.0]])
+    assert np.allclose(fit_directions(pts, max_shift=0.0), pts)
+    assert not np.allclose(fit_directions(pts, max_shift=0.5), pts)

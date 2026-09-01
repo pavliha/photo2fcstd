@@ -107,7 +107,9 @@ _CACHED = {}
 
 def predict(views, allowed=None):
     import joblib
+    from photo2fcstd import fallback
     if not os.path.exists(MODEL_PATH):
+        fallback.note("mode_model", "no model at %s" % MODEL_PATH)
         return None
     if MODEL_PATH not in _CACHED:
         _CACHED[MODEL_PATH] = joblib.load(MODEL_PATH)
@@ -116,6 +118,7 @@ def predict(views, allowed=None):
     if isinstance(saved, dict) and saved.get("kind") == "regression":
         heads = {m: h for m, h in saved["heads"].items() if allowed is None or m in allowed}
         if not heads:
+            fallback.note("mode_model", "no head for any allowed mode")
             return None
         return max(heads, key=lambda m: heads[m].predict(x)[0])
     model = saved["model"] if isinstance(saved, dict) else saved
