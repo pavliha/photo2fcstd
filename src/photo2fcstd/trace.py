@@ -283,6 +283,31 @@ def unify_radii(els, tol):
     return els
 
 
+def snap_angles(pts, tol_deg=4.0, step=15.0, lock=None):
+    pts = np.asarray(pts, float).copy()
+    n = len(pts)
+    lock = lock or [False] * n
+    for _ in range(3):
+        for i in range(n):
+            j = (i + 1) % n
+            if lock[i] or lock[j]:
+                continue
+            a, b = pts[i], pts[j]
+            d = b - a
+            length = float(np.hypot(*d))
+            if length < 1e-6:
+                continue
+            ang = np.degrees(np.arctan2(d[1], d[0]))
+            target = round(ang / step) * step
+            if abs(target % 90) < 1e-6 or abs(ang - target) > tol_deg:
+                continue
+            mid = (a + b) / 2
+            t = np.radians(target)
+            half = 0.5 * length * np.array([np.cos(t), np.sin(t)])
+            pts[i], pts[j] = mid - half, mid + half
+    return pts
+
+
 def snap_rectilinear(pts, tol_deg=12.0, lock=None):
     pts = np.asarray(pts, float).copy()
     n = len(pts)
@@ -602,7 +627,7 @@ def regularise_lines(els, length_px):
     keep = list(range(len(els)))
     if all(e["type"] == "line" for e in els):
         pts = merge_collinear(snap_rectilinear(pts), 0.015 * length_px)
-        pts = snap_rectilinear(pts)
+        pts = snap_rectilinear(snap_angles(snap_rectilinear(pts)))
         return [{"type": "line", "p0": pts[i].tolist(), "p1": pts[(i + 1) % len(pts)].tolist()} for i in range(len(pts))]
     pts = snap_rectilinear(pts, lock=lock)
     for i, e in enumerate(els):
@@ -613,7 +638,7 @@ def regularise_lines(els, length_px):
     els = merge_line_elements(els, 0.015 * length_px)
     pts = np.array([e["p0"] for e in els], float)
     lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
-    pts = snap_rectilinear(pts, lock=lock)
+    pts = snap_rectilinear(snap_angles(pts, lock=lock), lock=lock)
     for i, e in enumerate(els):
         if e["type"] == "arc":
             pts[i], pts[(i + 1) % len(els)] = e["p0"], e["p1"]

@@ -207,3 +207,36 @@ def test_reflecting_is_exact_for_odd_and_even_widths():
         out, axes = symmetrize(mask)
         assert "x" in axes
         assert (out == np.flip(out, axis=1)).all()
+
+
+def test_a_near_45_degree_edge_snaps_to_exactly_45():
+    from photo2fcstd.trace import snap_angles
+    pts = np.array([[0.0, 0.0], [100.0, 96.0], [0.0, 120.0]])
+    out = snap_angles(pts)
+    d = out[1] - out[0]
+    assert abs(np.degrees(np.arctan2(d[1], d[0])) - 45.0) < 0.01
+
+
+def test_a_near_30_degree_edge_snaps_to_exactly_30():
+    from photo2fcstd.trace import snap_angles
+    pts = np.array([[0.0, 0.0], [100.0, 60.0], [0.0, 90.0]])
+    out = snap_angles(pts)
+    d = out[1] - out[0]
+    assert abs(np.degrees(np.arctan2(d[1], d[0])) - 30.0) < 0.01
+
+
+def test_a_deliberate_odd_angle_is_left_alone():
+    from photo2fcstd.trace import snap_angles
+    angle = lambda p, q: np.degrees(np.arctan2(q[1] - p[1], q[0] - p[0]))
+    pts = np.array([[0.0, 0.0], [100.0, 40.4], [0.0, 80.0]])
+    before = angle(pts[0], pts[1])
+    out = snap_angles(pts)
+    assert abs(angle(out[0], out[1]) - before) < 0.01
+
+
+def test_angle_snapping_leaves_horizontal_and_vertical_to_the_rectilinear_pass():
+    from photo2fcstd.trace import snap_angles
+    angle = lambda p, q: np.degrees(np.arctan2(q[1] - p[1], q[0] - p[0]))
+    pts = np.array([[0.0, 0.0], [100.0, 3.0], [38.0, 80.0]])
+    out = snap_angles(pts)
+    assert np.allclose(out, pts)
