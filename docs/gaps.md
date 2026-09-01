@@ -53,8 +53,8 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 
 | # | item | blocked by | size |
 |---|---|---|---|
-| **A6** | **Arc chord gate relative to the run, not the part** | code | medium |
-| A7 | Give the fitter evidence a straight line lacks | code | large |
+| ~~A6~~ | ~~Arc chord gate relative to the run~~ - **measured, reverted** | - | - |
+| **A7** | **Give the fitter evidence a straight line lacks** | code | large |
 | A3 | Arc fitting before simplification - *demoted, addresses 29%* | code | medium |
 | B1 | Two sketches that fail to solve | code | small |
 | B2 | Two solids with volume that `isValid()` rejects | code | medium |
@@ -79,18 +79,41 @@ Done: **A1** (which arcs are lost), **A2** (not simplification), **A4** (b-splin
 
 ## A. Arcs
 
-**A6. Make the arc chord gate relative to the run, not the part.** `trace.py:696` requires
-`chord > ARC_MIN_CHORD_FRAC * length_px` before a run is even *considered* as an arc - a fraction of
-**the whole part's extent**. On a part with 28 curves every arc is a small share of the part and is
-thrown out before any fitting happens. This is A1's "share of the loop's perimeter" table from the
-other side: 15% kept below 0.02 of the perimeter, 48% at 0.05-0.15. The sagitta test on the very
-next line is already relative to the local chord; only this one is global.
+**A6. MEASURED AND REVERTED.** `trace.py:696` gated on `chord > ARC_MIN_CHORD_FRAC * length_px`, a
+fraction of the whole part, so the hypothesis was that on complex parts every arc is too small to be
+considered. The mechanism is real and far too small to matter.
 
-Different in kind from the loosening that failed: not a lower threshold on the same quantity, but a
-threshold measured against the right thing. **Done when** an A/B on the same parts, regenerating
-both arms, reports curve recovery **and the false-curve rate on the 134 zero-curve parts**, since
-precision is exactly what the earlier attempt destroyed. Ship or revert on `verdict`, with a build
-check for null solids.
+On perfect input, n=418 (124 parts with four or more curves, 122 with none):
+
+| arm | curves on complex parts | recovered | false curves/part | structure |
+|---|---|---|---|---|
+| shipped | 3.49 | 26% | 0.04 | 0.797 |
+| frac/2 | 3.98 | 29% | 0.04 | +0.0022 [+0.0005, +0.0047] |
+| **abs 8 px** | 4.15 | 31% | **0.04** | **+0.0030 [+0.0010, +0.0057]** |
+| abs 5 px | 4.25 | 31% | 0.06 | +0.0024 [-0.0003, +0.0055] |
+| really there | 13.57 | | | |
+
+Removing the global gate entirely reaches 31%, not 90%: **the chord gate explains about 5 of the
+65 missing points.** Precision holds, unlike the earlier loosening.
+
+On real photographs, n=133 discriminating, specs regenerated for both arms and built:
+
+| arm | IoU | structure | curves | valid solid | sketches unsolved |
+|---|---|---|---|---|---|
+| shipped | 0.603 | 0.695 | 1.96 | 125 (94%) | 3 |
+| abs 8 px | 0.603 | 0.690 | 2.37 | **123 (92%)** | **6** |
+
+It draws more curves and **doubles the unsolved sketches**, for -0.0045 structure [-0.0135, +0.0025]
+and no IoU change. Reverted; `ARC_MIN_CHORD_PX` removed rather than left as a dead knob. This is the
+documented pattern - a change that improves a statistic and breaks models.
+
+**The next hypothesis, from A1 and this result together.** Of lost arcs, 71% survive as two or more
+pieces. An arc split across three runs presents each run with a third of its sweep, so a 60 degree
+arc arrives as three 20 degree runs and every one fails `ARC_MIN_SPAN_DEG = 40`. That would explain
+why chord size is not the limit and why recovery tracks complexity - more corners, more splits.
+Note run merging was tried and reverted once already (-0.013 IoU), but that merged *fitted arcs*;
+this would merge runs *before* fitting. File as A8 and measure the split count against arc sweep
+first.
 
 **A7. Give the fitter evidence a straight line does not have.** If A6 fails or falls short, this is
 what is left, and it follows from the ruled-out list above: the discriminant has to be something
