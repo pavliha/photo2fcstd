@@ -314,3 +314,36 @@ def discriminating(record, floor=0.15):
 def skill(iou, baseline):
     """Fraction of the achievable margin above a trivial answer that was actually won."""
     return float((iou - baseline) / (1.0 - baseline)) if baseline < 1.0 else 0.0
+
+
+def structure_score(result):
+    """How much of the real sketch's structure a drawing reproduces.
+
+    Region IoU decides every A/B here and correlates 0.22 with structural agreement, 0.33 with
+    reproducing the exact primitives: it cannot see primitive type, because an arc and the chords
+    approximating it cover the same area, and it cannot see a small hole, because a hole carries
+    almost no area. Loops catch the missed hole, curves the arc drawn as chords, elements the
+    fragmentation. Unweighted - weighting needs someone to say which drawing they would rather edit.
+    """
+    mine, ideal = result.get("counts_mine") or {}, result.get("counts_ideal") or {}
+    total_m, total_i = sum(mine.values()), sum(ideal.values())
+    cm = sum(v for k, v in mine.items() if k in CURVES)
+    ci = sum(v for k, v in ideal.items() if k in CURVES)
+    loops = min(result.get("loops_mine", 0), result.get("loops_ideal", 0)) / max(result.get("loops_ideal", 0), 1)
+    curves = 1.0 - abs(cm - ci) / max(ci, cm, 1)
+    elements = max(1.0 - abs(total_m - total_i) / max(total_i, 1), 0.0)
+    return {"loops": float(loops), "curves": float(curves), "elements": float(elements),
+            "structure": float((loops + curves + elements) / 3)}
+
+
+def verdict(result):
+    """What a change did, in the terms a change should be judged on.
+
+    Region IoU stays because it is comparable with everything already published here, but a drawing
+    that gains area and loses primitives has not improved.
+    """
+    s = structure_score(result)
+    return {"region_iou": result.get("region_iou", 0.0),
+            "exact": result.get("counts_mine") == result.get("counts_ideal"),
+            **s, "trivial": result.get("trivial", 0.0),
+            "discriminating": (1.0 - result.get("trivial", 0.0)) >= 0.15}

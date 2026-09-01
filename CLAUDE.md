@@ -15,12 +15,33 @@ and its area times depth must actually equal the solid's volume. Quote numbers o
 trusted subset and say `n=`. The rest have no reliable reference and their scores mean
 nothing.
 
-## Region IoU is blind to things that matter
+## Region IoU is nearly independent of whether the drawing is right
 
 It cannot see primitive type (an arc and the chords approximating it cover the same
-area) and it cannot see small holes (they carry almost no area). A change can be right
-and move IoU by 0.000. Report `loops exact` and `curve fraction` alongside it, and
-look at a render before believing either.
+area) and it cannot see small holes (they carry almost no area). Measured over 251
+discriminating parts, region IoU correlates **0.22** with structural agreement and
+**0.33** with reproducing the exact primitives - it explains about 5% and 11% of the
+variance. Straight inversions are rarer than that sounds (4% of parts score in the top
+quarter by IoU and the bottom quarter by structure, 2% the reverse), so IoU is not
+lying; it is answering a different question from the one this project asks.
+
+So judge a change with `sketch_score.verdict`, not with IoU alone. It reports region IoU
+next to three structural terms, each a fraction of the real sketch reproduced:
+
+- `loops` - how many real closed loops exist at all, which is the hole the tracer missed
+- `curves` - how close the count of curved primitives is, which is the arc drawn as chords
+- `elements` - how close the total primitive count is, which is fragmentation or over-smoothing
+
+They are deliberately unweighted; weighting them needs a person saying which drawing they
+would rather edit, and nobody has been asked. Sanity check on hand cases: the letter G at
+IoU 0.41 scores 0.91 structurally, a rounded blob at IoU 0.81 scores 0.37, and a square
+whose notches were smoothed away goes from 0.97 to 0.78.
+
+Re-judging the shipped and reverted changes against it flipped nothing: view choice was
++0.038 IoU and +3.6 points exact, run merging -0.013 and -1.4, the mode allowed-list fix
+neutral on both. The record survives because exact primitives were always reported
+alongside - that is what rejected `eps_model`, which gained +0.005 IoU while losing 4.6
+points of exact. Do not report IoU on its own again.
 
 ## Measure before changing a threshold, and measure builds too
 
@@ -165,6 +186,24 @@ Keep the modules - they are the data pipeline for a better-posed model - but the
 attempt should predict primitives directly (a sketch is a short program: DeepCAD,
 Vitruvion) or regress corner positions as keypoints with sub-point offsets, not label
 points. Enable the losing path with `P2F_LEARNED_CURVES=1`; it is off by default.
+
+## Where a learned component pays, and where it does not
+
+Twelve learned attempts, two wins, and the split is not about model capacity - it is about
+what the model is asked to do:
+
+- **Won**: `view_model` picks which of three photos to draw from; `mode_model` picks which
+  mode to build. Both **select among candidates the geometry already produced**, and both
+  are labelled by the end-to-end score itself.
+- **Lost**: `curvenet`, `cornernet`, `eps_model`, `sketchnet` (twice), constraint
+  prediction, per-element confidence. All of them **replace a geometric step** with a
+  prediction, and every one lost to the code it replaced.
+
+The geometric pipeline is a strong prior that a small model on a few thousand parts does
+not beat. Before proposing a model, ask which of the two it is. If it replaces
+`approxPolyDP`, arc fitting, or the tracer, the prior says it loses and it needs a reason
+this case differs. If it chooses between things the tracer already built, it is worth a
+run.
 
 ## How to work on the ML parts
 
