@@ -1167,6 +1167,51 @@ span it is worse than chance. A warning that is right one time in four is not a 
 So the evidence recorded at fitting time predicts neither the constraints an element should satisfy
 nor how wrong it is. It stays in the spec as a debugging aid, which is what it is good for.
 
+## Predicting primitives straight from a raster: right idea, not enough parts
+
+Nine of the ten learned attempts here failed for one reason - they needed a correspondence between
+what the tracer produced and what the part actually is, and that correspondence is only 62%
+reliable. A model that maps a raster to primitives never needs it: the STEP files hold exact
+sequences for 1047 trusted parts and `synth` already renders them.
+
+`sketchnet` predicts a fixed set of 24 slots, each a presence, a type and five parameters, matched
+to the truth by Hungarian assignment so a set is not punished for arriving in a different order.
+Following PICASSO (WACV 2025), which found a feed-forward set predictor beat autoregressive
+Vitruvion 0.751 to 0.537. An arc is encoded by its endpoints and a signed sagitta rather than a
+centre, because a centre runs to infinity as an arc flattens; the encoding round-trips to within
+0.16 px on arcs from 0.02 to 0.29 of sagitta over radius.
+
+**Gate 1 was to beat the geometric tracer on clean renders, and it does not.** 5802 samples from
+967 parts, split by part:
+
+| | elements | right number of primitives |
+|---|---|---|
+| the real sketches | 7.23 | - |
+| **geometric tracer** | 10.98 | **40%** |
+| sketchnet | 5.76 | 40% |
+
+It draws level and never ahead, on the input most favourable to it: exact labels, no capture noise,
+no foreshortening.
+
+**The reason is the sample, and the numbers say so plainly:**
+
+| weights | split | right count | endpoint error, unit box |
+|---|---|---|---|
+| final epoch | train | **96%** | 0.128 |
+| final epoch | test | 40% | 0.285 |
+
+It learns the training parts almost perfectly and takes less than half of that across the split.
+967 parts is not enough for a set predictor over this output space; PICASSO used 1.53 million
+sketches. The trusted STEP corpus here is 1047 parts and there is no more of it.
+
+**One thing about how this was nearly misreported.** The first run saved the checkpoint with the
+best test loss, which was epoch 0 - test loss rose from the very first epoch - so the evaluation ran
+on an untrained network and showed 32% with an endpoint error of 0.28 on *training* data. That looks
+like a broken model rather than an overfitting one, and it would have been recorded as the method
+failing rather than the sample being small. "Save the best checkpoint" assumes the validation curve
+improves at some point; when it does not, the thing to check is whether the final weights fit the
+training set.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
