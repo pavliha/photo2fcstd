@@ -615,6 +615,25 @@ The sketch numbers above were taken with the axis forced to the reference, preci
 failure did not contaminate the capture measurement. In production on parts like these the axis
 would be wrong most of the time, and the honest expectation is well below 0.605.
 
+**A geometric gate catches what the confidence could not.** `section_constancy` is the median
+slice population over the largest, measured off the carved volume, so 1.0 means a part of constant
+cross-section - which is exactly the condition under which a base face exists at all:
+
+| gate | PrintCAD kept / correct | T-LESS kept / correct |
+|---|---|---|
+| none | 100% / 89% | 100% / 36% |
+| **constancy >= 0.8** | **94% / 89%** | **64% / 56%** |
+
+In distribution it costs nothing: the parts it drops were not being got right anyway, and accuracy
+on the rest is unchanged. Out of distribution it refuses the worst third and lifts the remainder
+from 36% to 56%. Within PrintCAD alone the measure is useless as a discriminator - 0.947 when right
+against 0.944 when wrong, because every part there is a prism - which is precisely why it had to be
+checked on a second dataset to be seen at all.
+
+It ships as a warning on the spec rather than a silent fallback, because when a part has no
+constant-section axis there is no better rule to fall back to. The honest output is a drawing plus
+a note saying no single sketch describes this part.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

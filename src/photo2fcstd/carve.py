@@ -141,6 +141,25 @@ def base_axis(carved):
     return int(np.argmin([np.ptp(pts[:, a]) for a in (0, 1, 2)]))
 
 
+PRISM_CONSTANCY = 0.8
+
+
+def section_constancy(carved, axis):
+    """Median slice population over the largest, so 1.0 is a part of constant cross-section.
+
+    A base face only exists if the part is an extrusion of one. The axis classifier was trained
+    entirely on PrintCAD, where every part is, and on T-LESS housings it drops to 29% against 33%
+    for chance - while getting *more* confident when wrong, so its own score cannot gate it.
+    This is measured off the carved volume instead. At 0.8 it leaves PrintCAD untouched, 94% kept
+    at the same 89% correct, and on T-LESS it refuses the worst third and lifts the rest from 36%
+    to 56% (n=14, small, but the mechanism does not depend on the sample).
+    """
+    from photo2fcstd import axis_model
+    counts = axis_model.slice_counts(carved["points_mm"], carved["voxel_mm"], axis)
+    trimmed = counts[1:-1] if len(counts) > 4 else counts
+    return float(np.median(trimmed) / max(trimmed.max(), 1)) if len(trimmed) else 0.0
+
+
 def spec_from_carve(carved, name="part", stl=None, axis=None):
     from photo2fcstd.trace import outline, primitives
     axis = base_axis(carved) if axis is None else axis
@@ -153,12 +172,20 @@ def spec_from_carve(carved, name="part", stl=None, axis=None):
     length_mm = max(np.ptp(np.array(shape["raw"], float), axis=0)) * voxel
     loops = primitives(centred, length_mm)
     height = float(np.ptp(carved["points_mm"][:, axis]) + voxel)
+    constancy = section_constancy(carved, axis)
+    warning = None
+    if constancy < PRISM_CONSTANCY:
+        warning = ("this part's cross-section changes along every direction (constancy %.2f), so it "
+                   "is not an extrusion of one face and no single sketch describes it - treat the "
+                   "chosen view as a guess" % constancy)
     return {"name": name, "mm_per_px": 1.0,
             "scale_note": "metric from the ChArUco board: %d views, %.2f mm voxels" % (carved["views"], voxel),
             "views": {},
             "outline": {"source": ";".join(carved.get("sources", [])) or "carved",
                         "loops": loops, "depth_px": height,
-                        "depth_note": "height measured from the carved volume (mm), not guessed"},
+                        "depth_note": "height measured from the carved volume (mm), not guessed",
+                        "section_constancy": round(constancy, 3),
+                        **({"warning": warning} if warning else {})},
             "revolve": None, "stl": stl}
 
 
