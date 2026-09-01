@@ -1144,6 +1144,29 @@ does not need tuning is the sign that the difficulty was in the design rather th
 
 Reprint the target: `photo2fcstd-target`.
 
+## Per-element evidence does not tell you which edges to check
+
+The tracer records how many contour points backed each element and how well they fit. That did not
+help predict constraints, but a simpler use would be worth having: flag the edges a user should
+check, so a drawing is honest about its weak parts even when it cannot be made more accurate.
+
+Over 3030 elements from 400 parts, against each element's distance to its counterpart in the real
+sketch (median error 0.025 of the diagonal, p90 0.239):
+
+| evidence | correlation with error | median error, weakest fifth vs strongest |
+|---|---|---|
+| straightness | -0.142 | 0.034 vs 0.014 |
+| fit residual | +0.094 | 0.036 vs 0.020 |
+| supporting points | -0.026 | 0.021 vs 0.022 |
+| run span | -0.005 | 0.021 vs 0.026 |
+
+Residual and straightness carry a little signal and it is not enough to act on. Flagging the worst
+fifth of elements by residual reaches **0.25 precision against a 0.20 chance rate**; by points or
+span it is worse than chance. A warning that is right one time in four is not a warning.
+
+So the evidence recorded at fitting time predicts neither the constraints an element should satisfy
+nor how wrong it is. It stays in the spec as a debugging aid, which is what it is good for.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
