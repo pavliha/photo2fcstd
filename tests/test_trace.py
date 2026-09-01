@@ -282,3 +282,26 @@ def test_fit_directions_refuses_a_fit_that_moves_the_shape_too_far():
     pts = np.array([[0.0, 0.0], [100.0, 2.5], [97.0, 40.0], [-2.0, 38.0]])
     assert np.allclose(fit_directions(pts, max_shift=0.0), pts)
     assert not np.allclose(fit_directions(pts, max_shift=0.5), pts)
+
+
+def test_every_loop_shares_the_part_frame():
+    from photo2fcstd.trace import dominant_frame, primitives
+    t = np.radians(20.0)
+    rot = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
+    box = lambda w, h, dx, dy: np.array([[dx, dy], [dx + w, dy], [dx + w, dy + h], [dx, dy + h]])
+    dense = lambda pts: np.array([pts[i] + (pts[(i + 1) % len(pts)] - pts[i]) * f
+                                  for i in range(len(pts)) for f in np.linspace(0, 1, 40, endpoint=False)])
+    outer = dense(box(200.0, 120.0, 0.0, 0.0)) @ rot.T
+    hole = dense(box(40.0, 20.0, 60.0, 40.0)) @ rot.T
+    loops = primitives([outer.tolist(), hole.tolist()], 200.0)
+    angles = []
+    for loop in loops:
+        if loop["type"] != "loop":
+            continue
+        for e in loop["elements"]:
+            if e["type"] == "line":
+                d = np.subtract(e["p1"], e["p0"])
+                angles.append(np.degrees(np.arctan2(d[1], d[0])) % 90.0)
+    assert len(angles) >= 6
+    spread = [min(abs(a - 20.0), abs(a - 20.0 - 90.0), abs(a - 20.0 + 90.0)) for a in angles]
+    assert max(spread) < 3.0, sorted(spread)

@@ -476,7 +476,7 @@ MIN_ELLIPSE_POINTS = 12
 def ellipse_ok(f, n_points=None):
     if f is None or (n_points is not None and n_points < MIN_ELLIPSE_POINTS):
         return False
-    return f["rms"] < max(0.03 * f["b"], 3.0) and f["aspect"] > 0.5
+    return f["rms"] < 0.04 * f["a"] and f["aspect"] > 0.5
 
 
 def arc_from_run(run, ccw=None):
@@ -731,13 +731,13 @@ def merge_line_elements(els, min_len, tol_deg=6.0):
     return merged
 
 
-def regularise_lines(els, length_px):
+def regularise_lines(els, length_px, frame=None):
     pts = np.array([e["p0"] for e in els], float)
     lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
     keep = list(range(len(els)))
     if all(e["type"] == "line" for e in els):
         pts = merge_collinear(snap_rectilinear(pts), 0.015 * length_px)
-        frame = dominant_frame(pts)
+        frame = dominant_frame(pts) if frame is None else frame
         pts = snap_angles(snap_rectilinear(pts), tol_deg=7.0, frame=frame)
         pts = fit_directions(pts, frame=frame)
         return [{"type": "line", "p0": pts[i].tolist(), "p1": pts[(i + 1) % len(pts)].tolist()} for i in range(len(pts))]
@@ -750,7 +750,7 @@ def regularise_lines(els, length_px):
     els = merge_line_elements(els, 0.015 * length_px)
     pts = np.array([e["p0"] for e in els], float)
     lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
-    frame = dominant_frame(pts)
+    frame = dominant_frame(pts) if frame is None else frame
     pts = snap_angles(pts, tol_deg=7.0, lock=lock, frame=frame)
     pts = snap_angles(pts, tol_deg=7.0, lock=lock, frame=frame)
     for i, e in enumerate(els):
@@ -817,7 +817,7 @@ def primitives(raw_loops, length_px, circle_aspect=0.7):
     for j, raw in enumerate(raw_loops):
         raw = np.asarray(raw, float)
         f = fit_ellipse(raw)
-        if ellipse_ok(f) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect):
+        if ellipse_ok(f, len(raw)) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect):
             out.append({"type": "circle", "cx": f["cx"], "cy": f["cy"], "r": f["a"]})
             continue
         traced = elements(raw, length_px)
