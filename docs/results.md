@@ -789,6 +789,50 @@ weighed - during fitting, with each side weighted by how well it was seen - not 
 that treats both sides as equally trustworthy. That is a different piece of machinery from a
 threshold, and it is the honest form of "the model should understand symmetry".
 
+## Predicting constraints instead of snapping them: the labels are not learnable
+
+Three CAD priors applied uniformly all lost, so the natural next step is to decide each constraint
+per edge and per pair and then solve, weighting each edge by how well it was seen. That is
+Vitruvion's second stage and it is the right shape of answer: a rule cannot tell a well-traced side
+from a badly-traced one, and a model can.
+
+`constraints.py` extracts every constraint that holds in a sketch - canonical angle per edge,
+equal length, equal radius, parallel, perpendicular per pair - and aligns a traced sketch to its
+reference so the labels transfer. The alignment took three attempts:
+
+| aligner | elements matched within 0.05 | median distance |
+|---|---|---|
+| midpoint to midpoint | 43% | 0.063 |
+| position along the loop | 21% | 0.190 |
+| **dihedral pose, distance to the segment** | **62%** | **0.029** |
+
+Midpoint matching fails whenever the tracer splits one ideal edge in two, because the halves' midpoints
+sit far from the whole edge's midpoint. Arc-length position discards the geometry and does worse still.
+
+At 62% matched the labels were below the bar set before starting, so the next check was whether
+they are learnable at all. Held out 5-fold, split by part, against the majority baseline:
+
+| constraint | n | majority | model |
+|---|---|---|---|
+| angle class | 1610 | 0.471 | 0.442 |
+| equal length | 44440 | 0.586 | **0.614** |
+| parallel | 44440 | 0.862 | 0.843 |
+| perpendicular | 44440 | 0.912 | **0.920** |
+| equal radius | 44440 | 0.937 | 0.916 |
+
+Four of five sit at or below the baseline and the best gains 0.028. **The build stops here.**
+
+The reason is not only label noise. Asking whether the ideal edge is horizontal, given the traced
+edge's own angle, is asking the model to correct the tracer exactly where the tracer is wrong - and
+the features available are the tracer's own output. Where the traced angle is close to right the
+answer is already known and the model adds nothing; where it is wrong, nothing in the traced
+geometry says so. It is the tilt result again in a different costume: the quantity is not in the
+data we kept.
+
+A constraint predictor worth having would have to see the evidence the tracing threw away - which
+contour points supported each edge and how confidently - rather than the fitted primitives. That is
+a change to what the tracer records, not a model that can be bolted onto its output.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
