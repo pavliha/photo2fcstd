@@ -586,16 +586,23 @@ be chosen rather than assumed. 21 of 30 objects have such an axis, median variat
 | **carved from real photographs** | **0.605** |
 | carved from renders of the mesh at the same poses | 0.576 |
 
-Skill over the trivial answer is 0.221 on n=21. **Real photographs beat renders here by 0.029**,
-which is the wrong sign for a capture penalty and most likely says the render arm is the flawed
-one - probably a camera-convention mismatch between `carve_check.silhouette` and the dataset's
-pose convention, the same class of bug that mirrored every board render earlier. The real arm uses
-the dataset's own masks and poses throughout and is the trustworthy number. Either way it agrees
-with the matting sweep: capture is not what limits carving.
+Skill over the trivial answer is 0.221 on n=21. Real photographs appeared to beat renders by
+0.029, which is the wrong sign for a capture penalty, and the render arm turned out to be simply
+invalid: `carve_check.silhouette` rasterises at its own 900x900 canvas while T-LESS masks are
+400x400, so the two arms were never comparable. **Only the real-photograph number stands.** The
+matting sweep already answers the question that arm was meant to: capture is not what limits
+carving.
 
 **The axis model does not survive the change of dataset.** It picks the reference axis on 6 of 21
 T-LESS objects, 29% against 33% for chance, where it reaches 89% on PrintCAD. n=21 cannot separate
 29% from chance, but it separates both from 89% comfortably.
+
+**And it is confidently wrong.** On the objects it gets right its top score averages 0.56 with a
+margin of 0.31 over the runner-up; on the ones it gets wrong, 0.73 and 0.62. Confidence runs
+backwards, so the obvious mitigation - abstain when unsure and fall back to the thinnest-extent
+rule - would abstain on precisely the cases the model handles correctly. Any gate here has to come
+from geometry, such as whether any axis of the carved volume has a near-constant section, not from
+the classifier's own score.
 
 That is a real limitation of a component shipped today, and the cause is visible in the training
 set: every labelled example came from PrintCAD, whose parts are extrusions of a face. T-LESS parts

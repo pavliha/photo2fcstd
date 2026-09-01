@@ -250,10 +250,13 @@ For comparison the photo pipeline reaches about 0.43 solid IoU and its best poss
 mode choice 0.527. Carving roughly doubles that, and the depth is measured rather than
 guessed, so it is where the remaining accuracy is.
 
-**The axis classifier is PrintCAD-specific.** It reaches 89% there and 29% on T-LESS against 33%
-for chance, because every training example came from a dataset of extrusions and T-LESS parts have
-no constant-section axis to find. Retrain or gate it before trusting it on anything that is not a
-prism.
+**The axis classifier is PrintCAD-specific, and confidently so.** It reaches 89% there and 29% on
+T-LESS against 33% for chance, because every training example came from a dataset of extrusions and
+T-LESS parts have no constant-section axis to find. Its confidence runs backwards out of
+distribution - top score 0.73 when wrong against 0.56 when right - so gating on the model's own
+score abstains on the cases it gets right. Gate on geometry instead, or retrain. Note also that
+`carve_check.silhouette` renders on its own 900x900 canvas, so it cannot be compared against a
+dataset's masks without matching the intrinsics first.
 
 **Both halves of the capture term have now been measured, and neither is large.** Pose from
 a detected board is good to 0.016 degrees where the budget allows 2, and eight pixels of
