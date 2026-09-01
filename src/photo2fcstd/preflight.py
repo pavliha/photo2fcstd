@@ -164,6 +164,10 @@ def report(paths, part_width_mm=None):
         print("  %-34s %.1f%% of frame median" % ("part occupies",
               100 * float(np.median([r["mask"] for r in rows if r["mask"] is not None] or [0]))))
     problems, notes = verdict(rows, part_width_mm)
+    if not posed:
+        from photo2fcstd import tilt_model
+        extra_p, extra_n = tilt_model.square_check(paths)
+        problems, notes = problems + extra_p, notes + extra_n
     print()
     for p in problems:
         print("  RESHOOT: %s" % p)

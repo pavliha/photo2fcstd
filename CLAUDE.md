@@ -317,11 +317,26 @@ photo - which is the +0.13 that shooting square was always worth, now available 
 board in the frame. Its other plausible use is choosing among the photos already taken, which is
 the shape of problem the two learned winners solve.
 
-**Not yet established, and do not quote it as if it were**: that this transfers to PrintCAD photos
-(the depth model beat a constant two to one here and lost on T-LESS, so cross-dataset transfer is
-the known failure mode), and that rectifying by a 4.8 deg estimate improves the drawing. The tilt
-table says a residual of 4.8 deg should land near 0.88 against the 0.814 real photos score now, but
-that is an interpolation, not a measurement.
+**It does not transfer, and the gate is what saves it.** On PrintCAD renders the T-LESS head scores
+34 deg, worse than a constant, and its gate refuses 100% of PrintCAD images - real photographs and
+renders alike. Training a second head on 2,989 PrintCAD renders instead beats a constant by only
+**+2.5 deg [+2.2, +2.8]** (11.6 against 14.1), useless when the reshoot threshold is 8, and *its*
+gate also refuses every real photograph.
+
+The range is not the explanation. Restricted to the 0-30 deg regime a reshoot check actually lives
+in, the T-LESS head scores **2.78 deg against a 7.08 deg constant, 99% within 10 deg** - better in
+absolute terms, not worse. What the renders lack is shading: flat grey Lambertian with no texture,
+no specular highlight and no real light carries far less normal information than a photograph,
+which is the hypothesis working against us.
+
+So `tilt_model.square_check` ships gated and honest - it reports a reshoot when it recognises the
+photograph and says "not checked" when it does not - but the artefact it needs does not exist yet.
+**The way to get it is a few dozen real photographs with the ChArUco board in frame**, whose solved
+pose is a free tilt label. The board is not needed to *use* the check; it is the cheapest way to
+*train* it, after which the check works board-free for good.
+
+**Still not established**: that rectifying by any estimate improves the drawing - see the section
+above, where it does not.
 
 ## Carving is the strongest path, and it is validated synthetically
 
