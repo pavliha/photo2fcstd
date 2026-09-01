@@ -28,7 +28,8 @@ def model():
         return None
     if "m" not in _CACHE:
         if not os.path.exists(MODEL_PATH):
-            fallback.note("tilt_model", "no artefact at %s; run tools/tilt_train.py" % MODEL_PATH)
+            fallback.note("tilt_model", "no artefact at %s; run tools/tilt_train.py" % MODEL_PATH,
+                          "squareness cannot be checked")
             _CACHE["m"] = None
         else:
             import joblib
@@ -46,18 +47,57 @@ def is_familiar(vector, m):
     return float(1.0 - vector @ m["centre"]) <= m["gate"]
 
 
+def part_crop(path):
+    """The part with its background removed, which is what the head was fitted on.
+
+    `embed.crop` keeps the background; training zeroes it. Embedding a photograph the other way
+    moves it 0.10 further from the training centre and turns admissions that would pass into
+    refusals, so the two must agree.
+    """
+    import numpy as np
+    from PIL import Image, ImageOps
+    from photo2fcstd import embed
+    from photo2fcstd.trace import segment_photo
+    image = ImageOps.exif_transpose(Image.open(path).convert("RGB"))
+    mask = np.asarray(segment_photo(path)) > 0
+    if not mask.any():
+        return None
+    h, w = mask.shape
+    ys, xs = np.nonzero(mask)
+    pad = 0.15 * max(np.ptp(xs), np.ptp(ys))
+    cut = np.asarray(image.resize((w, h))) * mask[:, :, None]
+    box = (max(0, xs.min() - pad), max(0, ys.min() - pad),
+           min(w, xs.max() + pad), min(h, ys.max() + pad))
+    return Image.fromarray(cut.astype("uint8")).crop(box).resize((embed.SIZE, embed.SIZE))
+
+
+def vector_of(path):
+    from photo2fcstd import embed
+    from photo2fcstd.settings import cache_dir
+    cached = os.path.join(cache_dir("tilt_embeddings"), embed.key_for(path) + ".npy")
+    if os.path.exists(cached):
+        return np.load(cached)
+    crop = part_crop(path)
+    if crop is None:
+        fallback.note("tilt_model", "no part found in %s" % os.path.basename(path))
+        return None
+    v = embed.embed_images([crop])[0]
+    os.makedirs(cache_dir("tilt_embeddings"), exist_ok=True)
+    np.save(cached, v.astype(np.float32))
+    return v
+
+
 def normal_of(path):
     """The part's face normal in camera coordinates, or None if the head cannot speak."""
-    from photo2fcstd import embed
     m = model()
     if m is None:
         return None
-    vectors = embed.vectors_for([path])
-    if vectors is None:
+    v = vector_of(path)
+    if v is None:
         return None
-    v = vectors[0]
     if not is_familiar(v, m):
-        fallback.note("tilt_model", "photograph is outside the head's training distribution")
+        fallback.note("tilt_model", "photograph is outside the head's training distribution",
+                      "squareness not checked for it")
         return None
     x = ((v - m["mu"]) / m["sd"]).reshape(1, -1)
     n = np.array([float(h.predict(x)[0]) for h in m["heads"]])

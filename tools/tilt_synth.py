@@ -26,28 +26,53 @@ import tilt_close as T  # noqa: E402
 TILTS = (0.0, 5.0, 10.0, 16.0, 22.0, 30.0)
 
 
-def lit(mesh, view, rng):
+def lit(mesh, view, rng, ss=2):
+    """Blinn-Phong at double resolution, because the highlight is the normal cue.
+
+    A flat Lambertian render trains a head that beats a constant by 2.5 degrees and whose gate
+    refuses every real photograph. Specular highlights, a coloured albedo and antialiased edges are
+    not decoration here - they are the signal, and their absence is why the first renders failed.
+    """
+    W2, H2 = T.W * ss, T.H * ss
+    K = T.K_of() * ss
+    K[2, 2] = 1.0
+    v2 = dict(view, K=K)
     V = np.asarray(mesh.vertices, float)
     F = np.asarray(mesh.faces)
-    uv = T.C.project(V, view)
+    uv = T.C.project(V, v2)
     R = view["R"]
     cam = (R @ V.T + view["tvec"]).T
     depth = cam[F].mean(1)[:, 2]
     fn = np.asarray(mesh.face_normals, float) @ R.T
-    light = rng.normal(size=3)
-    light[2] = -abs(light[2]) - 0.4
-    light /= np.linalg.norm(light)
-    ambient, gain = rng.uniform(20, 70), rng.uniform(120, 210)
-    shade = ambient + gain * np.clip(np.abs(fn @ light), 0, 1)
-    tint = rng.uniform(0.75, 1.0, 3)
-    img = np.zeros((T.H, T.W, 3), np.float32)
-    mask = np.zeros((T.H, T.W), np.uint8)
+    fn = fn * np.sign(np.where(fn[:, 2:3] == 0, 1, -fn[:, 2:3]))
+    eye = np.array([0.0, 0.0, -1.0])
+    albedo = rng.uniform(0.35, 1.0, 3) * rng.uniform(0.5, 1.0)
+    shine = rng.uniform(8, 90)
+    kspec = rng.uniform(0.15, 0.9)
+    ambient = rng.uniform(0.06, 0.28)
+    shade = np.zeros((len(F), 3))
+    for _ in range(int(rng.integers(1, 4))):
+        light = rng.normal(size=3)
+        light[2] = -abs(light[2]) - rng.uniform(0.2, 1.0)
+        light /= np.linalg.norm(light)
+        power = rng.uniform(0.35, 1.0)
+        lam = np.clip(fn @ (-light), 0, 1)
+        half = (-light + eye)
+        half /= np.linalg.norm(half)
+        spec = np.clip(fn @ half, 0, 1) ** shine
+        shade += power * (lam[:, None] * albedo + kspec * spec[:, None])
+    shade = np.clip(ambient + shade, 0, 1.6)
+    img = np.zeros((H2, W2, 3), np.float32)
+    mask = np.zeros((H2, W2), np.uint8)
     tri = np.round(uv[F]).astype(np.int32)
     for i in np.argsort(-depth):
-        cv2.fillConvexPoly(img, tri[i], tuple(float(shade[i] * t) for t in tint))
+        cv2.fillConvexPoly(img, tri[i], tuple(float(c) for c in shade[i] * 255))
         cv2.fillConvexPoly(mask, tri[i], 1)
-    img = cv2.GaussianBlur(img, (0, 0), rng.uniform(0.4, 1.8))
-    img += rng.normal(0, rng.uniform(1, 7), img.shape)
+    img = cv2.resize(img, (T.W, T.H), interpolation=cv2.INTER_AREA)
+    mask = cv2.resize(mask, (T.W, T.H), interpolation=cv2.INTER_AREA)
+    img = cv2.GaussianBlur(img, (0, 0), rng.uniform(0.3, 1.4))
+    img *= rng.uniform(0.75, 1.25)
+    img += rng.normal(0, rng.uniform(1, 6), img.shape)
     return np.clip(img, 0, 255).astype(np.uint8), mask > 0
 
 

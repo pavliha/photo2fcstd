@@ -17,7 +17,7 @@ def fake(monkeypatch, normal, familiar=True):
          "centre": np.array([1.0, 0, 0, 0]), "gate": 1.0 if familiar else -1.0,
          "held_out_mae": 4.8}
     monkeypatch.setattr(TM, "_CACHE", {"m": m})
-    monkeypatch.setattr("photo2fcstd.embed.vectors_for", lambda paths: np.zeros((len(paths), 4)))
+    monkeypatch.setattr(TM, "vector_of", lambda path: np.zeros(4))
     return m
 
 

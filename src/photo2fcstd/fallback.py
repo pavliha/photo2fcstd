@@ -14,14 +14,13 @@ _SEEN = set()
 _LOG = []
 
 
-def note(component, reason):
+def note(component, reason, instead="using the geometric rule instead"):
     """Warn the first time a component falls back, and record every occurrence for telemetry."""
     _LOG.append((component, reason))
     if component in _SEEN or SILENT:
         return
     _SEEN.add(component)
-    sys.stderr.write("photo2fcstd: %s unavailable (%s); using the geometric rule instead\n"
-                     % (component, reason))
+    sys.stderr.write("photo2fcstd: %s unavailable (%s); %s\n" % (component, reason, instead))
 
 
 def events():

@@ -323,13 +323,23 @@ renders alike. Training a second head on 2,989 PrintCAD renders instead beats a 
 **+2.5 deg [+2.2, +2.8]** (11.6 against 14.1), useless when the reshoot threshold is 8, and *its*
 gate also refuses every real photograph.
 
-The range is not the explanation. Restricted to the 0-30 deg regime a reshoot check actually lives
-in, the T-LESS head scores **2.78 deg against a 7.08 deg constant, 99% within 10 deg** - better in
-absolute terms, not worse. What the renders lack is shading: flat grey Lambertian with no texture,
-no specular highlight and no real light carries far less normal information than a photograph,
-which is the hypothesis working against us.
+The range is not the explanation, and neither is the shading. On the quantity the check actually
+reads - tilt magnitude, not the full normal, which also carries an azimuth the check never uses -
+restricted to the 0-30 deg regime it lives in:
 
-So `tilt_model.square_check` ships gated and honest - it reports a reshoot when it recognises the
+| trained on | tilt error | constant | within 5 deg |
+|---|---|---|---|
+| **T-LESS photographs** | **2.63 deg** | 6.98 | **87%** |
+| PrintCAD flat Lambertian renders | 7.62 | 8.81 | 45% |
+| PrintCAD Blinn-Phong, specular, antialiased | 7.96 | 8.81 | 43% |
+
+Rewriting the renderer with specular highlights, coloured albedo, several lights and supersampling
+made it very slightly *worse*, so "the renders lack shading" was the wrong diagnosis and two
+photometric attempts is enough - the same reason a lone threshold change is not worth chasing here.
+Renders are not photographs and no knob tried closes that.
+
+`data/tilt_printcad.npz` and its head are deleted; `tools/tilt_synth.py` stays as the harness that
+established the null. So `tilt_model.square_check` ships gated and honest - it reports a reshoot when it recognises the
 photograph and says "not checked" when it does not - but the artefact it needs does not exist yet.
 **The way to get it is a few dozen real photographs with the ChArUco board in frame**, whose solved
 pose is a free tilt label. The board is not needed to *use* the check; it is the cheapest way to
