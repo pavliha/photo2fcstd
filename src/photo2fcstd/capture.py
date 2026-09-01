@@ -10,7 +10,9 @@ MIN_CALIBRATION_VIEWS = 4
 
 
 def board_corners(image):
-    gray = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2GRAY) if np.asarray(image).ndim == 3 else np.asarray(image)
+    from photo2fcstd.rectify import as_uint8
+    arr = as_uint8(image)
+    gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY) if arr.ndim == 3 else arr
     detector = cv2.aruco.CharucoDetector(board())
     corners, ids, _, _ = detector.detectBoard(gray)
     if ids is None or len(ids) < MIN_CORNERS:
@@ -51,7 +53,8 @@ def camera_matrix(shape, focal_px=None):
 
 
 def pose(image, K=None, dist=None):
-    arr = np.asarray(image)
+    from photo2fcstd.rectify import as_uint8
+    arr = as_uint8(image)
     corners, ids = board_corners(arr)
     if corners is None:
         return None

@@ -1063,6 +1063,41 @@ helps. Kept behind `P2F_EPS_MODEL=1`, off by default: unlike the contour-labelli
 has a measured positive on one axis and a documented reason it is not enough, which is worth having
 for anyone who returns to the element deficit.
 
+## The capture path would have failed on the first real photograph
+
+Building the preflight check meant running `capture.pose` on an image loaded the way the pipeline
+loads one, and it raised immediately: `trace.load` returns float32 in 0..1 and the aruco detector
+requires uint8. **`carve.from_photos` calls `load` and hands the result straight to `pose`**, so the
+entire board path - the one thing this project has been recommending as its largest available gain -
+would have thrown on the first photograph anyone took.
+
+Nothing caught it because the datasets have no board photographs, so the path had only ever run on
+arrays built in memory by `capture_check`, which are uint8. Every synthetic validation passed:
+16 of 16 views solved, 0.016 degrees of pose error. The failure lives exactly in the gap those
+tests could not reach.
+
+`rectify.as_uint8` now coerces at the detector boundary, so every entry point is covered rather than
+the one that happened to be found.
+
+Two smaller things the same exercise turned up, both in code written the same hour:
+
+- **elevation came out negative.** `capture.pose` solves the board's own frame, whose z axis points
+  away from the camera because the printed frame is left-handed in 2D, so a camera above the table
+  reads as below it. The same convention that mirrored every board render earlier.
+- **reprojection was measured against a guessed focal length.** Calling `pose` without intrinsics
+  uses 1.2 x the image's long edge; on renders whose true pose is accurate to 0.05 degrees that
+  produced 4 to 6 px of reprojection and a spurious "the poses are unreliable". Calibrating across
+  the set first, as `from_photos` already does, brings it to 0.1 px. A preflight that does not
+  mirror the real path measures itself.
+
+`photo2fcstd-preflight` now separates the cases it should, on rendered captures:
+
+| capture | verdict |
+|---|---|
+| 16 views, 11 to 69 degrees, walked around | usable |
+| 16 views but none below 36 degrees | reshoot: height is bounded by the lowest view |
+| 5 views from one side | reshoot: too few, and a 274 degree arc never looked from |
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

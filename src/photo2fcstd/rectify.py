@@ -10,7 +10,26 @@ from photo2fcstd.make_target import DICT, SQUARE_MM, board
 PPMM = 20.0
 
 
+def as_uint8(image):
+    """Whatever the caller had, in the 8-bit form the aruco detector requires.
+
+    `trace.load` returns float32 in 0..1 and every capture entry point feeds it straight to the
+    detector, which raises. Nothing caught it because the board path had never been run on a real
+    photograph - the datasets have none - so the failure only appears at the moment the rig is
+    first used.
+    """
+    a = np.asarray(image)
+    if a.dtype == np.uint8:
+        return a
+    a = a.astype(np.float32)
+    top = float(a.max()) if a.size else 0.0
+    if top <= 1.001:
+        a = a * 255.0
+    return np.clip(a, 0, 255).astype(np.uint8)
+
+
 def detect(gray):
+    gray = as_uint8(gray)
     detector = cv2.aruco.CharucoDetector(board())
     corners, ids, _, _ = detector.detectBoard(gray)
     if ids is None or len(ids) < 6:
