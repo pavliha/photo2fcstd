@@ -58,8 +58,11 @@ def one(args):
             # strokes, not a filled silhouette, so this matches how SketchGraphs is rendered for
             # pretraining and how a traced contour is drawn at inference
             sys.path.insert(0, os.path.join(ROOT, "tools"))
-            from sketchgraphs_bridge import render as stroke_render
-            raster = stroke_render(els, synth.CANVAS)
+            if os.environ.get("P2F_FILLED") == "1":
+                raster = (synth.rasterise(loops, synth.CANVAS).astype(np.uint8)) * 255
+            else:
+                from sketchgraphs_bridge import render as stroke_render
+                raster = stroke_render(els, synth.CANVAS)
             if raster.sum() < 255 * 200:
                 continue
             img = cv2.resize(raster.astype(np.float32) / 255.0, (SN.SIDE, SN.SIDE),
@@ -77,7 +80,7 @@ def main(limit=None):
     parts = parts[:limit] if limit else parts
     with Pool(6) as pool:
         got = [r for chunk in pool.map(one, [(p, i) for i, p in enumerate(parts)]) for r in chunk]
-    tag = "tilt%g" % TILT
+    tag = ("filled" if os.environ.get("P2F_FILLED") == "1" else "tilt%g") % TILT if os.environ.get("P2F_FILLED") != "1" else "filled"
     np.savez_compressed(os.path.join(ROOT, "data", "sketchnet_%s.npz" % tag),
                         X=np.stack([r["img"] for r in got]),
                         Y=np.stack([r["rows"] for r in got]),

@@ -467,3 +467,19 @@ def test_a_plain_disc_is_still_a_circle():
     a = np.linspace(0, 2 * np.pi, 1440, endpoint=False)
     disc = np.column_stack([120 * np.cos(a), 120 * np.sin(a)])
     assert primitives([disc.tolist()], 240.0)[0]["type"] == "circle"
+
+
+def test_shallow_flutes_still_read_as_a_circle():
+    from photo2fcstd.trace import primitives
+    a = np.linspace(0, 2 * np.pi, 1440, endpoint=False)
+    r = 120 * (1 + 0.02 * np.sign(np.cos(24 * a)))
+    fluted = np.column_stack([r * np.cos(a), r * np.sin(a)])
+    assert primitives([fluted.tolist()], 240.0)[0]["type"] == "circle"
+
+
+def test_deep_scallops_are_drawn_not_rounded_off():
+    from photo2fcstd.trace import primitives
+    a = np.linspace(0, 2 * np.pi, 1440, endpoint=False)
+    r = 120 * (1 + 0.12 * np.sign(np.cos(16 * a)))
+    scalloped = np.column_stack([r * np.cos(a), r * np.sin(a)])
+    assert primitives([scalloped.tolist()], 240.0)[0]["type"] == "loop"

@@ -209,6 +209,20 @@ def boundary_period(pts, min_peaks=6, min_prominence=0.012, max_peaks=60, min_am
     return len(peaks) if min_peaks <= len(peaks) <= max_peaks else None
 
 
+CIRCLE_VETO_AMPLITUDE = 0.10
+
+
+def feature_amplitude(pts):
+    """How far the contour departs from its mean radius, as a fraction of that radius."""
+    pts = np.asarray(pts, float)
+    delta = pts - pts.mean(axis=0)
+    radius = np.hypot(delta[:, 0], delta[:, 1])
+    middle = float(np.median(radius))
+    if middle <= 0:
+        return 0.0
+    return float((np.percentile(radius, 97) - np.percentile(radius, 3)) / middle)
+
+
 def outline(mask, eps_frac=0.008, min_hole=None):
     min_hole = th.MIN_HOLE_FRAC if min_hole is None else min_hole
     import cv2
@@ -962,8 +976,9 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
     for j, raw in enumerate(raw_loops):
         raw = np.asarray(raw, float)
         f = fit_ellipse(raw)
+        toothed = boundary_period(raw) is not None and feature_amplitude(raw) >= CIRCLE_VETO_AMPLITUDE
         if (ellipse_ok(f, len(raw)) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect)
-                and boundary_period(raw) is None):
+                and not toothed):
             out.append({"type": "circle", "cx": f["cx"], "cy": f["cy"], "r": f["a"]})
             continue
         traced = elements(raw, length_px)

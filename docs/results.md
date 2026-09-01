@@ -1212,6 +1212,43 @@ failing rather than the sample being small. "Save the best checkpoint" assumes t
 improves at some point; when it does not, the thing to check is whether the final weights fit the
 training set.
 
+## Pretraining on SketchGraphs clears gate 1
+
+`sketchnet` learns its training parts almost perfectly and takes 40% of that across a part split,
+because 967 parts is not a sample for a set predictor. SketchGraphs holds 15 million real CAD
+sketches whose entities are exactly the primitives we predict, so the shortage is fixable rather
+than fundamental.
+
+`sketchgraphs_bridge` converts them: Onshape entities to our line / arc / circle, scaled into the
+same canvas `synth` uses, rendered the same way. **96% of sketches convert.** Both corpora are drawn
+as strokes rather than filled silhouettes, so that pretraining and fine-tuning see the same kind of
+image - a filled shape and a line drawing are different distributions and pretraining across them
+would transfer nothing.
+
+60000 sketches from the validation split alone, which is 62 times the PrintCAD sample:
+
+| | right number of primitives, held-out parts |
+|---|---|
+| geometric tracer | 34% |
+| sketchnet, trained on PrintCAD alone | 37% |
+| **sketchnet, pretrained on SketchGraphs then fine-tuned** | **46%** |
+
+Pretraining is worth **9 points**, and the way it earns them is visible in the training fit: from
+scratch the model reaches 94% on the parts it trained on, and after pretraining only 87%. It
+memorises less and generalises more, which is what a larger corpus is supposed to buy.
+
+The tracer emits 35.17 elements against a truth of 7.62 on these renders - it fragments, which is
+the over-segmentation behind the 9.4-against-11.9 element deficit measured on photographs.
+
+**One measurement was nearly reported unfairly.** With both corpora rendered as strokes, the tracer
+scored 12% - but it is built for a filled silhouette and was being handed a line drawing. Rebuilding
+the same test parts as filled renders and rerunning it gives 34%. Comparing two methods requires
+giving each the input it was designed for, not the input that happens to be loaded.
+
+Gate 1 asked whether a model can beat the geometric tracer on clean renders. It can, once it has
+enough sketches. Gate 2 is the homography, gate 3 is transfer to photographs, and the honest prior
+from the two dataset-transfer collapses measured earlier is still that gate 3 is where this fails.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
