@@ -572,6 +572,42 @@ Against the photo path's 0.602 that is **+0.11**, and it is now an estimate buil
 degradation curves rather than an extrapolation from clean synthetic input. The board rig is worth
 building.
 
+## Carving to a sketch from real photographs, and what it costs the axis model
+
+T-LESS has real photographs with dataset poses, real segmentation and a CAD mesh, which is
+everything the PrintCAD sets lack. It has no STEP sketch, so the reference is the mesh's own
+cross-section, taken on the axis whose section area varies least - T-LESS parts are not prisms
+like PrintCAD's and their variation runs 0.09 to 0.78 depending on direction, so the axis has to
+be chosen rather than assumed. 21 of 30 objects have such an axis, median variation 0.08.
+
+| | sketch IoU |
+|---|---|
+| a circle, ignoring the photographs | 0.493 |
+| **carved from real photographs** | **0.605** |
+| carved from renders of the mesh at the same poses | 0.576 |
+
+Skill over the trivial answer is 0.221 on n=21. **Real photographs beat renders here by 0.029**,
+which is the wrong sign for a capture penalty and most likely says the render arm is the flawed
+one - probably a camera-convention mismatch between `carve_check.silhouette` and the dataset's
+pose convention, the same class of bug that mirrored every board render earlier. The real arm uses
+the dataset's own masks and poses throughout and is the trustworthy number. Either way it agrees
+with the matting sweep: capture is not what limits carving.
+
+**The axis model does not survive the change of dataset.** It picks the reference axis on 6 of 21
+T-LESS objects, 29% against 33% for chance, where it reaches 89% on PrintCAD. n=21 cannot separate
+29% from chance, but it separates both from 89% comfortably.
+
+That is a real limitation of a component shipped today, and the cause is visible in the training
+set: every labelled example came from PrintCAD, whose parts are extrusions of a face. T-LESS parts
+are industrial housings and connectors whose section changes along every axis - the median best
+axis still varies by 0.08 and the worst by 0.78 - so "the axis a single sketch describes" is a
+different question there, and often has no good answer at all. The classifier learned PrintCAD's
+notion of a base face, not a general one.
+
+The sketch numbers above were taken with the axis forced to the reference, precisely so that this
+failure did not contaminate the capture measurement. In production on parts like these the axis
+would be wrong most of the time, and the honest expectation is well below 0.605.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
