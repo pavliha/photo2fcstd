@@ -174,7 +174,8 @@ def symmetrize(mask, min_iou=0.93):
     for axis in (1, 0):
         f = np.flip(crop, axis=axis)
         if (crop & f).sum() / max((crop | f).sum(), 1) >= min_iou:
-            crop, hole_crop = reflect_richer_half(crop, hole_crop, axis)
+            crop = crop | f
+            hole_crop = reflect_richer_half(hole_crop, hole_crop, axis)[0]
             axes.append("x" if axis == 1 else "y")
     out, out_holes = filled.copy(), holes.copy()
     out[y0:y1, x0:x1] = crop
