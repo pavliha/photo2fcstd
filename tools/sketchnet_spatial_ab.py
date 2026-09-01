@@ -51,9 +51,8 @@ def main():
         iou, err, right = evaluate(m, Xt, Yt, te)
         print("\n  %-22s region IoU %.3f   endpoint error %.3f   right count %.0f%%\n"
               % ("spatial slots" if spatial else "global average", iou, err, 100 * right))
-        if spatial:
-            torch.save({k: v.detach().cpu() for k, v in m.state_dict().items()},
-                       SN.MODEL_PATH + ".spatial")
+        torch.save({k: v.detach().cpu() for k, v in m.state_dict().items()},
+                   SN.MODEL_PATH + (".spatial" if spatial else ".pooled"))
     print("  the geometric tracer, for comparison: region IoU 0.755, right count 40%")
 
 
