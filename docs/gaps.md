@@ -11,7 +11,7 @@ made.
 | # | item | blocked by | size |
 |---|---|---|---|
 | ~~A1~~ | ~~Characterise which arcs get split~~ - **done**, see below | - | - |
-| A2 | Test whether simplification eps is the binding knob on perfect input | code | small |
+| ~~A2~~ | ~~Is simplification the binding knob~~ - **done, it is not** | - | - |
 | A3 | Try arc fitting before polygon simplification, not after | code | medium |
 | A4 | Decide the `bsplinecurve` policy | code | small |
 | A5 | Re-run the tracer ceiling on the 45% untrusted parts | code | small |
@@ -57,15 +57,32 @@ which is why loosening the gate fires on 54% of parts that have no curve at all.
 evidence a straight line would not have - neighbouring geometry, symmetry, a longer run - not a
 lower threshold on the same quantity.
 
-**A2. Test whether simplification eps is the binding knob on perfect input.** An earlier sweep
-patched `outline`'s eps rather than `corner_runs`' and all four arms returned an identical 0.639 -
-an unwired knob. Redo it on the perfect-input harness, where capture noise is absent. **Done when**
-the arms differ, or it is confirmed that eps is not what limits arc recovery.
+**A2. DONE - simplification is not the limit.** `tools/eps_ceiling.py`, sweeping `trace.RUN_EPS`
+(the knob `corner_runs` actually reads) over a 16x range on perfect input, n=165:
 
-**A3. Try arc fitting before polygon simplification.** `approxPolyDP` commits to straight segments
-first and arcs are fitted to what survives, which is a plausible mechanism for an arc arriving as
-chords. **Done when** measured on the same 180 parts with `verdict`, and shipped or reverted. Note
-this modifies the geometric prior that beat twelve learned attempts - a null is the likely outcome.
+| arm | curves | elements | IoU | structure |
+|---|---|---|---|---|
+| eps/4 | 1.61 | 17.42 | 0.690 | 0.741 |
+| eps/2 | 1.78 | 14.65 | 0.686 | 0.762 |
+| **shipped** | 1.75 | 13.48 | 0.682 | 0.757 |
+| eps x2 | 1.72 | 12.82 | 0.670 | 0.753 |
+| eps x4 | 1.71 | 11.92 | 0.656 | 0.750 |
+| really there | **5.22** | 12.39 | | |
+
+The knob is wired this time (IoU spread 0.034, against the old unwired null's 0.000). Sixteen-fold
+change moves curves by 0.17 against a deficit of 3.5. It moves *fragmentation* - element count runs
+17.4 down to 11.9 - and not primitive *type*. Nothing beats shipped: the best arm is eps/2 at
++0.0047 structure [-0.0080, +0.0182]. **No change shipped.**
+
+Corroborated independently: of 106 arcs the tracer loses, only 29% are smoothed into a single line.
+**71% survive as two or more pieces** and are then refused by the fitter. The arcs are reaching the
+decision intact.
+
+**A3. Try arc fitting before polygon simplification** - *demoted by A2*. The premise was that
+simplification commits to straight segments before arcs are considered. A2 shows 71% of lost arcs
+survive simplification as multi-piece polylines and are refused afterwards, and that a 16x eps
+change barely moves curve count. So reordering addresses at most the 29% minority. **Done when**
+measured, but expect little; the accept/reject decision is the real subject.
 
 **A4. Decide the `bsplinecurve` policy.** 328 of 2,163 ground-truth elements are b-splines; the
 pipeline has no primitive for them and the scorer counts them as curves, so part of the "missing

@@ -120,6 +120,12 @@ Circles are fine. Arcs are the defect, and the loss is entirely on the shallow o
 The cliff sits exactly where `ARC_MIN_SPAN_DEG = 40` puts it, and a large-radius short-sweep arc is
 geometrically almost a straight line, which is the same fact from the other side.
 
+Simplification is not what loses them. Sweeping `trace.RUN_EPS` over a 16x range on perfect input
+(n=165) moves curve count by 0.17 against a deficit of 3.5, while moving element count from 17.4 to
+11.9 - it controls fragmentation, not primitive type, and no arm beats shipped. Independently, of
+106 lost arcs only 29% collapse to a single line; **71% survive as two or more pieces and are
+refused by the fitter**. The arcs reach the decision intact.
+
 **This is a precision/recall setting, not a bug.** Only 3% of real lines come out curved, and that
 precision is what loosening the gate destroys: the looser gate fires on 54% of parts whose sketch
 has no curve at all, because sweep and sagitta are exactly the quantities that cannot separate a

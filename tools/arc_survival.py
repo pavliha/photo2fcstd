@@ -106,20 +106,22 @@ def one(part):
             for e in loop:
                 pts = to_px(TC.polyline(e))
                 length = float(np.sum(np.linalg.norm(np.diff(pts, axis=0), axis=1)))
-                hits = []
+                hits, owners = [], []
                 for p in pts[::3]:
                     dists = [float(np.min(np.linalg.norm(mv - p, axis=1))) for mv in moved]
                     j = int(np.argmin(dists))
                     if dists[j] < 12:
                         hits.append(elements[j]["type"])
+                        owners.append(j)
                 if not hits:
                     continue
                 curved = sum(1 for h in hits if h in CURVED) / len(hits)
+                shared = max(sum(1 for o2 in range(len(elements)) if o2 == o) for o in set(owners))
                 rows.append({"part": part, "type": e["type"], "span": e.get("span_deg"),
                              "r_px": (e.get("r") or 0) * scale, "length_px": length,
                              "share_of_loop": length / max(total, 1e-9),
-                             "curved_frac": curved, "pieces": len(set(map(id, hits))),
-                             "distinct": len(set(hits)), "align_cost": cost})
+                             "curved_frac": curved, "pieces": len(set(owners)),
+                             "align_cost": cost})
         return rows
     except Exception:
         return []
