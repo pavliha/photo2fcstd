@@ -182,6 +182,33 @@ def upright_mask(mask):
     return rotated, float(angle)
 
 
+def boundary_period(pts, min_peaks=6, min_prominence=0.012, max_peaks=60, min_amplitude=0.03):
+    """How many repeated features sit on this contour, or None if it is not periodic.
+
+    A gear, a scalloped disc or a perforated rim has a radius that rises and falls a fixed
+    number of times around the centroid. Simplifying such a contour by arc length erases
+    exactly the features that define the part.
+    """
+    from scipy.signal import find_peaks
+    pts = np.asarray(pts, float)
+    if len(pts) < 40:
+        return None
+    centre = pts.mean(axis=0)
+    delta = pts - centre
+    radius = np.hypot(delta[:, 0], delta[:, 1])
+    if radius.max() <= 0:
+        return None
+    middle = float(np.median(radius))
+    if middle <= 0 or (np.percentile(radius, 97) - np.percentile(radius, 3)) / middle < min_amplitude:
+        return None
+    order = np.argsort(np.arctan2(delta[:, 1], delta[:, 0]))
+    profile = radius[order] / radius.max()
+    wrapped = np.concatenate([profile, profile[:len(profile) // 6]])
+    peaks, _ = find_peaks(wrapped, prominence=min_prominence, distance=max(3, len(profile) // 60))
+    peaks = [q for q in peaks if q < len(profile)]
+    return len(peaks) if min_peaks <= len(peaks) <= max_peaks else None
+
+
 def outline(mask, eps_frac=0.008, min_hole=None):
     min_hole = th.MIN_HOLE_FRAC if min_hole is None else min_hole
     import cv2
@@ -477,6 +504,7 @@ def arc_span(run, cx, cy):
 
 
 RUN_EPS = 0.015
+REPEATED_RUN_EPS = 0.004
 
 
 def corner_runs(raw, eps_frac=None):
@@ -734,8 +762,10 @@ def elements(raw, length_px):
     if learned is not None:
         els = elements_from_runs(learned, length_px)
         return merge_and_snap(els, length_px)
+    repeated = boundary_period(raw)
     runs = ((cornernet_runs(raw) if LEARNED_CORNERS else None)
-            or (filtered_runs(raw) if FILTERED_CORNERS else None) or corner_runs(raw))
+            or (filtered_runs(raw) if FILTERED_CORNERS else None)
+            or corner_runs(raw, REPEATED_RUN_EPS if repeated else None))
     els = []
     for run in runs:
         chord = float(np.hypot(*(run[-1] - run[0])))
@@ -932,7 +962,8 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
     for j, raw in enumerate(raw_loops):
         raw = np.asarray(raw, float)
         f = fit_ellipse(raw)
-        if ellipse_ok(f, len(raw)) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect):
+        if (ellipse_ok(f, len(raw)) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect)
+                and boundary_period(raw) is None):
             out.append({"type": "circle", "cx": f["cx"], "cy": f["cy"], "r": f["a"]})
             continue
         traced = elements(raw, length_px)

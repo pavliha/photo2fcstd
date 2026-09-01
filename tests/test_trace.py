@@ -421,3 +421,49 @@ def test_a_real_hole_survives_the_speck_filter():
     mask[80:120, 60:90] = False
     out, _ = symmetrize(mask)
     assert not out[85:115, 65:85].any()
+
+
+def toothed(teeth=12, radius=100.0, depth=0.12, n=720):
+    a = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    r = radius * (1.0 + depth * np.sign(np.cos(teeth * a)))
+    return np.column_stack([r * np.cos(a), r * np.sin(a)])
+
+
+def test_a_toothed_contour_is_recognised_as_repeated():
+    from photo2fcstd.trace import boundary_period
+    assert boundary_period(toothed(12)) is not None
+    assert boundary_period(toothed(30)) is not None
+
+
+def test_a_plain_disc_is_not_repeated():
+    from photo2fcstd.trace import boundary_period
+    a = np.linspace(0, 2 * np.pi, 720, endpoint=False)
+    assert boundary_period(np.column_stack([100 * np.cos(a), 100 * np.sin(a)])) is None
+
+
+def test_a_rectangle_is_not_repeated():
+    from photo2fcstd.trace import boundary_period
+    pts = []
+    for f in np.linspace(0, 1, 200, endpoint=False):
+        pts += [(f * 200, 0.0), (200.0, f * 100), (200 - f * 200, 100.0), (0.0, 100 - f * 100)]
+    assert boundary_period(np.array(pts)) is None
+
+
+def test_teeth_survive_into_the_elements():
+    from photo2fcstd.trace import elements
+    els = elements(toothed(12, n=1440), 200.0)
+    assert len(els) >= 20, len(els)
+
+
+def test_a_scalloped_disc_is_not_called_a_circle():
+    from photo2fcstd.trace import primitives
+    loops = primitives([toothed(16, radius=120.0, depth=0.06, n=1440).tolist()], 240.0)
+    assert loops[0]["type"] == "loop"
+    assert len(loops[0]["elements"]) >= 16
+
+
+def test_a_plain_disc_is_still_a_circle():
+    from photo2fcstd.trace import primitives
+    a = np.linspace(0, 2 * np.pi, 1440, endpoint=False)
+    disc = np.column_stack([120 * np.cos(a), 120 * np.sin(a)])
+    assert primitives([disc.tolist()], 240.0)[0]["type"] == "circle"

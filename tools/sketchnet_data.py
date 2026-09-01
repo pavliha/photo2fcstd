@@ -52,13 +52,18 @@ def one(args):
             H = synth.homography(rng, tilt_deg=TILT) if TILT > 0 else np.eye(3)
             loops = [[(t, synth.apply_h(H, p)) for t, p in lp] for lp in loops]
             loops = synth.fit_canvas(loops, synth.CANVAS)
-            mask = synth.rasterise(loops, synth.CANVAS)
-            if mask.sum() < 500:
-                continue
             els = primitives_of(loops)
             if not els or len(els) > SN.SLOTS:
                 continue
-            img = cv2.resize(mask.astype(np.float32), (SN.SIDE, SN.SIDE), interpolation=cv2.INTER_AREA)
+            # strokes, not a filled silhouette, so this matches how SketchGraphs is rendered for
+            # pretraining and how a traced contour is drawn at inference
+            sys.path.insert(0, os.path.join(ROOT, "tools"))
+            from sketchgraphs_bridge import render as stroke_render
+            raster = stroke_render(els, synth.CANVAS)
+            if raster.sum() < 255 * 200:
+                continue
+            img = cv2.resize(raster.astype(np.float32) / 255.0, (SN.SIDE, SN.SIDE),
+                             interpolation=cv2.INTER_AREA)
             box = (np.zeros(2), float(synth.CANVAS))
             rows.append({"part": part, "img": img.astype(np.float32),
                          "rows": SN.encode(els, box).astype(np.float32)})
