@@ -27,9 +27,11 @@ def test_the_board_render_matches_a_part_free_photograph():
     assert np.median(d[inside > 0]) < 10
 
 
-def test_part_mask_refuses_rather_than_returning_something_wrong():
+def test_a_bare_target_yields_no_part():
+    """part_mask used to raise, because no appearance method could separate a part from the
+    checkerboard. Clearing the target's middle made the problem go away; an empty target should
+    still yield nothing."""
     view = CK.board_views(1, radius=max(CK.board_mm()) * 1.6,
                           elevations=CK.DETECTABLE_ELEV[:1])[0]
     img, _ = CK.render_view(view, CK.board_texture())
-    with pytest.raises(NotImplementedError):
-        capture.part_mask(img, capture.pose(img))
+    assert capture.part_mask(img, capture.pose(img)).sum() == 0
