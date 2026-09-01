@@ -5,3 +5,15 @@ data/printcad/
 .pytest_cache/
 *.joblib
 .playwright-mcp/
+
+# Regenerable model artefacts and caches. Every one of these is rebuilt by a script in tools/,
+# and the measurement that justifies each model lives in docs/results.md, which is what actually
+# stops the work being repeated. Roughly 500 MB was committed before this rule existed.
+*.pt
+*.pt.*
+data/*.npz
+data/corner_rows.npy
+data/constraint_rows.json
+data/support_vs_error.json
+data/sketchnet_*.npz
+!data/embed_centre.npz

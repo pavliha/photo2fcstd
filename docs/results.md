@@ -1252,6 +1252,31 @@ One measurement was also nearly reported unfairly: with everything rendered as s
 scores 12%, but it is built for a filled silhouette. Rebuilding the same test parts filled gives 34%
 on count and 0.755 region IoU. Each method has to be given the input it was designed for.
 
+## What the learned layer is, after twelve attempts
+
+Two components earn their place, both by selecting among candidates:
+
+| component | what it does | measured |
+|---|---|---|
+| `view_model` | which photograph to draw from | +0.038 [+0.019, +0.056], shipped |
+| `axis_model` | which way to look at a carved volume | 69% to 89% in distribution, 29% out, gated by `section_constancy` |
+| depth, pixel path | depth from an image embedding | gated by `embedding_is_familiar` after losing to a constant out of distribution |
+
+Ten lost. **Every one of the ten replaced a geometric step; both winners chose between candidates.**
+That is the clearest pattern in this project and it took twelve attempts to see.
+
+Three of the losers were still wired into the shipped pipeline behind flags that were never enabled
+- `curvenet`, `cornernet` and `eps_model` - so `elements()` carried two dead branches and
+`traced_outline` a third. Removed, with their tests and tools. `sketchnet` and its SketchGraphs
+bridge stay: they are not wired into anything, and raster-to-primitives is the one formulation that
+needs no correspondence to the truth, which is what killed nine of the ten.
+
+**About 500 MB of regenerable artefacts had been committed**, `corner_rows.npy` at 283 MB and two
+pixel caches at 62 MB each among them. Every one is rebuilt by a script in `tools/`, and the
+measurement that justifies a model lives in this file, which is what actually stops the work being
+repeated. They are untracked now and `.gitignore` covers the patterns. The history still carries
+them; shrinking that needs a rewrite, which is not mine to do.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

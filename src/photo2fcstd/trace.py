@@ -540,55 +540,8 @@ def corner_runs(raw, eps_frac=None):
     return runs
 
 
-LEARNED_CORNERS = os.environ.get("P2F_LEARNED_CORNERS") == "1"
 
 
-def runs_between(pts, corners):
-    idx = sorted({int(i) for i in corners})
-    if len(idx) < 2:
-        return None
-    out = []
-    for j, c in enumerate(idx):
-        d = idx[(j + 1) % len(idx)]
-        run = pts[c:d + 1] if d > c else np.vstack([pts[c:], pts[:d + 1]])
-        out.append(run.astype(float))
-    return out
-
-
-def cornernet_runs(raw):
-    """Split the contour at the corners the heatmap predicts instead of the ones approxPolyDP finds."""
-    from photo2fcstd import cornernet
-    pts = np.asarray(raw, float)
-    corners = cornernet.predict(pts)
-    if corners is None or len(corners) < 2:
-        return None
-    near = [int(np.argmin(np.hypot(pts[:, 0] - q[0], pts[:, 1] - q[1]))) for q in corners]
-    return runs_between(pts, near)
-
-
-FILTERED_CORNERS = os.environ.get("P2F_FILTERED_CORNERS") == "1"
-KEEP_CORNER = 0.25
-
-
-def filtered_runs(raw, keep=KEEP_CORNER):
-    """approxPolyDP's corner positions, with the ones the heatmap does not believe removed.
-
-    Predicting corners outright loses end to end even at 0.84 F1, because approxPolyDP places
-    a corner it does find more accurately (0.0034 of the diagonal against 0.0055) and a
-    displaced corner moves a line endpoint. What approxPolyDP does badly is fire too often,
-    at 0.48 precision, and that is the half a classifier can fix without touching a position.
-    """
-    from photo2fcstd import cornernet
-    import cv2
-    pts = np.asarray(raw, np.float32)
-    h = cornernet.heatmap(pts)
-    if h is None:
-        return None
-    poly = cv2.approxPolyDP(pts.reshape(-1, 1, 2), 0.015 * cv2.arcLength(pts, True), True).reshape(-1, 2)
-    near = [int(np.argmin(np.hypot(pts[:, 0] - q[0], pts[:, 1] - q[1]))) for q in poly]
-    span = max(len(pts) // 100, 2)
-    kept = [i for i in near if h[max(0, i - span):i + span + 1].max() >= keep]
-    return runs_between(np.asarray(raw, float), kept) if len(kept) >= 2 else None
 
 
 MIN_ELLIPSE_POINTS = 12
@@ -610,13 +563,8 @@ def arc_from_run(run, ccw=None):
     return {"type": "arc", "p0": on(run[0]), "p1": on(run[-1]), "cx": float(cx), "cy": float(cy), "r": float(r), "ccw": bool(ccw), "_run": run}
 
 
-LEARNED_CURVES = os.environ.get("P2F_LEARNED_CURVES") == "1"
 
 
-def majority_filter(y, w=9):
-    n = len(y)
-    pad = np.concatenate([y[-w:], y, y[:w]])
-    return np.array([np.bincount(pad[i:i + 2 * w + 1], minlength=2).argmax() for i in range(n)])
 
 
 def split_straight(seg, length_px, eps_frac=0.015):
@@ -651,44 +599,8 @@ def absorb_short(spans, n, frac=0.04):
     return merged
 
 
-def learned_runs(raw, length_px):
-    from photo2fcstd import curvenet
-    y = curvenet.predict(raw)
-    if y is None:
-        return None
-    y = majority_filter(np.asarray(y, int))
-    n = len(y)
-    edges = [i for i in range(n) if y[i] != y[i - 1]]
-    if not edges:
-        spans = [(0, n, int(y[0]))]
-    else:
-        spans = [(edges[j], edges[(j + 1) % len(edges)], int(y[edges[j]])) for j in range(len(edges))]
-    spans = absorb_short(spans, n)
-    out = []
-    for a, b, cls in spans:
-        idx = list(range(a, b)) if b > a else list(range(a, n)) + list(range(0, b))
-        if len(idx) < 2:
-            continue
-        seg = np.asarray(raw, float)[idx]
-        if cls == 1 and len(seg) >= th.ARC_MIN_POINTS:
-            out.append(("curved", seg))
-        else:
-            out += [("straight", sub) for sub in split_straight(seg, length_px)]
-    return out or None
 
 
-def elements_from_runs(runs, length_px):
-    els = []
-    for kind, run in runs:
-        chord = float(np.hypot(*(run[-1] - run[0])))
-        if kind == "curved" and len(run) >= th.ARC_MIN_POINTS and chord > 1e-6:
-            cx, cy, r, rel, _ = fit_circle(run)
-            span = arc_span(run, cx, cy)
-            if rel * r < max(0.05 * r, 2.0) and 5.0 < abs(span) < th.ARC_MAX_SPAN_DEG:
-                els.append(arc_from_run(run))
-                continue
-        els.append({"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist()})
-    return els
 
 
 def merge_and_snap(els, length_px):
@@ -776,14 +688,8 @@ def carry_support(final, original):
 
 
 def elements(raw, length_px):
-    learned = learned_runs(raw, length_px) if LEARNED_CURVES else None
-    if learned is not None:
-        els = elements_from_runs(learned, length_px)
-        return merge_and_snap(els, length_px)
     repeated = boundary_period(raw)
-    runs = ((cornernet_runs(raw) if LEARNED_CORNERS else None)
-            or (filtered_runs(raw) if FILTERED_CORNERS else None)
-            or corner_runs(raw, REPEATED_RUN_EPS if repeated else None))
+    runs = corner_runs(raw, REPEATED_RUN_EPS if repeated else None)
     els = []
     for run in runs:
         chord = float(np.hypot(*(run[-1] - run[0])))
