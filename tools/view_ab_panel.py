@@ -36,7 +36,7 @@ def photo(name):
 
 
 def movers(a, b, sa, sb, want):
-    shared = [p for p in set(a) & set(b) if sa.get(p) and sb.get(p) and sa[p] != sb[p]]
+    shared = [p for p in set(a) & set(b) if sa.get(p) and sb.get(p)]
     ordered = sorted(shared, key=lambda p: b[p] - a[p])
     return ordered[-want:][::-1] + ordered[:want]
 
@@ -50,13 +50,13 @@ def cell(ax, part, run, src, score, colour, tag):
     ax.set_title("%s  %s\nsolid IoU %.2f" % (tag, src, score), fontsize=8, color=colour)
 
 
-def draw(parts, a, b, sa, sb, out):
+def draw(parts, a, b, sa, sb, out, old="before", new="after"):
     fig, axes = plt.subplots(len(parts), 4, figsize=(13, 3.3 * len(parts)), squeeze=False)
     fig.patch.set_facecolor("#faf8f5")
     for row, part in zip(axes, parts):
-        cell(row[0], part, "vfirst", sa[part], a[part], OLD, "old rule")
-        cell(row[2], part, "vranker", sb[part], b[part], NEW, "ranker")
-        for ax, run in ((row[1], "pick_first"), (row[3], "pick_ranker")):
+        cell(row[0], part, old, sa[part], a[part], OLD, "before")
+        cell(row[2], part, new, sb[part], b[part], NEW, "after")
+        for ax, run in ((row[1], old), (row[3], new)):
             cand = "runs/%s/out/%s.stl" % (run, part)
             c = overlay.compare(truth_of(part), cand)
             overlay.draw(ax, c["views"]["face"], "")
@@ -65,17 +65,18 @@ def draw(parts, a, b, sa, sb, out):
                         Patch(color=(0.85, 0.15, 0.15), label="truth only"),
                         Patch(color=(0.15, 0.35, 0.85), label="model only")],
                loc="lower center", ncol=3, fontsize=9)
-    fig.suptitle("What changing the traced photo does to the solid", fontsize=13)
+    fig.suptitle("Last night: what the two new models changed", fontsize=13)
     fig.tight_layout(rect=(0, 0.035, 1, 0.975))
     fig.savefig(out, dpi=95, facecolor=fig.get_facecolor())
     return out
 
 
 def main():
-    a, b = scores("pick_first"), scores("pick_ranker")
-    sa, sb = sources("pick_first"), sources("pick_ranker")
+    old, new = (sys.argv[3], sys.argv[4]) if len(sys.argv) > 4 else ("pick_first", "pick_ranker")
+    a, b = scores(old), scores(new)
+    sa, sb = sources(old), sources(new)
     parts = movers(a, b, sa, sb, int(sys.argv[2]) if len(sys.argv) > 2 else 3)
-    print(draw(parts, a, b, sa, sb, sys.argv[1] if len(sys.argv) > 1 else "tools/view_ab_panel.png"))
+    print(draw(parts, a, b, sa, sb, sys.argv[1] if len(sys.argv) > 1 else "tools/view_ab_panel.png", old, new))
 
 
 if __name__ == "__main__":

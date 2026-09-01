@@ -686,6 +686,36 @@ The general lesson is that split-by-part, which this repo has been careful about
 protects against memorising a part and does nothing about memorising a dataset. Every learned
 component here has exactly one dataset behind it.
 
+## Carving recovers holes; it cannot recover pockets
+
+Rendering the T-LESS failures as drawings showed smooth profiles where the truth has slots and
+steps, which looked like carving returning an outline and no internal structure at all. That
+inference was drawn from four pictures and three measurable objects, and it is wrong.
+
+On 214 discriminating PrintCAD parts, with the axis chosen by the model:
+
+| | carve | photo path |
+|---|---|---|
+| loops recovered against real | **2.15 / 2.42** | 1.48 / 1.99 |
+| parts whose sketch has holes | 45% | - |
+| of those, recovering at least one | **91%** | - |
+| holes recovered against real | **2.48 / 3.12** | - |
+
+Carving recovers 89% of the loops a sketch contains against the photo path's 74%, and 79% of the
+individual holes. **It is better at internal structure, not worse.**
+
+The distinction the T-LESS figure was actually showing is between a through-hole and a pocket. A
+visual hull is the intersection of what every silhouette permits, so a hole that breaks the
+outline from some direction is carved out exactly, and a cavity that never breaks any silhouette
+is invisible in principle. PrintCAD parts are plates and brackets whose holes go through. T-LESS
+connector housings have internal slots that do not, and on the three such objects measurable here
+none of that structure came back - internal area 5.6% of the outer loop in truth, 0.0% recovered.
+
+So the limitation is real and narrow: **carving cannot see a cavity that no viewpoint reveals**,
+which is a property of the geometry rather than a tuning failure, and depth carving is the only
+thing that would address it. It is not the broad claim that carving returns outlines only, and
+three objects were never enough to support that.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
