@@ -861,6 +861,54 @@ The support metadata stays, recorded and unused by the pipeline. It costs a few 
 element, it is the foundation any future attempt needs, and it is now visible in the spec for anyone
 debugging why an edge came out where it did.
 
+## Architecture review of the learned layer
+
+Eight learned components now exist. What each is worth, and whether it runs:
+
+| component | job | on by default | measured value |
+|---|---|---|---|
+| `view_model` | which photo to draw from | **yes** | +0.038 [+0.019, +0.056], n=250 held out |
+| `axis_model` | which way to look at a carved volume | yes (carve path) | 69% to 89% in distribution, **29% out** |
+| `depth_model` (pixel) | depth from a DINOv3 embedding | **yes** | **never audited out of distribution** |
+| `depth_model` (tabular) | depth from silhouette statistics | fallback | 0.435 here, **loses to a constant on T-LESS** |
+| `mode_model` | which mode to build | no | worth ~0.001 |
+| `view_rank` | which photo to draw from | no (`P2F_VIEW_PICK`) | superseded, see below |
+| `curvenet` | per-point curve labels | no | 0.579 to 0.452, lost |
+| `cornernet` | corner heatmap | no | 0.842 F1, -0.043 end to end, lost |
+
+Four structural problems, in the order I would fix them.
+
+**1. Two view selectors, and one silently shadows the other.** `pick_view` supports a learned
+`view_rank`, and `outline_source` wraps its result with `view_model`. Since `view_model` is on by
+default and always returns an answer, `P2F_VIEW_PICK=ranker` has no effect on the outline modes -
+the ranker computes a view that is then discarded. Two models trained for the same decision, one
+unreachable. They should be one component, or the wrapping should defer when the ranker is enabled.
+
+**2. The depth model that ships has never been audited out of distribution.** `predict` tries the
+DINOv3 pixel path first and falls back to the tabular one. The T-LESS audit built its views from
+masks with no source image, so `embed.for_views` returned None and the pixel path never ran: the
+"loses to a constant" result is about the **fallback**, not about what runs on a real photograph.
+Auditing the shipped path needs T-LESS views carrying their image paths.
+
+**3. Fourteen swallowed exceptions across the ML layer, none of which log.** Every `load` and
+`predict` returns None on any failure and the caller quietly uses the geometric rule. That is the
+right behaviour and the wrong silence: it is exactly how `P2F_VIEW_MODEL=1` pointing the loader at a
+file named "1" produced an A/B that measured the control twice and reported +0.0000 on every part.
+A one-line warning the first time a component falls back would have caught it in seconds.
+
+**4. Every component has exactly one dataset behind it.** Split-by-part is enforced everywhere and
+protects against memorising a part. Nothing protects against memorising PrintCAD, and two of the
+three audited components turned out to have done so. The `section_constancy` gate is the only
+out-of-distribution guard in the system, and it was found by testing on a second dataset rather than
+by any in-distribution measurement.
+
+**What the layer is actually worth.** One component earns its place on measured evidence
+(`view_model`, +0.038). One is valuable but only inside its distribution (`axis_model`). One is
+unaudited where it matters (`depth_model` pixel path). Two are off and measured losers, and their
+5 MB of checkpoints are kept deliberately as the data pipeline for a better-posed attempt. The
+honest summary is that this is a geometric pipeline with one reliable learned component in it, not
+a learned system.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

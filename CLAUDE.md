@@ -336,6 +336,10 @@ which used exactly that thinnest view, lost to a constant.
 `data/depth_model.joblib` is gitignored like the other model artefacts, so a fresh clone
 falls back to the geometric estimate until `tools/` rebuilds it.
 
+**The T-LESS audit tested the tabular fallback, not the shipped path.** `predict` tries the DINOv3
+pixel model first, and views built from bare masks have no image to embed, so it fell through. What
+follows is about the fallback; the pixel path is still unaudited out of distribution.
+
 **It does not survive a different dataset.** On T-LESS it scores 0.348 median absolute log error
 against 0.314 for the best constant there, having beaten a constant two to one on PrintCAD. The
 ratios differ outright - 0.055 to 0.503 here, 0.377 to 1.561 there - so the model under-predicts
