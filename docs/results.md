@@ -909,6 +909,37 @@ unaudited where it matters (`depth_model` pixel path). Two are off and measured 
 honest summary is that this is a geometric pipeline with one reliable learned component in it, not
 a learned system.
 
+## The depth path that ships is the one that fails out of distribution
+
+The earlier T-LESS depth audit built its views from bare masks, so `embed.for_views` found no image,
+returned None, and the tabular fallback was measured. Giving the views their T-LESS RGB frames makes
+the DINOv3 path run, and it changes the answer twice over. n=21 objects, embeddings obtained on all
+21:
+
+| | median absolute log error | within 2x | band coverage (claims 80%) |
+|---|---|---|---|
+| best constant, fitted on T-LESS | 0.314 | **90%** | - |
+| **shipped: DINOv3 pixel path** | **1.117** | 24% | **24%** |
+| tabular fallback | **0.236** | 71% | 100% |
+
+**The shipped path is three and a half times worse than a constant**, and its conformal interval
+collapses from a claimed 80% coverage to 24% - the guarantee assumes exchangeability and a new
+dataset voids it. The tabular model, which the earlier audit maligned, is the better of the two
+here: its median error beats the constant outright and its band over-covers rather than under-covers,
+which is the safe direction to be wrong in.
+
+The failure mode is visible in the predictions. The pixel path outputs 0.108 to 0.480 where the truth
+runs 0.377 to 1.561 - it has collapsed onto PrintCAD's range of thin plates and brackets even harder
+than the tabular model, which at least spans 0.103 to 1.469.
+
+`P2F_DEPTH_PIXELS=0` selects the tabular path and is the safer setting for anything that is not a
+PrintCAD-like part. Changing the default is a trade, not a fix: the pixel path presumably earns its
+place in distribution, which is why it was built, and that comparison has not been re-run here.
+
+**One diagnostic did not work.** Embedding norm was recorded to separate "the backbone is out of its
+depth" from "the head is", and it is 1.7 for all 21 objects because the embeddings are L2 normalised.
+The norm carries no information and that question remains open.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

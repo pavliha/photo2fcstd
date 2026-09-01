@@ -12,8 +12,18 @@ import trimesh
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from photo2fcstd import analysis, depth_model, tless  # noqa: E402
+from photo2fcstd import analysis, depth_model, embed, tless  # noqa: E402
 from tless_sketch import reference_axis  # noqa: E402
+
+ARM = os.environ.get("P2F_DEPTH_ARM", "shipped")
+
+
+def rgb_for(mask_path):
+    """The photograph behind a T-LESS mask, so the pixel model has something to embed."""
+    d = os.path.dirname(os.path.dirname(mask_path))
+    stem = os.path.basename(mask_path).split("_")[0]
+    got = os.path.join(d, "rgb", stem + ".png")
+    return got if os.path.exists(got) else None
 
 
 def truth_ratio(mesh, axis):
@@ -31,22 +41,31 @@ def main(limit=30):
             if ax is None:
                 continue
             pairs = tless.views_of(obj, every=90, limit=6)
-            masks = [m for m in tless.masks_of(pairs) if m is not None and m.sum() > 400]
-            if len(masks) < 3:
+            masks = tless.masks_of(pairs)
+            usable = [(m, rgb_for(mp)) for (v, mp), m in zip(pairs, masks)
+                      if m is not None and m.sum() > 400 and rgb_for(mp)]
+            if len(usable) < 3:
                 continue
             views = []
-            for m in masks[:3]:
+            for m, rgb in usable[:3]:
                 try:
-                    views.append(analysis.view_from_mask(m, "obj%02d" % obj))
+                    views.append(analysis.view_from_mask(m, rgb))
                 except Exception:
                     pass
             if len(views) < 3:
                 continue
+            vec = None
+            try:
+                vec = embed.for_views(views, depth_model.ALLOW_BACKBONE)
+            except Exception:
+                vec = None
             got = depth_model.predict(views)
             if got is None:
                 continue
             rows.append({"obj": obj, "pred": got[0], "true": truth_ratio(mesh, ax),
-                         "lo": got[1], "hi": got[2]})
+                         "lo": got[1], "hi": got[2],
+                         "embedded": vec is not None,
+                         "embed_norm": None if vec is None else float(np.linalg.norm(vec))})
         except Exception:
             continue
     json.dump(rows, open(os.path.join(ROOT, "data", "depth_ood.json"), "w"))
@@ -58,7 +77,9 @@ def main(limit=30):
     err = np.abs(np.log(p / t))
     best_const = float(np.exp(np.median(np.log(t))))
     const_err = np.abs(np.log(best_const / t))
-    print("depth ratio on T-LESS, n=%d objects\n" % len(rows))
+    emb = [r for r in rows if r["embedded"]]
+    print("depth ratio on T-LESS, n=%d objects, arm=%s" % (len(rows), ARM))
+    print("  the pixel path had an embedding on %d of them\n" % len(emb))
     print("  %-30s %10s %10s" % ("", "median |log|", "within 2x"))
     print("  %-30s %10.3f %9.0f%%" % ("best constant, fitted on T-LESS", np.median(const_err),
                                       100 * np.mean(const_err < np.log(2))))
@@ -72,6 +93,9 @@ def main(limit=30):
               % (100 * cov, width))
     print("\n  true ratio spans %.3f to %.3f; the model predicts %.3f to %.3f"
           % (t.min(), t.max(), p.min(), p.max()))
+    if emb:
+        n = np.array([r["embed_norm"] for r in emb])
+        print("  embedding norm on T-LESS: median %.1f, range %.1f to %.1f" % (np.median(n), n.min(), n.max()))
 
 
 if __name__ == "__main__":

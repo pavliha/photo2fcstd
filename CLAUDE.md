@@ -336,9 +336,13 @@ which used exactly that thinnest view, lost to a constant.
 `data/depth_model.joblib` is gitignored like the other model artefacts, so a fresh clone
 falls back to the geometric estimate until `tools/` rebuilds it.
 
-**The T-LESS audit tested the tabular fallback, not the shipped path.** `predict` tries the DINOv3
-pixel model first, and views built from bare masks have no image to embed, so it fell through. What
-follows is about the fallback; the pixel path is still unaudited out of distribution.
+**The shipped pixel path is the one that fails out of distribution.** With T-LESS views carrying
+their RGB frames so DINOv3 actually runs: the pixel path scores 1.117 median absolute log error
+against a T-LESS constant's 0.314, 24% within 2x, and its conformal band covers 24% where it claims
+80%. The tabular fallback scores 0.236 and over-covers at 100%. `P2F_DEPTH_PIXELS=0` picks the
+tabular path and is safer on anything that is not a PrintCAD-like plate or bracket. Embedding norm
+cannot diagnose whether the backbone or the head is at fault - it is 1.7 for every T-LESS object
+because the embeddings are L2 normalised.
 
 **It does not survive a different dataset.** On T-LESS it scores 0.348 median absolute log error
 against 0.314 for the best constant there, having beaten a constant two to one on PrintCAD. The
