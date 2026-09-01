@@ -238,14 +238,18 @@ def predicted_depth(src, others):
     got = depth_model.predict([src] + list(others))
     if got is None:
         return None
-    ratio, lo, hi, coverage = got
+    ratio, lo, hi, coverage, per_part = got
     depth = ratio * src["length_px"]
     if lo is None or hi is None:
         return depth, "depth predicted from the silhouettes at %.3f of length - measure it (px units)" % ratio
     spread = hi / max(lo, 1e-9)
     verdict = "good enough to build from" if spread < 2.0 else "too wide to trust, put a caliper on it"
-    return (depth, "depth predicted from the silhouettes: %.1f px, %.0f%% of the time between %.1f and %.1f (%.1fx spread, %s)"
-            % (depth, 100 * coverage, lo * src["length_px"], hi * src["length_px"], spread, verdict))
+    band = ("%.0f%% of the time between %.1f and %.1f (%.1fx spread, %s)"
+            % (100 * coverage, lo * src["length_px"], hi * src["length_px"], spread, verdict)
+            if per_part else
+            "%.0f%% of parts land within %.1fx of this - a fixed calibration, not this part's own "
+            "uncertainty, so %s" % (100 * coverage, spread, verdict))
+    return depth, "depth predicted from the silhouettes: %.1f px, %s" % (depth, band)
 
 
 def outline_depth(src, others, mode, thickness_px):

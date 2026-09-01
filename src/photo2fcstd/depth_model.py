@@ -121,11 +121,21 @@ def pixel_predict(views, views_events=None):
         return _give_up("pixel model failed: %s" % exc)
     off = model["offset"]
     return (float(np.exp(point)), float(np.exp(point - off)), float(np.exp(point + off)),
-            1.0 - model.get("alpha", 0.2))
+            1.0 - model.get("alpha", 0.2), False)
 
 
 def predict(views):
-    """Return (ratio, low, high, coverage) or None. Bounds are conformally calibrated."""
+    """Return (ratio, low, high, coverage, per_part) or None.
+
+    `per_part` says whether the band was predicted for this part or is a fixed calibration applied
+    to every part. The pixel head has no quantile heads - it returns `exp(point +/- offset)` - so its
+    band is the same 3.20x width for everything, and 46 of 47 measured parts reported exactly that.
+    Marginal coverage still holds, but a constant width printed as a per-part interval invites the
+    reader to compare parts by it, so the caller must say which it has.
+
+    Fitting real quantile heads on the same embeddings was measured and lost: same 80% coverage,
+    median width 6.05x against 3.20x, and width correlating only 0.22 with actual error.
+    """
     from photo2fcstd import telemetry
     try:
         events = [telemetry.view_event(v) for v in views]
@@ -146,12 +156,12 @@ def predict(views):
         return _give_up("feature build failed: %s" % exc)
     try:
         if not isinstance(model, dict):
-            return float(np.exp(model.predict(x)[0])), None, None, None
+            return float(np.exp(model.predict(x)[0])), None, None, None, False
         off = model["offset"]
         return (float(np.exp(model["point"].predict(x)[0])),
                 float(np.exp(model["lo"].predict(x)[0] - off)),
                 float(np.exp(model["hi"].predict(x)[0] + off)),
-                1.0 - model.get("alpha", 0.2))
+                1.0 - model.get("alpha", 0.2), True)
     except Exception as exc:
         return _give_up("tabular model failed: %s" % exc)
 

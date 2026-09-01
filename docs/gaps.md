@@ -332,7 +332,27 @@ trust" and does so for 100% of parts on the shipped path. The open question is w
 should still be built from a number the pipeline itself calls untrustworthy. **Done when** that is a
 deliberate decision rather than the default.
 
-**D4. Give the pixel head a real interval, or stop printing one.** A constant 3.20x band dressed as
+**D4. DONE - real quantile heads measured and rejected; the phrasing is fixed instead.**
+
+Fitting proper quantile heads on the same 1,437 embeddings, conformalised the CQR way, held out by
+group:
+
+| band | coverage | median width | p10 | p90 |
+|---|---|---|---|---|
+| shipped, constant | 80% | **3.20x** | 3.20x | 3.20x |
+| quantile heads + CQR | 80% | 6.05x | 3.01x | 13.48x |
+
+It does vary per part - 4.5x between p10 and p90 - but the median band **nearly doubles** at the
+same coverage, and its width correlates only **0.22** with the actual error, the same figure that
+made region IoU "nearly independent" of drawing quality. It does not beat its control, so it is not
+shipped.
+
+The phrasing is fixed instead. `depth_model.predict` now returns a fifth value saying whether the
+band is this part's or a fixed calibration, and the note reads *"80% of parts land within 3.2x of
+this - a fixed calibration, not this part's own uncertainty"* on the pixel path, keeping the
+per-part wording only for the tabular model, which really does predict per-part quantiles.
+
+Original statement of the item: A constant 3.20x band dressed as
 a per-part prediction is worse than no band, because it invites a reader to compare parts by it.
 Either fit quantile heads on the embedding as the tabular model does, or report the point estimate
 with a single global caveat. **Done when** either the band varies per part with coverage checked on
