@@ -137,10 +137,10 @@ def outline_source(specs, fallback):
         ranked = view_rank.best(specs)
         return not_edge_on(ranked if ranked is not None else fallback, specs)
     if not USE_VIEW_MODEL:
-        return not_edge_on(fallback, specs)
+        return fallback
     from photo2fcstd import view_model
     i = view_model.choose(specs)
-    return specs[i] if i is not None else fallback
+    return not_edge_on(specs[i] if i is not None else fallback, specs)
 
 
 def select(specs, forced=None):

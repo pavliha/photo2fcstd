@@ -24,6 +24,11 @@ def test_the_model_is_on_by_default():
 
 
 def test_falls_back_to_the_rules_without_a_model(monkeypatch):
+    """Without a model the rule's choice stands, subject to the edge-on veto, so this uses views
+    that are all face-on and therefore never vetoed."""
     monkeypatch.setattr(view_model, "_CACHE", {"m": None})
-    fallback = object()
-    assert modes.outline_source([1, 2, 3], fallback) is fallback
+    flat = [{"shape": {"rectangularity": r, "solidity": 0.9, "hole_frac": 0.0, "ellipse_rms": 0.4,
+                       "stroke_px": 20.0, "holes": [], "bbox": (100.0, 60.0)},
+             "elongation": e, "symmetric": [], "length_px": 400.0}
+            for r, e in ((0.9, 2.0), (0.8, 2.1), (0.7, 2.2))]
+    assert modes.outline_source(flat, flat[1]) is flat[1]

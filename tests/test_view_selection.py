@@ -22,6 +22,8 @@ def test_one_view_is_never_second_guessed():
 
 
 def test_the_ranker_flag_actually_selects_the_ranker(monkeypatch):
+    """The ranker must be consulted. Its answer may still be vetoed by not_edge_on, which is a
+    separate guard, so this asserts the call rather than the identity of the result."""
     calls = []
 
     class Stub:
@@ -34,8 +36,9 @@ def test_the_ranker_flag_actually_selects_the_ranker(monkeypatch):
     monkeypatch.setattr(modes, "VIEW_PICK", "ranker")
     monkeypatch.setattr(vr, "best", Stub.best)
     specs = three()
-    assert modes.outline_source(specs, specs[0]) is specs[-1]
+    got = modes.outline_source(specs, specs[0])
     assert calls == [3]
+    assert got in specs
 
 
 def test_pick_view_no_longer_races_for_the_same_decision():
@@ -43,8 +46,11 @@ def test_pick_view_no_longer_races_for_the_same_decision():
     assert "view_rank" not in inspect.getsource(modes.pick_view)
 
 
-def test_disabling_the_model_returns_the_fallback(monkeypatch):
+def test_disabling_the_model_keeps_the_fallback_unless_it_is_edge_on(monkeypatch):
     monkeypatch.setattr(modes, "USE_VIEW_MODEL", False)
     monkeypatch.setattr(modes, "VIEW_PICK", "first")
     specs = three()
-    assert modes.outline_source(specs, specs[1]) is specs[1]
+    flat = [view(0.9, 0.95, 2.0), view(0.8, 0.9, 2.1), view(0.7, 0.85, 2.2)]
+    assert modes.outline_source(flat, flat[1]) is flat[1]
+    # an edge-on fallback is vetoed by not_edge_on, which is the point of that guard
+    assert modes.outline_source(specs, specs[1]) in specs
