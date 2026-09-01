@@ -940,6 +940,49 @@ place in distribution, which is why it was built, and that comparison has not be
 depth" from "the head is", and it is 1.7 for all 21 objects because the embeddings are L2 normalised.
 The norm carries no information and that question remains open.
 
+## A mode router that drew nothing, and the headroom it invented
+
+Rendering the pipeline end to end on part 00911 showed a green box whose three photographs include
+one taken square on, with the notched corners plainly visible - and that photograph produced no
+sketch at all. The mask was correct; nothing downstream drew it.
+
+`learned_mode` restricts the choice to profile, plan and revolve, because this project decided
+always-outline on measurement and `stations` produces no face to draw. `mode_pixels` honours that
+list and the per-mode regression head honours it. **The classifier path ignored it**, and the saved
+classifier has `stations` among its four classes, so it returned a mode the caller had explicitly
+excluded.
+
+| | mode classifier as it was | honouring the list |
+|---|---|---|
+| 00911, square-on photograph | **0.00** | **0.97** |
+| single-view specs drawing nothing | 158 of 780 (20%) | 0 |
+| parts with at least one view blanked | 75 (29%) | 0 |
+| parts whose best view was blanked | 19 | 0 |
+| **full three-view specs** | 0.638 | 0.637, **0 mode changes** |
+
+On the pipeline as it actually runs the bug is invisible: with three views the classifier already
+lands on an allowed mode, so the fix is worth -0.0005 [-0.010, +0.008] and changes not one part.
+It only bites when a single view is scored.
+
+**Which is exactly how the view-selection labels are made.** A fifth of them recorded a view as
+worthless when the mode router had simply declined to draw it, and on 19 parts the genuinely best
+view was the one marked worthless. Rebuilding the labels with the fix in place, over 1033 parts:
+
+| | contaminated labels | clean |
+|---|---|---|
+| what ships | 0.554 | **0.616** |
+| best of three (oracle) | 0.642 | 0.659 |
+| **headroom from view choice** | **+0.088** | **+0.043** |
+
+**Half the headroom quoted earlier was an artifact.** The shipped +0.038 stands - that A/B compared
+full three-view specs on both arms, where this bug does not fire - but the ceiling it was measured
+against does not.
+
+Retraining the selector on clean labels changes nothing: over 640 parts none of which the shipped
+model was trained on, -0.0012 [-0.010, +0.007], with identical agreement at 0.51. The contamination
+misled the analysis and not the model, which is the more embarrassing of the two outcomes and the
+easier one to miss.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had

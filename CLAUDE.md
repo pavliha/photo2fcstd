@@ -296,6 +296,12 @@ straight choice: `stations` keeps solid IoU 0.433 with 46% of parts drawing noth
 always-outline gives 100% coverage and sketch IoU 0.557 for solid IoU 0.364.
 `tests/test_regression.py` currently encodes the first.
 
+**Scoring one view at a time is not the same pipeline.** `assemble` with a single view took a
+different mode from `assemble` with three, and until this was fixed the learned classifier ignored
+the allowed-mode list and routed 20% of single-view specs to `stations`, which draws nothing. Any
+per-view experiment - view selection labels above all - inherits that. Check what mode a single-view
+spec chose before trusting its score.
+
 ## Depth is predicted, with an honest interval
 
 `depth_model.py` predicts `log(depth / length)` from the silhouette features, trained on

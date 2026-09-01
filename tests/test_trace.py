@@ -353,3 +353,38 @@ def test_squaring_only_touches_four_sided_loops():
     from photo2fcstd.trace import square_quadrilateral
     els = line_loop([(0.0, 0.0), (50.0, 0.0), (100.0, 20.0), (100.0, 70.0), (0.0, 90.0)])
     assert square_quadrilateral(els) is els
+
+
+def test_a_hole_that_shows_the_background_is_carved_back_out():
+    from photo2fcstd.trace import recover_holes
+    image = np.zeros((200, 200, 3), float)
+    image[:, :] = (0.95, 0.95, 0.95)
+    image[40:160, 40:160] = (0.15, 0.45, 0.25)
+    image[80:120, 80:120] = (0.95, 0.95, 0.95)
+    filled = np.zeros((200, 200), bool)
+    filled[40:160, 40:160] = True
+    out = recover_holes(image, filled)
+    assert not out[85:115, 85:115].any()
+    assert out[45:75, 45:75].all()
+
+
+def test_a_part_the_colour_of_the_background_is_not_hollowed_out():
+    from photo2fcstd.trace import recover_holes
+    image = np.zeros((200, 200, 3), float)
+    image[:, :] = (0.95, 0.95, 0.95)
+    image[40:160, 40:160] = (0.93, 0.94, 0.95)
+    filled = np.zeros((200, 200), bool)
+    filled[40:160, 40:160] = True
+    out = recover_holes(image, filled, tol=0.02)
+    assert out.sum() == filled.sum()
+
+
+def test_a_dark_pocket_is_left_alone():
+    from photo2fcstd.trace import recover_holes
+    image = np.zeros((200, 200, 3), float)
+    image[:, :] = (0.95, 0.95, 0.95)
+    image[40:160, 40:160] = (0.15, 0.45, 0.25)
+    image[80:120, 80:120] = (0.02, 0.02, 0.02)
+    filled = np.zeros((200, 200), bool)
+    filled[40:160, 40:160] = True
+    assert recover_holes(image, filled).sum() == filled.sum()

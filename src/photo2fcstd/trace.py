@@ -76,18 +76,49 @@ _RMBG = {}
 from photo2fcstd.settings import cache_dir
 
 
-def cached_mask(path):
+MASK_VERSION = "2"
+
+
+def cached_mask(path, version=MASK_VERSION):
     import hashlib
     st = os.stat(path)
-    key = hashlib.sha1(("%s|%d|%d" % (os.path.abspath(path), st.st_size, int(st.st_mtime))).encode()).hexdigest()
+    raw = "%s|%d|%d" % (os.path.abspath(path), st.st_size, int(st.st_mtime))
+    key = hashlib.sha1((raw if version is None else raw + "|v" + version).encode()).hexdigest()
     return os.path.join(cache_dir("masks"), key + ".npz")
+
+
+def recover_holes(image, mask, tol=0.10, min_frac=0.01):
+    """Carve interior regions whose colour matches the background seen around the part."""
+    inner = ndimage.binary_erosion(mask, np.ones((9, 9)))
+    outside = ~ndimage.binary_dilation(mask, np.ones((25, 25)))
+    if outside.sum() < 500 or inner.sum() < 500:
+        return mask
+    background = np.median(image[outside], axis=0)
+    distance = np.linalg.norm(image - background, axis=2)
+    limit = tol * np.sqrt(3)
+    candidates = (distance < limit) & inner
+    body = inner & ~candidates
+    if body.sum() < 0.2 * inner.sum() or float(np.median(distance[body])) < 3.0 * limit:
+        return mask
+    labelled, count = ndimage.label(candidates)
+    edge = ~ndimage.binary_erosion(mask, np.ones((3, 3)))
+    carved = np.zeros_like(mask)
+    for i in range(1, count + 1):
+        blob = labelled == i
+        if blob.sum() < min_frac * mask.sum() or (blob & edge).any():
+            continue
+        carved |= blob
+    return mask & ~carved
 
 
 def segment_photo(path):
     f = cached_mask(path)
     if os.path.exists(f):
         return np.load(f)["mask"]
-    mask = segment_rmbg(load(path))
+    legacy = cached_mask(path, version=None)
+    image = load(path)
+    base = np.load(legacy)["mask"] if os.path.exists(legacy) else segment_rmbg(image)
+    mask = largest(recover_holes(image, base))
     os.makedirs(cache_dir("masks"), exist_ok=True)
     np.savez_compressed(f, mask=mask)
     return mask
