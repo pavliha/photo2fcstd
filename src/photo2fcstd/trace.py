@@ -434,6 +434,30 @@ def elements(raw, length_px):
     return merge_and_snap(els, length_px)
 
 
+def merge_line_elements(els, min_len, tol_deg=6.0):
+    if len(els) < 3:
+        return els
+    direction = lambda e: np.subtract(e["p1"], e["p0"])
+    def turn(a, b):
+        d1, d2 = direction(a), direction(b)
+        return abs((np.degrees(np.arctan2(d2[1], d2[0]) - np.arctan2(d1[1], d1[0])) + 180) % 360 - 180)
+    def joinable(a, b):
+        if a["type"] != "line" or b["type"] != "line":
+            return False
+        t = turn(a, b)
+        return t < tol_deg or (np.hypot(*direction(a)) < min_len and t < 45)
+    merged = []
+    for e in els:
+        if merged and joinable(merged[-1], e):
+            merged[-1] = {"type": "line", "p0": merged[-1]["p0"], "p1": e["p1"]}
+        else:
+            merged.append(dict(e))
+    while len(merged) > 3 and joinable(merged[-1], merged[0]):
+        merged[0] = {"type": "line", "p0": merged[-1]["p0"], "p1": merged[0]["p1"]}
+        merged.pop()
+    return merged
+
+
 def regularise_lines(els, length_px):
     pts = np.array([e["p0"] for e in els], float)
     lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
@@ -442,6 +466,15 @@ def regularise_lines(els, length_px):
         pts = merge_collinear(snap_rectilinear(pts), 0.015 * length_px)
         pts = snap_rectilinear(pts)
         return [{"type": "line", "p0": pts[i].tolist(), "p1": pts[(i + 1) % len(pts)].tolist()} for i in range(len(pts))]
+    pts = snap_rectilinear(pts, lock=lock)
+    for i, e in enumerate(els):
+        if e["type"] == "arc":
+            pts[i], pts[(i + 1) % len(els)] = e["p0"], e["p1"]
+    for i, e in enumerate(els):
+        e["p0"], e["p1"] = list(map(float, pts[i])), list(map(float, pts[(i + 1) % len(els)]))
+    els = merge_line_elements(els, 0.015 * length_px)
+    pts = np.array([e["p0"] for e in els], float)
+    lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
     pts = snap_rectilinear(pts, lock=lock)
     for i, e in enumerate(els):
         if e["type"] == "arc":

@@ -75,3 +75,36 @@ def test_a_rectangle_is_not_a_circle():
 def test_a_disc_is_still_a_circle():
     poly, shape = outline(disc())
     assert primitives([shape["raw"]], 200)[0]["type"] == "circle"
+
+
+def test_collinear_lines_merge_even_when_the_loop_has_an_arc():
+    from photo2fcstd import trace
+    els = [{"type": "line", "p0": [0, 0], "p1": [10, 0]},
+           {"type": "line", "p0": [10, 0], "p1": [20, 0]},
+           {"type": "line", "p0": [20, 0], "p1": [30, 0]},
+           {"type": "arc", "p0": [30, 0], "p1": [30, 10], "cx": 25, "cy": 5, "r": 7.07, "ccw": True},
+           {"type": "line", "p0": [30, 10], "p1": [0, 10]},
+           {"type": "line", "p0": [0, 10], "p1": [0, 0]}]
+    merged = trace.merge_line_elements(els, min_len=1.0)
+    assert sum(1 for e in merged if e["type"] == "line") == 3
+    assert sum(1 for e in merged if e["type"] == "arc") == 1
+    assert merged[0]["p0"] == [0, 0] and merged[0]["p1"] == [30, 0]
+
+
+def test_merging_never_swallows_a_real_corner():
+    from photo2fcstd import trace
+    els = [{"type": "line", "p0": [0, 0], "p1": [30, 0]},
+           {"type": "line", "p0": [30, 0], "p1": [30, 20]},
+           {"type": "line", "p0": [30, 20], "p1": [0, 20]},
+           {"type": "line", "p0": [0, 20], "p1": [0, 0]}]
+    assert len(trace.merge_line_elements(els, min_len=1.0)) == 4
+
+
+def test_a_tiny_segment_is_absorbed():
+    from photo2fcstd import trace
+    els = [{"type": "line", "p0": [0, 0], "p1": [30, 0]},
+           {"type": "line", "p0": [30, 0], "p1": [30.4, 3]},
+           {"type": "line", "p0": [30.4, 3], "p1": [30, 20]},
+           {"type": "line", "p0": [30, 20], "p1": [0, 20]},
+           {"type": "line", "p0": [0, 20], "p1": [0, 0]}]
+    assert len(trace.merge_line_elements(els, min_len=5.0)) == 4

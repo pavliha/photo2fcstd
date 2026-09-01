@@ -716,6 +716,41 @@ which is a property of the geometry rather than a tuning failure, and depth carv
 thing that would address it. It is not the broad claim that carving returns outlines only, and
 three objects were never enough to support that.
 
+## Snapping to 45 degrees: the prior is real and too small to use
+
+Manufactured faces are mostly axis-aligned, so extending the rectilinear pass to multiples of 45
+looks obviously right. The reference sketches say how much is actually there, over 5549 straight
+edges from trusted parts:
+
+| edges within 2 degrees of a multiple of | share |
+|---|---|
+| 90 | **72.6%** |
+| 45 | 75.3% |
+| 15 | 81.6% |
+
+The 90-degree prior is strong and the shipped pass already exploits it. Adding 45 buys **2.7
+points**, and **16.7% of edges sit more than 10 degrees from any multiple of 45** - chamfers and
+tapers at genuinely odd angles that a loose tolerance would straighten into right angles that were
+never in the part.
+
+End to end on 198 discriminating parts, snapping each near-canonical edge onto its target by
+rotating it about its own midpoint:
+
+| arm | sketch IoU | exact primitives |
+|---|---|---|
+| **shipped, horizontal and vertical only** | **0.646** | 25% |
+| plus 45 degrees, 6 degree tolerance | 0.640 | 26% |
+| plus 45 degrees, 8 degree tolerance | 0.642 | 26% |
+| plus 45 degrees, 11 degree tolerance | 0.645 | 26% |
+
+-0.0059 [-0.0122, -0.0003] at the tight tolerance and indistinguishable from zero at the loose
+ones, with exact primitives up half a point, which is one part in 198.
+
+The interesting part is the activity: the pass changed **142 of 198 parts** and split them 64 to 78.
+It is not doing nothing, it is doing as much harm as good - straightening a genuinely oblique edge
+costs about what tidying a nearly-square one gains. The 2.7 points of extra edges it can help are
+simply outnumbered by the 16.7% it can hurt. Reverted.
+
 ## The capture path runs, measured without a camera
 
 `carve.from_photos` detects the ChArUco target, solves each pose and carves. None of it had
