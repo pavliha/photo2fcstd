@@ -34,10 +34,12 @@ def outline_aspect(loops):
 
 def traced_outline(view, min_fill=th.MIN_OUTLINE_FILL):
     """Trace a view into loops, or None when regularising collapses it to no area."""
+    from photo2fcstd import eps_model
     raw = view["shape"]["raw"]
     cx = sum(p[0] for p in raw) / len(raw)
     cy = sum(p[1] for p in raw) / len(raw)
-    loops = primitives(modes.centred_loops(view, cx, cy), view["length_px"])
+    eps = eps_model.choose(view, raw)
+    loops = primitives(modes.centred_loops(view, cx, cy), view["length_px"], eps=eps)
     if not loops or loop_area(loops[0]) < min_fill * view["length_px"] ** 2:
         return None
     return loops

@@ -912,7 +912,18 @@ def fit_ellipse(pts):
     return {"cx": float(cx), "cy": float(cy), "a": float(a), "b": float(b), "theta": float(theta), "rms": rms, "aspect": float(b / max(a, 1e-6))}
 
 
-def primitives(raw_loops, length_px, circle_aspect=0.7):
+def primitives(raw_loops, length_px, circle_aspect=0.7, eps=None):
+    out = []
+    keep_eps = RUN_EPS
+    if eps is not None:
+        globals()["RUN_EPS"] = float(eps)
+    try:
+        return _primitives(raw_loops, length_px, circle_aspect)
+    finally:
+        globals()["RUN_EPS"] = keep_eps
+
+
+def _primitives(raw_loops, length_px, circle_aspect=0.7):
     out = []
     if SYMMETRY_TOL > 0:
         raw_loops = symmetrise_loops(raw_loops, SYMMETRY_TOL)
