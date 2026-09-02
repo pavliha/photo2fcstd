@@ -68,7 +68,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~F2~~ | ~~Decide whether `stations` stays~~ - **kept, with a measured reason** | - | - |
 | C1 | Shoot 30-50 board frames for tilt labels | photos | small |
 | C2 | Fit and gate the tilt head on them | code (after C1) | small |
-| C3 | Run `carve.py` on a real capture | photos | medium |
+| ~~C3~~ | ~~Run carve on a real capture~~ - **already done on T-LESS, 0.782 IoU** | - | - |
 | C4 | Decide the no-board, no-scale case | code | small |
 | E1 | Ask a person which drawing they would rather edit | person | small |
 | E2 | Re-weight `structure_score` from the answers | code (after E1) | small |
@@ -285,7 +285,14 @@ pin, the same class the B1 fix removed.
 
 ## C. Needs photographs
 
-**C1. Shoot 30-50 board frames.** The tilt head is good on real photographs (2.63 deg against a
+**C1 can now be fed from public data instead.** BOP-Industrial - IPD (10 objects, RGB-D, 13
+cameras), XYZ-IBD (15 objects, 273k real samples) - is real photographs of machined parts with exact
+poses, in BOP format that `bop.py` already reads, so tilt labels no longer have to come from your
+camera. Caveats in `docs/datasets.md`: these are cluttered bin-picking scenes needing a visibility
+filter, and ITODD is grayscale, which is the wrong sensor for a head that reads shading. Your own
+photographs remain the only way to test whether the *gate* admits them.
+
+**C1 (original). Shoot 30-50 board frames.** The tilt head is good on real photographs (2.63 deg against a
 6.98 constant, 87% within 5, over 0-30 deg) and useless trained on renders (7.6-8.0 against 8.81;
 two renderers, the better one slightly worse). Recipe and assumptions in `docs/tilt-labels.md`;
 `tools/tilt_board_data.py` turns the capture into labels. **Done when** `data/tilt_board.npz` spans
@@ -295,10 +302,14 @@ two renderers, the better one slightly worse). Recipe and assumptions in `docs/t
 held-out-by-part error beats the constant and the gate admits ordinary photographs - at which point
 `square_check` stops abstaining and the +0.13 from shooting square becomes reachable board-free.
 
-**C3. Run `carve.py` on a real capture.** Carving reaches 0.736 volumetric IoU against truth (0.791
-on parts at least four voxels thick, n=30) and an expected ~0.715 sketch IoU against the photo
-path's 0.602, with depth *measured*. It has only ever run on synthetic views. **Done when** one real
-capture is carved and scored, and the synthetic estimate is confirmed or corrected.
+**C3. ALREADY DONE - and this entry was wrong.** Carving has run on real photographs since before
+this session, and `docs/results.md` records it: T-LESS ships what the ChArUco board was for - 30
+objects, 1,296 views each, `cam_K` and `cam_R`/`cam_t` per view, masks and CAD - so
+`bop.carve_object` needs no capture session at all. On 30 objects, 22 views, 0.8 mm voxels, scored
+at 1.5 mm against CAD: **0.719 mean IoU from silhouettes, 0.782 with depth free space**, against the
+photo pipeline's ~0.43. The synthetic estimate of 0.736 was fair rather than flattering.
+
+A dataset closed this, not a rig. See `docs/datasets.md`.
 
 **C4. Decide the no-board, no-scale case.** Without a board or a known length the sketch is
 dimensionless. **Done when** the behaviour is deliberate rather than incidental.
@@ -428,6 +439,16 @@ product call, not a measurement.
 
 The option is now costed, should coverage ever be preferred to refusal: 3 parts in 320 gain a solid
 and lose their reshoot advice.
+
+## Ground truth, and the eight-fold option
+
+Every number here is quoted on the ~55% of PrintCAD whose reference face can be inferred from its
+STEP file. The [Fusion 360 Gallery Reconstruction dataset](https://github.com/AutodeskAILab/Fusion360GalleryDataset)
+is 8,625 designs **authored** as sketch-and-extrude, 2.0 GB, carrying `SketchLine` / `SketchArc` /
+`SketchCircle` with coordinates and `extent_one.distance.value` as the true depth. Nothing is
+inferred, so `trustworthy()` and its prism and area-times-depth tests stop being needed, and the
+usable ground truth multiplies by about eight. It has no photographs, so it improves what a drawing
+is scored against rather than what it is made from. See `docs/datasets.md`.
 
 ## Closed - do not re-open
 
