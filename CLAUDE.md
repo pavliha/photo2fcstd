@@ -189,6 +189,17 @@ face: capture costs 0.212, our tracing and regularisation 0.112, and the fact th
 silhouette includes side walls the base face does not costs 0.089. Threshold work lives
 in the middle term only.
 
+**On a thin ring, matting decides the score and nothing else does.** 01407 is a washer whose ideal
+is two concentric circles with a wall 2% of the radius. The pipeline draws exactly two circles -
+`exact` true, structure 1.000 - and scores region IoU **0.557**, with `extra` 0.747. The cause is
+not the tracer: the RMBG mask itself has a radius ratio of 0.965 against an ideal 0.980, and the
+traced circles reproduce that mask to within 0.001. Segmentation eats about **13 px** of the hole,
+so the wall comes out 29.7 px where 16.8 is right, 1.77 times too thick.
+
+Matting costs about 0.02 of sketch IoU on an ordinary part. On a thin annulus the same class of
+error costs **0.41**, because the wall area is the whole of the shape. Before chasing a mode or a
+threshold on a ring-shaped part, measure its mask.
+
 `tools/split_capture.py` breaks the capture term down further, and the answer is not
 what it looks like:
 
