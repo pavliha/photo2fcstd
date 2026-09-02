@@ -1,5 +1,12 @@
 # Work items
 
+**`PLAN.md` is the primary plan and this file is subordinate to it.** PLAN.md carries the
+objective (primitive F1), the curriculum ladder and the declined-ideas table; two threads worked
+through this file - undoing viewpoint tilt, and choosing which photo to trace - are already in its
+declined list, and the arc work is the top of a ladder it says to climb from the bottom. Read
+PLAN.md first.
+
+
 Every gap broken into something a person could pick up in one sitting: what it is, the measurement
 behind it, and what "done" means. `n=` throughout; where something is unmeasured it says so instead
 of estimating.

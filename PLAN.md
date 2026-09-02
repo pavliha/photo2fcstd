@@ -43,6 +43,44 @@ wrong end of the ladder.
 
 **Next: over-drawing on simple parts, then holes.**
 
+### The bottom rung over-draws because a curve becomes a polygon
+
+Measured on the 1-4 tier with a **perfect** rasterised drawing as input, so nothing here is capture
+(n=351): 2.58 primitives wanted, 3.62 drawn, 1.04 extra per part.
+
+It is not a broad fragmentation. **74% of parts draw exactly the right count**, and the mean is
+carried by a long tail:
+
+| part | wanted | drawn | what the ideal contains |
+|---|---|---|---|
+| 00171 | 4 | 19 | 2 line, 2 arc |
+| 00817 | 3 | 17 | 2 ellipse, 1 arc |
+| 00039 | 2 | 14 | 2 ellipse |
+| 01284 | 1 | 10 | 1 bsplinecurve |
+
+The two groups differ by exactly one thing:
+
+| | circle | line | arc | bspline | ellipse |
+|---|---|---|---|---|---|
+| drawn exactly right (260) | **40%** | 56% | 3% | 0% | 0% |
+| over-drawn (82) | 3% | 71% | **15%** | **8%** | 3% |
+
+A full circle is recognised and emitted as one primitive. **An arc, ellipse or b-spline is
+polygonised**, and on a part that wants two primitives that is a sevenfold blow-up. Two mechanisms
+already ruled out: adjacent near-collinear line pairs are 2% of the extra and sub-quarter-length
+slivers are 4%, so this is not a merging failure.
+
+**This is the same defect as the arc work at the top of the ladder, seen where it costs most.** A
+missed arc among 28 primitives is one error; a missed arc among 2 is the whole drawing. The
+simplification tolerance is not the lever - split by tier, eps x4 gains +0.014 [+0.003, +0.030] on
+the 1-4 tier and *loses* 0.033 and 0.029 on the 5-8 and 9-16 tiers, which is why a single global
+value shows nothing and why the declined per-part tolerance had nothing to find.
+
+Established about that defect, from the other end of the ladder: the arcs survive simplification
+(71% of lost arcs arrive as two or more pieces), a looser gate cannot work because sweep and
+sagitta cannot separate a shallow arc from a straight edge, and on perfect input the tracer still
+recovers only 1.76 curves against 5.19. See CLAUDE.md.
+
 ### What is shipped, and what it was worth
 
 | component | held out | on by default |
@@ -91,7 +129,21 @@ a +0.01 change is detectable.
 delta and the run's own resolution. Its first use caught a real +0.031 [+0.013, +0.050] from the
 parallel commits between `v17` and `ci_check` — a change neither of us had measured.
 
-## 2. Prove the metric path on real photographs - done on T-LESS, board still unshot
+## 2. Prove the metric path on real photographs - done on T-LESS, and the board is no longer required
+
+**The printed target is not needed for pose.** Structure-from-motion recovers camera poses from the
+scene, gated synthetically in `docs/sfm.md`: 24 of 24 images registered, camera rotation error 0.035
+deg median against carving's 2 deg budget, and carving from SfM poses agrees with carving from true
+poses at 0.995. Two hard requirements - a strongly textured surface, since at a quarter contrast 0
+of 16 images register, and sixteen views rather than eight. Untested on real photographs.
+
+So the ask is now sixteen photographs of a part on a newspaper, not a printed target in every frame.
+
+**Carving to a sketch from real photographs measures 0.649**, not the 0.715 previously extrapolated:
+`tools/tless_sketch.py` on 21 discriminating T-LESS objects, against a trivial circle's 0.493. It is
+a different part set from PrintCAD, so it is not comparable with the photo path's numbers here.
+
+## 2b. Prove the metric path on real photographs - done on T-LESS, board still unshot
 
 `--rectify` and `photo2fcstd-carve` were validated only against synthetic boards and a simulated
 box. Every millimetre figure quoted for them came from geometry we generated ourselves.
