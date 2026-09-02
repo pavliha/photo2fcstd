@@ -503,3 +503,38 @@ def test_tokens_are_square():
     from photo2fcstd.patches import grid_of
     tokens = np.zeros((197, 8))
     assert grid_of(tokens).shape == (14, 14, 8)
+
+
+def test_a_wire_tail_is_trimmed_off_the_part():
+    from photo2fcstd.trace import trim_appendages
+    mask = np.zeros((200, 200), bool)
+    mask[60:140, 40:140] = True
+    mask[95:101, 140:195] = True
+    out = trim_appendages(mask, width_frac=0.09)
+    assert out[70:130, 50:130].all()
+    assert not out[95:101, 160:195].any()
+
+
+def test_a_part_that_is_thin_all_over_is_left_alone():
+    from photo2fcstd.trace import trim_appendages
+    mask = np.zeros((200, 200), bool)
+    mask[98:104, 20:180] = True
+    assert trim_appendages(mask, width_frac=0.09).sum() == mask.sum()
+
+
+def test_trimming_keeps_the_outline_of_what_survives():
+    from photo2fcstd.trace import trim_appendages
+    mask = np.zeros((200, 200), bool)
+    mask[50:150, 50:150] = True
+    mask[95:100, 150:190] = True
+    out = trim_appendages(mask, width_frac=0.09)
+    assert out[50:150, 50:150].all()
+
+
+def test_appendage_trimming_is_off_by_default():
+    from photo2fcstd.trace import TRIM_APPENDAGE, trim_appendages
+    assert TRIM_APPENDAGE == 0.0
+    mask = np.zeros((200, 200), bool)
+    mask[60:140, 40:140] = True
+    mask[95:101, 140:195] = True
+    assert trim_appendages(mask).sum() == mask.sum()

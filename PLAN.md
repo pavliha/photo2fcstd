@@ -18,6 +18,31 @@ Measured on `data/test_ids.txt`, 246 parts with trustworthy truth that nothing h
 
 A sketch-only run over all 1908 parts takes five minutes; a full run with solids takes twenty-two.
 
+### The curriculum, and where it actually fails
+
+The dataset is a ladder: master simple parts, then climb. Measured per tier on 1047 parts with
+trustworthy truth:
+
+| tier | n | primitive F1 | region IoU | drawn/wanted |
+|---|---|---|---|---|
+| 1-4 primitives | 531 | 0.618 [0.582, 0.654] | 0.652 | **3.78** |
+| 5-8 | 216 | 0.624 [0.584, 0.664] | 0.645 | 2.16 |
+| 9-16 | 147 | 0.584 [0.538, 0.629] | 0.569 | 1.67 |
+| 17 or more | 153 | 0.392 [0.345, 0.439] | 0.582 | 1.07 |
+| no holes | 697 | 0.626 | | |
+| with holes | 350 | 0.493 | | |
+
+**The bottom rung is not solved, and it fails by over-drawing.** A part that needs four primitives
+gets 3.78 times too many: a rectangle traced from a clean photograph comes out as fifteen segments.
+Region IoU is highest in that tier, 0.652, because the shape is right - it is the primitive count
+that is wrong. That is 531 parts, half the set, and unlike every oracle in the table below there is
+nothing to argue about: the answer is known to be four.
+
+Two days went into the 17+ tier - teeth, lattices, scallops - which is 153 parts. That was the
+wrong end of the ladder.
+
+**Next: over-drawing on simple parts, then holes.**
+
 ### What is shipped, and what it was worth
 
 | component | held out | on by default |

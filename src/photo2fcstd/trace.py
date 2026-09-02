@@ -76,15 +76,57 @@ _RMBG = {}
 from photo2fcstd.settings import cache_dir
 
 
-MASK_VERSION = "2"
+MASK_VERSION = "3"
+TRIM_APPENDAGE = float(os.environ.get("P2F_TRIM_APPENDAGE", 0.0))
 
 
 def cached_mask(path, version=MASK_VERSION):
     import hashlib
     st = os.stat(path)
     raw = "%s|%d|%d" % (os.path.abspath(path), st.st_size, int(st.st_mtime))
-    key = hashlib.sha1((raw if version is None else raw + "|v" + version).encode()).hexdigest()
+    if version is not None:
+        raw += "|v%s|t%.4f" % (version, TRIM_APPENDAGE)
+    key = hashlib.sha1(raw.encode()).hexdigest()
     return os.path.join(cache_dir("masks"), key + ".npz")
+
+
+def trim_appendages(mask, width_frac=None, keep_frac=0.55):
+    """Remove wires, cables and tails: anything thinner than a fraction of the part.
+
+    Erode to a core, then grow it back a bounded number of steps inside the mask. The body
+    recovers its own outline, corners included, because every boundary pixel is within the
+    erosion radius of the core; a cable running away from the body only grows back that far
+    and the rest of it is gone. Full reconstruction was tried first and does the opposite -
+    the tail is connected, so it fills straight back in - and a plain opening drops the tail
+    but rounds every corner by the radius. Refused if it would eat the part.
+    """
+    width_frac = TRIM_APPENDAGE if width_frac is None else width_frac
+    area = float(mask.sum())
+    if area <= 0:
+        return mask
+    step = max(1, int(max(mask.shape) / 512))
+    small = mask[::step, ::step]
+    if not small.any():
+        return mask
+    ys, xs = np.nonzero(small)
+    span = max(ys.max() - ys.min(), xs.max() - xs.min()) + 1
+    radius = int(round(width_frac * span / 2.0))
+    if radius < 1:
+        return mask
+    yy, xx = np.mgrid[-radius:radius + 1, -radius:radius + 1]
+    disk = (yy ** 2 + xx ** 2) <= radius ** 2
+    core = ndimage.binary_erosion(small, disk)
+    if not core.any():
+        return mask
+    kept_small = ndimage.binary_dilation(core, np.ones((3, 3), bool), iterations=radius, mask=small)
+    if kept_small.sum() >= keep_frac * small.sum():
+        grown = np.repeat(np.repeat(kept_small, step, axis=0), step, axis=1)[:mask.shape[0], :mask.shape[1]]
+        pad = np.zeros_like(mask)
+        pad[:grown.shape[0], :grown.shape[1]] = grown
+        kept = mask & ndimage.binary_dilation(pad, np.ones((3, 3), bool), iterations=2 * step)
+        if kept.sum() >= keep_frac * area:
+            return kept
+    return mask
 
 
 def recover_holes(image, mask, tol=0.10, min_frac=0.01):
@@ -118,7 +160,7 @@ def segment_photo(path):
     legacy = cached_mask(path, version=None)
     image = load(path)
     base = np.load(legacy)["mask"] if os.path.exists(legacy) else segment_rmbg(image)
-    mask = largest(recover_holes(image, base))
+    mask = largest(trim_appendages(recover_holes(image, base)))
     os.makedirs(cache_dir("masks"), exist_ok=True)
     np.savez_compressed(f, mask=mask)
     return mask

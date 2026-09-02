@@ -654,3 +654,62 @@ on the silhouette statistics.
 
 00238 recovers a real four-element outline from another photo; 00332 has no usable view
 and now fails with a message telling you to reshoot it square to the face.
+
+## The objective is primitive F1, over a denominator that never moves
+
+`sketch_score.score_one` returns `primitive_f1`: drawn primitives matched against the ideal
+sketch's, type by type, so over-drawing and under-drawing cost the same. Region IoU is
+secondary and blind to missing features - it scored a scalloped disc 0.95 when the pipeline
+drew a plain circle.
+
+Every mean needs its denominator pinned to the set you meant, with a missing part scoring
+zero rather than vanishing. This was got wrong four times in one session: a threshold search
+found a configuration scoring 0.85 by making 235 of 269 parts fail to produce a sketch at
+all, and F1 correlated -0.87 with how many parts were scored. `tools/tune_thresholds.py`
+computes the denominator once, up front, from the ids file.
+
+## Fit on the tuning split, confirm on the test split, never the reverse
+
+`data/tune_ids.txt` and `data/test_ids.txt` are disjoint by geometry group with a fixed seed,
+and `tools/freeze_split.py` refuses to redraw them. The eight thresholds in the pipeline were
+fitted by random search on a slice of the tuning set and confirmed once on the test set:
++0.045 [+0.026, +0.065]. Every threshold they replaced had been chosen by eye on five or ten
+parts, and several had to be walked back once the full set disagreed.
+
+The sensitivity ranking from that search is worth as much as the gain: periodicity prominence
+matters most, then the repeated-contour tolerance, then the peak floor. The angle snap
+tolerance and the periodicity amplitude do not matter at all - do not spend time on them.
+
+## Compare learned components only on parts they were not trained on
+
+Both depth heads are fitted on all 1908 photographed parts, which is the set the bench scores.
+Served in-sample the silhouette GBM reaches median x1.16 against its own out-of-fold x1.67 -
+it is reciting - and beats a head that generalises better. That reading caused a good change to
+be reverted for two hours. Retrain without a held-out third and bench on that third:
+`data/depth_holdout_ids.txt` with the `_heldout` model files.
+
+## An oracle here is worth about a tenth of its face value
+
+Six ideas looked large as a best-of-K ceiling and collapsed when a selector had to find them
+without the answer: view choice +0.082 became +0.004 end to end, nine view-and-mode hypotheses
++0.081 with the pipeline already picking the best 61% of the time, a per-part simplification
+tolerance +0.059 became +0.004, tilt +0.090 became 11%, rotational symmetry exact on synthetic
+gears and nothing on photographs, and a bigger head on the same features +0.000.
+
+Size the prize with an oracle before building the machinery, and discount it heavily. Part of
+every such ceiling is argmax picking up noise: on parts whose three photographs are
+geometrically interchangeable, an oracle over them still "gains" +0.045.
+
+## Diff the code snapshots before believing a delta
+
+`runs/<name>/code` holds the source each run used. A depth A/B looked like a null until the
+snapshots showed a second change had landed between the arms. Any surprising result gets
+`diff -rq runs/a/code runs/b/code` before it gets an explanation.
+
+## The dataset is a curriculum, and the bottom rung is not solved
+
+PrintCAD is 1908 single-extrusion printed parts: median four primitives, no holes, 7.9 mm
+thick. Work up the ladder, and check `tools/tiers.py` before choosing what to fix. As of this
+writing the 1-4 primitive tier is 531 parts scoring 0.618 while drawing 3.78 times too many
+primitives - a rectangle comes out as fifteen segments. Over-drawing on simple parts is the
+largest single block of loss in the dataset and it is not a perception problem.
