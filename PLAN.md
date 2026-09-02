@@ -41,6 +41,27 @@ view whose fitted ellipse is within 5% of circular now picks revolve before any 
 selector votes: that head is trained on per-mode voxel IoU, which cannot tell one circle from
 fifty-three lines. Worth +0.001 on the test set, because clean discs are about 1% of it.
 
+An **ellipse primitive** now exists, and it is inert on every real input. No part whose ideal
+holds an ellipse or b-spline had ever been drawn with the right primitives, because the pipeline
+emitted only `line`, `arc` and `circle`; a loop too eccentric to be a circle is now emitted as one
+`ellipse`, through the scorer and into FreeCAD as `Part.Ellipse`. A two-ellipse spec builds a valid
+solid of volume 18221.237 against a hand-computed 18221.2.
+
+On perfect input it wins - structure +0.0028 [+0.0002, +0.0061] overall, +0.0174 [+0.0009, +0.0375]
+on the 112 parts whose ideal holds one, and exact primitives there **0% to 4%**. On photographs it
+never fires: the A/B is identical to four decimals, builds unchanged, and the T-LESS carve-to-sketch
+is 0.649 either way. The reason is measured rather than assumed - an ellipse fitted to a
+photo-traced loop leaves a residual of 0.073 of the semi-major axis on parts that really are
+elliptical and 0.063 on parts that are not, with matching fire rates at every threshold. **The fit
+carries no signal about whether the part is an ellipse**, so loosening would fire indiscriminately,
+which is what sank the arc gates. Kept as neutral-not-harmful, and live the moment an outline is
+cleaner than a photograph's.
+
+Tried and removed on the way: an elliptical arc per contour run. `cv2.fitEllipse` scores 21 to 292
+on runs the circle fits at 0.4 to 1.8, because `corner_runs` splits a curve into 20-50 degree pieces
+and any smooth curve is locally circular. The ellipse spans several runs, so the run is the wrong
+level to fit it at.
+
 ### What is shipped, and what it was worth
 
 | component | held out | on by default |
