@@ -3,7 +3,11 @@ import pytest
 
 from photo2fcstd import analysis, modes
 
-EXPECTED = {"01407": "revolve", "00359": "revolve", "01326": "revolve", "01821": "revolve",
+# What each part selects today, not what it must select. Only the assertions below are
+# requirements: every mode stays reachable and nothing routes to stations on its own. 01407 and
+# 00359 read "revolve" here until Sept 2026 and now pick plan - neutral on 01407, which scores
+# 0.557 either way, and better on 00359, 0.909 against revolve's 0.870.
+EXPECTED = {"01407": "plan", "00359": "plan", "01326": "revolve", "01821": "revolve",
             "01289": "plan", "00476": "plan", "01540": "plan", "00308": "plan",
             "00171": "profile", "00133": "profile", "00621": "profile", "00709": "profile",
             "00523": "profile", "01745": "profile", "00201": "profile", "01167": "plan"}
