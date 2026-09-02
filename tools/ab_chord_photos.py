@@ -1,4 +1,4 @@
-"""The ellipse primitive on real photographs, with a build check.
+"""A three-pixel mask erosion on real photographs, with a build check.
 
 Set the flag for *both* arms on every job. A pool worker is reused, so patching the control arm
 only leaves that worker patched for every later job and both arms measure the control - which is
@@ -17,14 +17,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 IDEAL = json.load(open(os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json")))
 FREECAD = os.environ.get("FREECADCMD", os.path.expanduser("~/Code/FreeCAD/build/release/bin/FreeCADCmd"))
-ARMS = {"before": False, "ellipse": True}
+ARMS = {"before": 0, "erode3": 3}
 CURVED = ("arc", "circle", "ellipse", "bsplinecurve")
 
 
 def one(args):
     part, arm = args
     from photo2fcstd import analysis, bench, sketch_score as SS, spec as spec_mod, trace
-    trace.ELLIPSE_ARCS = ARMS[arm]
+    trace.MASK_ERODE_PX = ARMS[arm]
     try:
         views = [analysis.view(p) for p in bench.photos_of(part)[:3]]
         doc = spec_mod.assemble(views, name=part, log=lambda *a: None)
@@ -79,9 +79,9 @@ def main(limit=160):
                  100 * np.mean([d[p]["exact"] for p in keen])))
     print("  %-10s %9s %9s %10.2f" % ("really", "-", "-", np.mean([by["before"][p]["curve_ideal"] for p in keen])))
     for key in ("region_iou", "structure"):
-        d = np.array([by["ellipse"][p][key] - by["before"][p][key] for p in keen])
+        d = np.array([by["erode3"][p][key] - by["before"][p][key] for p in keen])
         m, lo, hi = stats.mean_ci(d)
-        print("\n  %-12s ellipse vs before %+.4f [%+.4f, %+.4f]" % (key, m, lo, hi))
+        print("\n  %-12s erode3 vs before %+.4f [%+.4f, %+.4f]" % (key, m, lo, hi))
     print("\n  building both arms through FreeCAD...")
     for arm in ARMS:
         specs = {p: by[arm][p]["spec"] for p in keen}

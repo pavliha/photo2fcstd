@@ -200,6 +200,19 @@ Matting costs about 0.02 of sketch IoU on an ordinary part. On a thin annulus th
 error costs **0.41**, because the wall area is the whole of the shape. Before chasing a mode or a
 threshold on a ring-shaped part, measure its mask.
 
+**And there is nothing to turn.** The alpha threshold cannot move it: sweeping `> 128` from 96 to
+240 takes the ratio from 0.964 to 0.971 against an ideal 0.980, because only **0.43% of pixels sit
+in the transition band** - RMBG is confidently placing the boundary in the wrong place, not
+hesitating about it. Eroding the mask does move the ratio arithmetically, but a 30 px ring wall
+loses 40% of its area to the 6 px that would fix it, so any guard worth having refuses exactly the
+parts that need it.
+
+Nor is the bias general enough to erode globally. Over 175 discriminating parts, `extra` exceeds
+`missing` on **53%** - a coin flip - and a three-pixel erosion measured end to end gives region IoU
++0.0079 [-0.0036, +0.0213], structure -0.0027 [-0.0287, +0.0227], and **valid solids 127 to 126
+with unsolved sketches 1 to 2**. Reverted. Improving a thin ring needs a better matte, not a
+post-process.
+
 `tools/split_capture.py` breaks the capture term down further, and the answer is not
 what it looks like:
 
