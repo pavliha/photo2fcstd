@@ -26,3 +26,14 @@ def test_arcs_drawn_as_chords_cost_the_curve_term():
 def test_verdict_carries_iou_and_the_discriminating_flag():
     v = verdict({**case({"line": 4}, {"line": 4}, iou=0.8), "trivial": 0.9})
     assert v["region_iou"] == 0.8 and v["exact"] and not v["discriminating"]
+
+
+def test_an_invented_loop_is_penalised_like_a_missing_one():
+    missed = structure_score(case({"line": 4}, {"line": 4}, loops_mine=1, loops_ideal=2))
+    invented = structure_score(case({"line": 4}, {"line": 4}, loops_mine=2, loops_ideal=1))
+    assert missed["loops"] == invented["loops"] == 0.5
+
+
+def test_many_invented_loops_score_near_zero():
+    s = structure_score(case({"line": 4}, {"line": 4}, loops_mine=5, loops_ideal=1))
+    assert s["loops"] == 0.2

@@ -329,7 +329,8 @@ def structure_score(result):
     total_m, total_i = sum(mine.values()), sum(ideal.values())
     cm = sum(v for k, v in mine.items() if k in CURVES)
     ci = sum(v for k, v in ideal.items() if k in CURVES)
-    loops = min(result.get("loops_mine", 0), result.get("loops_ideal", 0)) / max(result.get("loops_ideal", 0), 1)
+    lm, li = result.get("loops_mine", 0), result.get("loops_ideal", 0)
+    loops = min(lm, li) / max(lm, li, 1)
     curves = 1.0 - abs(cm - ci) / max(ci, cm, 1)
     elements = max(1.0 - abs(total_m - total_i) / max(total_i, 1), 0.0)
     return {"loops": float(loops), "curves": float(curves), "elements": float(elements),

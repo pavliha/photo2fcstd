@@ -70,7 +70,24 @@ polygonised**, and on a part that wants two primitives that is a sevenfold blow-
 already ruled out: adjacent near-collinear line pairs are 2% of the extra and sub-quarter-length
 slivers are 4%, so this is not a merging failure.
 
-**This is the same defect as the arc work at the top of the ladder, seen where it costs most.** A
+**But the dominant mechanism is invented loops, not polygonised curves.** On photographs, n=179 in
+this tier: 4% of parts draw *more* loops than the sketch has, none draw fewer, and those 4% carry
+**48% of every extra primitive** - 31.6 extra elements each against 1.38 for the rest. On perfect
+input it is 13% of parts carrying 61% of the extra. The spurious loops are specks: median 0.0024 of
+the outer loop's area against a legitimate hole's 0.0477.
+
+**An area threshold does not separate them.** Dropping inner loops under 0.5% of the outer catches
+77% of the spurious ones and **24% of real holes**; at 3% it is 89% against 41%. Real holes are what
+the `loops` term measures and it is the pipeline's strongest at 0.998, so that trade is not worth
+making. Not shipped. A different discriminator is needed - shape, or where the loop sits - and the
+area of the thing is not it.
+
+**The metric could not see any of this.** `structure_score`'s loops term was
+`min(mine, ideal) / ideal`, which caps at 1: every one of those parts scored **1.00 on loops while
+inventing four**. It is now `min / max`, so an invented loop costs exactly what a missing one does.
+Every structure figure quoted before this change treated invented loops as free.
+
+**The rest is the same defect as the arc work at the top of the ladder, seen where it costs most.** A
 missed arc among 28 primitives is one error; a missed arc among 2 is the whole drawing. The
 simplification tolerance is not the lever - split by tier, eps x4 gains +0.014 [+0.003, +0.030] on
 the 1-4 tier and *loses* 0.033 and 0.029 on the 5-8 and 9-16 tiers, which is why a single global
