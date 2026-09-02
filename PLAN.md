@@ -105,9 +105,26 @@ threshold: the pipeline emits `line`, `arc` and `circle`, so an ellipse has no r
 comes out as one arc plus a handful of chords. Fixing those 25 parts means adding a primitive, which
 FreeCAD sketches support and this pipeline does not.
 
-**The largest single share is the plain case.** 292 parts with no curve at all, 0.68 extra each, is
-55% of the tier's over-drawing - ordinary fragmentation of straight edges, needing no new primitive
-and no per-part knowledge. That is the tractable target.
+**There is no fragmentation to fix.** The "292 parts with no curve" in that table is mislabelled -
+it excluded arcs, ellipses and b-splines but still admitted circles. Filtering properly, on parts
+whose ideal contains **no curved primitive at all** (n=121, perfect input):
+
+| | n | extra elements each |
+|---|---|---|
+| all of them | 121 | 1.61 |
+| **with the loop count correct** | 82 | **0.04** |
+| with a spurious loop | 39 | 4.92 |
+
+Given the right loop count, a plain part is drawn **98% exactly right**, 0.04 extra, and not one join
+between consecutive lines turns by less than 30 degrees - there is nothing collinear left to merge.
+All of the plain-part over-drawing is the spurious-loop failure wearing different clothes.
+
+From photographs the same filter gives 0.32 against 0.04 here, so what remains on plain parts is
+**capture, not the tracer**.
+
+So the tier's over-drawing is three things, and none of them is fragmentation: spurious loops, for
+which no discriminator has been found; ellipses and b-splines, which need a primitive that does not
+exist; and capture noise.
 
 **Absorbing stray lines into a neighbouring arc was tried and does nothing.** The premise was that a
 curve comes out as an arc plus chords of the same circle; it is false. Excluding the shared vertex,
