@@ -87,6 +87,34 @@ area of the thing is not it.
 inventing four**. It is now `min / max`, so an invented loop costs exactly what a missing one does.
 Every structure figure quoted before this change treated invented loops as free.
 
+### What the remaining over-drawing is made of
+
+With the loop count correct, the extra is **entirely lines** - 3.14 drawn against 1.90 wanted from
+photographs, while the curve count is already right at 0.98 against 0.93. Split by what the ideal
+curve actually is (n=351, perfect input):
+
+| the ideal contains | n | extra elements each | share of all extra |
+|---|---|---|---|
+| an ellipse or b-spline | 25 | **4.28** | 29% |
+| an arc, nothing worse | 34 | 1.74 | 16% |
+| no curve at all | 292 | 0.68 | **55%** |
+
+**No part containing an ellipse or b-spline is ever drawn exactly right** - 0% of the
+exactly-right group has one, against 26% of the over-drawn group. That is structural, not a
+threshold: the pipeline emits `line`, `arc` and `circle`, so an ellipse has no representation and
+comes out as one arc plus a handful of chords. Fixing those 25 parts means adding a primitive, which
+FreeCAD sketches support and this pipeline does not.
+
+**The largest single share is the plain case.** 292 parts with no curve at all, 0.68 extra each, is
+55% of the tier's over-drawing - ordinary fragmentation of straight edges, needing no new primitive
+and no per-part knowledge. That is the tractable target.
+
+**Absorbing stray lines into a neighbouring arc was tried and does nothing.** The premise was that a
+curve comes out as an arc plus chords of the same circle; it is false. Excluding the shared vertex,
+a neighbouring line's far endpoint sits a median 0.308 of the radius off the arc's circle, because
+the leftover belongs to a curve of varying curvature, not to that arc. Measured: elements 9.485 to
+9.407, structure -0.0002 [-0.0006, +0.0003], exact 47% either way. Reverted.
+
 **The rest is the same defect as the arc work at the top of the ladder, seen where it costs most.** A
 missed arc among 28 primitives is one error; a missed arc among 2 is the whole drawing. The
 simplification tolerance is not the lever - split by tier, eps x4 gains +0.014 [+0.003, +0.030] on
