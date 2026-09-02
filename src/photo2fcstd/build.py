@@ -297,11 +297,27 @@ def symmetric(pad):
         pad.Midplane = True
 
 
+def measured_rows(spec):
+    """Caliper readings the photographs came with, named beside the derived dimensions.
+
+    Written out here rather than imported: this module is executed by FreeCAD's own
+    interpreter, which cannot see the package.
+    """
+    out = []
+    for entry in spec.get("measured") or []:
+        source = entry.get("source") or ""
+        where = source.rsplit("/", 1)[-1] if source else "caliper"
+        out.append((entry["name"], round(float(entry["mm"]), 3), "measured, %s" % where))
+    return out
+
+
 def build(spec, out):
     doc = App.newDocument(spec.get("name", "part"))
     unit = spec.get("unit", "px")
     params = [("scale", spec["mm_per_px"],
                "multiplies every dimension below; change it to rescale the whole part. %s" % spec["scale_note"])]
+    for name, value, note in measured_rows(spec):
+        params.append((name, value, note))
     if spec.get("revolve"):
         body = build_revolve(spec, doc, params)
         views = {}

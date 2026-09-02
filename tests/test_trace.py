@@ -483,3 +483,23 @@ def test_deep_scallops_are_drawn_not_rounded_off():
     r = 120 * (1 + 0.12 * np.sign(np.cos(16 * a)))
     scalloped = np.column_stack([r * np.cos(a), r * np.sin(a)])
     assert primitives([scalloped.tolist()], 240.0)[0]["type"] == "loop"
+
+
+def test_patch_pooling_halves_the_grid():
+    from photo2fcstd.patches import pooled
+    grid = np.arange(16 * 16 * 4, dtype=float).reshape(16, 16, 4)
+    out = pooled(grid, 2)
+    assert out.shape == (8, 8, 4)
+    assert out[0, 0, 0] == pytest.approx(grid[0:2, 0:2, 0].mean())
+
+
+def test_patch_pooling_is_a_noop_at_factor_one():
+    from photo2fcstd.patches import pooled
+    grid = np.zeros((7, 7, 3))
+    assert pooled(grid, 1).shape == (7, 7, 3)
+
+
+def test_tokens_are_square():
+    from photo2fcstd.patches import grid_of
+    tokens = np.zeros((197, 8))
+    assert grid_of(tokens).shape == (14, 14, 8)

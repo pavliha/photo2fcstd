@@ -94,7 +94,7 @@ def merged_stations(view, rnd, floor):
     return [{"width": ws[i]} for i in keep], [zs[i] for i in keep] + [zs[-1]]
 
 
-def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_px=None, rim_px=None, stl=None, log=print):
+def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_px=None, rim_px=None, stl=None, measurements=None, log=print):
     mode_sel, src = modes.select(specs, mode)
     others = [v for v in specs if v is not src]
     log("mode: %s   (rectangularity %s, elongation %s)"
@@ -146,6 +146,8 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
         if end_on:
             log("WARNING: %s looks end-on; a second elevation would be better" % os.path.basename(end_on))
     mpp, scale_note = scale_of(views, mm_per_px, length_mm)
+
+
     known = not scale_note.startswith("UNSCALED")
     unit = "mm" if known else "px"
     if len(views) == 2:
@@ -170,4 +172,5 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
     return {"name": name, "mode": mode_sel, "mm_per_px": 1.0, "unit": unit,
             "scale_note": scale_note if known else scale_note + "; the sheet is in pixels until you set scale",
             "views": {k: {kk: vv for kk, vv in v.items() if kk not in ("poly", "shape")} for k, v in views.items()},
-            "outline": outline_spec, "revolve": revolve_spec, "stl": stl}
+            "outline": outline_spec, "revolve": revolve_spec, "stl": stl,
+            "measured": [dict(m) for m in (measurements or [])]}

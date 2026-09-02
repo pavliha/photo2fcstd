@@ -4,7 +4,8 @@ import os
 import subprocess
 import sys
 
-from photo2fcstd import analysis, spec
+from photo2fcstd import analysis
+from photo2fcstd import measured as measured_mod, views as views_mod, spec
 from photo2fcstd.errors import BuildError, CaptureError
 from photo2fcstd.settings import FREECADCMD
 
@@ -33,6 +34,9 @@ def parse(argv):
     scale = p.add_argument_group("scale (pick one, or the sheet stays in pixels)")
     scale.add_argument("--mm-per-px", type=float, metavar="MM", help="millimetres per pixel, if you already know it")
     scale.add_argument("--length-mm", type=float, metavar="MM", help="the part's longest dimension, measured with a caliper")
+    p.add_argument("--measure", action="append", metavar="NAME=MM",
+                   help="a caliper reading and what it measures, for example body_width=12.53, "
+                        "optionally @photo; repeatable")
     measured = p.add_argument_group("dimensions the photos cannot show")
     measured.add_argument("--thickness-px", type=float, metavar="PX",
                           help="plate thickness or extrusion depth, in pixels of the first photo")
@@ -80,13 +84,21 @@ def main(argv):
     out = os.path.abspath(a.out)
     readable(a.photos)
     kw = {k: v for k, v in (("min_step_px", a.min_step_px), ("grad", a.grad), ("tail", a.tail)) if v is not None}
-    views = [analysis.view(p, segment=a.segment, rectify=a.rectify, **kw) for p in a.photos[:3]]
+    offered = [analysis.view(p, segment=a.segment, rectify=a.rectify, **kw) for p in a.photos]
+    views = views_mod.spread(offered)
+    note = views_mod.describe(views, offered)
+    if note:
+        print(note)
     if a.rectify:
         found = sum(1 for v in views if v.get("mm_per_px"))
         print("rectified %d of %d photos from the target" % (found, len(views)))
+    readings = measured_mod.parse_all(a.measure)
+    if readings:
+        print("measured: " + ", ".join("%s = %.2f mm" % (m["name"], m["mm"]) for m in readings))
     doc = spec.assemble(views, name=a.name or os.path.splitext(os.path.basename(out))[0], mode=a.mode,
                         mm_per_px=a.mm_per_px, length_mm=a.length_mm, thickness_px=a.thickness_px,
-                        rim_px=a.rim_px, stl=os.path.abspath(a.stl) if a.stl else None)
+                        rim_px=a.rim_px, stl=os.path.abspath(a.stl) if a.stl else None,
+                        measurements=readings)
     spec_path = os.path.splitext(out)[0] + ".spec.json"
     with open(spec_path, "w") as fh:
         json.dump(doc, fh)
