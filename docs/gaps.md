@@ -65,7 +65,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | D2 | Refuse a solid when the depth band is uninformative | code | small |
 | ~~D3~~ | ~~Use a second view's depth~~ - **already done, and edge-on does not help** | - | - |
 | ~~F1~~ | ~~Audit the gates~~ - **done, neither distance gate is backwards** | - | - |
-| F2 | Decide whether `stations` stays | code | small |
+| ~~F2~~ | ~~Decide whether `stations` stays~~ - **kept, with a measured reason** | - | - |
 | C1 | Shoot 30-50 board frames for tilt labels | photos | small |
 | C2 | Fit and gate the tilt head on them | code (after C1) | small |
 | C3 | Run `carve.py` on a real capture | photos | medium |
@@ -413,9 +413,21 @@ The audit tool was wrong before the gates were: it compared a 3,072-dim embeddin
 1,024-dim centre and reported "not measured". `embedding_is_familiar` reshapes into three views and
 takes the median per-view distance, which is correct; `tools/gate_audit.py` now does the same.
 
-**F2. Decide whether `stations` stays.** Never selected on 197 trusted parts, reachable only when
-forced, both enforced by `tests/test_regression.py`. **Done when** deliberately kept with a reason,
-or removed.
+**F2. DONE - kept, and it is not dead code.** Over 320 trusted parts with photos, 317 assemble
+(plan 247, profile 63, revolve 7) and **3 raise** *"every view of this part traces to an outline with
+no area"*: 00076, 00135, 00332. Those are the parts `stations` exists for, and forced onto them it
+produces a valid solid for all three - volumes 217,980, 472,920 and 1,327,238, one solid each.
+
+So it is a working capability covering 0.9% of parts, not dead code.
+
+**It is deliberately not wired as the automatic fallback.** A `stations` document draws no sketch,
+and the sketch is the product; emitting one would hand back a document that looks fine and contains
+no drawing, and would swallow the "reshoot it square to the face" message that those three parts
+currently get. That refusal was a deliberate decision recorded in CLAUDE.md, and reversing it is a
+product call, not a measurement.
+
+The option is now costed, should coverage ever be preferred to refusal: 3 parts in 320 gain a solid
+and lose their reshoot advice.
 
 ## Closed - do not re-open
 
