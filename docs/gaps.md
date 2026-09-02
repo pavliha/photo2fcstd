@@ -63,8 +63,8 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~B4~~ | ~~One redundant constraint~~ - **gone with B1** | - | - |
 | ~~D1~~ | ~~Verify the depth note~~ - **done, and the band is constant** | - | - |
 | D2 | Refuse a solid when the depth band is uninformative | code | small |
-| D3 | Use a second view's depth | code | medium |
-| F1 | Audit every gate for backwards confidence | code | medium |
+| ~~D3~~ | ~~Use a second view's depth~~ - **already done, and edge-on does not help** | - | - |
+| ~~F1~~ | ~~Audit the gates~~ - **done, neither distance gate is backwards** | - | - |
 | F2 | Decide whether `stations` stays | code | small |
 | C1 | Shoot 30-50 board frames for tilt labels | photos | small |
 | C2 | Fit and gate the tilt head on them | code (after C1) | small |
@@ -358,9 +358,29 @@ Either fit quantile heads on the embedding as the tabular model does, or report 
 with a single global caveat. **Done when** either the band varies per part with coverage checked on
 held-out data, or the per-part phrasing is removed.
 
-**D3.** Use a second view. Depth is not in one face-on photograph, but a capture has three. **Done
-when** it is known whether an edge-on view narrows the band. The hand-written edge-on estimator lost
-to a constant, which is not the same test.
+**D3. DONE - the premise was already satisfied, and the extra signal is not there.** Both heads
+already read three views: the pixel head's 3,072 dims are three 1,024-vectors, and the tabular
+features are computed over all the events. So "use a second view" was not open.
+
+The real question was whether an *edge-on* view carries depth the model fails to use. Over 1,437
+parts held out by group, against the thinnest silhouette in each capture:
+
+| thinnest view | n | median abs log error | within 2x |
+|---|---|---|---|
+| 0.00-0.15 (most edge-on) | 59 | 0.329 | 88% |
+| 0.15-0.30 | 175 | 0.377 | 86% |
+| 0.30-0.50 | 372 | 0.324 | 81% |
+| 0.50-0.70 | 419 | 0.289 | 83% |
+| 0.70-1.01 (all face-on) | 412 | **0.214** | **93%** |
+
+Captures **with** an edge-on view score 0.437 [0.385, 0.495] against 0.384 [0.362, 0.408] without -
+worse, not better, and the trend runs monotonically the opposite way to the hypothesis. Correlation
+between thinness and error is -0.13.
+
+**This is correlational, not causal**: having an edge-on view is confounded with being a thin or
+awkward part, which is harder anyway. Settling it properly needs the same part shot with and
+without, which nobody has. But there is no evidence here to justify weighting an edge-on view, and
+the hand-written estimator that tried lost to a constant.
 
 ## E. The objective itself
 
@@ -374,11 +394,24 @@ pairs and said which they would rather edit.
 
 ## F. Robustness and tidying
 
-**F1. Audit the gates.** Nothing learned here survives a change of dataset: `depth_model` 0.435 to
-1.117, `axis_model` 89% to 29% against 33% for chance, `tilt_model` 4.8 deg to 34. Each is gated so
-it abstains, and the gates work - but `axis_model`'s confidence runs **backwards** out of
-distribution, scoring 0.73 when wrong against 0.56 when right. **Done when** every gate has been
-checked for that specific failure. A gate reading a broken signal is worse than no gate.
+**F1. DONE - neither distance gate is backwards.** A gate is sound when the quantity it thresholds
+rises with the error it exists to catch. Measured as the correlation between gate score and
+held-out error:
+
+| gate | correlation | n | verdict |
+|---|---|---|---|
+| depth: `embedding_is_familiar` | +0.04 | 1,437 parts | flat, not backwards |
+| tilt: `is_familiar` | +0.04 | 3,132 views | flat, not backwards |
+
+Flat is the right answer for these two. They are cosine distance from the training centre, built to
+detect being *outside* the distribution, and inside it there is nothing to rank - which is what +0.04
+says. Neither shows the `axis_model` failure, whose own score runs backwards out of distribution
+(0.73 when wrong against 0.56 when right) and which is already gated on geometry
+(`section_constancy`) instead of on itself.
+
+The audit tool was wrong before the gates were: it compared a 3,072-dim embedding against a
+1,024-dim centre and reported "not measured". `embedding_is_familiar` reshapes into three views and
+takes the median per-view distance, which is correct; `tools/gate_audit.py` now does the same.
 
 **F2. Decide whether `stations` stays.** Never selected on 197 trusted parts, reachable only when
 forced, both enforced by `tests/test_regression.py`. **Done when** deliberately kept with a reason,
