@@ -210,8 +210,22 @@ parts that need it.
 Nor is the bias general enough to erode globally. Over 175 discriminating parts, `extra` exceeds
 `missing` on **53%** - a coin flip - and a three-pixel erosion measured end to end gives region IoU
 +0.0079 [-0.0036, +0.0213], structure -0.0027 [-0.0287, +0.0227], and **valid solids 127 to 126
-with unsolved sketches 1 to 2**. Reverted. Improving a thin ring needs a better matte, not a
-post-process.
+with unsolved sketches 1 to 2**. Reverted.
+
+**And the matte is not at fault either - the printer is.** Three models agree to within half a pixel
+on 01407: RMBG-2.0 gives a ratio of 0.965, BiRefNet 0.964, BiRefNet_HR at 2048 px 0.964. Input
+resolution does not move it (0.965 at 1024, 0.964 at 2048), the alpha threshold does not, and the
+ratio is identical across all three photographs despite roundness running 0.74 to 0.94, which rules
+out the bore wall. The photographed ring simply *is* 0.965.
+
+01407's ideal wall is **0.20 mm** on a 10 mm radius. Measured, it is **0.35 mm**. PrintCAD is
+photographs of *printed* parts, and a 0.4 mm nozzle cannot lay a 0.2 mm wall. The mask is right, the
+STEP is right, and the object in front of the camera is neither.
+
+**This is not one part.** Of 290 parts with concentric walls, **10% specify a wall under 0.4 mm** and
+25% under 1 mm - the thinnest is 0.01 mm. For those the ground truth is not reachable by any amount
+of tracing, matting or capture, and a low score on them measures the printer. Check the specified
+wall in millimetres before treating a thin-walled part's score as a defect.
 
 `tools/split_capture.py` breaks the capture term down further, and the answer is not
 what it looks like:
