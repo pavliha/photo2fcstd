@@ -289,7 +289,12 @@ def build_revolve(spec, doc, params):
         params += [("R_outer", round(v["R"], 3), "outer radius (%s)" % unit), ("t_floor", round(v["t"], 3), "floor thickness (%s) - a guess, measure it" % unit), ("h_rim", round(v["h"], 3), "rim height (%s) - a guess, measure it" % unit)]
         params += [("R_rim", round(v["rings"][0] * v["R"], 3), "rim inner radius (%s)" % unit)] if v["rings"] else []
     for j, hole in enumerate(v["holes"]):
-        params += [("hole%d_cx" % j, round(hole["cx"], 3), "hole %d centre x (%s)" % (j, unit)), ("hole%d_cy" % j, round(hole["cy"], 3), "hole %d centre y (%s)" % (j, unit)), ("hole%d_r" % j, round(hole["r"], 3), "hole %d radius (%s)" % (j, unit))]
+        params += [("hole%d_cx" % j, round(hole["cx"], 3), "hole %d centre x (%s)" % (j, unit)),
+                   ("hole%d_cy" % j, round(hole["cy"], 3), "hole %d centre y (%s)" % (j, unit))]
+        params += ([("hole%d_r" % j, round(hole["r"], 3), "hole %d radius (%s)" % (j, unit))]
+                   if hole["type"] == "circle" else
+                   [("hole%d_a" % j, round(hole["a"], 3), "hole %d semi-major (%s)" % (j, unit)),
+                    ("hole%d_b" % j, round(hole["b"], 3), "hole %d semi-minor (%s)" % (j, unit))])
     sheet_with(doc, params)
     body = doc.addObject("PartDesign::Body", "Body")
     body.Label = spec.get("name", "part")

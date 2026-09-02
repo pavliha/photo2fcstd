@@ -67,3 +67,38 @@ def test_an_ellipse_builds_a_solid_of_the_right_volume(freecad, tmp_path):
     assert report["volume"] == pytest.approx(want, rel=1e-3)
     for sk in report["sketches"].values():
         assert sk["solve"] == 0 and not sk["redundant"] and not sk["conflicting"]
+
+
+def test_revolve_keeps_an_ellipse_hole():
+    from photo2fcstd import modes
+    loops = [{"type": "loop", "elements": []},
+             {"type": "circle", "cx": 1.0, "cy": 2.0, "r": 5.0},
+             ellipse_loop(cx=3.0, cy=4.0, a=7.0, b=2.0),
+             {"type": "loop", "elements": []}]
+    kept = modes.round_holes(loops)
+    assert [h["type"] for h in kept] == ["circle", "ellipse"]
+
+
+def test_an_ellipse_hole_reports_its_semi_major_as_the_wall_radius():
+    from photo2fcstd import modes
+    assert modes.hole_radius(ellipse_loop(a=7.0, b=2.0)) == 7.0
+    assert modes.hole_radius({"type": "circle", "cx": 0, "cy": 0, "r": 5.0}) == 5.0
+
+
+def test_a_revolve_with_an_elliptical_hole_builds(freecad, tmp_path):
+    from photo2fcstd import cli
+    R, depth, floor = 40.0, 12.0, 3.0
+    prof = [[0, 0], [R, 0], [R, depth], [R * 0.8, depth], [R * 0.8, floor], [0, floor]]
+    circ = {"type": "circle", "cx": 18.0, "cy": 0.0, "r": 4.0}
+    oval = ellipse_loop(cx=-16.0, cy=6.0, a=9.0, b=3.5, theta=0.4)
+    spec = {"name": "rev", "unit": "px", "mm_per_px": 1.0, "scale_note": "test", "mode": "revolve",
+            "revolve": {"source": "synthetic", "profile": prof, "R": R, "rings": [],
+                        "generic": True, "note": "test", "holes": [circ, oval]}}
+    sp = str(tmp_path / "rev.spec.json")
+    json.dump(spec, open(sp, "w"))
+    report = cli.freecad_build(sp, str(tmp_path / "rev.FCStd"))
+    assert report["valid"] and report["solids"] == 1
+    body = math.pi * R ** 2 * floor + math.pi * (R ** 2 - (R * 0.8) ** 2) * (depth - floor)
+    drilled = (math.pi * circ["r"] ** 2 + math.pi * oval["a"] * oval["b"]) * floor
+    assert report["volume"] == pytest.approx(body - drilled, rel=2e-3)
+    assert len(report["sketches"]["sk_holes"]["redundant"]) == 0

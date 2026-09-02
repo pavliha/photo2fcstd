@@ -229,26 +229,41 @@ def centred_loops(src, cx, cy):
     return [[[x - cx, -(y - cy)] for x, y in loop] for loop in raw]
 
 
+def hole_radius(hole):
+    """The radius a hole is drilled at. An ellipse has no single one, so take its semi-major
+    axis: that is the thinnest wall it leaves, which is what every caller is asking about."""
+    return hole["r"] if hole["type"] == "circle" else hole["a"]
+
+
+def round_holes(loops):
+    """Holes a revolve can drill.
+
+    This used to filter on `type == "circle"` alone, which silently dropped an `ellipse` loop the
+    moment the tracer could emit one - the hole would vanish from the solid with nothing said.
+    """
+    return [l for l in loops[1:] if l["type"] in ("circle", "ellipse")]
+
+
 def revolve_from_elevation(src, elev, loops, R):
     ws = [st["width"] for st in elev["stations"]]
     k = R / (max(ws) / 2)
     zs = [(z - elev["z"][0]) * k for z in elev["z"]]
     profile = [[0, 0]] + [pt for i, w in enumerate(ws) for pt in ([w / 2 * k, zs[i]], [w / 2 * k, zs[i + 1]])] + [[0, zs[-1]]]
-    return {"source": src["source"], "profile": profile, "holes": [l for l in loops[1:] if l["type"] == "circle"],
+    return {"source": src["source"], "profile": profile, "holes": round_holes(loops),
             "R": R, "rings": [], "generic": True,
             "note": "revolve of the elevation's half profile (%s), radius scaled to the round view" % os.path.basename(elev["source"])}
 
 
 def revolve_from_prior(src, loops, R, rings, thickness_px, rim_px):
     total = th.REVOLVE_FRAC * 2 * R
-    walls = [R - h["r"] for h in loops[1:] if h["type"] == "circle" and h["r"] > th.RING_HOLE_FRACTION_OF_R * R]
+    walls = [R - hole_radius(h) for h in round_holes(loops) if hole_radius(h) > th.RING_HOLE_FRACTION_OF_R * R]
     if walls:
         total = min(total, 2 * min(walls))
     t = thickness_px if thickness_px is not None else 0.5 * total
     h = rim_px if rim_px is not None else total
     profile = ([[0, 0], [R, 0], [R, h], [rings[0] * R, h], [rings[0] * R, t], [0, t]] if rings
                else [[0, 0], [R, 0], [R, t], [0, t]])
-    return {"source": src["source"], "profile": profile, "holes": [l for l in loops[1:] if l["type"] == "circle"],
+    return {"source": src["source"], "profile": profile, "holes": round_holes(loops),
             "R": R, "rings": rings, "t": t, "h": h,
             "note": "revolve of a half profile: R and rim radius from the photo; floor thickness and rim height are NOT visible from above - measure them"}
 
