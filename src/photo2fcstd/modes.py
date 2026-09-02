@@ -70,10 +70,34 @@ def can_build(mode, specs):
     return True
 
 
+CIRCLE_ASPECT = float(os.environ.get("P2F_CIRCLE_ASPECT", 0.95))
+
+
+def circular(specs):
+    """A view that is a circle, not merely roundish: a disc is one circle, so say so early.
+
+    Discs were being routed to profile or plan and drawn as twenty to fifty line segments
+    while a forced revolve gave a single circle scoring 1.00.
+    """
+    circles = [v for v in specs if v["shape"].get("round") and v["shape"].get("ellipse")
+               and v["shape"]["ellipse"]["aspect"] >= CIRCLE_ASPECT]
+    return max(circles, key=lambda v: v["shape"]["ellipse"]["aspect"]) if circles else None
+
+
+def roundest(specs):
+    """The view whose fitted ellipse is closest to a circle, or None if no view is round.
+
+    Revolve needs a view carrying an ellipse fit; asking for one that has none raised a
+    KeyError, which is how forcing revolve on a cylinder failed outright.
+    """
+    round_ones = [v for v in specs if v["shape"].get("roundish") and v["shape"].get("ellipse")]
+    return max(round_ones, key=lambda v: v["shape"]["ellipse"]["aspect"]) if round_ones else None
+
+
 def source_for(mode, specs):
     holed = max(specs, key=lambda v: v["shape"]["hole_frac"])
     if mode == "revolve":
-        return max([v for v in specs if v["shape"].get("roundish")], key=lambda v: v["shape"]["ellipse"]["aspect"])
+        return roundest(specs) or specs[0]
     if mode == "profile":
         least_rect = min(specs, key=lambda v: v["shape"]["rectangularity"])
         return holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else least_rect
@@ -159,6 +183,10 @@ def outline_source(specs, fallback):
 def select(specs, forced=None):
     if not specs:
         raise ValueError("no views to choose a mode from: the part has no photos")
+    if forced is None:
+        circle_view = circular(specs)
+        if circle_view is not None:
+            return "revolve", circle_view
     if forced is None and (LEARNED or os.environ.get("P2F_MODE_PIXELS", "1") == "1"):
         predicted = learned_mode(specs)
         if predicted and can_build(predicted, specs):
@@ -168,7 +196,9 @@ def select(specs, forced=None):
     least_rect = min(specs, key=lambda v: v["shape"]["rectangularity"])
     if forced == "profile":
         return "profile", holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else least_rect
-    if forced in ("plan", "revolve"):
+    if forced == "revolve":
+        return "revolve", roundest(specs) or (holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else specs[0])
+    if forced == "plan":
         return forced, holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else specs[0]
     if forced == "stations":
         return "stations", specs[0]

@@ -10,7 +10,7 @@ def mine(spec):
         return {"circle": len(v["holes"]) + 1}
     counts = {}
     for loop in spec["outline"]["loops"]:
-        if loop["type"] == "circle":
+        if loop["type"] in ("circle", "ellipse"):
             counts["circle"] = counts.get("circle", 0) + 1
         else:
             for e in loop["elements"]:

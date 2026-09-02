@@ -11,6 +11,7 @@ register_heif_opener()
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from photo2fcstd import thresholds as th
+from photo2fcstd import thresholds as th_module
 from photo2fcstd.rectify import PPMM
 
 WARM = 0.005
@@ -565,6 +566,11 @@ def arc_span(run, cx, cy):
 
 RUN_EPS = float(os.environ.get("P2F_RUN_EPS", 0.01806))
 RECONCILE_ARCS = os.environ.get("P2F_RECONCILE_ARCS", "1") != "0"
+ELLIPSE_ARCS = os.environ.get("P2F_ELLIPSE_ARCS", "1") != "0"
+ELLIPSE_MIN_ASPECT = 0.15
+ELLIPSE_MAX_ASPECT = 0.92
+ELLIPSE_FIT_TOL = 0.03
+ELLIPSE_BETTER_THAN = 0.6
 KEEP_SIMPLE = os.environ.get("P2F_KEEP_SIMPLE", "1") != "0"
 DROP_STRAY_HOLES = os.environ.get("P2F_DROP_STRAY_HOLES", "1") != "0"
 REPEATED_RUN_EPS = float(os.environ.get("P2F_REPEATED_RUN_EPS", 0.00836))
@@ -864,8 +870,28 @@ def regularise_lines(els, length_px, frame=None):
     return els
 
 
+def full_ellipse_points(loop, n=96):
+    c = np.array([loop["cx"], loop["cy"]], float)
+    u = np.array([np.cos(loop["theta"]), np.sin(loop["theta"])])
+    v = np.array([-np.sin(loop["theta"]), np.cos(loop["theta"])])
+    t = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    return [c + loop["a"] * np.cos(x) * u + loop["b"] * np.sin(x) * v for x in t]
+
+
+def ellipse_points(e, steps=24):
+    c = np.array([e["cx"], e["cy"]], float)
+    u = np.array([np.cos(e["theta"]), np.sin(e["theta"])])
+    v = np.array([-np.sin(e["theta"]), np.cos(e["theta"])])
+    t0, t1 = e["t0"], e["t1"]
+    span = ((t1 - t0) % (2 * np.pi)) if e.get("ccw", True) else -((t0 - t1) % (2 * np.pi))
+    return [c + e["a"] * np.cos(t0 + span * f) * u + e["b"] * np.sin(t0 + span * f) * v
+            for f in np.linspace(0, 1, steps)]
+
+
 def loop_ring(loop, steps=16):
     """Sample a loop into points, whatever primitives it is made of."""
+    if loop.get("type") == "ellipse":
+        return np.array(full_ellipse_points(loop, 4 * steps))
     if loop.get("type") == "circle":
         a = np.linspace(0, 2 * np.pi, 4 * steps)
         return np.stack([loop["cx"] + loop["r"] * np.cos(a), loop["cy"] + loop["r"] * np.sin(a)], axis=1)
@@ -873,6 +899,9 @@ def loop_ring(loop, steps=16):
     for e in loop.get("elements", []):
         if e["type"] == "line":
             pts.append(np.array(e["p0"][:2], float))
+            continue
+        if e["type"] == "ellipse":
+            pts += list(ellipse_points(e, steps))
             continue
         c = np.array([e["cx"], e["cy"]], float)
         a0 = np.arctan2(e["p0"][1] - c[1], e["p0"][0] - c[0])
@@ -1049,6 +1078,13 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
         if (ellipse_ok(f, len(raw)) and f["aspect"] > (circle_aspect if j == 0 else hole_aspect)
                 and not toothed):
             out.append({"type": "circle", "cx": f["cx"], "cy": f["cy"], "r": f["a"]})
+            continue
+        if (ELLIPSE_ARCS and f is not None and not toothed
+                and len(raw) >= MIN_ELLIPSE_POINTS
+                and f["rms"] < ELLIPSE_FIT_TOL * f["a"]
+                and ELLIPSE_MIN_ASPECT < f["aspect"] < ELLIPSE_MAX_ASPECT):
+            out.append({"type": "ellipse", "cx": f["cx"], "cy": f["cy"],
+                        "a": f["a"], "b": f["b"], "theta": f["theta"]})
             continue
         traced = elements(raw, length_px)
         before = [dict(e) for e in traced]

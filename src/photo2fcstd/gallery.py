@@ -31,6 +31,9 @@ def draw_sketch(ax, spec):
     elif ol:
         n = {"circle": 0, "arc": 0, "line": 0}
         for l in ol["loops"]:
+            if l["type"] == "ellipse":
+                n["circle"] = n.get("circle", 0) + 1
+                continue
             if l["type"] == "circle":
                 n["circle"] += 1
                 ax.add_patch(Circle((l["cx"], l["cy"]), l["r"], fill=False, lw=1.5, color="C3"))

@@ -66,11 +66,35 @@ def arc_ring(e, step=math.radians(4)):
     return np.column_stack([e["cx"] + e["r"] * np.cos(ang), e["cy"] + e["r"] * np.sin(ang)])
 
 
+def ellipse_ring(e, n=48):
+    u = np.array([math.cos(e["theta"]), math.sin(e["theta"])])
+    v = np.array([-math.sin(e["theta"]), math.cos(e["theta"])])
+    t0, t1 = e["t0"], e["t1"]
+    span = ((t1 - t0) % (2 * math.pi)) if e.get("ccw", True) else -((t0 - t1) % (2 * math.pi))
+    t = t0 + span * np.linspace(0, 1, n)
+    return np.array([e["cx"], e["cy"]]) + np.outer(e["a"] * np.cos(t), u) + np.outer(e["b"] * np.sin(t), v)
+
+
+def element_ring(e):
+    if e["type"] == "line":
+        return np.array([e["p0"], e["p1"]], float)
+    return ellipse_ring(e) if e["type"] == "ellipse" else arc_ring(e)
+
+
+def full_ellipse_ring(loop, n=96):
+    u = np.array([math.cos(loop["theta"]), math.sin(loop["theta"])])
+    v = np.array([-math.sin(loop["theta"]), math.cos(loop["theta"])])
+    t = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    return np.array([loop["cx"], loop["cy"]]) + np.outer(loop["a"] * np.cos(t), u) \
+        + np.outer(loop["b"] * np.sin(t), v)
+
+
 def loop_ring(loop):
+    if loop["type"] == "ellipse":
+        return full_ellipse_ring(loop)
     if loop["type"] == "circle":
         return circle_ring(loop["cx"], loop["cy"], loop["r"])
-    return np.vstack([np.array([e["p0"], e["p1"]], float) if e["type"] == "line" else arc_ring(e)
-                      for e in loop["elements"]])
+    return np.vstack([element_ring(e) for e in loop["elements"]])
 
 
 def polygon_of(rings):
@@ -177,8 +201,8 @@ def counts_of_spec(spec):
     if spec.get("revolve"):
         return {"circle": len(spec["revolve"]["holes"]) + 1}
     for loop in (spec.get("outline") or {}).get("loops", []):
-        if loop["type"] == "circle":
-            c["circle"] = c.get("circle", 0) + 1
+        if loop["type"] in ("circle", "ellipse"):
+            c[loop["type"]] = c.get(loop["type"], 0) + 1
         else:
             for e in loop["elements"]:
                 c[e["type"]] = c.get(e["type"], 0) + 1

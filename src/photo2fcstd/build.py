@@ -108,6 +108,9 @@ def vertex_dims(loop):
 def loop_dims(loop, prefix):
     if loop["type"] == "circle":
         return [(prefix + "_cx", loop["cx"]), (prefix + "_cy", loop["cy"]), (prefix + "_r", loop["r"])]
+    if loop["type"] == "ellipse":
+        return [(prefix + "_cx", loop["cx"]), (prefix + "_cy", loop["cy"]),
+                (prefix + "_a", loop["a"]), (prefix + "_b", loop["b"])]
     out = []
     for i, want_x, want_y in vertex_dims(loop):
         p0 = loop["elements"][i]["p0"]
@@ -116,6 +119,9 @@ def loop_dims(loop, prefix):
         if want_y:
             out.append((prefix + "_y%d" % i, p0[1]))
     for i, e in enumerate(loop["elements"]):
+        if e["type"] == "ellipse":
+            out += [(prefix + "_cx%d" % i, e["cx"]), (prefix + "_cy%d" % i, e["cy"])]
+            continue
         if e["type"] == "arc":
             want_centre, want_radius = arc_dims(loop, i)
             if want_centre:
@@ -130,8 +136,34 @@ def bind(sk, cid, name):
     sk.setExpression(".Constraints." + name, "params.%s * params.scale" % name)
 
 
+def ellipse_geometry(e, mpp):
+    """An elliptical arc, for curves no circle can carry.
+
+    A part whose sketch holds an ellipse used to come out as one arc plus a handful of chords,
+    because `line`, `arc` and `circle` were the only primitives available. FreeCAD parametrises an
+    ArcOfEllipse exactly as the tracer does - centre plus a*cos(t)*u + b*sin(t)*v - so the
+    parameters cross unchanged.
+    """
+    import math
+    c = Vector(e["cx"] * mpp, e["cy"] * mpp, 0)
+    th = e["theta"]
+    u = Vector(math.cos(th), math.sin(th), 0)
+    v = Vector(-math.sin(th), math.cos(th), 0)
+    ell = Part.Ellipse(c + u * (e["a"] * mpp), c + v * (e["b"] * mpp), c)
+    t0, t1 = e["t0"], e["t1"]
+    if e.get("ccw", True):
+        while t1 <= t0:
+            t1 += 2 * math.pi
+        return Part.ArcOfEllipse(ell, t0, t1), 1, 2
+    while t0 <= t1:
+        t0 += 2 * math.pi
+    return Part.ArcOfEllipse(ell, t1, t0), 2, 1
+
+
 def arc_geometry(e, mpp):
     import math
+    if e["type"] == "ellipse":
+        return ellipse_geometry(e, mpp)
     c = Vector(e["cx"] * mpp, e["cy"] * mpp, 0)
     a0 = math.atan2(e["p0"][1] - e["cy"], e["p0"][0] - e["cx"])
     a1 = math.atan2(e["p1"][1] - e["cy"], e["p1"][0] - e["cx"])
@@ -145,6 +177,16 @@ def arc_geometry(e, mpp):
 
 
 def add_loop(sk, loop, prefix, mpp):
+    if loop["type"] == "ellipse":
+        import math
+        c = Vector(loop["cx"] * mpp, loop["cy"] * mpp, 0)
+        th = loop["theta"]
+        u = Vector(math.cos(th), math.sin(th), 0)
+        v = Vector(-math.sin(th), math.cos(th), 0)
+        g = sk.addGeometry(Part.Ellipse(c + u * (loop["a"] * mpp), c + v * (loop["b"] * mpp), c), False)
+        bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceX", -1, 1, g, 3, loop["cx"] * mpp)), prefix + "_cx")
+        bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, g, 3, loop["cy"] * mpp)), prefix + "_cy")
+        return
     if loop["type"] == "circle":
         g = sk.addGeometry(Part.Circle(Vector(loop["cx"] * mpp, loop["cy"] * mpp, 0), Vector(0, 0, 1), loop["r"] * mpp), False)
         bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceX", -1, 1, g, 3, loop["cx"] * mpp)), prefix + "_cx")
@@ -186,6 +228,10 @@ def add_loop(sk, loop, prefix, mpp):
             elif kinds[i] == "V" and not tangent_neighbour and not (a[0] and b[0]):
                 sk.addConstraint(Sketcher.Constraint("Vertical", ids[i]))
         else:
+            if e["type"] == "ellipse":
+                bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceX", -1, 1, ids[i], 3, e["cx"] * mpp)), prefix + "_cx%d" % i)
+                bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, ids[i], 3, e["cy"] * mpp)), prefix + "_cy%d" % i)
+                continue
             want_centre, want_radius = arc_dims(loop, i)
             if want_centre:
                 bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceX", -1, 1, ids[i], 3, e["cx"] * mpp)), prefix + "_cx%d" % i)

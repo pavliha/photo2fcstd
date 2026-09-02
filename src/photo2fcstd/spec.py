@@ -9,6 +9,8 @@ from photo2fcstd.trace import joins, kinds_of, primitives
 def loop_area(loop):
     if loop["type"] == "circle":
         return math.pi * loop["r"] ** 2
+    if loop["type"] == "ellipse":
+        return math.pi * loop["a"] * loop["b"]
     pts = [e["p0"] for e in loop["elements"]]
     if len(pts) < 3:
         return 0.0
@@ -100,6 +102,9 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
     log("mode: %s   (rectangularity %s, elongation %s)"
         % (mode_sel, [round(v["shape"]["rectangularity"], 2) for v in specs], [v["elongation"] for v in specs]))
     outline_spec = revolve_spec = None
+    if mode_sel == "revolve" and not src["shape"].get("ellipse"):
+        log("revolve asked for but no photograph shows a round face; modelling the outline instead")
+        mode_sel, src = modes.select(specs, "plan")
     if mode_sel == "revolve":
         ellipse = src["shape"]["ellipse"]
         loops = primitives(modes.centred_loops(src, ellipse["cx"], ellipse["cy"]), src["length_px"])

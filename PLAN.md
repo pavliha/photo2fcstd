@@ -20,128 +20,26 @@ A sketch-only run over all 1908 parts takes five minutes; a full run with solids
 
 ### The curriculum, and where it actually fails
 
-The dataset is a ladder: master simple parts, then climb. Measured per tier on 1047 parts with
-trustworthy truth:
+Measured on the frozen test set with current code, 242 parts with trustworthy truth:
 
-| tier | n | primitive F1 | region IoU | drawn/wanted |
-|---|---|---|---|---|
-| 1-4 primitives | 531 | 0.618 [0.582, 0.654] | 0.652 | **3.78** |
-| 5-8 | 216 | 0.624 [0.584, 0.664] | 0.645 | 2.16 |
-| 9-16 | 147 | 0.584 [0.538, 0.629] | 0.569 | 1.67 |
-| 17 or more | 153 | 0.392 [0.345, 0.439] | 0.582 | 1.07 |
-| no holes | 697 | 0.626 | | |
-| with holes | 350 | 0.493 | | |
-
-**The bottom rung is not solved, and it fails by over-drawing.** A part that needs four primitives
-gets 3.78 times too many: a rectangle traced from a clean photograph comes out as fifteen segments.
-Region IoU is highest in that tier, 0.652, because the shape is right - it is the primitive count
-that is wrong. That is 531 parts, half the set, and unlike every oracle in the table below there is
-nothing to argue about: the answer is known to be four.
-
-Two days went into the 17+ tier - teeth, lattices, scallops - which is 153 parts. That was the
-wrong end of the ladder.
-
-**Next: over-drawing on simple parts, then holes.**
-
-### The bottom rung over-draws because a curve becomes a polygon
-
-Measured on the 1-4 tier with a **perfect** rasterised drawing as input, so nothing here is capture
-(n=351): 2.58 primitives wanted, 3.62 drawn, 1.04 extra per part.
-
-It is not a broad fragmentation. **74% of parts draw exactly the right count**, and the mean is
-carried by a long tail:
-
-| part | wanted | drawn | what the ideal contains |
+| tier | n | primitive F1 | drawn/wanted |
 |---|---|---|---|
-| 00171 | 4 | 19 | 2 line, 2 arc |
-| 00817 | 3 | 17 | 2 ellipse, 1 arc |
-| 00039 | 2 | 14 | 2 ellipse |
-| 01284 | 1 | 10 | 1 bsplinecurve |
+| 1-4 primitives | 113 | 0.646 [0.573, 0.717] | 2.10 |
+| 5-8 | 56 | 0.728 [0.665, 0.788] | 1.03 |
+| 9-16 | 36 | 0.690 [0.610, 0.765] | 0.87 |
+| **17 or more** | 37 | **0.394 [0.310, 0.477]** | 0.60 |
+| no holes | 145 | 0.657 | |
+| with holes | 97 | 0.598 | |
 
-The two groups differ by exactly one thing:
+The failure inverts with complexity: simple parts draw about twice too many primitives, and
+complex parts draw barely half of what they need. The bottom of the ladder is the better of
+the two - it was 3.78 times over before the thresholds were fitted, and an earlier version of
+this table said so; measure current code before believing any of it.
 
-| | circle | line | arc | bspline | ellipse |
-|---|---|---|---|---|---|
-| drawn exactly right (260) | **40%** | 56% | 3% | 0% | 0% |
-| over-drawn (82) | 3% | 71% | **15%** | **8%** | 3% |
-
-A full circle is recognised and emitted as one primitive. **An arc, ellipse or b-spline is
-polygonised**, and on a part that wants two primitives that is a sevenfold blow-up. Two mechanisms
-already ruled out: adjacent near-collinear line pairs are 2% of the extra and sub-quarter-length
-slivers are 4%, so this is not a merging failure.
-
-**But the dominant mechanism is invented loops, not polygonised curves.** On photographs, n=179 in
-this tier: 4% of parts draw *more* loops than the sketch has, none draw fewer, and those 4% carry
-**48% of every extra primitive** - 31.6 extra elements each against 1.38 for the rest. On perfect
-input it is 13% of parts carrying 61% of the extra. The spurious loops are specks: median 0.0024 of
-the outer loop's area against a legitimate hole's 0.0477.
-
-**An area threshold does not separate them.** Dropping inner loops under 0.5% of the outer catches
-77% of the spurious ones and **24% of real holes**; at 3% it is 89% against 41%. Real holes are what
-the `loops` term measures and it is the pipeline's strongest at 0.998, so that trade is not worth
-making. Not shipped. A different discriminator is needed - shape, or where the loop sits - and the
-area of the thing is not it.
-
-**The metric could not see any of this.** `structure_score`'s loops term was
-`min(mine, ideal) / ideal`, which caps at 1: every one of those parts scored **1.00 on loops while
-inventing four**. It is now `min / max`, so an invented loop costs exactly what a missing one does.
-Every structure figure quoted before this change treated invented loops as free.
-
-### What the remaining over-drawing is made of
-
-With the loop count correct, the extra is **entirely lines** - 3.14 drawn against 1.90 wanted from
-photographs, while the curve count is already right at 0.98 against 0.93. Split by what the ideal
-curve actually is (n=351, perfect input):
-
-| the ideal contains | n | extra elements each | share of all extra |
-|---|---|---|---|
-| an ellipse or b-spline | 25 | **4.28** | 29% |
-| an arc, nothing worse | 34 | 1.74 | 16% |
-| no curve at all | 292 | 0.68 | **55%** |
-
-**No part containing an ellipse or b-spline is ever drawn exactly right** - 0% of the
-exactly-right group has one, against 26% of the over-drawn group. That is structural, not a
-threshold: the pipeline emits `line`, `arc` and `circle`, so an ellipse has no representation and
-comes out as one arc plus a handful of chords. Fixing those 25 parts means adding a primitive, which
-FreeCAD sketches support and this pipeline does not.
-
-**There is no fragmentation to fix.** The "292 parts with no curve" in that table is mislabelled -
-it excluded arcs, ellipses and b-splines but still admitted circles. Filtering properly, on parts
-whose ideal contains **no curved primitive at all** (n=121, perfect input):
-
-| | n | extra elements each |
-|---|---|---|
-| all of them | 121 | 1.61 |
-| **with the loop count correct** | 82 | **0.04** |
-| with a spurious loop | 39 | 4.92 |
-
-Given the right loop count, a plain part is drawn **98% exactly right**, 0.04 extra, and not one join
-between consecutive lines turns by less than 30 degrees - there is nothing collinear left to merge.
-All of the plain-part over-drawing is the spurious-loop failure wearing different clothes.
-
-From photographs the same filter gives 0.32 against 0.04 here, so what remains on plain parts is
-**capture, not the tracer**.
-
-So the tier's over-drawing is three things, and none of them is fragmentation: spurious loops, for
-which no discriminator has been found; ellipses and b-splines, which need a primitive that does not
-exist; and capture noise.
-
-**Absorbing stray lines into a neighbouring arc was tried and does nothing.** The premise was that a
-curve comes out as an arc plus chords of the same circle; it is false. Excluding the shared vertex,
-a neighbouring line's far endpoint sits a median 0.308 of the radius off the arc's circle, because
-the leftover belongs to a curve of varying curvature, not to that arc. Measured: elements 9.485 to
-9.407, structure -0.0002 [-0.0006, +0.0003], exact 47% either way. Reverted.
-
-**The rest is the same defect as the arc work at the top of the ladder, seen where it costs most.** A
-missed arc among 28 primitives is one error; a missed arc among 2 is the whole drawing. The
-simplification tolerance is not the lever - split by tier, eps x4 gains +0.014 [+0.003, +0.030] on
-the 1-4 tier and *loses* 0.033 and 0.029 on the 5-8 and 9-16 tiers, which is why a single global
-value shows nothing and why the declined per-part tolerance had nothing to find.
-
-Established about that defect, from the other end of the ladder: the arcs survive simplification
-(71% of lost arcs arrive as two or more pieces), a looser gate cannot work because sweep and
-sagitta cannot separate a shallow arc from a straight edge, and on perfect input the tracer still
-recovers only 1.76 curves against 5.19. See CLAUDE.md.
+A clean disc is one circle. Three of four scored 0.00 while a forced revolve gave 1.00, so a
+view whose fitted ellipse is within 5% of circular now picks revolve before any learned
+selector votes: that head is trained on per-mode voxel IoU, which cannot tell one circle from
+fifty-three lines. Worth +0.001 on the test set, because clean discs are about 1% of it.
 
 ### What is shipped, and what it was worth
 
