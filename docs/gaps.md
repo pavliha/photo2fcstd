@@ -66,6 +66,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~D3~~ | ~~Use a second view's depth~~ - **already done, and edge-on does not help** | - | - |
 | ~~F1~~ | ~~Audit the gates~~ - **done, neither distance gate is backwards** | - | - |
 | ~~F2~~ | ~~Decide whether `stations` stays~~ - **kept, with a measured reason** | - | - |
+| **C5** | **Shoot ~16 photos of one part on a patterned surface** | photos | small |
 | C1 | Shoot 30-50 board frames for tilt labels | photos | small |
 | C2 | Fit and gate the tilt head on them | code (after C1) | small |
 | ~~C3~~ | ~~Run carve on a real capture~~ - **already done on T-LESS, 0.782 IoU** | - | - |
@@ -284,6 +285,22 @@ normally, red with the guard disabled. Costs about 50 seconds; the suite is 269 
 pin, the same class the B1 fix removed.
 
 ## C. Needs photographs
+
+**C5. Sixteen photographs on a patterned surface - the highest-value capture available.**
+Structure-from-motion recovers camera poses from the scene, so carving no longer needs a printed
+board. Validated synthetically in `docs/sfm.md`: 24 of 24 images registered, camera rotation error
+**0.031 deg** against a 2 deg budget, and carving from SfM poses agrees with carving from true poses
+at **0.987** (0.949-0.997 across parts).
+
+That unblocks the largest measured gain in the project: **0.782 solid IoU against the photo path's
+~0.43**.
+
+Two requirements, both found by trying to break it: the surface must be strongly textured - at a
+quarter of the contrast, **0 of 16 images registered on every part** - and sixteen views are needed,
+since eight gave only five. Scale still needs one caliper reading, as it already does.
+
+**Done when** sixteen photographs of one part on a newspaper or cutting mat have been carved and
+scored.
 
 **C1 can now be fed from public data instead.** BOP-Industrial - IPD (10 objects, RGB-D, 13
 cameras), XYZ-IBD (15 objects, 273k real samples) - is real photographs of machined parts with exact

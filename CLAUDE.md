@@ -510,6 +510,30 @@ Two harness bugs worth remembering, both found here: an OpenCV camera basis must
 `[right, down, forward]` and right-handed (`det = +1`), and with every camera above the
 horizon the space beneath the part is unobservable, so clip the grid at the board plane.
 
+## Carving no longer needs the board: poses come from the scene
+
+The ChArUco board existed to tell carving where each camera was. Structure-from-motion gets the same
+thing from the scene, and `tools/sfm_check.py` gates it on renders with a textured ground plane and
+exactly known poses:
+
+| | 24 views, one part | 16 views, four parts |
+|---|---|---|
+| images registered | 24 of 24 | 16 of 16, all four |
+| camera rotation error | median **0.031 deg**, worst 0.060 | 0.031 to 0.058 |
+| carve agreement against true poses | **0.987** | 0.949 to 0.997 |
+
+A detected board gives 0.016 deg against a 2 deg budget, so SfM is the same order with plenty of
+headroom. One of the four parts carves to nothing **from true poses too** - it is 0.25 mm thin, 0.4
+of a voxel - so it says nothing about SfM.
+
+**Two hard requirements.** The background must be strongly textured: at a quarter contrast **0 of 16
+images registered, on every part**, because the part is textureless and the scene does all the work.
+And sixteen views, not eight - eight registered five. Scale is untouched by any of this; SfM is
+scale-free and a metric solid still needs one caliper reading.
+
+Untested: real photographs, where motion blur, exposure drift and a real desk's texture all differ.
+The gate measures geometry, and geometry was not the risk it looked like.
+
 ## Do not intersect two independently-registered photo silhouettes
 
 Twice measured, twice lost:
