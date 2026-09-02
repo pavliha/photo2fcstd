@@ -75,7 +75,8 @@ def one(part):
         return part, {"error": str(e)[:60]}
 
 
-IDEAL = json.load(open(os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json")))
+IDEAL_PATH = os.environ.get("P2F_IDEAL", os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json"))
+IDEAL = json.load(open(IDEAL_PATH))
 
 
 def main(limit=250):

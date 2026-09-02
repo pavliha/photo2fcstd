@@ -17,3 +17,5 @@ data/constraint_rows.json
 data/support_vs_error.json
 data/sketchnet_*.npz
 !data/embed_centre.npz
+data/fusion360_ideal_sketches.json
+data/fusion360_probe.json

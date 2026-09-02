@@ -444,11 +444,13 @@ and lose their reshoot advice.
 
 Every number here is quoted on the ~55% of PrintCAD whose reference face can be inferred from its
 STEP file. The [Fusion 360 Gallery Reconstruction dataset](https://github.com/AutodeskAILab/Fusion360GalleryDataset)
-is 8,625 designs **authored** as sketch-and-extrude, 2.0 GB, carrying `SketchLine` / `SketchArc` /
-`SketchCircle` with coordinates and `extent_one.distance.value` as the true depth. Nothing is
-inferred, so `trustworthy()` and its prism and area-times-depth tests stop being needed, and the
-usable ground truth multiplies by about eight. It has no photographs, so it improves what a drawing
-is scored against rather than what it is made from. See `docs/datasets.md`.
+is now **built and verified**: 3,120 records passing `trustworthy()` against PrintCAD's 1,047, a
+**3.0x** multiplier rather than the eight-fold a first reading suggested - half the designs are
+multi-extrude timelines this pipeline does not model. Each record is checked against the dataset's
+own mesh (median area x depth / volume of 1.000, 84% within 5%) rather than accepted on a heuristic,
+and 94% pass where PrintCAD manages 55%. It carries **no b-splines**, so `exact` is reachable on
+every record. It has no photographs, so it improves what a drawing is scored against rather than
+what it is made from. `tools/fusion360.py`, and see `docs/datasets.md`.
 
 ## Closed - do not re-open
 

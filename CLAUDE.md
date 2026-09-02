@@ -133,6 +133,12 @@ The tracer does not fail at arcs so much as **saturate**. Pooling trusted and un
 defect lives entirely in the ~23% of parts with four or more curves, and complexity selects them,
 not `trustworthy()`.
 
+**The saturation replicates on an independent dataset.** On 1,185 Fusion 360 Gallery parts - a
+different authoring tool, different parts, 6.6x the sample, no b-splines - recovery runs 99% at one
+real curve, 87% at two or three, 57% at four to seven and 24% past eight, against PrintCAD's 99, 89,
+45 and 23. Overall structure is 0.879 and 67% exact there against 0.756 and 33% here, which is what
+simpler parts and no b-splines buy rather than a better tracer.
+
 A likely mechanism, untested: `trace.py:696` requires `chord > ARC_MIN_CHORD_FRAC * length_px`
 before a run is considered as an arc at all - a fraction of **the whole part**. On a complex part
 every arc is a small share of it. The sagitta test beside it is relative to the local chord; only

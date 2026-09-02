@@ -36,12 +36,59 @@ this project outputs:
 - `extent_one.distance.value` - the true extrusion depth, which is the depth model's training target
 - geometry in `.smt`, `.step` and `.obj`
 
-Nothing is inferred: the sketch is the one a person drew. That removes the `trustworthy` filter, the
-`prism` check and the area-times-depth test in one move, and multiplies the usable ground truth by
-about eight.
+### Built and verified: 3,120 usable records, 3.0x PrintCAD
 
-What it does **not** have is photographs. So it improves what a drawing is scored against, not what
+`tools/fusion360.py` turns it into records `sketch_score` reads. **The multiplier is 3.0x, not the
+eight-fold this document first claimed** - 8,625 designs sounds like eight times 1,047, but half are
+multi-extrude timelines this pipeline does not model and a tenth fail verification:
+
+| | records | pass `trustworthy()` |
+|---|---|---|
+| PrintCAD | 1,907 | 1,047 (55%) |
+| Fusion 360, verified | 3,318 | **3,120 (94%)** |
+
+Every record is **checked against its own mesh** rather than asserted: the dataset ships the solid,
+so the test is whether the sketch's area times the extrude distance equals the mesh's volume. Median
+ratio 1.000, 84% within 5%. That is a measurement where PrintCAD's `prism` and area-times-depth
+tests are heuristics guessing at an inferred face.
+
+Two further differences matter:
+
+- **No b-splines and no ellipses.** Every curve is a `line`, `arc` or `circle` - primitives this
+  pipeline can emit. On PrintCAD, b-splines are 94% of the curves in 15% of parts and cap those
+  parts at 0% exact by construction.
+- **Simpler parts**: 7.6 elements and 2.6 curved per sketch, against PrintCAD's 9.4 and 4.1.
+
+### It replicates the arc finding independently
+
+Running the perfect-input tracer ceiling (`P2F_IDEAL=...` selects the set) on 1,185 Fusion 360
+parts against the 180 PrintCAD parts it was found on:
+
+| real curves | n | drawn | recovered | PrintCAD |
+|---|---|---|---|---|
+| 0 | 404 | 0.03 | - | - |
+| 1 | 266 | 0.99 | **99%** | 99% |
+| 2-3 | 290 | 1.81 | **87%** | 89% |
+| 4-7 | 134 | 2.75 | 57% | 45% |
+| >=8 | 91 | 4.89 | **24%** | 23% |
+
+The saturation is the same shape on a dataset with different parts, a different authoring tool and
+6.6x the sample. Overall structure is 0.879 and 67% exact here against 0.756 and 33% on PrintCAD,
+which is what simpler parts and no b-splines buy - not a better tracer.
+
+What it does **not** have is photographs, so it improves what a drawing is scored against, not what
 the drawing is made from.
+
+### Two traps in reading it
+
+- **Profile-curve points are in the sketch's own 2D frame, not the world.** The `transform` maps
+  that frame into the world and two thirds of sketches sit off the XY plane, which makes projecting
+  through it look right - and it collapses those sketches to a line. Design
+  `100243_9fb796fe_0005` has a `y_axis` of (0, 0, -1) while its own points vary in x and y. Use x
+  and y directly; `flat()` drops the ~6% whose points carry a non-zero z rather than guessing.
+- **Half the designs have more than one extrude.** A five-operation timeline has no single base
+  face to compare against, so `build()` skips them - which is where most of the missing multiplier
+  went.
 
 ## For tilt labels on real photographs: BOP-Industrial
 
