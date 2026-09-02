@@ -497,8 +497,20 @@ dataset's masks without matching the intrinsics first.
 a detected board is good to 0.016 degrees where the budget allows 2, and eight pixels of
 correlated boundary wander - far worse than RMBG - costs only 0.074 of sketch IoU, leaving
 carving ahead of the photo path even then. Sixteen views average matting error out, because
-a voxel survives only where every silhouette agrees. Expected on real photographs: about
-0.715 sketch IoU against the photo path's 0.602.
+a voxel survives only where every silhouette agrees.
+
+**Measured, not expected: 0.649.** `tools/tless_sketch.py` carves 21 discriminating T-LESS objects
+from real photographs and scores the *drawing* against the mesh's own cross-section: **0.649 sketch
+IoU against a trivial circle's 0.493**. The 0.715 previously written here was an extrapolation from
+synthetic carves plus a boundary-noise experiment, and it was optimistic. Note also that this is a
+different part set from PrintCAD - its circle baseline is 0.493 - so 0.649 is **not** comparable
+with the photo path's PrintCAD numbers without matching the parts.
+
+One number in that run is not to be trusted: renders at the same poses score 0.586, *below* the real
+photographs' 0.649, which is the wrong way round. `carve_check.silhouette` rasterises on its own
+900x900 canvas and the dataset's masks do not share those intrinsics, which is already recorded
+above as making the two incomparable. Treat the render arm as broken rather than the real arm as
+flattered.
 
 **Size the voxel to the smallest feature you care about - about a quarter of it.** The
 default `VOXEL_MM = 0.4` cannot resolve anything under roughly 1.6 mm, and a quarter of
