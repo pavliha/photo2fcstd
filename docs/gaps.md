@@ -78,8 +78,8 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | C2 | Fit and gate the tilt head on them | code (after C1) | small |
 | ~~C3~~ | ~~Run carve on a real capture~~ - **already done on T-LESS, 0.782 IoU** | - | - |
 | ~~C4~~ | ~~Decide the no-board, no-scale case~~ - **decided: pixels + one scale cell, verified** | - | - |
-| E1 | Ask a person which drawing they would rather edit | person | small |
-| E2 | Re-weight `structure_score` from the answers | code (after E1) | small |
+| ~~E1~~ | ~~Ask a person which drawing they would rather edit~~ - **done, 20 pairs** | - | - |
+| ~~E2~~ | ~~Re-weight `structure_score` from the answers~~ - **weights stay equal; fit failed LOO** | - | - |
 
 Done: **A1** (which arcs are lost), **A2** (not simplification), **A4** (b-splines), **A5**
 (saturation, not trust).
@@ -448,13 +448,26 @@ the hand-written estimator that tried lost to a constant.
 
 ## E. The objective itself
 
-**E1. Ask a person.** `structure_score` weights `loops`, `curves` and `elements` **equally** and
-that is arbitrary. Region IoU correlates 0.22 with structural agreement and 0.33 with exact
-primitives, which is why the structural criterion exists - but it has never been checked against a
-human. Every quality number here is a proxy its authors chose. **Done when** someone has seen twenty
-pairs and said which they would rather edit.
+**E1. DONE - a person judged twenty pairs** (`tools/pair_survey.py`, answers in
+`data/pair_survey_answers.json`, sides shuffled, key held out until after). Every pair was the same
+part with one knob moved, kept only where the structural terms traded off.
 
-**E2.** Re-weight from the answers, and re-judge the shipped and reverted changes under them.
+**E2. DONE - and the answer is that the weights stay equal, deliberately.** Fourteen decisive
+answers cannot pin three weights: the best-fit weighting (elements 0.70, loops 0.15, curves 0.15,
+11/14) **fails leave-one-out at 5/14** and a permutation test gives it p = 0.34 - a third of random
+answer sets fit that well. Nothing to re-judge under weights that did not survive.
+
+What the answers do establish, without any fitting:
+
+- **The tight arc gate is now human-confirmed**: on the six decisive loose-arc-gate pairs the
+  person chose the shipped drawing five times. The metric and the person agree.
+- Preference leans toward fewer, longer elements (coarse eps preferred 3 of 4), consistent with
+  over-fragmentation being the dataset's largest loss - but n=4.
+- **Six of twenty pairs were ties.** A third of one-knob differences are below human notice, which
+  calibrates how much any 0.01-level metric delta can matter to the person editing the sketch.
+
+Powering a real fit needs 50-100 decisive pairs; the candidate pool at 250 parts held 39. Not worth
+it until a change actually hinges on the weighting.
 
 ## F. Robustness and tidying
 
