@@ -186,6 +186,13 @@ def add_loop(sk, loop, prefix, mpp):
         g = sk.addGeometry(Part.Ellipse(c + u * (loop["a"] * mpp), c + v * (loop["b"] * mpp), c), False)
         bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceX", -1, 1, g, 3, loop["cx"] * mpp)), prefix + "_cx")
         bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, g, 3, loop["cy"] * mpp)), prefix + "_cy")
+        sk.exposeInternalGeometry(g)
+        major, minor = g + 1, g + 2
+        for axis, name, semi in ((major, prefix + "_a", loop["a"]), (minor, prefix + "_b", loop["b"])):
+            cid = sk.addConstraint(Sketcher.Constraint("Distance", axis, 2 * semi * mpp))
+            sk.renameConstraint(cid, name)
+            sk.setExpression(".Constraints." + name, "2 * params.%s * params.scale" % name)
+        sk.addConstraint(Sketcher.Constraint("Angle", major, th))
         return
     if loop["type"] == "circle":
         g = sk.addGeometry(Part.Circle(Vector(loop["cx"] * mpp, loop["cy"] * mpp, 0), Vector(0, 0, 1), loop["r"] * mpp), False)

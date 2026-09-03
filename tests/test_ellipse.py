@@ -67,6 +67,7 @@ def test_an_ellipse_builds_a_solid_of_the_right_volume(freecad, tmp_path):
     assert report["volume"] == pytest.approx(want, rel=1e-3)
     for sk in report["sketches"].values():
         assert sk["solve"] == 0 and not sk["redundant"] and not sk["conflicting"]
+        assert not sk["dof"]
 
 
 def test_revolve_keeps_an_ellipse_hole():

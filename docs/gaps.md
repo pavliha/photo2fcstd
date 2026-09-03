@@ -77,7 +77,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | C1 | Shoot 30-50 board frames for tilt labels | photos | small |
 | C2 | Fit and gate the tilt head on them | code (after C1) | small |
 | ~~C3~~ | ~~Run carve on a real capture~~ - **already done on T-LESS, 0.782 IoU** | - | - |
-| C4 | Decide the no-board, no-scale case | code | small |
+| ~~C4~~ | ~~Decide the no-board, no-scale case~~ - **decided: pixels + one scale cell, verified** | - | - |
 | E1 | Ask a person which drawing they would rather edit | person | small |
 | E2 | Re-weight `structure_score` from the answers | code (after E1) | small |
 
@@ -350,8 +350,19 @@ photo pipeline's ~0.43. The synthetic estimate of 0.736 was fair rather than fla
 
 A dataset closed this, not a rig. See `docs/datasets.md`.
 
-**C4. Decide the no-board, no-scale case.** Without a board or a known length the sketch is
-dimensionless. **Done when** the behaviour is deliberate rather than incidental.
+**C4. DONE - the decision is: build in pixels, hang the whole model off one `scale` cell.**
+Without a board or a known length the document builds with `scale = 1.0`, every constraint bound as
+`params.X * params.scale`, and the sheet saying "the sheet is in pixels until you set scale" - so
+one caliper reading typed into one cell makes the whole part metric, after the fact, in the saved
+file. That promise is now verified rather than assumed:
+`test_editing_the_scale_cell_rescales_the_saved_document` edits B1 in the built FCStd and requires
+volume x8.000.
+
+Verifying it found a real hole: a full-ellipse loop bound only its centre. Its axes had params in
+the sheet that drove nothing, the ellipse did not rescale (00339 scaled x8.084, 1% of its volume
+stuck), and the sketch had free degrees of freedom. `add_loop` now exposes the ellipse's internal
+geometry, constrains both axes bound to `2 * params._a/_b * scale`, and pins the axis angle; the
+ellipse build test now asserts zero DoF.
 
 ## D. Depth
 

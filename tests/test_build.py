@@ -44,6 +44,26 @@ def test_scale_rescales_the_body(dataset, freecad, photos_of, tmp_path):
     assert max(unscaled["bbox"]) > 100
 
 
+def test_editing_the_scale_cell_rescales_the_saved_document(dataset, freecad, photos_of, tmp_path):
+    import subprocess
+    _, report, out = build("00476", tmp_path, photos_of)
+    v0 = report["volume"]
+    inside = pathlib.Path(spec.__file__).parents[2] / "_test_rescale.py"
+    inside.write_text(
+        "import FreeCAD\n"
+        "doc = FreeCAD.openDocument(%r)\n"
+        "doc.getObject('params').set('B1', '2.0')\n"
+        "doc.recompute()\n"
+        "body = next(o for o in doc.Objects if o.TypeId == 'PartDesign::Body')\n"
+        "print('VOLUME', body.Shape.Volume)\n" % out)
+    try:
+        r = subprocess.run([freecad, str(inside)], capture_output=True, text=True, timeout=300)
+    finally:
+        inside.unlink()
+    line = next(l for l in r.stdout.splitlines() if l.startswith("VOLUME"))
+    assert float(line.split()[1]) == pytest.approx(8.0 * v0, rel=1e-3), r.stdout[-500:]
+
+
 def test_the_sheet_is_in_millimetres_when_the_scale_is_known(dataset, freecad, photos_of, tmp_path):
     doc, report, out = build("00476", tmp_path, photos_of, length_mm=40.0)
     assert doc["unit"] == "mm"
