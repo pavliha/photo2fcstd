@@ -62,7 +62,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 |---|---|---|---|
 | ~~A6~~ | ~~Arc chord gate relative to the run~~ - **measured, reverted** | - | - |
 | ~~A8~~ | ~~Merge runs before fitting~~ - **measured, reverted** | - | - |
-| **A7** | **Give the fitter evidence a straight line lacks** | code | large |
+| ~~A7~~ | ~~Give the fitter evidence a straight line lacks~~ - **shipped: `chain_arcs`, +0.0122 F1 on photographs** | - | - |
 | A3 | Arc fitting before simplification - *demoted, addresses 29%* | code | medium |
 | ~~B1~~ | ~~Two sketches that fail to solve~~ - **00011 fixed, 00039 remains** | - | - |
 | ~~B2~~ | ~~Solids with volume that `isValid()` rejects~~ - **00061 fixed, 00086 is nested holes** | - | - |
@@ -184,6 +184,26 @@ non-local candidates only. On the circle gate, which is the same question one pr
 
 So neither how well a curve fits nor how badly a polygon fits carries the answer. Do not propose a
 fourth local statistic.
+
+**A7 is now SHIPPED, on the one non-local candidate that worked: `trace.chain_arcs`.** Three or
+more consecutive line pieces that each turn the *same direction* by a *small* angle are refit as
+one arc - the signature of a sampled curve, which two edges at a corner, a zigzag, or a single
+shallow bend cannot produce. The merged run must still pass every shipped gate on its full sweep,
+so this widens the fitter's support, never the gate. It is the first arc change to survive
+photographs (n=351 discriminating, specs regenerated both arms, built):
+
+| | perfect input (n=417) | photographs (n=351) |
+|---|---|---|
+| primitive F1 | +0.0111 [+0.0053, +0.0175] | **+0.0122 [+0.0057, +0.0197]** |
+| structure | +0.0088 [+0.0032, +0.0151] | +0.0080 [+0.0014, +0.0156] |
+| region IoU | +0.0004 | -0.0003 [-0.0025, +0.0017] |
+| builds | | **identical**: 340/351 valid, 11 unsolved, 0 free DoF, same wall time |
+
+Exact primitives hold at 29% both arms, so precision is untouched. Two design points mattered:
+a two-piece chain is refused (one shallow corner is one turn - the discriminant the dead local
+statistics could not provide), and when a maximal chain fails its gates the longest passing
+sub-chain is taken rather than abandoning the whole chain. `P2F_CHAIN_ARCS=0` turns it off;
+`tools/ab_chain.py` re-measures.
 **Done when** one is measured. **Read the prior first**: twelve learned attempts, two wins, and
 every loss replaced a geometric step. A model that *ranks candidate arc fits the geometry already
 produced* is the winning shape; one that replaces `approxPolyDP` or the fitter is the losing one.

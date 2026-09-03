@@ -538,3 +538,27 @@ def test_appendage_trimming_is_off_by_default():
     mask[60:140, 40:140] = True
     mask[95:101, 140:195] = True
     assert trim_appendages(mask).sum() == mask.sum()
+
+
+def test_a_split_arc_is_refit_as_one_arc_and_corners_are_not():
+    from photo2fcstd.trace import chain_arcs
+    line_el = lambda run: {"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist(), "_run": run}
+    seg = lambda p, q, k=30: np.linspace(p, q, k)
+    edges = np.linspace(0, np.radians(60), 4)
+    pieces = [np.c_[120 * np.cos(t), 120 * np.sin(t)]
+              for t in (np.linspace(a, b, 40) for a, b in zip(edges, edges[1:]))]
+    p_end, p_start = pieces[-1][-1], pieces[0][0]
+    box = [seg(p_end, p_end + [-260, 0]), seg(p_end + [-260, 0], [p_start[0] - 260, p_start[1]]),
+           seg([p_start[0] - 260, p_start[1]], p_start)]
+    out = chain_arcs([line_el(r) for r in pieces + box], 300.0)
+    kinds = [e["type"] for e in out]
+    assert kinds.count("arc") == 1 and kinds.count("line") == 3, kinds
+    arc = next(e for e in out if e["type"] == "arc")
+    assert abs(arc["r"] - 120.0) < 2.0
+
+    square = [seg([0, 0], [100, 0]), seg([100, 0], [100, 100]), seg([100, 100], [0, 100]), seg([0, 100], [0, 0])]
+    assert all(e["type"] == "line" for e in chain_arcs([line_el(r) for r in square], 100.0))
+
+    shallow = [seg([0, 0], [100, 12]), seg([100, 12], [200, 0]), seg([200, 0], [200, -80]),
+               seg([200, -80], [0, -80]), seg([0, -80], [0, 0])]
+    assert all(e["type"] == "line" for e in chain_arcs([line_el(r) for r in shallow], 200.0))

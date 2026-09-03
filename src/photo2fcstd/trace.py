@@ -748,6 +748,74 @@ def carry_support(final, original):
     return final
 
 
+CHAIN_ARCS = os.environ.get("P2F_CHAIN_ARCS", "1") != "0"
+CHAIN_TURN_DEG = float(os.environ.get("P2F_CHAIN_TURN_DEG", 50.0))
+
+
+def chord_turn(a, b):
+    va = np.subtract(a["p1"], a["p0"])
+    vb = np.subtract(b["p1"], b["p0"])
+    return float(np.degrees(np.arctan2(va[0] * vb[1] - va[1] * vb[0], float(va @ vb))))
+
+
+def chain_arcs(els, length_px):
+    """Refit maximal chains of line pieces that all bend the same way as one arc.
+
+    Of the arcs the tracer loses, 71% survive simplification as two or more pieces and are refused
+    piecewise - each piece shows the gate a fraction of the true sweep. Three or more pieces each
+    turning the same direction by a small angle is a sampled curve; two straight edges meet at one
+    large corner, a zigzag alternates sign, and a single shallow corner is only one turn, so none
+    can qualify. The merged run must still pass every shipped arc gate on its full sweep - this
+    widens the fitter's support, not the gate.
+    """
+    n = len(els)
+    if n < 3:
+        return els
+    def linked(i):
+        a, b = els[i], els[(i + 1) % n]
+        if a["type"] != "line" or b["type"] != "line" or a.get("_run") is None or b.get("_run") is None:
+            return 0
+        t = chord_turn(a, b)
+        return (1 if t > 0 else -1) if 0.5 < abs(t) < CHAIN_TURN_DEG else 0
+    signs = [linked(i) for i in range(n)]
+    if all(signs) and len(set(signs)) == 1:
+        return els
+    start = next(i for i in range(n) if signs[i - 1] == 0 or signs[i - 1] != signs[i])
+    order = [(start + k) % n for k in range(n)]
+    def passes(chain):
+        run = np.vstack([els[j]["_run"] for j in chain])
+        chord = float(np.hypot(*(run[-1] - run[0])))
+        if len(run) < th.ARC_MIN_POINTS or chord <= th.ARC_MIN_CHORD_FRAC * length_px:
+            return None
+        cx, cy, r, rel, _ = fit_circle(run)
+        span = arc_span(run, cx, cy)
+        cv = run[-1] - run[0]
+        sag = float(np.max(np.abs(cv[0] * (run[:, 1] - run[0][1]) - cv[1] * (run[:, 0] - run[0][0])) / max(chord, 1e-9)))
+        ok = (rel * r < max(th.ARC_FIT_TOL * r, 1.2) and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG
+              and sag > th.ARC_MIN_SAG_FRAC * chord)
+        return arc_from_run(run) if ok else None
+    def resolve(chain):
+        if len(chain) < 3:
+            return [els[j] for j in chain]
+        for size in range(len(chain), 2, -1):
+            for lo in range(len(chain) - size + 1):
+                arc = passes(chain[lo:lo + size])
+                if arc is not None:
+                    return resolve(chain[:lo]) + [arc] + resolve(chain[lo + size:])
+        return [els[j] for j in chain]
+    out, chain, chain_sign = [], [], 0
+    for k, i in enumerate(order):
+        chain.append(i)
+        junction = signs[i] if k + 1 < n else 0
+        if junction != 0 and (chain_sign == 0 or junction == chain_sign):
+            chain_sign = junction
+            continue
+        out.extend(resolve(chain))
+        chain, chain_sign = [], 0
+    out.extend(resolve(chain))
+    return out
+
+
 def elements(raw, length_px):
     repeated = boundary_period(raw)
     runs = corner_runs(raw, REPEATED_RUN_EPS if repeated else None)
@@ -765,6 +833,8 @@ def elements(raw, length_px):
         line = {"type": "line", "p0": run[0].tolist(), "p1": run[-1].tolist(), "_run": run}
         line["support"] = support_of(run, line, length_px)
         els.append(line)
+    if CHAIN_ARCS:
+        els = chain_arcs(els, length_px)
     for e in els:
         if "support" not in e and e.get("_run") is not None:
             e["support"] = support_of(e["_run"], e, length_px)
