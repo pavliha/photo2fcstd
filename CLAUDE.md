@@ -177,6 +177,17 @@ exists, never as evidence to ship on, and never run an arc A/B without regenerat
 photographs and building them. A census of 3,384 runs also shows where arcs actually die: 42% fail
 `ARC_MIN_SPAN_DEG`, 23% fail the circle fit, and the chord gate fires on **one run in 3,384**.
 
+**The third attempt survived, and it is shipped: `trace.chain_arcs`.** Three or more consecutive
+line pieces that each turn the same direction by a small angle are refit as one arc, and the merged
+run must still pass every shipped gate on its full sweep. On photographs, specs regenerated both
+arms and built (n=351): primitive F1 **+0.0122 [+0.0057, +0.0197]**, structure +0.0080
+[+0.0014, +0.0156], IoU flat, exact 29% both arms, builds identical to the solid and the unsolved
+sketch. What made it differ from the dead attempts: the discriminant is non-local (consistent turn
+direction across pieces - evidence a corner, a zigzag or one shallow bend cannot produce), a
+two-piece chain is refused, and it widens the fitter's support instead of lowering any gate. The
+same session measured and killed three more *local* discriminants (absolute residual, relative
+residual, piece count) - the local family is exhausted, stop proposing members of it.
+
 ## Mode selection and coverage are finished
 
 Measured on 197 trusted parts with photos, every one draws a sketch and `stations` is never chosen,
