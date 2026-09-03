@@ -59,10 +59,10 @@ def test_the_note_does_not_claim_a_constant_band_is_this_part_s_uncertainty():
     keep = depth_model.predict
     try:
         depth_model.predict = fixed
-        _, note = modes.predicted_depth(src, [])
+        _, note, _ = modes.predicted_depth(src, [])
         assert "fixed calibration" in note and "not this part" in note
         depth_model.predict = per_part
-        _, note = modes.predicted_depth(src, [])
+        _, note, _ = modes.predicted_depth(src, [])
         assert "of the time between" in note and "fixed calibration" not in note
     finally:
         depth_model.predict = keep

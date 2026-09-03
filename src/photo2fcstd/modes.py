@@ -299,43 +299,51 @@ def predicted_depth(src, others):
     ratio, lo, hi, coverage, per_part = got
     depth = ratio * src["length_px"]
     if lo is None or hi is None:
-        return depth, "depth predicted from the silhouettes at %.3f of length - measure it (px units)" % ratio
+        return depth, "depth predicted from the silhouettes at %.3f of length - measure it (px units)" % ratio, False
     spread = hi / max(lo, 1e-9)
-    verdict = "good enough to build from" if spread < 2.0 else "too wide to trust, put a caliper on it"
+    trusted = spread < 2.0
+    verdict = "good enough to build from" if trusted else "too wide to trust, put a caliper on it"
     band = ("%.0f%% of the time between %.1f and %.1f (%.1fx spread, %s)"
             % (100 * coverage, lo * src["length_px"], hi * src["length_px"], spread, verdict)
             if per_part else
             "%.0f%% of parts land within %.1fx of this - a fixed calibration, not this part's own "
             "uncertainty, so %s" % (100 * coverage, spread, verdict))
-    return depth, "depth predicted from the silhouettes: %.1f px, %s" % (depth, band)
+    return depth, "depth predicted from the silhouettes: %.1f px, %s" % (depth, band), trusted
 
 
 def outline_depth(src, others, mode, thickness_px):
+    """Returns (depth_px, note, trusted).
+
+    `trusted` is False whenever the number is a guess or a band wider than 2x, and the pad is
+    built regardless - a deliberate decision, not an oversight. Refusing it would discard a
+    correct sketch on nearly every part, when the sketch is the product and the depth is one
+    editable parameter away from right. The flag exists so a consumer can act on the doubt
+    without parsing the prose note."""
     if thickness_px is not None:
-        return thickness_px, "thickness from --thickness-px (px units)"
+        return thickness_px, "thickness from --thickness-px (px units)", True
     if ORACLE_DEPTH:
         known = oracle_depth(src)
         if known is not None:
-            return known
+            return known + (True,)
     if mode == "plan":
         learned = predicted_depth(src, others)
         if learned is not None:
             return learned
         return (th.PLATE_FRAC * src["length_px"],
                 "plate thickness: NOT visible when every photo shows the same face, guessed as %.0f%% of length - set it from a caliper (px units)"
-                % (th.PLATE_FRAC * 100))
+                % (th.PLATE_FRAC * 100), False)
     extent = max(src["shape"]["bbox"])
     other = max(others, key=lambda v: v["shape"]["rectangularity"]) if others else None
     if other is not None and other["shape"]["rectangularity"] > th.PLAN_RECT:
         width = max(st["width"] for st in other["stations"])
         return (width * extent / other["length_px"],
-                "extrusion length = width of %s scaled by the profile extent (px units)" % os.path.basename(other["source"]))
+                "extrusion length = width of %s scaled by the profile extent (px units)" % os.path.basename(other["source"]), True)
     learned = predicted_depth(src, others)
     if learned is not None:
         return learned
     measured = edge_on_depth(src, [src] + list(others))
     if measured is not None:
-        return measured
+        return measured + (False,)
     return (min(src["shape"]["stroke_px"], th.PLATE_FRAC * src["length_px"]),
             "no plain elevation photo: depth guessed as min(section stroke, %.0f%% of length) - measure it (px units)"
-            % (th.PLATE_FRAC * 100))
+            % (th.PLATE_FRAC * 100), False)

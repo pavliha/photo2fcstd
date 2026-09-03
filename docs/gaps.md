@@ -69,7 +69,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~B3~~ | ~~Build validity in the regression test~~ - **done** | - | - |
 | ~~B4~~ | ~~One redundant constraint~~ - **gone with B1** | - | - |
 | ~~D1~~ | ~~Verify the depth note~~ - **done, and the band is constant** | - | - |
-| D2 | Refuse a solid when the depth band is uninformative | code | small |
+| ~~D2~~ | ~~Refuse a solid when the depth band is uninformative~~ - **decided: build, but flag it** | - | - |
 | ~~D3~~ | ~~Use a second view's depth~~ - **already done, and edge-on does not help** | - | - |
 | ~~F1~~ | ~~Audit the gates~~ - **done, neither distance gate is backwards** | - | - |
 | ~~F2~~ | ~~Decide whether `stations` stays~~ - **kept, with a measured reason** | - | - |
@@ -377,10 +377,13 @@ and 3.20 exceeds it. **The pixel path can never say a depth is usable** - 0 of 4
 
 **D1 is closed; the finding becomes D4.**
 
-**D2.** Refuse when the band is uninformative. Partly moot: the note already says "too wide to
-trust" and does so for 100% of parts on the shipped path. The open question is whether the pad
-should still be built from a number the pipeline itself calls untrustworthy. **Done when** that is a
-deliberate decision rather than the default.
+**D2. DONE - the decision is to build the pad anyway, and to say so machine-readably.** Refusing
+it would discard a correct sketch on nearly every part (the shipped path never clears the 2x bar,
+0 of 47) to protest one parameter that is a single spinbox edit - and the sketch is the product.
+The spec now carries `depth_trusted`, `outline_depth` returns it per source (caliper and
+other-view widths trusted, every guess and wide band not), and the FreeCAD params sheet prefixes
+the depth note with `UNTRUSTED:` so nobody has to parse prose. Verified end to end: 00339 builds
+valid with the flagged note in its spreadsheet.
 
 **D4. DONE - real quantile heads measured and rejected; the phrasing is fixed instead.**
 

@@ -24,6 +24,9 @@ def outline_aspect(loops):
         if loop["type"] == "circle":
             pts += [[loop["cx"] - loop["r"], loop["cy"] - loop["r"]],
                     [loop["cx"] + loop["r"], loop["cy"] + loop["r"]]]
+        elif loop["type"] == "ellipse":
+            pts += [[loop["cx"] - loop["a"], loop["cy"] - loop["a"]],
+                    [loop["cx"] + loop["a"], loop["cy"] + loop["a"]]]
         else:
             pts += [e["p0"] for e in loop["elements"]]
     if len(pts) < 3:
@@ -77,6 +80,10 @@ def rounded_loops(loops, rnd):
     for loop in loops:
         if loop["type"] == "circle":
             out.append(dict(loop, cx=rnd(loop["cx"]), cy=rnd(loop["cy"]), r=rnd(loop["r"])))
+            continue
+        if loop["type"] == "ellipse":
+            out.append(dict(loop, cx=rnd(loop["cx"]), cy=rnd(loop["cy"]),
+                            a=rnd(loop["a"]), b=rnd(loop["b"])))
             continue
         elements = [dict(e, p0=[rnd(e["p0"][0]), rnd(e["p0"][1])], p1=[rnd(e["p1"][0]), rnd(e["p1"][1])],
                          **({"cx": rnd(e["cx"]), "cy": rnd(e["cy"]), "r": rnd(e["r"])} if e["type"] == "arc" else {}))
@@ -132,16 +139,19 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
         if loops is None:
             raise ValueError("every view of this part traces to an outline with no area: "
                              "the silhouette is too thin to regularise, reshoot it square to the face")
-        depth, note = modes.outline_depth(src, others, mode_sel, thickness_px)
-        outline_spec = {"source": src["source"], "loops": loops, "depth_px": depth, "depth_note": note}
+        depth, note, depth_trusted = modes.outline_depth(src, others, mode_sel, thickness_px)
+        outline_spec = {"source": src["source"], "loops": loops, "depth_px": depth, "depth_note": note,
+                        "depth_trusted": depth_trusted}
         aspect = outline_aspect(loops)
         if aspect < th.SLIVER_ASPECT:
             outline_spec["warning"] = ("the outline is %.0fx longer than it is wide, so these photos are "
                                        "looking at the part edge-on - lay it flat and reshoot to get its "
                                        "real face" % (1.0 / max(aspect, 1e-6)))
             log("WARNING: %s" % outline_spec["warning"])
-        log("sketch: %s%s" % (", ".join("circle r=%.0f" % l["r"] if l["type"] == "circle"
-                                        else "%d elements (%s)" % (len(l["elements"]), "".join(l["kinds"])) for l in loops),
+        described = ["circle r=%.0f" % l["r"] if l["type"] == "circle"
+                     else "ellipse %.0fx%.0f" % (l["a"], l["b"]) if l["type"] == "ellipse"
+                     else "%d elements (%s)" % (len(l["elements"]), "".join(l["kinds"])) for l in loops]
+        log("sketch: %s%s" % (", ".join(described),
                               "; symmetric about " + "".join(src["symmetric"]) if src["symmetric"] else ""))
         views = {"front": src}
     else:

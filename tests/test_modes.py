@@ -64,7 +64,7 @@ def test_oracle_depth_is_off_unless_asked(monkeypatch):
     from photo2fcstd import modes
     monkeypatch.setattr(modes, "ORACLE_DEPTH", False)
     src = {"source": "/p/00002_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
-    depth, note = modes.outline_depth(src, [], "plan", None)
+    depth, note, trusted = modes.outline_depth(src, [], "plan", None)
     assert "oracle" not in note
 
 
@@ -73,7 +73,7 @@ def test_oracle_depth_uses_the_step_file_ratio(monkeypatch):
     monkeypatch.setattr(modes, "ORACLE_DEPTH", True)
     monkeypatch.setattr(modes, "_TRUE_RATIOS", {"00002": 0.25})
     src = {"source": "/p/00002_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
-    depth, note = modes.outline_depth(src, [], "plan", None)
+    depth, note, trusted = modes.outline_depth(src, [], "plan", None)
     assert depth == 25.0 and "oracle" in note
 
 
@@ -82,7 +82,7 @@ def test_oracle_depth_falls_through_for_an_unknown_part(monkeypatch):
     monkeypatch.setattr(modes, "ORACLE_DEPTH", True)
     monkeypatch.setattr(modes, "_TRUE_RATIOS", {"00002": 0.25})
     src = {"source": "/p/99999_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
-    depth, note = modes.outline_depth(src, [], "plan", None)
+    depth, note, trusted = modes.outline_depth(src, [], "plan", None)
     assert "oracle" not in note
 
 
@@ -156,3 +156,19 @@ def test_the_view_model_prefers_the_pre_regularisation_statistics():
     got = view_model.stats_of_view(view)
     assert got["rect"] == 0.8 and got["elong"] == 2.0 and got["nholes"] == 3
     assert got["ellipse_rms"] == 0.3
+
+
+def test_a_guessed_depth_is_marked_untrusted(monkeypatch):
+    from photo2fcstd import modes
+    monkeypatch.setattr(modes, "ORACLE_DEPTH", False)
+    monkeypatch.setattr(modes, "predicted_depth", lambda src, others: None)
+    src = {"source": "/p/00002_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
+    depth, note, trusted = modes.outline_depth(src, [], "plan", None)
+    assert "caliper" in note and trusted is False
+
+
+def test_a_caliper_depth_is_trusted():
+    from photo2fcstd import modes
+    src = {"source": "/p/00002_1.jpg", "length_px": 100.0, "shape": {"bbox": (10, 20), "stroke_px": 3.0}}
+    depth, note, trusted = modes.outline_depth(src, [], "plan", 42.0)
+    assert depth == 42.0 and trusted is True
