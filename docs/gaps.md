@@ -169,6 +169,21 @@ check, and perfect-input numbers should be treated as a *screen*, never as evide
 what is left, and it follows from the ruled-out list above: the discriminant has to be something
 other than local sweep and sagitta. Candidates - neighbouring geometry, symmetry between paired
 fillets, continuity with an adjacent arc, fitting over a longer run than the corner split allows.
+
+**Three local discriminants are now measured and all three are dead**, which narrows this to the
+non-local candidates only. On the circle gate, which is the same question one primitive down:
+
+- *residual, absolute in pixels* - gains +0.0033 primitive F1 [+0.0001, +0.0072] over 559 parts but
+  admits small rectangles, because a 40x20 rectangle fits an ellipse at rms 1.97 px. Reverted.
+- *residual, relative to the radius* - cannot admit a rectangle at any setting, and loses outright:
+  -0.0187, -0.0162, -0.0239 F1 at 0.05, 0.06, 0.07, every CI clear of zero. Reverted.
+- *how many straight pieces the tracer needs* - the description-length idea, that a shape needing
+  many segments is a curve. **It does not separate at all**: over 119 hole loops matched to their
+  ideal, loops whose ideal is a circle take a mean 6.3 pieces and loops whose ideal is not take 6.1.
+  At `k >= 6` it recovers 7 of 8 missed circles and wrongly takes 42 of 66 non-circles.
+
+So neither how well a curve fits nor how badly a polygon fits carries the answer. Do not propose a
+fourth local statistic.
 **Done when** one is measured. **Read the prior first**: twelve learned attempts, two wins, and
 every loss replaced a geometric step. A model that *ranks candidate arc fits the geometry already
 produced* is the winning shape; one that replaces `approxPolyDP` or the fitter is the losing one.
