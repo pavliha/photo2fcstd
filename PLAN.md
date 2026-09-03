@@ -61,11 +61,34 @@ three frames show the rim, so no view choice, threshold or tracer change reaches
 F1 0.000 and stay there. That is **4.9% of the trusted test set permanently at zero for want of one
 photograph**, which is the capture wall of "86% have no good view" with a name and a count.
 
-What is left in code is the hole gate, and it is small. `ellipse_ok` requires `rms < 0.04 * a`,
-a fraction of the radius, while matting noise is a fixed number of pixels - so the test tightens as
-holes shrink. Measured over 194 hole loops in 91 parts, only **16 fail on rms alone**, and of the 9
-whose absolute residual exceeds 5 px only 22% belong to a part with a round hole, so an absolute
-rule would fire wrongly there. At most ~7 loops are reachable. Worth one A/B, not a campaign.
+**The hole gate was the code half, and it is now closed.** `ellipse_ok` requires
+`rms < 0.04 * a` before a loop may be drawn as one circle. Two forms of loosening it were measured
+on 559 discriminating parts with specs regenerated for both arms and built (`tools/ab_hole_gate.py`):
+
+| arm | primitive F1 | structure | region IoU | changed | builds |
+|---|---|---|---|---|---|
+| absolute escape, 5 px | **+0.0033 [+0.0001, +0.0072]** | +0.0023 [+0.0003, +0.0048] | -0.0000 | 6 | 551 valid, 6 unsolved - identical |
+| absolute escape, 8 px | +0.0040 [+0.0002, +0.0084] | +0.0032 [+0.0004, +0.0069] | -0.0002 | 8 | **550 valid** |
+| relative 0.05 | -0.0187 [-0.0314, -0.0075] | -0.0103 | -0.0001 | 21 | |
+| relative 0.06 | -0.0162 [-0.0293, -0.0045] | -0.0089 | -0.0003 | 29 | |
+| relative 0.07 | -0.0239 [-0.0392, -0.0095] | -0.0111 | +0.0009 | 46 | |
+
+**Both reverted, and the pair is the finding.** The absolute escape gains, and it gains a lot per
+firing - the six parts it touches move +0.30 F1 each, four of them to a perfect 1.00. But it admits
+small rectangles: a 40x20 rectangle fits an ellipse at **rms 1.97 px**, so no absolute threshold
+excludes it, and `test_every_loop_shares_the_part_frame` goes red. On real data two of its nine
+firings at 8 px drew circles for parts whose ideal has none. It works only because it is
+self-limiting to loops under `rms_px / 0.04` = 125 px, where PrintCAD's holes happen to be round -
+a dataset prior, not a geometry.
+
+Loosening the *relative* threshold is the form that cannot admit a rectangle, since rectangles sit
+at rms/a 0.083 to 0.111 at every scale against a circle's 0.000. It loses outright at every setting,
+because the same threshold governs a 400 px outer loop, where rms/a 0.05 is 20 px from circular and
+flattening it destroys the part.
+
+So the residual cannot separate a noisy small circle from a small rectangle, exactly as sweep and
+sagitta cannot separate a shallow arc from a straight edge. Any fix needs evidence a polygon would
+not have. 8 px additionally cost a valid solid (00061, which builds up to 5 px and fails at 6).
 
 An **ellipse primitive** now exists, and it is inert on every real input. No part whose ideal
 holds an ellipse or b-spline had ever been drawn with the right primitives, because the pipeline
