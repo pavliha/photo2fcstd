@@ -32,8 +32,11 @@ next to three structural terms, each a fraction of the real sketch reproduced:
 - `curves` - how close the count of curved primitives is, which is the arc drawn as chords
 - `elements` - how close the total primitive count is, which is fragmentation or over-smoothing
 
-They are deliberately unweighted; weighting them needs a person saying which drawing they
-would rather edit, and nobody has been asked. Sanity check on hand cases: the letter G at
+They are deliberately unweighted, and that is now a measured decision, not a default: a person
+judged twenty trade-off pairs (E1/E2 in docs/gaps.md) and fourteen decisive answers could not pin
+three weights - the best fit failed leave-one-out at 5/14 with permutation p = 0.34. What the
+answers did establish: the tight arc gate is human-confirmed (shipped preferred 5 of 6), and a
+third of one-knob differences are ties a person cannot see. Sanity check on hand cases: the letter G at
 IoU 0.41 scores 0.91 structurally, a rounded blob at IoU 0.81 scores 0.37, and a square
 whose notches were smoothed away goes from 0.97 to 0.78.
 
