@@ -5,10 +5,11 @@ import os
 import cv2
 import numpy as np
 
+from photo2fcstd import settings
 from photo2fcstd.carve import carve, mesh_of
 from photo2fcstd.errors import CaptureError
 
-BOP_ROOT = os.path.expanduser(os.environ.get("P2F_BOP", "~/3DPrint/tools/data/bop"))
+BOP_ROOT = settings.bop_dir()
 BOUND_MM = 90.0
 DARK = 40
 

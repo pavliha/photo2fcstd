@@ -21,6 +21,7 @@ dependencies = [
     "timm",
     "scikit-image",
     "shapely",
+    "kornia",
 ]
 
 [project.optional-dependencies]

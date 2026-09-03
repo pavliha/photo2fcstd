@@ -2,6 +2,8 @@ __pycache__/
 *.egg-info/
 runs/
 data/printcad/
+data/bop/
+data/charuco_target.png
 .pytest_cache/
 *.joblib
 .playwright-mcp/

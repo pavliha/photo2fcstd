@@ -3,6 +3,8 @@ import numpy as np
 
 import os
 
+from photo2fcstd import settings
+
 DICT = cv2.aruco.DICT_4X4_50
 COLS, ROWS = 7, 10
 NOMINAL_SQUARE_MM = 15.0
@@ -54,7 +56,7 @@ def render(path):
 
 
 if __name__ == "__main__":
-    shape = render("/Users/pavliha/3DPrint/tools/charuco_target.png")
+    shape = render(settings.charuco_target())
     print("target %dx%d px at %d dpi = %.0f x %.0f mm  (%d x %d squares of %.1f mm)"
           % (shape[1], shape[0], DPI, shape[1] * MM_PER_INCH / DPI,
              shape[0] * MM_PER_INCH / DPI, COLS, ROWS, SQUARE_MM))

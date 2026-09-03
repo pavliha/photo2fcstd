@@ -9,7 +9,9 @@ import os
 
 import numpy as np
 
-ROOT = os.environ.get("P2F_TLESS", os.path.expanduser("~/3DPrint/tools/data/bop/tless"))
+from photo2fcstd import settings
+
+ROOT = os.environ.get("P2F_TLESS", os.path.join(settings.bop_dir(), "tless"))
 
 
 def scene_dir(obj_id, split="train_primesense"):

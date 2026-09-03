@@ -13,8 +13,15 @@ FREECAD_GUESSES = (
 )
 DATA_GUESSES = (
     os.path.join(PACKAGE_ROOT, "data", "printcad", "PrintCAD"),
-    os.path.expanduser("~/3DPrint/tools/data/printcad/PrintCAD"),
 )
+
+
+def bop_dir():
+    return os.environ.get("P2F_BOP", os.path.join(PACKAGE_ROOT, "data", "bop"))
+
+
+def charuco_target():
+    return os.path.join(PACKAGE_ROOT, "data", "charuco_target.png")
 
 
 def find_freecad():

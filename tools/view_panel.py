@@ -8,9 +8,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-from photo2fcstd import view_rank
+from photo2fcstd import settings, view_rank
 
-PHOTOS = os.path.expanduser("~/3DPrint/tools/data/printcad/PrintCAD/captured_img")
+PHOTOS = os.path.join(settings.data_dir(), "captured_img")
 PICKED = "#2f8f4e"
 DEFAULT = "#b0522f"
 

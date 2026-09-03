@@ -74,17 +74,29 @@ def segment_auto(a):
 _RMBG = {}
 
 
-from photo2fcstd.settings import cache_dir
+from photo2fcstd.settings import PACKAGE_ROOT, cache_dir
 
 
 MASK_VERSION = "3"
 TRIM_APPENDAGE = float(os.environ.get("P2F_TRIM_APPENDAGE", 0.0))
 
 
+def cache_identity(path):
+    """What names a photo for the cache: its place in the project, not its place on disk.
+
+    Keying on the absolute path meant moving the dataset threw away every one of 5,713
+    segmented masks, none of which had changed. Paths inside the project are recorded
+    relative to it, so the tree can be moved or checked out anywhere and the cache follows.
+    """
+    full = os.path.abspath(path)
+    root = os.path.abspath(PACKAGE_ROOT) + os.sep
+    return os.path.relpath(full, root) if full.startswith(root) else full
+
+
 def cached_mask(path, version=MASK_VERSION):
     import hashlib
     st = os.stat(path)
-    raw = "%s|%d|%d" % (os.path.abspath(path), st.st_size, int(st.st_mtime))
+    raw = "%s|%d|%d" % (cache_identity(path), st.st_size, int(st.st_mtime))
     if version is not None:
         raw += "|v%s|t%.4f" % (version, TRIM_APPENDAGE)
     key = hashlib.sha1(raw.encode()).hexdigest()

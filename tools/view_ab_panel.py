@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from PIL import Image, ImageOps
 
-from photo2fcstd import overlay
+from photo2fcstd import overlay, settings
 from photo2fcstd.bench import truth_of
 
-PHOTOS = os.path.expanduser("~/3DPrint/tools/data/printcad/PrintCAD/captured_img")
+PHOTOS = os.path.join(settings.data_dir(), "captured_img")
 OLD, NEW = "#b0522f", "#2f8f4e"
 
 

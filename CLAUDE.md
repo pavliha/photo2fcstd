@@ -261,10 +261,12 @@ Depth cannot be a constant: the true depth/length ratio spans 0.055 to 0.503.
   held at 2.13.0, torchvision at 0.28.0, trimesh at 5.0.0, numpy at 2.5.1 and scipy
   at 1.18.0 - the versions every benchmark number in this file was measured on.
   The old shared `~/3DPrint/.venv` is not this project's environment.
-- `FREECADCMD` defaults to `~/Code/FreeCAD/build/release/bin/FreeCADCmd`;
-  `P2F_DATA` points at the PrintCAD dataset.
-- Segmentation masks and voxels cache under `~/.cache/photo2fcstd`. All 5,713 masks are
-  already built, so re-running the full set costs no GPU time.
+- `FREECADCMD` defaults to `~/Code/FreeCAD/build/release/bin/FreeCADCmd`. The datasets live
+  in the repo: `data/printcad/PrintCAD` (4.9 GB) and `data/bop` (5.7 GB), both gitignored.
+  `P2F_DATA` and `P2F_BOP` override them.
+- Segmentation masks and voxels cache under `~/.cache/photo2fcstd`, keyed by the photo's path
+  relative to the repo, its size and its mtime. 3,059 of the 5,731 captured photos are cached
+  at the current mask version; the rest cost GPU time on first use.
 - `FreeCADCmd` will not execute a script from outside the repo. Put it in the project
   directory and delete it afterwards.
 - macOS spawns, so anything using `multiprocessing` must live in a real file with an

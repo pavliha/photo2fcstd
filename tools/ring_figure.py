@@ -13,6 +13,7 @@ from torchvision import transforms
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
+from photo2fcstd import settings  # noqa: E402
 from photo2fcstd.trace import load, largest, segment_photo  # noqa: E402
 
 MODELS = (("RMBG-2.0", "briaai/RMBG-2.0", 1024),
@@ -43,7 +44,7 @@ def circles(mask):
 
 
 def main(out="docs/figures/ring.png"):
-    path = glob.glob(os.path.join(os.path.expanduser("~/3DPrint/tools/data/printcad/PrintCAD"),
+    path = glob.glob(os.path.join(settings.data_dir(),
                                   "captured_img", "*", "01407_2.jpg"))[0]
     img = load(path)
     im = _Image.fromarray((img * 255).astype(np.uint8))
