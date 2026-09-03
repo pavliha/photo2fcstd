@@ -41,6 +41,32 @@ view whose fitted ellipse is within 5% of circular now picks revolve before any 
 selector votes: that head is trained on per-mode voxel IoU, which cannot tell one circle from
 fifty-three lines. Worth +0.001 on the test set, because clean discs are about 1% of it.
 
+**The bottom rung is circles, and half of that is capture.** Splitting the 1-4 tier by what the
+ideal is made of, on the 246-part test set: 38 parts whose ideal is all lines score **0.880** and
+21 of 37 draw exactly four, so rectangles are finished. 54 parts whose ideal is nothing but circles
+score **0.560** and draw 4.1 primitives where 1.6 are wanted. That one group is 22% of the trusted
+test set and it is the whole of the tier's over-drawing.
+
+Of those 54, 27 already draw exactly the right circles. The other 23 divide sharply:
+
+| | n | why |
+|---|---|---|
+| chosen view's fitted aspect < 0.5 | **12** | the disc was photographed on its rim |
+| a round view, outer circle found, holes drawn as 4-11 line loops | ~7 | the hole circle gate |
+| other | 4 | |
+
+**None of the 12 has a face-on sibling.** Checking the fitted aspect of all three photographs of each:
+the best sibling beats the chosen view by 0.01 or less on 10 of them, and no part reaches 0.7. All
+three frames show the rim, so no view choice, threshold or tracer change reaches them - they are
+F1 0.000 and stay there. That is **4.9% of the trusted test set permanently at zero for want of one
+photograph**, which is the capture wall of "86% have no good view" with a name and a count.
+
+What is left in code is the hole gate, and it is small. `ellipse_ok` requires `rms < 0.04 * a`,
+a fraction of the radius, while matting noise is a fixed number of pixels - so the test tightens as
+holes shrink. Measured over 194 hole loops in 91 parts, only **16 fail on rms alone**, and of the 9
+whose absolute residual exceeds 5 px only 22% belong to a part with a round hole, so an absolute
+rule would fire wrongly there. At most ~7 loops are reachable. Worth one A/B, not a campaign.
+
 An **ellipse primitive** now exists, and it is inert on every real input. No part whose ideal
 holds an ellipse or b-spline had ever been drawn with the right primitives, because the pipeline
 emitted only `line`, `arc` and `circle`; a loop too eccentric to be a circle is now emitted as one
