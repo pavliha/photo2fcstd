@@ -17,7 +17,7 @@ def run_at(eps, ids, jobs):
     run = os.path.join("runs", name)
     shutil.rmtree(run, ignore_errors=True)
     env = dict(os.environ, P2F_RUN_EPS=str(eps), P2F_REPEATED_RUN_EPS=str(eps))
-    subprocess.run([os.path.expanduser("~/3DPrint/.venv/bin/photo2fcstd-bench"), name,
+    subprocess.run([os.path.join(os.path.dirname(sys.executable), "photo2fcstd-bench"), name,
                     "--jobs", str(jobs), "--ids", ids, "--sketch-only"],
                    env=env, capture_output=True, check=False)
     out = {}

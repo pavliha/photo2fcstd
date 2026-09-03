@@ -43,7 +43,7 @@ def score(name, ids, config, jobs, denominator):
     env = dict(os.environ, **{k: str(v) for k, v in config.items()})
     run = os.path.join("runs", name)
     shutil.rmtree(run, ignore_errors=True)
-    subprocess.run([os.path.expanduser("~/3DPrint/.venv/bin/photo2fcstd-bench"), name,
+    subprocess.run([os.path.join(os.path.dirname(sys.executable), "photo2fcstd-bench"), name,
                     "--jobs", str(jobs), "--ids", ids, "--sketch-only"],
                    env=env, capture_output=True, check=False)
     got = bench.sketch_scores(run)

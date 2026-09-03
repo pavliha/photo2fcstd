@@ -253,7 +253,11 @@ Depth cannot be a constant: the true depth/length ratio spans 0.055 to 0.503.
 
 ## Environment
 
-- Interpreter: `~/3DPrint/.venv/bin/python`. `photo2fcstd` is installed editable.
+- Interpreter: `.venv/bin/python` in the repo, built by `uv venv --python 3.12 .venv`
+  and `uv pip install -r requirements.lock -e ".[dev]"`. `photo2fcstd` is installed editable. torch is
+  held at 2.13.0, torchvision at 0.28.0, trimesh at 5.0.0, numpy at 2.5.1 and scipy
+  at 1.18.0 - the versions every benchmark number in this file was measured on.
+  The old shared `~/3DPrint/.venv` is not this project's environment.
 - `FREECADCMD` defaults to `~/Code/FreeCAD/build/release/bin/FreeCADCmd`;
   `P2F_DATA` points at the PrintCAD dataset.
 - Segmentation masks and voxels cache under `~/.cache/photo2fcstd`. All 5,713 masks are
