@@ -574,21 +574,6 @@ ELLIPSE_BETTER_THAN = 0.6
 KEEP_SIMPLE = os.environ.get("P2F_KEEP_SIMPLE", "1") != "0"
 DROP_STRAY_HOLES = os.environ.get("P2F_DROP_STRAY_HOLES", "1") != "0"
 REPEATED_RUN_EPS = float(os.environ.get("P2F_REPEATED_RUN_EPS", 0.00836))
-PERIOD_EPS_SCALE = float(os.environ.get("P2F_PERIOD_EPS_SCALE", 0.04))
-
-
-def repeated_eps(period):
-    """A contour carrying N repeats needs about a fraction of a repeat as its tolerance.
-
-    One fixed tolerance cannot serve both a six-lobed cam and a thirty-one tooth comb: the
-    fitted 0.00836 flattened a crenellated plate to eight segments and a comb to four, where
-    their ideals hold sixty and fifty-three.
-    """
-    if not period:
-        return REPEATED_RUN_EPS
-    return min(REPEATED_RUN_EPS, PERIOD_EPS_SCALE / float(period))
-
-
 def corner_runs(raw, eps_frac=None):
     eps_frac = RUN_EPS if eps_frac is None else eps_frac
     import cv2

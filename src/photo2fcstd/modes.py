@@ -77,10 +77,23 @@ def circular(specs):
     """A view that is a circle, not merely roundish: a disc is one circle, so say so early.
 
     Discs were being routed to profile or plan and drawn as twenty to fifty line segments
-    while a forced revolve gave a single circle scoring 1.00.
+    while a forced revolve gave a single circle scoring 1.00. A scalloped or toothed rim is
+    not a circle however round it fits, so a periodic boundary with real amplitude is
+    excluded - without that check this rule turned a 75 primitive scalloped disc into one
+    circle.
     """
-    circles = [v for v in specs if v["shape"].get("round") and v["shape"].get("ellipse")
-               and v["shape"]["ellipse"]["aspect"] >= CIRCLE_ASPECT]
+    from photo2fcstd.trace import CIRCLE_VETO_AMPLITUDE, boundary_period, feature_amplitude
+    circles = []
+    for v in specs:
+        shape = v["shape"]
+        if not (shape.get("round") and shape.get("ellipse")
+                and shape["ellipse"]["aspect"] >= CIRCLE_ASPECT):
+            continue
+        raw = shape.get("raw")
+        if raw is not None and boundary_period(raw) is not None \
+                and feature_amplitude(raw) >= CIRCLE_VETO_AMPLITUDE:
+            continue
+        circles.append(v)
     return max(circles, key=lambda v: v["shape"]["ellipse"]["aspect"]) if circles else None
 
 
