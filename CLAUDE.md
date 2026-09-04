@@ -380,20 +380,25 @@ points. Enable the losing path with `P2F_LEARNED_CURVES=1`; it is off by default
 
 ## Where a learned component pays, and where it does not
 
-Twelve learned attempts, two wins, and the split is not about model capacity - it is about
+Fourteen learned attempts, two wins, and the split is not about model capacity - it is about
 what the model is asked to do:
 
 - **Won**: `view_model` picks which of three photos to draw from; `mode_model` picks which
   mode to build. Both **select among candidates the geometry already produced**, and both
   are labelled by the end-to-end score itself.
 - **Lost**: `curvenet`, `cornernet`, `eps_model`, `sketchnet` (twice), constraint
-  prediction, per-element confidence, and `seqnet` - the strongest attempt yet, a sequence
-  model over breakpoints with pointer-style corners and geometric fitting, which beat the
-  tracer by 17 points of breakpoint F1 on held-out synthetic contours and still lost 0.067
-  of primitive F1 on photographs, then lost 0.103 after noise augmentation. All of them
+  prediction, per-element confidence, and `seqnet` twice - the strongest attempts yet, a
+  sequence model over breakpoints with pointer-style corners and geometric fitting. It beat
+  the tracer by 17 points of breakpoint F1 on held-out synthetic contours and lost 0.067 of
+  primitive F1 on photographs. Every candidate explanation was then fixed in turn and
+  measured: matting-calibrated wobble augmentation halved the loss to -0.034; parsimony and
+  fit gates (accept the proposal only when no larger and no worse-fitting than the tracer's
+  drawing) brought it to +0.001; retraining on 2,028 *real* contours labelled by aligning the
+  ideal sketch onto the photograph (2.6 px median label error, `tools/label_screen.py`) landed
+  at exactly 0.000 on tune-excluded parts. Capacity, labels, representation, noise realism and
+  same-distribution data are each individually not the blocker; the remaining axis is scale -
+  tens of thousands of real labelled contours, which means photographing parts. All of these
   **replace a geometric step** with a prediction, and every one lost to the code it replaced.
-  The failure is now located precisely: the synthetic-to-photograph contour gap, which noise
-  augmentation widens rather than closes.
 
 The geometric pipeline is a strong prior that a small model on a few thousand parts does
 not beat. Before proposing a model, ask which of the two it is. If it replaces

@@ -175,7 +175,7 @@ The cheapest work left is not code and not a model - it is ~50 photographs at a 
 - The **twelve discs photographed on their rims** (4.9% of the test set at F1 0.000) need one
   square-on frame each.
 
-### 2. Direct primitive prediction - attempted, and the thirteenth replacement lost like the twelve
+### 2. Direct primitive prediction - closed at zero, and the closure is evidence-complete
 
 Built as designed (2026-09-04): a 1.9M-parameter encoder-decoder (`seqnet.py`) that decides only
 breakpoints and span types on the traced contour - corners are contour-point indices so
