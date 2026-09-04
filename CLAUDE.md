@@ -783,10 +783,53 @@ geometrically interchangeable, an oracle over them still "gains" +0.045.
 snapshots showed a second change had landed between the arms. Any surprising result gets
 `diff -rq runs/a/code runs/b/code` before it gets an explanation.
 
-## The dataset is a curriculum, and the bottom rung is not solved
+## The dataset is a curriculum, and the bottom rung is now split open
 
 PrintCAD is 1908 single-extrusion printed parts: median four primitives, no holes, 7.9 mm
-thick. Work up the ladder, and check `tools/tiers.py` before choosing what to fix. As of this
-writing the 1-4 primitive tier is 531 parts scoring 0.618 while drawing 3.78 times too many
-primitives - a rectangle comes out as fifteen segments. Over-drawing on simple parts is the
-largest single block of loss in the dataset and it is not a perception problem.
+thick. Work up the ladder, and check `tools/tiers.py` before choosing what to fix - and rerun it
+on current code before believing any tier number, because this section's original claim (3.78x
+over-drawing) was measured before the thresholds were fitted.
+
+The bottom tier is measured apart now (PLAN.md has the full tables). Rectangles are finished -
+38 all-line parts score 0.880 and most draw exactly four lines. The tier's whole loss is its
+54 all-circle parts at 0.560, and half of *that* is capture: twelve discs were photographed on
+their rims in all three frames (best sibling aspect under 0.5 on every one) and sit at F1 0.000
+until someone reshoots them. The code half was the hole circle gate, and it is closed both ways:
+an absolute-pixel escape on `ellipse_ok` gains +0.0033 F1 but admits small rectangles (a 40x20
+rectangle fits an ellipse at rms 1.97 px, so no absolute threshold excludes it), and loosening
+the relative threshold loses outright at every setting because it also governs 400 px outer
+loops. The residual cannot separate a noisy small circle from a small rectangle - the same wall
+as sweep and sagitta for arcs, one primitive down.
+
+## Depth cannot be rendered out of the archive, and sixteen photos measure it to 1%
+
+Two results, same day, opposite signs. Choosing the depth whose extruded prism best explains the
+part's other two photographs (`tools/depth_consistency.py`, n=92, orientations swept, scale-free)
+scores a median absolute log error of **1.74 against the shipped predictor's 0.24 and a plain
+constant's 1.13** - it loses to knowing nothing, and restricting to parts where the consistency
+score varies makes it worse, so the variation is bias. This is the edge-on-estimator null
+re-derived the expensive way: PrintCAD's three photographs are same-face dominated and depth is
+not in them, however it is rendered and compared. Test-time render-and-compare therefore has no
+supervision signal on the archive; it needs the sixteen-view capture.
+
+`tools/sfm_real.py` is that capture's tool, gated end to end on rendered frames through its own
+full path - COLMAP with estimated intrinsics, desk plane from the sparse cloud, no truth
+consulted: **depth/length 1.0% off at 3.73 mm thickness**, with the visual hull's own +0.5 to
++0.8 mm overestimate below ~2.5 mm (identical to carve_check's error with exact poses, so SfM
+adds nothing on top). Depth is read as the median top-surface height over interior columns,
+because the hull cannot carve the skirt at the base rim; a steeper 70-degree camera ring makes
+the carve worse, not better, because the low views are what carve the sides.
+
+## Decisions that used to be defaults
+
+An untrusted depth still builds its pad, deliberately: the sketch is the product and the depth is
+one spinbox away from right, so refusing would discard a correct sketch on nearly every part. The
+spec carries `depth_trusted` and the FreeCAD params sheet prefixes the note with `UNTRUSTED:` -
+machine-readable doubt, not prose (D2). With no board and no known length the document builds in
+pixels with every constraint bound as `params.X * params.scale`, so one caliper reading typed into
+one cell makes the whole saved part metric; a regression test edits the cell in the built FCStd and
+requires volume x8.000 (C4). Verifying that promise found a full-ellipse loop binding only its
+centre - sheet parameters that drove nothing and free DoF - now constrained through its internal
+geometry. The ellipse primitive is no longer inert on photographs, and three places that assumed a
+loop is a circle-or-elements crashed on it before being fixed; grep for that assumption before
+adding a loop type.
