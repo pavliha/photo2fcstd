@@ -147,6 +147,60 @@ photographs** and **89% are still under 0.4 traced raw**, before any regularisat
 cent of parts cannot be reproduced by extruding their own ideal sketch, so their ceiling is not 1.0
 and never was. The remaining work is capture, or accepting the scope.
 
+## What comes next, ranked (2026-09-04)
+
+The gaps ladder (`docs/gaps.md`) is complete: every code item is shipped, closed by measurement, or
+measured-and-reverted, and the two person items are answered. What follows is the plan from here,
+in the order the record supports - not the order the ideas are exciting in.
+
+### 0. Do not add another selector to PrintCAD
+
+The two slots where a learned component wins here - choosing among candidates the geometry already
+produced - are exhausted: a perfect mode oracle is worth +0.0003, and view choice is captured.
+Every model that replaced a geometric step lost, and 1,908 parts is not getting bigger. New
+in-distribution PrintCAD models are mined out; anything proposed must name which of the two winning
+shapes it takes, or why a third exists (`tilt` was one: a quantity with no geometric step at all).
+
+### 1. One photo session unlocks three blocked components (C1/C2/C5)
+
+The cheapest work left is not code and not a model - it is ~50 photographs at a desk:
+
+- **~16 photos of one part on a strongly textured surface** gates SfM carving on real photographs
+  (validated synthetically at 0.031 deg; carving doubles solid IoU and measures depth instead of
+  guessing it).
+- **A few dozen frames with the ChArUco board in view** are free tilt labels; the tilt head works
+  (4.8 deg on T-LESS) and its gate refuses every PrintCAD photo until it is retrained on them.
+  After that the reshoot check works board-free for good - and shooting square is worth +0.13,
+  the largest single number on the board.
+- The **twelve discs photographed on their rims** (4.9% of the test set at F1 0.000) need one
+  square-on frame each.
+
+### 2. If the goal is PrintCAD's last points: direct primitive prediction, as a fine-tune
+
+The 17+ tier sits at 0.391 against 0.65-0.74 everywhere else, and the tracer ceiling *measured*
+that the information is in the pixels and the decomposition cannot use it - the "reason this case
+differs" that a fourth replacement attempt requires. Two changes from the failed attempts: pose it
+as sequence generation (a sketch is a short program - DeepCAD/Vitruvion), and fine-tune something
+pretrained rather than training on 1,908 parts - Fusion 360 Gallery (8,625 designs, already
+ingested) plus the `synth.py` homography pipeline as training data, PrintCAD held out entirely.
+Discount the prize before starting: excluding b-splines the curve deficit is 1.66 against 3.83,
+the whole complex-part ceiling is about +0.04 structure, and `chain_arcs` already took a bite.
+A real project, a modest prize.
+
+### 3. If the goal is beyond PrintCAD: test-time render-and-compare (item 5 below)
+
+The only idea that scales: a candidate model is right if it explains all the photographs, which
+turns every unlabelled photo set into supervision at inference time. The crude version gave +0.010.
+Done properly it is differentiable silhouette rendering over the sketch program's continuous
+parameters, with pose as a nuisance variable - respecting the measured trap that intersecting
+independently-registered views destroys material. This is the one research-grade bet in the file.
+
+### What not to do, measured
+
+Another local arc statistic (three died on 2026-09-03/04; the family is exhausted), threshold
+tuning (+0.007, inside the noise floor), a bigger head on the same features (+0.000), or trusting
+an oracle ceiling at face value (they collapse to about a tenth here, six times measured).
+
 ## 1. Fix the instrument first - done
 
 Nothing else is worth running until the benchmark can detect what we are chasing.
