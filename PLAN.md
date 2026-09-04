@@ -10,7 +10,9 @@ Measured on `data/test_ids.txt`, 246 parts with trustworthy truth that nothing h
 
 | | value |
 |---|---|
-| primitive F1, fitted thresholds | **0.612** |
+| primitive F1, current code (runs/chain_shipped, 2026-09-04) | **0.637 [0.594, 0.678]** |
+| of which `chain_arcs` (A7) against the code before it | +0.0161 [+0.0048, +0.0298] |
+| primitive F1, fitted thresholds before A7 | 0.612 |
 | primitive F1, hand-picked thresholds | 0.566 |
 | paired gain from fitting | +0.045 [+0.026, +0.065] |
 | region IoU, full photographed set | 0.629 [0.611, 0.646] |
@@ -24,12 +26,16 @@ Measured on the frozen test set with current code, 242 parts with trustworthy tr
 
 | tier | n | primitive F1 | drawn/wanted |
 |---|---|---|---|
-| 1-4 primitives | 113 | 0.646 [0.573, 0.717] | 2.10 |
-| 5-8 | 56 | 0.728 [0.665, 0.788] | 1.03 |
-| 9-16 | 36 | 0.690 [0.610, 0.765] | 0.87 |
-| **17 or more** | 37 | **0.394 [0.310, 0.477]** | 0.60 |
-| no holes | 145 | 0.657 | |
-| with holes | 97 | 0.598 | |
+| 1-4 primitives | 115 | 0.651 [0.578, 0.721] | 1.88 |
+| 5-8 | 56 | 0.740 [0.677, 0.799] | 0.99 |
+| 9-16 | 36 | 0.696 [0.620, 0.767] | 0.82 |
+| **17 or more** | 39 | **0.391 [0.308, 0.475]** | 0.54 |
+| no holes | 146 | 0.660 | |
+| with holes | 100 | 0.602 | |
+
+(runs/chain_shipped, current code. `chain_arcs` moved the bottom three tiers - over-drawing on the
+1-4 tier fell from 2.21 to 1.88 - and the 17+ tier not at all: saturation on many-curve parts is
+untouched, as its A/B's per-tier split predicted.)
 
 The failure inverts with complexity: simple parts draw about twice too many primitives, and
 complex parts draw barely half of what they need. The bottom of the ladder is the better of
