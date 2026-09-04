@@ -175,17 +175,28 @@ The cheapest work left is not code and not a model - it is ~50 photographs at a 
 - The **twelve discs photographed on their rims** (4.9% of the test set at F1 0.000) need one
   square-on frame each.
 
-### 2. If the goal is PrintCAD's last points: direct primitive prediction, as a fine-tune
+### 2. Direct primitive prediction - attempted, and the thirteenth replacement lost like the twelve
 
-The 17+ tier sits at 0.391 against 0.65-0.74 everywhere else, and the tracer ceiling *measured*
-that the information is in the pixels and the decomposition cannot use it - the "reason this case
-differs" that a fourth replacement attempt requires. Two changes from the failed attempts: pose it
-as sequence generation (a sketch is a short program - DeepCAD/Vitruvion), and fine-tune something
-pretrained rather than training on 1,908 parts - Fusion 360 Gallery (8,625 designs, already
-ingested) plus the `synth.py` homography pipeline as training data, PrintCAD held out entirely.
-Discount the prize before starting: excluding b-splines the curve deficit is 1.66 against 3.83,
-the whole complex-part ceiling is about +0.04 structure, and `chain_arcs` already took a bite.
-A real project, a modest prize.
+Built as designed (2026-09-04): a 1.9M-parameter encoder-decoder (`seqnet.py`) that decides only
+breakpoints and span types on the traced contour - corners are contour-point indices so
+localisation inherits contour precision, fitting stays geometric, targets from Fusion 360 Gallery
+plus the PrintCAD *tuning* split under homography, test split never entering, split by design.
+
+**On its own distribution it clearly beats the tracer**: breakpoint F1 0.68-0.72 against 0.51-0.55,
+span-type accuracy 0.89 against 0.79-0.83 (majority 0.80), held out by design. **End to end on
+photographs it loses decisively** (n=350, specs both arms, built): primitive F1 **-0.067
+[-0.087, -0.049]**, structure -0.051, valid solids 339 to 328, curves drawn 3.67 against the
+geometric arm's 1.59 - on real contours it calls matting noise curved. Retraining with
+matting-like noise augmentation (blur, threshold jitter, morphological noise) made it *worse*:
+F1 -0.103, curves 5.98, sixteen solids lost - the augmentation taught it that wobbly means curved,
+the same lesson as the tilt renders, where no photometric knob closed the render-photo gap either.
+
+So the proxy-objective gap, not model capacity or label quality, is the binding constraint - rule 9
+measured for the third time. The pipeline stays as infrastructure (`tools/seq_data.py`,
+`seq_train.py`, `seq_eval.py`, `ab_seq.py`; `P2F_SEQNET=1` enables the losing path). A fourteenth
+replacement attempt needs training data whose contours come from *real photographs with known
+sketches* - which the archive cannot label and the photo session cannot produce at scale. This
+path is closed until that dataset exists.
 
 ### 3. If the goal is beyond PrintCAD: test-time render-and-compare (item 5 below)
 

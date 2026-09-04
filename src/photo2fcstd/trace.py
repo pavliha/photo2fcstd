@@ -88,8 +88,8 @@ def cache_identity(path):
     segmented masks, none of which had changed. Paths inside the project are recorded
     relative to it, so the tree can be moved or checked out anywhere and the cache follows.
     """
-    full = os.path.abspath(path)
-    root = os.path.abspath(PACKAGE_ROOT) + os.sep
+    full = os.path.realpath(path)
+    root = os.path.realpath(PACKAGE_ROOT) + os.sep
     return os.path.relpath(full, root) if full.startswith(root) else full
 
 
@@ -748,6 +748,7 @@ def carry_support(final, original):
     return final
 
 
+SEQNET = os.environ.get("P2F_SEQNET", "0") == "1"
 CHAIN_ARCS = os.environ.get("P2F_CHAIN_ARCS", "1") != "0"
 CHAIN_TURN_DEG = float(os.environ.get("P2F_CHAIN_TURN_DEG", 50.0))
 
@@ -1166,7 +1167,13 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
             out.append({"type": "ellipse", "cx": f["cx"], "cy": f["cy"],
                         "a": f["a"], "b": f["b"], "theta": f["theta"]})
             continue
-        traced = elements(raw, length_px)
+        traced = None
+        if SEQNET:
+            from photo2fcstd import seq_infer
+            if seq_infer.available():
+                traced = seq_infer.seq_elements(raw, length_px)
+        if traced is None:
+            traced = elements(raw, length_px)
         before = [dict(e) for e in traced]
         els = carry_support(rectangularise(regularise_lines(traced, length_px)), before)
         els = reconcile_arcs(keep_simple(els, traced) if KEEP_SIMPLE else els)

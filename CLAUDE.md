@@ -387,8 +387,13 @@ what the model is asked to do:
   mode to build. Both **select among candidates the geometry already produced**, and both
   are labelled by the end-to-end score itself.
 - **Lost**: `curvenet`, `cornernet`, `eps_model`, `sketchnet` (twice), constraint
-  prediction, per-element confidence. All of them **replace a geometric step** with a
-  prediction, and every one lost to the code it replaced.
+  prediction, per-element confidence, and `seqnet` - the strongest attempt yet, a sequence
+  model over breakpoints with pointer-style corners and geometric fitting, which beat the
+  tracer by 17 points of breakpoint F1 on held-out synthetic contours and still lost 0.067
+  of primitive F1 on photographs, then lost 0.103 after noise augmentation. All of them
+  **replace a geometric step** with a prediction, and every one lost to the code it replaced.
+  The failure is now located precisely: the synthetic-to-photograph contour gap, which noise
+  augmentation widens rather than closes.
 
 The geometric pipeline is a strong prior that a small model on a few thousand parts does
 not beat. Before proposing a model, ask which of the two it is. If it replaces
