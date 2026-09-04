@@ -367,6 +367,32 @@ reappeared one level down, conserved. `data/seq_model.pt` currently holds this s
 tracer. The capture is still the only path that gains anything; it just gains the *model*, not
 the drawing, until something better than the shipped decomposition consumes the section.
 
+### The optimal decomposer: the ceiling explained, and greed exonerated (2026-09-05)
+
+The last untried corner was the decomposition itself, replaced by better *geometry* rather than a
+sixteenth model: `photo2fcstd/dptrace.py`, dynamic programming over every contour span with O(1)
+incremental line and circle fits and an MDL cost - the same fits and the same arc gates as shipped,
+applied to whole spans instead of greedy fragments. Four cells, all measured (`tools/ab_dp.py`,
+`rig_value` with `P2F_DP_TRACE=1`):
+
+| input | DP vs greedy, primitive F1 | curves drawn (~4.6-5.1 wanted) | builds |
+|---|---|---|---|
+| perfect rasterised ideals (n=414) | **+0.0160 [+0.0032, +0.0291]**; 4+-curve parts **+0.0643**, structure +0.0866, saturation broken | 1.70 -> 2.84 | |
+| photographs, sigma 1.6 (n=351) | **-0.0664 [-0.0883, -0.0449]** | 1.61 -> 5.00, wobble tiled with arcs | 340 -> **310** valid |
+| photographs, sigma 3.5 measured | -0.0318 [-0.0511, -0.0129] | 3.48 | 326 valid - halved, not closed |
+| rig carve sections (n=57) | -0.0572 [-0.1018, -0.0142] | **4.35 of 4.30 wanted - right count, wrong places**; exact 18% -> 7% | |
+
+Three conclusions, each worth keeping. **The clean-input ceiling was never fundamental** - the DP
+breaks the saturation the moment the input is truly clean, so the curve deficit on perfect input
+was the greedy decomposition after all, not information. **Greedy corner-first is an accidental,
+load-bearing regulariser** - exact optimality under a mis-specified noise model faithfully fits the
+noise, and greed's inability to see long spans is what protected the shipped tracer from wobble;
+this is the third and strongest confirmation of the perfect-input law. **No available input is
+clean enough**: matting wobble and hull-section noise are both structured, not Gaussian, so the
+optimal estimator mis-models both; the DP+rig combination draws the right number of curves in the
+wrong places. `P2F_DP_TRACE=1` enables it; it stays off; on genuinely clean input (a scanned
+drawing, a DXF raster) it is the better tracer, measured.
+
 ### The Bayes route's cheapest form failed its screen (2026-09-05)
 
 The proposed fix for the noise floor - a design prior over sketches settling decisions the contour

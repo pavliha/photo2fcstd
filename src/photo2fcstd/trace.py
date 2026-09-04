@@ -762,6 +762,7 @@ def carry_support(final, original):
 
 
 BSPLINE_ARCS = os.environ.get("P2F_BSPLINE_ARCS", "1") != "0"
+DP_TRACE = os.environ.get("P2F_DP_TRACE", "0") == "1"
 SEQNET = os.environ.get("P2F_SEQNET", "0") == "1"
 CHAIN_ARCS = os.environ.get("P2F_CHAIN_ARCS", "1") != "0"
 CHAIN_TURN_DEG = float(os.environ.get("P2F_CHAIN_TURN_DEG", 50.0))
@@ -1288,7 +1289,12 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
             out.append({"type": "ellipse", "cx": f["cx"], "cy": f["cy"],
                         "a": f["a"], "b": f["b"], "theta": f["theta"]})
             continue
-        traced = elements(raw, length_px)
+        traced = None
+        if DP_TRACE:
+            from photo2fcstd.dptrace import dp_elements
+            traced = dp_elements(raw, length_px)
+        if traced is None:
+            traced = elements(raw, length_px)
         if SEQNET:
             from photo2fcstd import seq_infer
             if seq_infer.available():
