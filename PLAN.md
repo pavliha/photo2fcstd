@@ -328,6 +328,22 @@ on three same-face photographs but which becomes well-posed over sixteen registe
 
 The week's fourteen zeros are a proof that the next model's first layer is a tripod.
 
+### The Bayes route's cheapest form failed its screen (2026-09-05)
+
+The proposed fix for the noise floor - a design prior over sketches settling decisions the contour
+cannot - was screened at its cheapest (`tools/prior_screen.py`): a count-based prior over loop
+compositions, fitted on 700 tuning-split ideals with the evaluated part left out, choosing between
+the two candidate drawings every measured A/B left behind (38 pairs where the truth differs and the
+compositions differ). It picks the truthfully better drawing **47% of the time overall and 41% on
+the tangent-merge pairs - below both coin flip and the better fixed policy (61%)**. Where it looks
+good (holegate, 83%) it merely matches the fixed policy. The failure mode is visible in the pairs:
+a composition prior rewards *a-priori-common* drawings, and the truthfully better candidate is
+often the less common composition that happens to match this part. Composition frequency alone
+does not carry the discriminating signal, and the screen's own terms said that sinks the full
+generative version too. What remains untested is a joint model where the prior is conditioned on
+geometry rather than marginal over it - but that re-enters photograph territory, where fourteen
+zeros stand. The noise floor holds; the fix is still the capture.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc
