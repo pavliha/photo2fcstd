@@ -328,6 +328,32 @@ on three same-face photographs but which becomes well-posed over sixteen registe
 
 The week's fourteen zeros are a proof that the next model's first layer is a tripod.
 
+**Measured addendum (2026-09-05, `tools/rig_value.py`): the rig's sketch claim is parity, not
+victory - and the synthesis above overclaimed.** Rendering sixteen true-pose views of each part's
+own truth mesh (the gated renderer; SfM equivalence 0.987-0.997), carving at 0.25 mm, slicing the
+mid-section, extracting it with marching squares at sub-voxel precision, and tracing with the
+production tracer, paired against the photo pipeline on the same 57 trusted parts:
+
+| | photos | rig section |
+|---|---|---|
+| primitive F1 | 0.564 | 0.529, paired **-0.035 [-0.105, +0.031]** |
+| exact primitives | 14% | 18% |
+| curved drawn / wanted | ~1.6 | **1.60** / 4.30 |
+
+The rig section draws the *same* 1.6 curves the photograph does. This was predictable from
+`tracer_ceiling` (perfect drawings in: 1.76 curves) and the synthesis conflated two walls: the
+noise floor explains the *marginal* photo-versus-perfect gap (1.62 vs 1.76), but the large curve
+deficit is the decomposition's own saturation on any input, and better input does not fix the
+decomposition. Getting here cost four harness bugs, each the kind that fakes a conclusion:
+PrintCAD meshes stand on edge in their STLs and must be laid flat; `base_axis` guesses when the
+axis is known by construction; a fixed carve box smaller than the part "keeps" everything; and
+voxel staircase must be extracted with marching squares, not blurred.
+
+**The rig's re-priced value, all measured:** depth to 1-5% (against none), solid IoU ~0.43 to
+~0.79, the twelve discs, the tilt labels - and for the sketch itself, parity under the current
+tracer. The capture is still the only path that gains anything; it just gains the *model*, not
+the drawing, until something better than the shipped decomposition consumes the section.
+
 ### The Bayes route's cheapest form failed its screen (2026-09-05)
 
 The proposed fix for the noise floor - a design prior over sketches settling decisions the contour
