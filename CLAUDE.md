@@ -91,7 +91,9 @@ perfect input it produces roughly the right number of elements (12.82 against 11
 *types*, splitting each arc into short straight pieces.
 
 This is the largest identified headroom left in the pipeline and it is entirely in code. It also
-corrects the arc-gate section above, which said arc recovery was capture-limited.
+corrects the arc-gate section above, which said arc recovery was capture-limited. (Later measured
+further: the DP decomposer recovers these curves on perfect input - the ceiling was the greedy
+decomposition - and cannot on any real input; see "greed is a load-bearing regulariser" below.)
 
 Note what it does *not* say. It is a ceiling on this decomposition only, and `approxPolyDP` plus arc
 fitting is the same geometric prior that beat every learned replacement so far - so a fourth attempt
@@ -829,6 +831,25 @@ consulted: **depth/length 1.0% off at 3.73 mm thickness**, with the visual hull'
 adds nothing on top). Depth is read as the median top-surface height over interior columns,
 because the hull cannot carve the skirt at the base rim; a steeper 70-degree camera ring makes
 the carve worse, not better, because the low views are what carve the sides.
+
+## The tracer's ceiling is explained: greed is a load-bearing regulariser
+
+The last untried replacement of the decomposition was classical-optimal geometry, not a model:
+`dptrace.py`, dynamic programming over every contour span with O(1) incremental line and circle
+fits and an MDL cost - the same fits, the same arc gates, applied to whole spans instead of greedy
+fragments. Four cells (`tools/ab_dp.py`; PLAN.md has the full table): on perfect input it **breaks
+the saturation** (+0.064 F1 and +0.087 structure on 4+-curve parts, curves 3.75 to 6.42) - so the
+clean-input curve deficit was the greedy algorithm, not missing information, which corrects the
+older reading of `tracer_ceiling`. On photographs it collapses (-0.066 F1, 30 solids lost, wobble
+tiled with arcs), at the *measured* noise sigma it still loses (-0.032), and on carve sections it
+draws the right number of curves in the wrong places (4.35 of 4.30 wanted, exact 18% to 7%).
+
+The law this closes: **exact optimality under a mis-specified noise model faithfully fits the
+noise, and every real input's noise here is structured** - matting wobble and hull-section ripple
+alike - so greedy corner-first, unable to see long spans, is precisely what protects the shipped
+tracer. Do not "fix" the greed on photographic input; it is the regulariser. `P2F_DP_TRACE=1` is
+the better tracer on genuinely clean input (a scanned drawing, a rasterised DXF), measured, and
+off by default.
 
 ## Carving does not improve the drawing, only the model - measured, with the reason
 
