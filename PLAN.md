@@ -214,6 +214,23 @@ measurement-calibrated noise, and geometric gates strong enough to block its err
 too. `P2F_SEQNET=1` enables the gated path; it stays off. The pipeline remains as infrastructure
 (`tools/seq_data.py`, `seq_train.py`, `seq_eval.py`, `ab_seq.py`).
 
+**"The archive cannot label real contours" was then screened, and it is false**
+(`tools/label_screen.py`, `docs/figures/label_screen.png`). Aligning each part's ideal sketch onto
+its real traced contour - rotation x per-axis scale x flip, chamfer-gated - transfers labels at:
+
+| chamfer gate | yield (n=60 tune parts) | label error, median | p90 |
+|---|---|---|---|
+| cost <= 8 | 32% | 1.9 px of a 720 px part | 6.4 px |
+| cost <= 12 | **55%** | **2.6 px (0.36%)** | 8.0 px |
+| cost <= 18 | 68% | 3.4 px | 9.1 px |
+
+The overlays verify it by eye: straight flanks inherit straight, fillets inherit curved. At 55%
+yield that is roughly 350-400 tune parts x 3 photos of *real* labelled contours - the dataset the
+seqnet closure said could not exist. Breakpoint tolerance in training is +-3 resampled points
+(tens of raw pixels), so 2.6 px of label error is well inside it. The open question is only
+whether a model retrained on this mixture finally survives the A/B; that is one more training run,
+and it has a prior no earlier attempt had - training and test contours from the same distribution.
+
 ### 3. If the goal is beyond PrintCAD: test-time render-and-compare (item 5 below)
 
 The only idea that scales: a candidate model is right if it explains all the photographs, which
