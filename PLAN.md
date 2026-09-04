@@ -409,6 +409,31 @@ generative version too. What remains untested is a joint model where the prior i
 geometry rather than marginal over it - but that re-enters photograph territory, where fourteen
 zeros stand. The noise floor holds; the fix is still the capture.
 
+### The label factory exists, measured (2026-09-05): 60,000 real contours at 1.4-1.9 px
+
+The missing axis every closure named - tens of thousands of real labelled contours - was priced by
+downloading BOP-Industrial (ITODD, IPD, XYZ-IBD validation splits, ~14 GB; poses public) and
+pooling with the T-LESS training split already on disk. `tools/bop_yield.py` counts instances,
+uses the datasets' own `visib_fract` to answer the bin-clutter question by counting, and measures
+label error as the real modal mask's boundary against the CAD silhouette projected through the
+*given* pose:
+
+| dataset | instances | objects | visib>95% | visib>99% | boundary, median / p90 |
+|---|---|---|---|---|---|
+| ITODD val | 123 | 28 | 105 | 78 | 1.7 / 2.3 px |
+| IPD val | 2,264 | 10 | 723 | 282 | **1.4 / 2.1 px** |
+| XYZ-IBD val | 59,850 | 15 | 26,707 | 19,645 | 1.7 / 2.4 px |
+| T-LESS train | 37,584 | 30 | 32,587 | 11,156 | 1.9 / 3.7 px |
+| **pooled** | **99,821** | **83** | **60,122** | **31,161** | |
+
+Sixty thousand near-unoccluded real photographs of industrial parts whose contours label
+themselves through the pose - against the archive alignment route's 338 photos at 2.6 px, a
+178x scale-up at better label quality, acquired without a camera. The standing risk is diversity:
+83 distinct objects, split-by-object mandatory, and whether 83 shapes teach a decomposer or get
+memorised is exactly the question the sixteenth attempt would answer - on captured deployment
+data this time, as the conservation law demands. The corpus also upgrades every OOD evaluation
+in this file from T-LESS-only to four independent industrial sources.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc
