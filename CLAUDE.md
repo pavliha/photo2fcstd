@@ -380,7 +380,7 @@ points. Enable the losing path with `P2F_LEARNED_CURVES=1`; it is off by default
 
 ## Where a learned component pays, and where it does not
 
-Fourteen learned attempts, two wins, and the split is not about model capacity - it is about
+Fifteen learned attempts, two wins, and the split is not about model capacity - it is about
 what the model is asked to do:
 
 - **Won**: `view_model` picks which of three photos to draw from; `mode_model` picks which
@@ -397,8 +397,18 @@ what the model is asked to do:
   ideal sketch onto the photograph (2.6 px median label error, `tools/label_screen.py`) landed
   at exactly 0.000 on tune-excluded parts. Capacity, labels, representation, noise realism and
   same-distribution data are each individually not the blocker; the remaining axis is scale -
-  tens of thousands of real labelled contours, which means photographing parts. All of these
-  **replace a geometric step** with a prediction, and every one lost to the code it replaced.
+  tens of thousands of real labelled contours, which means photographing parts. A fifteenth
+  attempt trained on simulated carve sections ("no domain gap by construction") changed zero of
+  57 real sections: the simulation reproduced the voxel quantisation but not the hull's geometry,
+  and the model missed real sections by 7-18 px where the tracer fits at 2-3 - the gap moved one
+  level down, conserved. All of these **replace a geometric step** with a prediction, and every
+  one lost to the code it replaced.
+
+  The law those fifteen zeros add up to: **a learned replacement's training distribution never
+  matches its deployment distribution unless the deployment data itself is the training data.**
+  Simulating the deployment noise - matting wobble, section quantisation - reproduces the part
+  of it you understood and omits the part that matters. Do not propose a sixteenth on simulated
+  input; propose it, if ever, on captured-and-labelled deployment data.
 
 The geometric pipeline is a strong prior that a small model on a few thousand parts does
 not beat. Before proposing a model, ask which of the two it is. If it replaces
@@ -819,6 +829,21 @@ consulted: **depth/length 1.0% off at 3.73 mm thickness**, with the visual hull'
 adds nothing on top). Depth is read as the median top-surface height over interior columns,
 because the hull cannot carve the skirt at the base rim; a steeper 70-degree camera ring makes
 the carve worse, not better, because the low views are what carve the sides.
+
+## Carving does not improve the drawing, only the model - measured, with the reason
+
+`tools/rig_value.py` runs the whole rig loop synthetically - sixteen true-pose views of the part's
+own truth mesh, carve at 0.25 mm, mid-section by sub-voxel marching squares, production tracer,
+paired against the photo pipeline on the same 57 trusted parts: **primitive F1 0.529 against 0.564,
+-0.035 [-0.105, +0.031], and the section draws the same 1.60 curved primitives the photograph
+does** against 4.30 wanted. The curve deficit is the decomposition's own saturation on any clean
+input - `tracer_ceiling` said so and the section confirms it - so better input does not fix the
+drawing, and the noise-floor argument only ever covered the marginal photo-versus-perfect gap.
+The rig's measured value is depth (1-5% against none), the solid (IoU ~0.43 to ~0.79), the twelve
+rim-shot discs and the tilt labels. Four harness bugs of the conclusion-faking kind were burned
+finding this: PrintCAD STLs stand on edge and must be laid flat; `base_axis` guesses where the
+axis is known by construction; a carve box smaller than the part keeps everything; voxel staircase
+needs marching squares, not blur.
 
 ## Decisions that used to be defaults
 
