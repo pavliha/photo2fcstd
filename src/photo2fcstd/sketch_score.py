@@ -78,6 +78,8 @@ def ellipse_ring(e, n=48):
 def element_ring(e):
     if e["type"] == "line":
         return np.array([e["p0"], e["p1"]], float)
+    if e["type"] == "bsplinecurve":
+        return np.asarray(e["xy"], float)
     return ellipse_ring(e) if e["type"] == "ellipse" else arc_ring(e)
 
 

@@ -703,6 +703,15 @@ def merge_and_snap(els, length_px):
     return merged
 
 
+def segment_res(pts, a, b):
+    d = np.asarray(b, float) - np.asarray(a, float)
+    L2 = float(d @ d)
+    if L2 < 1e-12:
+        return np.linalg.norm(pts - a, axis=1)
+    t = np.clip((pts - a) @ d / L2, 0.0, 1.0)
+    return np.linalg.norm(pts - (a + t[:, None] * d), axis=1)
+
+
 def support_of(run, element, length_px):
     """How much contour evidence stands behind one fitted element, and how well it fits.
 
@@ -728,6 +737,10 @@ def support_of(run, element, length_px):
         else:
             t = np.clip((run - a) @ d / L2, 0.0, 1.0)
             res = float(np.sqrt(np.mean(np.linalg.norm(run - (a + t[:, None] * d), axis=1) ** 2)))
+    elif element["type"] == "bsplinecurve":
+        knots = np.asarray(element["xy"], float)
+        seg = [segment_res(run, knots[i], knots[i + 1]) for i in range(len(knots) - 1)]
+        res = float(np.sqrt(np.mean(np.min(np.stack(seg), axis=0) ** 2)))
     else:
         c = np.array([element["cx"], element["cy"]], float)
         res = float(np.sqrt(np.mean((np.linalg.norm(run - c, axis=1) - element["r"]) ** 2)))
@@ -748,6 +761,7 @@ def carry_support(final, original):
     return final
 
 
+BSPLINE_ARCS = os.environ.get("P2F_BSPLINE_ARCS", "1") != "0"
 SEQNET = os.environ.get("P2F_SEQNET", "0") == "1"
 CHAIN_ARCS = os.environ.get("P2F_CHAIN_ARCS", "1") != "0"
 CHAIN_TURN_DEG = float(os.environ.get("P2F_CHAIN_TURN_DEG", 50.0))
@@ -795,6 +809,16 @@ def chain_arcs(els, length_px):
         ok = (rel * r < max(th.ARC_FIT_TOL * r, 1.2) and th.ARC_MIN_SPAN_DEG < abs(span) < th.ARC_MAX_SPAN_DEG
               and sag > th.ARC_MIN_SAG_FRAC * chord)
         return arc_from_run(run) if ok else None
+    def spline(chain):
+        if not BSPLINE_ARCS or len(chain) < 4:
+            return None
+        turn = sum(abs(chord_turn(els[chain[k]], els[chain[k + 1]])) for k in range(len(chain) - 1))
+        if turn < th.ARC_MIN_SPAN_DEG:
+            return None
+        run = np.vstack([els[j]["_run"] for j in chain])
+        idx = np.linspace(0, len(run) - 1, 9).round().astype(int)
+        return {"type": "bsplinecurve", "p0": run[0].tolist(), "p1": run[-1].tolist(),
+                "xy": run[idx].tolist(), "_run": run}
     def resolve(chain):
         if len(chain) < 3:
             return [els[j] for j in chain]
@@ -803,6 +827,9 @@ def chain_arcs(els, length_px):
                 arc = passes(chain[lo:lo + size])
                 if arc is not None:
                     return resolve(chain[:lo]) + [arc] + resolve(chain[lo + size:])
+        curved = spline(chain)
+        if curved is not None:
+            return [curved]
         return [els[j] for j in chain]
     out, chain, chain_sign = [], [], 0
     for k, i in enumerate(order):
@@ -923,7 +950,7 @@ def merge_line_elements(els, min_len, tol_deg=6.0):
 
 def regularise_lines(els, length_px, frame=None):
     pts = np.array([e["p0"] for e in els], float)
-    lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
+    lock = [els[i]["type"] != "line" or els[i - 1]["type"] != "line" for i in range(len(els))]
     keep = list(range(len(els)))
     if all(e["type"] == "line" for e in els):
         pts = merge_collinear(snap_rectilinear(pts), 0.015 * length_px)
@@ -933,18 +960,18 @@ def regularise_lines(els, length_px, frame=None):
         return [{"type": "line", "p0": pts[i].tolist(), "p1": pts[(i + 1) % len(pts)].tolist()} for i in range(len(pts))]
     pts = snap_rectilinear(pts, lock=lock)
     for i, e in enumerate(els):
-        if e["type"] == "arc":
+        if e["type"] != "line":
             pts[i], pts[(i + 1) % len(els)] = e["p0"], e["p1"]
     for i, e in enumerate(els):
         e["p0"], e["p1"] = list(map(float, pts[i])), list(map(float, pts[(i + 1) % len(els)]))
     els = merge_line_elements(els, 0.015 * length_px)
     pts = np.array([e["p0"] for e in els], float)
-    lock = [els[i]["type"] == "arc" or els[i - 1]["type"] == "arc" for i in range(len(els))]
+    lock = [els[i]["type"] != "line" or els[i - 1]["type"] != "line" for i in range(len(els))]
     frame = dominant_frame(pts) if frame is None else frame
     pts = snap_angles(pts, tol_deg=7.0, lock=lock, frame=frame)
     pts = snap_angles(pts, tol_deg=7.0, lock=lock, frame=frame)
     for i, e in enumerate(els):
-        if e["type"] == "arc":
+        if e["type"] != "line":
             pts[i], pts[(i + 1) % len(els)] = e["p0"], e["p1"]
     for i, e in enumerate(els):
         e["p0"], e["p1"] = list(map(float, pts[i])), list(map(float, pts[(i + 1) % len(els)]))
@@ -983,6 +1010,9 @@ def loop_ring(loop, steps=16):
             continue
         if e["type"] == "ellipse":
             pts += list(ellipse_points(e, steps))
+            continue
+        if e["type"] == "bsplinecurve":
+            pts += [np.asarray(q, float) for q in e["xy"]]
             continue
         c = np.array([e["cx"], e["cy"]], float)
         a0 = np.arctan2(e["p0"][1] - c[1], e["p0"][0] - c[0])
@@ -1107,9 +1137,16 @@ def joins(els, tol_deg=10.0):
         if a["type"] == "line" and b["type"] == "line":
             out.append("")
             continue
+        if a["type"] == "bsplinecurve" or b["type"] == "bsplinecurve":
+            out.append("")
+            continue
         def tangent_dir(e, at_end):
             if e["type"] == "line":
                 d = np.subtract(e["p1"], e["p0"])
+            elif e["type"] == "bsplinecurve":
+                q = np.asarray(e["xy"], float)
+                d = q[-1] - q[-2] if at_end else q[1] - q[0]
+                return d / max(np.hypot(*d), 1e-9)
             else:
                 q = np.array(e["p1"] if at_end else e["p0"]); rad = q - np.array([e["cx"], e["cy"]])
                 d = np.array([-rad[1], rad[0]]) * (1 if e["ccw"] else -1)

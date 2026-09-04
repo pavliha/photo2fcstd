@@ -112,6 +112,23 @@ carries no signal about whether the part is an ellipse**, so loosening would fir
 which is what sank the arc gates. Kept as neutral-not-harmful, and live the moment an outline is
 cleaner than a photograph's.
 
+**A `bsplinecurve` primitive now exists end to end** (2026-09-05): traced as a chain of four or
+more same-turning pieces that no sub-chain can fit as a circle, scored by its sampled ring, built
+as `Part.BSplineCurve` with interior poles bound through `params.scale` (the x8.000 scale test
+passes with a spline in the sketch; end poles are pinned by the endpoint dims, binding them too
+over-constrains, and tangent joins next to a spline must be plain or the solver conflicts - both
+learned from 00061). On photographs it is measured neutral-not-harmful: 5 of 351 parts change,
+curves +0.0011 [+0.0001, +0.0029], builds identical (`tools/ab_bspline.py`).
+
+**And it does not touch the 58 parts whose ideal holds b-splines - zero changed - which is the
+diagnosis.** Their mean F1 is 0.309 against 0.692 elsewhere, the largest bucket left (~0.055 of
+overall F1), but the deficit is not curves-drawn-as-lines: their smooth boundaries are consumed
+piecewise *as arcs* before any chain can form, so the loss is type accounting (arc drawn where
+bsplinecurve is wanted) plus fragmentation (7 elements drawn where 14.6 are wanted). The identified
+next mechanism - noted, not attempted - is merging consecutive tangent-joined elements into one
+spline when no single circle explains the merged run; the `joins()` "T" classification is exactly
+the non-local evidence that rule would need.
+
 Tried and removed on the way: an elliptical arc per contour run. `cv2.fitEllipse` scores 21 to 292
 on runs the circle fits at 0.4 to 1.8, because `corner_runs` splits a curve into 20-50 degree pieces
 and any smooth curve is locally circular. The ellipse spans several runs, so the run is the wrong

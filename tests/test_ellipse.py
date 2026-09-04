@@ -103,3 +103,24 @@ def test_a_revolve_with_an_elliptical_hole_builds(freecad, tmp_path):
     drilled = (math.pi * circ["r"] ** 2 + math.pi * oval["a"] * oval["b"]) * floor
     assert report["volume"] == pytest.approx(body - drilled, rel=2e-3)
     assert len(report["sketches"]["sk_holes"]["redundant"]) == 0
+
+
+def test_a_bspline_loop_builds_a_valid_solid(freecad, tmp_path):
+    import json, numpy as np
+    from photo2fcstd import cli
+    t = np.linspace(0, np.pi, 9)
+    wave = [[float(x * 20), float(18 + 6 * np.sin(3 * x))] for x in t]
+    els = [{"type": "bsplinecurve", "p0": wave[0], "p1": wave[-1], "xy": wave},
+           {"type": "line", "p0": wave[-1], "p1": [wave[-1][0], 0.0]},
+           {"type": "line", "p0": [wave[-1][0], 0.0], "p1": [0.0, 0.0]},
+           {"type": "line", "p0": [0.0, 0.0], "p1": wave[0]}]
+    from photo2fcstd.trace import joins, kinds_of
+    loop = {"type": "loop", "elements": els, "kinds": kinds_of(els), "joins": joins(els)}
+    spec = {"name": "spline", "unit": "px", "mm_per_px": 1.0, "scale_note": "test", "mode": "plan",
+            "outline": {"source": "synthetic", "depth_px": 8.0, "depth_note": "test", "loops": [loop]}}
+    sp = str(tmp_path / "spline.spec.json")
+    json.dump(spec, open(sp, "w"))
+    report = cli.freecad_build(sp, str(tmp_path / "spline.FCStd"))
+    assert report["valid"] and report["solids"] == 1
+    for sk in report["sketches"].values():
+        assert sk["solve"] == 0 and not sk["conflicting"]

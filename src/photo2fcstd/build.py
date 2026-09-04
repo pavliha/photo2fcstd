@@ -105,6 +105,28 @@ def vertex_dims(loop):
     return dims
 
 
+def spline_pole_params(loops, mpp):
+    out = []
+    for j, loop in enumerate(loops):
+        if loop["type"] in ("circle", "ellipse"):
+            continue
+        prefix = "o" if j == 0 else "h%d" % (j - 1)
+        si = 0
+        for e in loop["elements"]:
+            if e["type"] != "bsplinecurve":
+                continue
+            curve = Part.BSplineCurve()
+            curve.interpolate([Vector(q[0] * mpp, q[1] * mpp, 0) for q in e["xy"]])
+            poles = curve.getPoles()
+            for k, pole in enumerate(poles):
+                if k in (0, len(poles) - 1):
+                    continue
+                out.append(("%s_s%d_p%dx" % (prefix, si, k), pole.x / mpp))
+                out.append(("%s_s%d_p%dy" % (prefix, si, k), pole.y / mpp))
+            si += 1
+    return out
+
+
 def loop_dims(loop, prefix):
     if loop["type"] == "circle":
         return [(prefix + "_cx", loop["cx"]), (prefix + "_cy", loop["cy"]), (prefix + "_r", loop["r"])]
@@ -202,11 +224,18 @@ def add_loop(sk, loop, prefix, mpp):
         return
     els, kinds, jn = loop["elements"], loop["kinds"], loop["joins"]
     n = len(els)
-    ids, ends = [], []
+    ids, ends, splines = [], [], []
     for e in els:
         if e["type"] == "line":
             ids.append(sk.addGeometry(Part.LineSegment(Vector(e["p0"][0] * mpp, e["p0"][1] * mpp, 0), Vector(e["p1"][0] * mpp, e["p1"][1] * mpp, 0)), False))
             ends.append((1, 2))
+        elif e["type"] == "bsplinecurve":
+            curve = Part.BSplineCurve()
+            curve.interpolate([Vector(q[0] * mpp, q[1] * mpp, 0) for q in e["xy"]])
+            g = sk.addGeometry(curve, False)
+            ids.append(g)
+            ends.append((1, 2))
+            splines.append((g, len(curve.getPoles())))
         else:
             geo, s0, s1 = arc_geometry(e, mpp)
             ids.append(sk.addGeometry(geo, False))
@@ -218,6 +247,20 @@ def add_loop(sk, loop, prefix, mpp):
             sk.addConstraint(Sketcher.Constraint("Perpendicular", ids[i - 1], ends[i - 1][1], ids[i], ends[i][0]))
         else:
             sk.addConstraint(Sketcher.Constraint("Coincident", ids[i - 1], ends[i - 1][1], ids[i], ends[i][0]))
+    for si, (g, n_poles) in enumerate(splines):
+        before = len(sk.Geometry)
+        sk.exposeInternalGeometry(g)
+        circles = [j for j in range(before, len(sk.Geometry))
+                   if sk.Geometry[j].TypeId == "Part::GeomCircle"][:n_poles]
+        for k, j in enumerate(circles):
+            if k in (0, len(circles) - 1):
+                continue
+            pole = sk.Geometry[j].Center
+            for axis, val in (("X", pole.x), ("Y", pole.y)):
+                name = "%s_s%d_p%d%s" % (prefix, si, k, axis.lower())
+                cid = sk.addConstraint(Sketcher.Constraint("Distance" + axis, -1, 1, j, 3, val))
+                sk.renameConstraint(cid, name)
+                sk.setExpression(".Constraints." + name, "params.%s * params.scale" % name)
     for i, want_x, want_y in vertex_dims(loop):
         p0 = els[i]["p0"]
         if want_x:
@@ -238,6 +281,8 @@ def add_loop(sk, loop, prefix, mpp):
             if e["type"] == "ellipse":
                 bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceX", -1, 1, ids[i], 3, e["cx"] * mpp)), prefix + "_cx%d" % i)
                 bind(sk, sk.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, ids[i], 3, e["cy"] * mpp)), prefix + "_cy%d" % i)
+                continue
+            if e["type"] == "bsplinecurve":
                 continue
             want_centre, want_radius = arc_dims(loop, i)
             if want_centre:
@@ -265,6 +310,7 @@ def build_outline(spec, doc, params):
         prefix = "o" if j == 0 else "h%d" % (j - 1)
         what = "outline" if j == 0 else "hole %d" % (j - 1)
         params += [(n, round(val, 3), "%s %s (%s)" % (what, n.split("_", 1)[1], unit)) for n, val in loop_dims(loop, prefix)]
+    params += [(n, round(val, 4), "spline pole (%s)" % unit) for n, val in spline_pole_params(v["loops"], mpp)]
     doubt = "" if v.get("depth_trusted", True) else "UNTRUSTED: "
     params.append(("depth", round(v["depth_px"], 3), doubt + v["depth_note"].replace("(px units)", "(%s)" % unit).replace("(px)", "(%s)" % unit)))
     if v.get("warning"):
