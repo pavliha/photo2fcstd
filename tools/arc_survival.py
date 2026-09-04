@@ -28,6 +28,12 @@ def drawn_points(element, steps=24):
         p0, p1 = np.array(element["p0"], float), np.array(element["p1"], float)
         t = np.linspace(0, 1, steps)[:, None]
         return p0 + t * (p1 - p0)
+    if element["type"] == "ellipse":
+        a = np.linspace(0, 2 * np.pi, 4 * steps)
+        u = np.c_[np.cos(a) * element["a"], np.sin(a) * element["b"]]
+        th_ = element["theta"]
+        R = np.array([[np.cos(th_), -np.sin(th_)], [np.sin(th_), np.cos(th_)]])
+        return u @ R.T + [element["cx"], element["cy"]]
     c = np.array([element["cx"], element["cy"]], float)
     r = element["r"]
     if element["type"] == "circle":
@@ -84,8 +90,8 @@ def one(part):
         loops = spec_mod.traced_outline(view)
         if not loops:
             return []
-        elements = [e for l in loops if l["type"] != "circle" for e in l["elements"]]
-        elements += [dict(l, type="circle") for l in loops if l["type"] == "circle"]
+        elements = [e for l in loops if l["type"] not in ("circle", "ellipse") for e in l["elements"]]
+        elements += [dict(l) for l in loops if l["type"] in ("circle", "ellipse")]
         if not elements:
             return []
         drawn = [drawn_points(e) for e in elements]

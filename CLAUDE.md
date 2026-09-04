@@ -100,7 +100,9 @@ at replacing it needs a reason this case differs, and "there is headroom" is not
 ## Which arcs the tracer loses: shallow ones, and the gate says so
 
 `tools/arc_survival.py` matches every ground-truth element to the primitives the tracer drew, in
-the pixel frame of a perfect rasterised face, over 180 parts and 555 matched elements:
+the pixel frame of a perfect rasterised face. 180 parts are fed but only the ~20 whose drawing
+aligns to the ideal within the cost gate contribute rows - 555 matched elements, and quote it that
+way:
 
 | ground truth | n | reproduced as a curve |
 |---|---|---|
@@ -187,6 +189,13 @@ direction across pieces - evidence a corner, a zigzag or one shallow bend cannot
 two-piece chain is refused, and it widens the fitter's support instead of lowering any gate. The
 same session measured and killed three more *local* discriminants (absolute residual, relative
 residual, piece count) - the local family is exhausted, stop proposing members of it.
+
+At the mechanism level, paired on the same 18 aligned parts of the survival harness: arcs
+reproduced as curves go **28% to 38%**, b-splines 53% to 65%, and lines falsely drawn curved 3% to
+7% - about eleven lines bought thirteen arcs, and end to end the trade nets positive with exact
+primitives unchanged. On the frozen test set the whole change is **+0.0161 F1 [+0.0048, +0.0298]**,
+carried by the bottom three tiers (1-4 over-drawing falls 2.21 to 1.88); the 17+ tier does not move,
+so saturation on many-curve parts is still the standing wall.
 
 ## Mode selection and coverage are finished
 
