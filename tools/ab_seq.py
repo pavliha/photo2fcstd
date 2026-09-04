@@ -125,6 +125,9 @@ def main(limit=420, do_photos=1):
     keen = [p for p in photo_parts if all(pby[a].get(p) and "region_iou" in pby[a][p] for a in ARMS)
             and pby["off"][p]["discriminating"]]
     report(pby, keen, "PHOTOGRAPHS")
+    tune = set(open(os.path.join(ROOT, "data", "tune_ids.txt")).read().split())
+    held = [p for p in keen if p not in tune]
+    report(pby, held, "PHOTOGRAPHS, tune split excluded (the model trains on tune photos)")
     print("\n  building both arms through FreeCAD...")
     for arm in ARMS:
         rep = build({p: pby[arm][p]["spec"] for p in keen}, arm)

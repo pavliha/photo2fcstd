@@ -227,9 +227,28 @@ its real traced contour - rotation x per-axis scale x flip, chamfer-gated - tran
 The overlays verify it by eye: straight flanks inherit straight, fillets inherit curved. At 55%
 yield that is roughly 350-400 tune parts x 3 photos of *real* labelled contours - the dataset the
 seqnet closure said could not exist. Breakpoint tolerance in training is +-3 resampled points
-(tens of raw pixels), so 2.6 px of label error is well inside it. The open question is only
-whether a model retrained on this mixture finally survives the A/B; that is one more training run,
-and it has a prior no earlier attempt had - training and test contours from the same distribution.
+(tens of raw pixels), so 2.6 px of label error is well inside it. The retrain was then run
+(a rented 4090, four mixtures of synthetic and real, `tools/seq_train_remote.py`, ~$0.70):
+
+| training mix | token acc on held-out real photographs |
+|---|---|
+| synthetic only | 0.4992 |
+| + real x4 | **0.5085** |
+| + real x12 | 0.4994 |
+| + real x30 | 0.5040 |
+
+Real labels help the proxy by less than its own noise (the real validation set is effectively ~33
+photographs), and the best mixture, gated, scores **F1 -0.0010 [-0.0033, +0.0004] end to end** on
+all 351 parts and **exactly 0.0000 on the 85 tune-excluded parts** - the gates accept its
+proposals on six parts. So the same-distribution hypothesis is measured at the scale the archive
+can deliver, and the scale is the problem: the alignment gate passes 14% of photographs, giving
+2,028 samples from 338 photos, against 27,581 synthetic - enough to pull the model off the
+synthetic distribution (its synthetic breakpoint F1 fell 0.71 to 0.66) and not enough to buy real
+skill the gates would keep. **The fourteenth attempt closes at zero, like the thirteenth, and the
+closure is now evidence-complete**: capacity, labels, representation, noise realism, and
+same-distribution data have each been fixed in turn, and the end-to-end score never left zero.
+What remains unexplored is scale itself - tens of thousands of real labelled contours, which means
+photographing parts, which is the same conclusion every path in this file reaches.
 
 ### 3. If the goal is beyond PrintCAD: test-time render-and-compare (item 5 below)
 
