@@ -85,13 +85,13 @@ def render(mesh, view, texture, extent, rng):
     return img, mask > 0
 
 
-def run_colmap(image_dir, work):
+def run_colmap(image_dir, work, camera_model="PINHOLE"):
     db = os.path.join(work, "db.db")
     sparse = os.path.join(work, "sparse")
     os.makedirs(sparse, exist_ok=True)
     steps = [
         [COLMAP, "feature_extractor", "--database_path", db, "--image_path", image_dir,
-         "--ImageReader.single_camera", "1", "--ImageReader.camera_model", "PINHOLE",
+         "--ImageReader.single_camera", "1", "--ImageReader.camera_model", camera_model,
          "--FeatureExtraction.use_gpu", "0"],
         [COLMAP, "exhaustive_matcher", "--database_path", db, "--FeatureMatching.use_gpu", "0"],
         [COLMAP, "mapper", "--database_path", db, "--image_path", image_dir, "--output_path", sparse],

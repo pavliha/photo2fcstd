@@ -16,8 +16,10 @@ reaches ~0.43, and structure-from-motion removes the ChArUco board it used to ne
 - Part thicker than ~2 mm (a 0.25 mm plate carves to nothing from true poses too).
 - Hold exposure steady if the phone allows it; motion blur is the untested risk, so brace or use
   a timer.
-- Then: `python tools/sfm_real.py <directory>` (to be written when the photos exist - COLMAP is
-  installed and the synthetic gate is `tools/sfm_check.py`).
+- Then: `python tools/sfm_real.py <directory> --length-mm <one caliper reading>` - written and
+  gated: on rendered frames through its full path it recovers depth/length to 1% at 3.7 mm
+  thickness, with the hull's own +0.5-0.8 mm overestimate on thinner parts. It reports the depth
+  the archive's photographs cannot contain (tools/depth_consistency.py measured that null).
 
 ## Job 2: thirty to fifty frames with the board, tilt known (C1)
 
