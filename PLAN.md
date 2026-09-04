@@ -269,11 +269,44 @@ rendering or comparing extracts a depth they do not contain. The bet stands only
 sixteen-view capture - which moves its prerequisite into item 1 and removes any reason to attempt
 it on the archive.
 
+### The synthesis (2026-09-05): the capture rig is two instruments, and that resolves the strategy
+
+Read the fourteenth zero for what it says. The final attempt removed every confound - capacity,
+labels, representation, noise realism, distribution match - and landed at exactly 0.000 under gates
+that only reject provably-worse drawings. That is not "models do not work here"; it is that the
+geometric prior is already near the optimum *for this input*. Learner and tracer plateau at the
+same wall because the wall is in the data: a shallow arc on a wobbly matted contour is genuinely
+undetermined by that contour. You cannot classify what the input does not determine. The correct
+response is to change the observable, not the estimator.
+
+The sixteen-view capture does exactly that, twice over:
+
+- **It changes the observable.** A cross-section of a carved solid has *measured* curvature at
+  metric scale with matting noise averaged across sixteen silhouettes - the shallow-arc decision
+  that is undecidable on one contour becomes trivial geometry on the carve. Already measured:
+  0.649 carve-to-sketch on real T-LESS photographs, ~0.78 solid IoU against the photo path's 0.43.
+- **It is a label factory.** The retrain died on scale: 14% alignment yield, 2,028 samples. With
+  SfM poses in hand, aligning the known STEP to each frame stops being a fragile similarity search -
+  the pose *is* the alignment - so yield goes to ~100% and every photographed part emits ~16
+  exactly-labelled real contours. The dataset the fourteenth attempt lacked falls out of the same
+  session that feeds carving.
+
+So there is no choice to make between the geometric path and the learned path: build the rig, and
+the choice resolves itself downstream with data neither side can currently claim. ML re-enters
+afterward in the shapes that win here - the axis classifier retrained beyond PrintCAD (89%
+in-domain, 29% out), selectors over carve outputs, and render-and-compare, which the null killed
+on three same-face photographs but which becomes well-posed over sixteen registered views.
+
+The week's fourteen zeros are a proof that the next model's first layer is a tripod.
+
 ### What not to do, measured
 
-Another local arc statistic (three died on 2026-09-03/04; the family is exhausted), threshold
-tuning (+0.007, inside the noise floor), a bigger head on the same features (+0.000), or trusting
-an oracle ceiling at face value (they collapse to about a tenth here, six times measured).
+A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc
+statistic (three died on 2026-09-03/04; the family is exhausted), more augmentation knobs (two
+measured), more acceptance gates (they converge to the tracer), threshold tuning (+0.007, inside
+the noise floor), a bigger head on the same features (+0.000), trusting an oracle ceiling at face
+value (they collapse to about a tenth here, six times measured), or any plan whose first step is
+not a camera.
 
 ## 1. Fix the instrument first - done
 
