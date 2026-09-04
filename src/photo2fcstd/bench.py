@@ -18,6 +18,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 
 
 def photos_of(part):
+    reshoot = os.environ.get("P2F_RESHOOT_DIR")
+    if reshoot:
+        got = sorted(glob.glob(os.path.join(reshoot, part, "*.jpg"))
+                     + glob.glob(os.path.join(reshoot, part, "*.jpeg"))
+                     + glob.glob(os.path.join(reshoot, part, "*.png"))
+                     + glob.glob(os.path.join(reshoot, part + "_*.jpg")))
+        if got:
+            return got
     return sorted(glob.glob(os.path.join(data_dir(), "captured_img", "*", part + "_*.jpg")))
 
 

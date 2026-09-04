@@ -102,3 +102,20 @@ def test_a_missing_part_counts_as_zero_not_as_absent(tmp_path, monkeypatch):
     value, count = tt.score("x", "ids", {}, 1, {"a", "b", "c"})
     assert value == pytest.approx(1.0 / 3)
     assert count == 1
+
+
+def test_reshoot_dir_overrides_the_dataset(monkeypatch, tmp_path):
+    d = tmp_path / "reshoot" / "00141"
+    d.mkdir(parents=True)
+    (d / "a.jpg").write_bytes(b"x")
+    (d / "b.jpg").write_bytes(b"x")
+    monkeypatch.setenv("P2F_RESHOOT_DIR", str(tmp_path / "reshoot"))
+    got = bench.photos_of("00141")
+    assert [p.rsplit("/", 1)[1] for p in got] == ["a.jpg", "b.jpg"]
+
+
+def test_reshoot_falls_through_when_part_absent(monkeypatch, tmp_path):
+    (tmp_path / "reshoot").mkdir()
+    monkeypatch.setenv("P2F_RESHOOT_DIR", str(tmp_path / "reshoot"))
+    monkeypatch.setattr(bench, "data_dir", lambda: str(tmp_path / "ds"))
+    assert bench.photos_of("09999") == []

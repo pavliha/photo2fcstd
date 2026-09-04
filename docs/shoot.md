@@ -37,6 +37,13 @@ sketch IoU and tilt cannot be corrected afterwards (docs/tilt-labels.md has the 
   data/tilt_board.npz`. The bar: beat the constant baseline held out by part, with a gate that
   accepts PrintCAD-style photographs.
 
+## Feeding reshot photos back in
+
+`P2F_RESHOOT_DIR=<dir>` makes `bench.photos_of(part)` prefer `<dir>/<part>/*.jpg` (or `.png`) over
+the dataset. So a reshot 00141 goes in `<dir>/00141/`, and any bench, A/B or gallery command scores
+it instead of the rim-shot original - no dataset edit. The sixteen-view carve path is separate:
+`python tools/sfm_real.py <photo_dir> --length-mm <caliper>` takes its directory directly.
+
 ## Job 3: one square-on frame each for the twelve discs
 
 These parts are at primitive F1 0.000 because all three photographs show the rim; no code change
