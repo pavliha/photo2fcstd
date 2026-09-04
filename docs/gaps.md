@@ -63,7 +63,7 @@ shipped at +0.038 IoU. Worth one good attempt, not a campaign.
 | ~~A6~~ | ~~Arc chord gate relative to the run~~ - **measured, reverted** | - | - |
 | ~~A8~~ | ~~Merge runs before fitting~~ - **measured, reverted** | - | - |
 | ~~A7~~ | ~~Give the fitter evidence a straight line lacks~~ - **shipped: `chain_arcs`, +0.0122 F1 on photographs** | - | - |
-| A3 | Arc fitting before simplification - *demoted, addresses 29%* | code | medium |
+| ~~A3~~ | ~~Arc fitting before simplification~~ - **closed: the residue is 37 px arcs, resolution-bound** | - | - |
 | ~~B1~~ | ~~Two sketches that fail to solve~~ - **00011 fixed, 00039 remains** | - | - |
 | ~~B2~~ | ~~Solids with volume that `isValid()` rejects~~ - **00061 fixed, 00086 is nested holes** | - | - |
 | ~~B3~~ | ~~Build validity in the regression test~~ - **done** | - | - |
@@ -208,10 +208,16 @@ sub-chain is taken rather than abandoning the whole chain. `P2F_CHAIN_ARCS=0` tu
 every loss replaced a geometric step. A model that *ranks candidate arc fits the geometry already
 produced* is the winning shape; one that replaces `approxPolyDP` or the fitter is the losing one.
 
-**A3. Arc fitting before polygon simplification** - *demoted by A2*. The premise was that
-simplification commits to straight segments first. A2 shows 71% of lost arcs survive simplification
-and are refused afterwards, so reordering addresses at most the 29% minority. **Done when**
-measured, but expect little.
+**A3. CLOSED - its target is resolution, not ordering.** The premise was that simplification
+commits to straight segments first, so fitting before it would save the arcs that collapse to a
+single line. Re-measured after `chain_arcs` shipped, on the survival harness (n=118 matched arcs):
+67 are still lost, and the 27 lost as a *single* piece - A3's entire addressable population - have
+a healthy median sweep of 82 degrees but a median length of **37 px on the page**. They do not fail
+because simplification got to them first; they fail because a 37 px arc offers the fitter a handful
+of contour points. Reordering the pipeline adds no points. Overall, 47 of the 67 remaining losses
+are shallower than the 40 degree gate or under 40 px long - the measured wall from both A1 and the
+gate-precision result - leaving about 20 arcs across 18 parts with any other cause. Nothing here
+is worth a pipeline reorder.
 
 **A4/A5 policy, now settled**: quote the arc ceiling **excluding b-spline parts**. They are 15% of
 the set, 94% of their curves are b-splines, and they score **0% exact** because there is no
