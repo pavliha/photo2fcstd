@@ -11,7 +11,7 @@ import numpy as np
 
 from photo2fcstd import settings
 
-ROOT = os.environ.get("P2F_TLESS", os.path.join(settings.bop_dir(), "tless"))
+ROOT = os.path.expanduser(os.environ.get("P2F_TLESS", os.path.join(settings.bop_dir(), "tless")))
 
 
 def scene_dir(obj_id, split="train_primesense"):

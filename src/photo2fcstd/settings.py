@@ -17,7 +17,7 @@ DATA_GUESSES = (
 
 
 def bop_dir():
-    return os.environ.get("P2F_BOP", os.path.join(PACKAGE_ROOT, "data", "bop"))
+    return os.path.expanduser(os.environ.get("P2F_BOP", os.path.join(PACKAGE_ROOT, "data", "bop")))
 
 
 def charuco_target():
@@ -37,7 +37,7 @@ def find_freecad():
 def data_dir():
     fromenv = os.environ.get("P2F_DATA")
     if fromenv:
-        return fromenv
+        return os.path.expanduser(fromenv)
     return next((p for p in DATA_GUESSES if os.path.isdir(p)), DATA_GUESSES[0])
 
 
