@@ -434,6 +434,30 @@ memorised is exactly the question the sixteenth attempt would answer - on captur
 data this time, as the conservation law demands. The corpus also upgrades every OOD evaluation
 in this file from T-LESS-only to four independent industrial sources.
 
+### The sixteenth attempt: the first non-harmful learned replacement (2026-09-05)
+
+Built on the conservation law's own prescription - inputs are real BOP contours (the deployment
+distribution, unsimulated), labels are the production tracer run on each frame's *clean* CAD
+silhouette projected through the given pose and transferred to the real contour across the measured
+1.4-1.9 px gap. 20,468 real self-labelled contours, 79 industrial objects, trained split-by-object
+on a rented 5090 (`tools/bop_seq_data.py`; held-out-object token acc 0.486).
+
+End to end on 351 PrintCAD photographs, every one held out from the BOP training, gated and built:
+**primitive F1 -0.0030 [-0.0089, +0.0027]** - straddling zero, and **curves drawn went slightly
+down, not up** (1.61 to 1.65). It is the first of sixteen learned replacements that is not clearly
+harmful: every prior one, the raw seqnet at -0.067 included, made photographs worse by inventing
+curves on matting noise. Training on genuine deployment noise removed that failure mode.
+
+But it gained nothing, for two measured reasons. **Cross-dataset transfer is flat** - 79 mostly-
+straight industrial objects (8% curved spans) carry no curve knowledge to printed parts, and the
+held-out-object proxy (0.486) sits below the in-distribution 0.55. **And there was little to learn**
+- on BOP's own parts the greedy tracer already scores 0.795 breakpoint F1, near-optimal on straight
+industrial edges. So the law resolves cleanly: **the domain gap was the harm mechanism, the
+tracer's ceiling is the wall.** Deployment-matched data buys neutrality, the first non-negative
+learned result here; a gain still needs real photographs of *curved* parts the tracer actually
+fails on - neither the industrial corpus nor the printed archive, but the photo session pointed at
+the right shelf. `data/bop16.pt` holds the model; `P2F_SEQNET=1` gates it; off by default.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc
