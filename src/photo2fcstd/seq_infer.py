@@ -56,6 +56,19 @@ def seq_elements(raw, length_px):
     from photo2fcstd.trace import arc_from_run, fit_circle, merge_and_snap, support_of
     raw = np.asarray(raw, float)
     spans = spans_of_contour(raw)
+    if len(spans) >= 2:
+        merged = []
+        for e, typ in spans:
+            if merged and typ == 1 and merged[-1][1] == 1:
+                merged[-1] = (e, 1)
+            else:
+                merged.append((e, typ))
+        if len(merged) >= 2 and merged[0][1] == 1 and merged[-1][1] == 1:
+            merged[-1] = (merged[0][0], 1)
+            merged.pop(0)
+        spans = sorted(merged)
+    if len(spans) == 1 and spans[0][1] == 1:
+        return "round"
     if len(spans) < 2:
         return None
     els = []
@@ -79,3 +92,22 @@ def seq_elements(raw, length_px):
         if "support" not in e and e.get("_run") is not None:
             e["support"] = support_of(e["_run"], e, length_px)
     return merge_and_snap(els, length_px)
+
+
+def drawn_residual(els, raw, samples=6):
+    pts = []
+    for e in els:
+        if e["type"] == "line":
+            a, b = np.asarray(e["p0"], float), np.asarray(e["p1"], float)
+            pts.append(a + np.linspace(0, 1, samples)[:, None] * (b - a))
+        elif e["type"] == "arc":
+            c = np.array([e["cx"], e["cy"]])
+            ang = np.linspace(0, 2 * np.pi, 6 * samples, endpoint=False)
+            pts.append(c + e["r"] * np.column_stack([np.cos(ang), np.sin(ang)]))
+    if not pts:
+        return float("inf")
+    drawn = np.vstack(pts)
+    step = max(len(raw) // 200, 1)
+    q = np.asarray(raw, float)[::step]
+    d = np.sqrt(((q[:, None] - drawn[None]) ** 2).sum(-1)).min(1)
+    return float(d.mean())

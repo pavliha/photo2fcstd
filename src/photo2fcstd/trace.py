@@ -1167,13 +1167,15 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
             out.append({"type": "ellipse", "cx": f["cx"], "cy": f["cy"],
                         "a": f["a"], "b": f["b"], "theta": f["theta"]})
             continue
-        traced = None
+        traced = elements(raw, length_px)
         if SEQNET:
             from photo2fcstd import seq_infer
             if seq_infer.available():
-                traced = seq_infer.seq_elements(raw, length_px)
-        if traced is None:
-            traced = elements(raw, length_px)
+                proposed = seq_infer.seq_elements(raw, length_px)
+                if (proposed not in (None, "round") and len(proposed) <= len(traced) + 2
+                        and seq_infer.drawn_residual(proposed, raw)
+                            <= 1.25 * seq_infer.drawn_residual(traced, raw) + 0.002 * length_px):
+                    traced = proposed
         before = [dict(e) for e in traced]
         els = carry_support(rectangularise(regularise_lines(traced, length_px)), before)
         els = reconcile_arcs(keep_simple(els, traced) if KEEP_SIMPLE else els)

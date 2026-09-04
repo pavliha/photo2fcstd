@@ -21,7 +21,7 @@ from photo2fcstd.synth import (CANVAS, LABEL, apply_h, fit_canvas, homography,  
 
 N_POINTS = 192
 MAX_SPANS = 48
-MAX_OWN_DIST = 2.5
+MAX_OWN_DIST = 4.5
 MIN_SPAN = 3
 
 
@@ -67,6 +67,26 @@ def spans_of(owner, types):
     return [(e, t) for e, t in merged], start
 
 
+def wobble_loop(loop, rng, amp, waves=5):
+    pts = np.vstack([p for _, p in loop])
+    d = np.linalg.norm(np.diff(pts, axis=0), axis=1)
+    s = np.concatenate([[0.0], np.cumsum(d)])
+    L = max(s[-1], 1e-9)
+    noise = np.zeros(len(pts))
+    for _ in range(waves):
+        k = int(rng.integers(2, 40))
+        noise += rng.uniform(0.2, 1.0) * np.sin(2 * np.pi * k * s / L + rng.uniform(0, 2 * np.pi))
+    noise *= amp / max(np.abs(noise).max(), 1e-9)
+    tang = np.gradient(pts, axis=0)
+    tang /= np.maximum(np.linalg.norm(tang, axis=1, keepdims=True), 1e-9)
+    moved = pts + np.column_stack([-tang[:, 1], tang[:, 0]]) * noise[:, None]
+    out, at = [], 0
+    for typ, p in loop:
+        out.append((typ, moved[at:at + len(p)]))
+        at += len(p)
+    return out
+
+
 def one(args):
     record, seed = args
     from photo2fcstd.trace import outline
@@ -78,7 +98,10 @@ def one(args):
     H = homography(rng)
     loops = [[(t, apply_h(H, p)) for t, p in lp] for lp in loops]
     loops = fit_canvas(loops, CANVAS)
-    mask = rasterise(loops, CANVAS)
+    drawn = loops
+    if rng.random() < 0.7:
+        drawn = [wobble_loop(lp, rng, amp=float(rng.uniform(0.5, 6.0))) for lp in loops]
+    mask = rasterise(drawn, CANVAS)
     if mask.sum() < 500:
         return None
     try:

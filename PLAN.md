@@ -189,15 +189,30 @@ photographs it loses decisively** (n=350, specs both arms, built): primitive F1 
 geometric arm's 1.59 - on real contours it calls matting noise curved.
 
 **Correction (same day): the "noise augmentation made it worse" claim was wrong.** The v3
-augmentation patch failed silently in a backgrounded shell; measured contour roughness is identical
-between the v2 and v3 datasets (mean |turn| 0.1910 vs 0.1911), so the -0.103 arm retrained on
-effectively the same data and its spread against -0.067 is seed and sample variance. Noise
-augmentation had not actually been tested. The correlated-wobble version - straight edges displaced
-by smooth boundary noise, labels still from the clean geometry, which is the failure the red-row
-rectangles actually show - runs next; its verdict replaces this paragraph.
+augmentation patch failed silently in a backgrounded shell; contour roughness was identical between
+the v2 and v3 datasets (mean |turn| 0.1910 vs 0.1911), so the -0.103 arm was a seed re-roll of
+-0.067. Caught by measuring the data, the diff-the-snapshots rule applied one level down.
 
-The pipeline stays as infrastructure (`tools/seq_data.py`, `seq_train.py`, `seq_eval.py`,
-`ab_seq.py`; `P2F_SEQNET=1` enables the losing path).
+**The wobble was then actually run, and the whole arc is a ratchet that ends at zero.** Correlated
+boundary wobble, amplitude calibrated to real photographs (mean |turn| 0.249 trained vs 0.258
+measured), labels from the clean geometry - then two geometric acceptance gates, each targeted at a
+failure class the previous stage exposed:
+
+| stage | primitive F1 vs tracer | what it fixed |
+|---|---|---|
+| model, no augmentation | -0.067 [-0.087, -0.049] | |
+| + calibrated wobble | -0.034 [-0.050, -0.019] | curve over-firing 3.67 to 1.95, builds undamaged |
+| + parsimony gate (<= tracer + 2 elements) | -0.017 [-0.028, -0.008] | rectangles shattered into 18-25 arcs |
+| + fit gate (residual <= 1.25x tracer) | **+0.0012 [+0.0000, +0.0027]** | right-primitives-wrong-geometry: 13 parts at F1 1.00 with IoU collapsed to 0.30 |
+
+Each gate reclaimed score by trusting the model less; the endpoint accepts it on about five parts
+of 351 and is indistinguishable from zero. Letting the model vote "this whole loop is round" was
+also tried and it voted round on wobbly rectangles, so its whole-loop judgment fails the same way
+its span judgment does. The conclusion is clean: the model's synthetic skill (breakpoint F1 0.71
+against the tracer's 0.55, held out by design) does not survive real contours even with
+measurement-calibrated noise, and geometric gates strong enough to block its errors block its wins
+too. `P2F_SEQNET=1` enables the gated path; it stays off. The pipeline remains as infrastructure
+(`tools/seq_data.py`, `seq_train.py`, `seq_eval.py`, `ab_seq.py`).
 
 ### 3. If the goal is beyond PrintCAD: test-time render-and-compare (item 5 below)
 
