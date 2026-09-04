@@ -11,7 +11,8 @@ def loop_area(loop):
         return math.pi * loop["r"] ** 2
     if loop["type"] == "ellipse":
         return math.pi * loop["a"] * loop["b"]
-    pts = [e["p0"] for e in loop["elements"]]
+    pts = [q for e in loop["elements"]
+           for q in (e["xy"][:-1] if e["type"] == "bsplinecurve" else [e["p0"]])]
     if len(pts) < 3:
         return 0.0
     n = len(pts)
@@ -28,7 +29,8 @@ def outline_aspect(loops):
             pts += [[loop["cx"] - loop["a"], loop["cy"] - loop["a"]],
                     [loop["cx"] + loop["a"], loop["cy"] + loop["a"]]]
         else:
-            pts += [e["p0"] for e in loop["elements"]]
+            pts += [q for e in loop["elements"]
+                    for q in (e["xy"] if e["type"] == "bsplinecurve" else [e["p0"]])]
     if len(pts) < 3:
         return 0.0
     a = [p[0] for p in pts]
@@ -72,6 +74,8 @@ def rescale_side(views):
 
 
 def not_degenerate(e):
+    if e["type"] == "bsplinecurve":
+        return len(e.get("xy", [])) >= 4
     return (e["p0"][0] != e["p1"][0] or e["p0"][1] != e["p1"][1]) and (e["type"] != "arc" or e["r"] > 0)
 
 
@@ -86,7 +90,8 @@ def rounded_loops(loops, rnd):
                             a=rnd(loop["a"]), b=rnd(loop["b"])))
             continue
         elements = [dict(e, p0=[rnd(e["p0"][0]), rnd(e["p0"][1])], p1=[rnd(e["p1"][0]), rnd(e["p1"][1])],
-                         **({"cx": rnd(e["cx"]), "cy": rnd(e["cy"]), "r": rnd(e["r"])} if e["type"] == "arc" else {}))
+                         **({"cx": rnd(e["cx"]), "cy": rnd(e["cy"]), "r": rnd(e["r"])} if e["type"] == "arc" else {}),
+                         **({"xy": [[rnd(q[0]), rnd(q[1])] for q in e["xy"]]} if e["type"] == "bsplinecurve" else {}))
                     for e in loop["elements"]]
         kept = [e for e in elements if not_degenerate(e)]
         if len(kept) >= 2 and len(kept) != len(elements):

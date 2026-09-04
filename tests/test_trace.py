@@ -562,3 +562,33 @@ def test_a_split_arc_is_refit_as_one_arc_and_corners_are_not():
     shallow = [seg([0, 0], [100, 12]), seg([100, 12], [200, 0]), seg([200, 0], [200, -80]),
                seg([200, -80], [0, -80]), seg([0, -80], [0, 0])]
     assert all(e["type"] == "line" for e in chain_arcs([line_el(r) for r in shallow], 200.0))
+
+
+def test_a_freeform_boundary_merges_to_one_spline_and_fillets_do_not(monkeypatch):
+    import photo2fcstd.trace as trace_mod
+    monkeypatch.setattr(trace_mod, "TANGENT_MERGE", True)
+    from photo2fcstd.trace import elements
+    def blob(n=1000):
+        t = np.linspace(0, 2 * np.pi, n, endpoint=False)
+        r = 260 + 50 * np.sin(2 * t) + 35 * np.sin(3 * t + 1.1)
+        return np.column_stack([r * np.cos(t), r * np.sin(t)])
+    els = elements(blob(), 500.0)
+    kinds = [e["type"] for e in els]
+    assert "bsplinecurve" in kinds or kinds == ["bsplinecurve"], kinds
+
+    def rounded_rect(w=300.0, h=180.0, r=30.0, k=28):
+        import numpy as np
+        segs = []
+        cs = [(w - r, h - r, 0), (r, h - r, 90), (r, r, 180), (w - r, r, 270)]
+        for i, (cx, cy, a0) in enumerate(cs):
+            a = np.radians(np.linspace(a0, a0 + 90, k))
+            segs.append(np.column_stack([cx + r * np.cos(a), cy + r * np.sin(a)]))
+        out = []
+        for i in range(4):
+            out.append(segs[i])
+            p, q = segs[i][-1], segs[(i + 1) % 4][0]
+            out.append(np.linspace(p, q, 40)[1:-1])
+        return np.vstack(out)
+    els = elements(rounded_rect(), 300.0)
+    kinds = [e["type"] for e in els]
+    assert "bsplinecurve" not in kinds, kinds

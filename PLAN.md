@@ -125,9 +125,21 @@ diagnosis.** Their mean F1 is 0.309 against 0.692 elsewhere, the largest bucket 
 overall F1), but the deficit is not curves-drawn-as-lines: their smooth boundaries are consumed
 piecewise *as arcs* before any chain can form, so the loss is type accounting (arc drawn where
 bsplinecurve is wanted) plus fragmentation (7 elements drawn where 14.6 are wanted). The identified
-next mechanism - noted, not attempted - is merging consecutive tangent-joined elements into one
-spline when no single circle explains the merged run; the `joins()` "T" classification is exactly
-the non-local evidence that rule would need.
+next mechanism was then attempted: `trace.tangent_merge` joins smooth chains (tangent break under
+35 deg - strict "T" joins fire on only 2 of 7 junctions of a real freeform fit) holding two or
+more arcs of scattered radii into one spline when no single circle explains the merged run. On the
+target bucket it works: **F1 +0.0166 [+0.0067, +0.0285]** on the 58 bspline-ideal parts, region IoU
++0.0102, and the builds get *better* (342 valid against 340, unsolved 9 against 11), with 00026
+going 0.00 to 1.00 as the single closed spline its STEP wants.
+
+**But it cannot ship, and the reason is the same wall found twice already.** Off the target bucket
+it merges *designed* multi-arc boundaries - ovals of four tangent arcs, arc-and-line profiles, even
+hexagons whose traced arcs were spurious - and two principled gates (radius spread, an interleaved
+line) leave the leak in the same class: overall F1 -0.0046 [-0.0118, +0.0014], losers -3.97 summed
+against winners +1.34. Freeform-versus-designed-arcs is a *curvature-profile* question -
+continuously varying against piecewise constant - and one matted contour buries exactly that signal
+in wobble. A carve cross-section measures it directly. `P2F_TANGENT_MERGE=1` enables it
+(off by default); `tools/ab_tangent.py` re-measures; the infrastructure and the unit tests stay.
 
 Tried and removed on the way: an elliptical arc per contour run. `cv2.fitEllipse` scores 21 to 292
 on runs the circle fits at 0.4 to 1.8, because `corner_runs` splits a curve into 20-50 degree pieces

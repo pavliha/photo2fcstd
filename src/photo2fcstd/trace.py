@@ -844,6 +844,89 @@ def chain_arcs(els, length_px):
     return out
 
 
+TANGENT_MERGE = os.environ.get("P2F_TANGENT_MERGE", "0") == "1"
+TANGENT_RADIUS_SPREAD = float(os.environ.get("P2F_TANGENT_RADIUS_SPREAD", 1.6))
+SMOOTH_JOIN_DEG = float(os.environ.get("P2F_SMOOTH_JOIN_DEG", 35.0))
+
+
+def end_tangent(e, at_end):
+    if e["type"] == "line":
+        d = np.subtract(e["p1"], e["p0"])
+    elif e["type"] == "bsplinecurve":
+        q = np.asarray(e["xy"], float)
+        d = q[-1] - q[-2] if at_end else q[1] - q[0]
+    else:
+        q = np.array(e["p1"] if at_end else e["p0"], float)
+        rad = q - np.array([e["cx"], e["cy"]])
+        d = np.array([-rad[1], rad[0]]) * (1.0 if e.get("ccw", True) else -1.0)
+    return d / max(np.hypot(*d), 1e-9)
+
+
+def smooth_break_deg(a, b):
+    ta, tb = end_tangent(a, True), end_tangent(b, False)
+    return float(np.degrees(np.arccos(np.clip(ta @ tb, -1.0, 1.0))))
+
+
+def tangent_merge(els, length_px):
+    """One freeform curve, drawn piecewise, comes back together.
+
+    A smooth boundary that is not circular gets fitted as tangent-joined arcs of scattered radii
+    with the odd line between - 7 elements drawn where the STEP wants one closed spline. A fillet
+    pattern is also tangent-joined but its radii agree, which is the discriminant: merge only
+    maximal tangent chains holding two or more arcs whose radii disagree by a real factor, and
+    only into a spline when no single circle explains the merged run.
+    """
+    n = len(els)
+    if not TANGENT_MERGE or n < 3:
+        return els
+    if any(e.get("_run") is None for e in els):
+        return els
+    linked = [smooth_break_deg(els[i - 1], els[i]) < SMOOTH_JOIN_DEG for i in range(n)]
+    if all(linked):
+        chains = [list(range(n))]
+    else:
+        start = next(i for i in range(n) if not linked[i])
+        order = [(start + k) % n for k in range(n)]
+        chains, cur = [], []
+        for k, i in enumerate(order):
+            cur.append(i)
+            nxt = order[(k + 1) % n]
+            if k + 1 == n or not linked[nxt]:
+                chains.append(cur)
+                cur = []
+    out_idx = set()
+    replacements = {}
+    for chain in chains:
+        radii = [els[j]["r"] for j in chain if els[j]["type"] == "arc"]
+        inner = chain[1:-1] if len(chain) > 2 else []
+        interleaved = any(els[j]["type"] == "line" for j in inner)
+        if len(chain) < 3 or len(radii) < 2 or not interleaved:
+            continue
+        if max(radii) / max(min(radii), 1e-9) < TANGENT_RADIUS_SPREAD:
+            continue
+        run = np.vstack([els[j]["_run"] for j in chain])
+        chord = float(np.hypot(*(run[-1] - run[0])))
+        cx, cy, r, rel, _ = fit_circle(run)
+        if rel * r < max(th.ARC_FIT_TOL * r, 1.2) and chord > 1e-6:
+            replacements[chain[0]] = (chain, arc_from_run(run))
+            continue
+        k = max(9, min(2 + len(run) // 40, 17))
+        idx = np.linspace(0, len(run) - 1, k).round().astype(int)
+        replacements[chain[0]] = (chain, {"type": "bsplinecurve", "p0": run[0].tolist(),
+                                          "p1": run[-1].tolist(), "xy": run[idx].tolist(),
+                                          "_run": run})
+    if not replacements:
+        return els
+    consumed = {j for chain, _ in replacements.values() for j in chain}
+    out = []
+    for i in range(n):
+        if i in replacements:
+            out.append(replacements[i][1])
+        elif i not in consumed:
+            out.append(els[i])
+    return out if len(out) >= 1 else els
+
+
 def elements(raw, length_px):
     repeated = boundary_period(raw)
     runs = corner_runs(raw, REPEATED_RUN_EPS if repeated else None)
@@ -863,6 +946,7 @@ def elements(raw, length_px):
         els.append(line)
     if CHAIN_ARCS:
         els = chain_arcs(els, length_px)
+    els = tangent_merge(els, length_px)
     for e in els:
         if "support" not in e and e.get("_run") is not None:
             e["support"] = support_of(e["_run"], e, length_px)
