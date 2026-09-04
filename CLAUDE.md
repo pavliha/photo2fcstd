@@ -144,7 +144,10 @@ not `trustworthy()`.
 different authoring tool, different parts, 6.6x the sample, no b-splines - recovery runs 99% at one
 real curve, 87% at two or three, 57% at four to seven and 24% past eight, against PrintCAD's 99, 89,
 45 and 23. Overall structure is 0.879 and 67% exact there against 0.756 and 33% here, which is what
-simpler parts and no b-splines buy rather than a better tracer.
+simpler parts and no b-splines buy rather than a better tracer. **Re-measured on current code after
+this week's changes** (chain_arcs, the ellipse and bspline primitives, all the gates): 0.855
+structure and 66% exact on 293 Fusion parts - unchanged inside the subsample noise, so the shipped
+changes generalise beyond PrintCAD rather than being PrintCAD-shaped.
 
 A likely mechanism, untested: `trace.py:696` requires `chord > ARC_MIN_CHORD_FRAC * length_px`
 before a run is considered as an arc at all - a fraction of **the whole part**. On a complex part
