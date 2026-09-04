@@ -99,10 +99,12 @@ def drawn_residual(els, raw, samples=6):
     for e in els:
         if e["type"] == "line":
             a, b = np.asarray(e["p0"], float), np.asarray(e["p1"], float)
-            pts.append(a + np.linspace(0, 1, samples)[:, None] * (b - a))
+            k = max(samples, int(np.hypot(*(b - a)) / 4) + 2)
+            pts.append(a + np.linspace(0, 1, k)[:, None] * (b - a))
         elif e["type"] == "arc":
             c = np.array([e["cx"], e["cy"]])
-            ang = np.linspace(0, 2 * np.pi, 6 * samples, endpoint=False)
+            k = max(6 * samples, int(2 * np.pi * e["r"] / 4) + 4)
+            ang = np.linspace(0, 2 * np.pi, k, endpoint=False)
             pts.append(c + e["r"] * np.column_stack([np.cos(ang), np.sin(ang)]))
     if not pts:
         return float("inf")

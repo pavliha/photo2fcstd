@@ -349,6 +349,19 @@ PrintCAD meshes stand on edge in their STLs and must be laid flat; `base_axis` g
 axis is known by construction; a fixed carve box smaller than the part "keeps" everything; and
 voxel staircase must be extracted with marching squares, not blurred.
 
+**The fifteenth replacement was then screened on the rig sections themselves, and it is the
+cleanest zero yet.** The reopened door - a model consuming carve sections, "trainable with no
+domain gap since simulated sections are the deployment distribution" - was built
+(`P2F_SECTION_NOISE=1` in `tools/seq_data.py` simulates the rig's own voxel-quantise-and-marching-
+squares extraction; 17,200 samples, val 0.549) and run through the rig harness gated: **zero of 57
+sections changed**. The diagnosis fired one gate-integrity fix on the way - `drawn_residual`
+sampled long lines at six points, inflating residuals for exactly the fewer-longer-element drawings
+a model proposes; it now samples by length (the earlier +0.001 photo-A/B gate numbers used the
+biased version) - and the verdict *survived* the fix: the tracer fits real sections at 2-3 px while
+the section-trained model misses by 7-18 px. The premise was false: quantisation was simulated but
+the hull's geometry (skirt corners, elevation-dependent bulges) was not, and the domain gap
+reappeared one level down, conserved. `data/seq_model.pt` currently holds this section model.
+
 **The rig's re-priced value, all measured:** depth to 1-5% (against none), solid IoU ~0.43 to
 ~0.79, the twelve discs, the tilt labels - and for the sketch itself, parity under the current
 tracer. The capture is still the only path that gains anything; it just gains the *model*, not

@@ -67,6 +67,29 @@ def spans_of(owner, types):
     return [(e, t) for e, t in merged], start
 
 
+SECTION_NOISE = os.environ.get("P2F_SECTION_NOISE") == "1"
+
+
+def sectionise(mask, rng):
+    """The rig's own extraction, simulated: voxel-quantise the face, then marching squares."""
+    import cv2
+    from scipy import ndimage
+    from skimage import measure
+    cells = int(rng.uniform(55, 110))
+    grid = cv2.resize(mask.astype(np.float32), (cells, cells), interpolation=cv2.INTER_AREA) > 0.5
+    grid = ndimage.gaussian_filter(grid.astype(np.float32), 0.8)
+    contours = [c for c in measure.find_contours(grid, 0.5) if len(c) >= 8]
+    if not contours:
+        return None
+    scale = CANVAS / cells
+    img = np.zeros((CANVAS, CANVAS), np.uint8)
+    contours.sort(key=lambda c: -cv2.contourArea(np.round(c * scale).astype(np.int32)))
+    for rank, c in enumerate(contours):
+        q = np.round(c * scale).astype(np.int32)[:, ::-1]
+        cv2.fillPoly(img, [q], 0 if rank else 1)
+    return img > 0
+
+
 def wobble_loop(loop, rng, amp, waves=5):
     pts = np.vstack([p for _, p in loop])
     d = np.linalg.norm(np.diff(pts, axis=0), axis=1)
@@ -99,11 +122,15 @@ def one(args):
     loops = [[(t, apply_h(H, p)) for t, p in lp] for lp in loops]
     loops = fit_canvas(loops, CANVAS)
     drawn = loops
-    if rng.random() < 0.7:
+    if not SECTION_NOISE and rng.random() < 0.7:
         drawn = [wobble_loop(lp, rng, amp=float(rng.uniform(0.5, 6.0))) for lp in loops]
     mask = rasterise(drawn, CANVAS)
     if mask.sum() < 500:
         return None
+    if SECTION_NOISE:
+        mask = sectionise(mask, rng)
+        if mask is None or mask.sum() < 500:
+            return None
     try:
         poly, shape = outline(mask)
     except Exception:
@@ -114,7 +141,7 @@ def one(args):
     pts = resample(contour)
     elements = loops[0]
     owner, dist = owners_of(pts, elements)
-    if np.median(dist) > MAX_OWN_DIST:
+    if np.median(dist) > (2 * MAX_OWN_DIST if SECTION_NOISE else MAX_OWN_DIST):
         return None
     types = [LABEL.get(t, 0) for t, _ in elements]
     spans, start = spans_of(owner, types)
