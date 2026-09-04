@@ -195,6 +195,17 @@ Done properly it is differentiable silhouette rendering over the sketch program'
 parameters, with pose as a nuisance variable - respecting the measured trap that intersecting
 independently-registered views destroys material. This is the one research-grade bet in the file.
 
+**Its cheapest version is now measured, and it is a null on the current capture protocol**
+(`tools/depth_consistency.py`, n=92 parts with STEP-recorded depth). Choosing the depth whose
+extruded prism best explains the other two photographs scores a median absolute log error of
+**1.74** against the shipped predictor's 0.24 - and against a plain constant's 1.13, so it loses
+to knowing nothing. Restricting to parts where the consistency score actually varies makes it
+worse, so the variation is bias, not signal. This is the edge-on-estimator result re-derived from
+the other direction: PrintCAD's three photographs are same-face dominated, and no amount of
+rendering or comparing extracts a depth they do not contain. The bet stands only on top of the
+sixteen-view capture - which moves its prerequisite into item 1 and removes any reason to attempt
+it on the archive.
+
 ### What not to do, measured
 
 Another local arc statistic (three died on 2026-09-03/04; the family is exhausted), threshold
