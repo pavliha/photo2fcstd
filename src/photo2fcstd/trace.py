@@ -1172,9 +1172,11 @@ def _primitives(raw_loops, length_px, circle_aspect=0.7):
             from photo2fcstd import seq_infer
             if seq_infer.available():
                 proposed = seq_infer.seq_elements(raw, length_px)
-                if (proposed not in (None, "round") and len(proposed) <= len(traced) + 2
+                gates_off = os.environ.get("P2F_SEQ_GATES") == "0"
+                if proposed not in (None, "round") and (gates_off or (
+                        len(proposed) <= len(traced) + 2
                         and seq_infer.drawn_residual(proposed, raw)
-                            <= 1.25 * seq_infer.drawn_residual(traced, raw) + 0.002 * length_px):
+                            <= 1.25 * seq_infer.drawn_residual(traced, raw) + 0.002 * length_px)):
                     traced = proposed
         before = [dict(e) for e in traced]
         els = carry_support(rectangularise(regularise_lines(traced, length_px)), before)
