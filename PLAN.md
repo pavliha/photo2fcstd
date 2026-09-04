@@ -186,17 +186,18 @@ plus the PrintCAD *tuning* split under homography, test split never entering, sp
 span-type accuracy 0.89 against 0.79-0.83 (majority 0.80), held out by design. **End to end on
 photographs it loses decisively** (n=350, specs both arms, built): primitive F1 **-0.067
 [-0.087, -0.049]**, structure -0.051, valid solids 339 to 328, curves drawn 3.67 against the
-geometric arm's 1.59 - on real contours it calls matting noise curved. Retraining with
-matting-like noise augmentation (blur, threshold jitter, morphological noise) made it *worse*:
-F1 -0.103, curves 5.98, sixteen solids lost - the augmentation taught it that wobbly means curved,
-the same lesson as the tilt renders, where no photometric knob closed the render-photo gap either.
+geometric arm's 1.59 - on real contours it calls matting noise curved.
 
-So the proxy-objective gap, not model capacity or label quality, is the binding constraint - rule 9
-measured for the third time. The pipeline stays as infrastructure (`tools/seq_data.py`,
-`seq_train.py`, `seq_eval.py`, `ab_seq.py`; `P2F_SEQNET=1` enables the losing path). A fourteenth
-replacement attempt needs training data whose contours come from *real photographs with known
-sketches* - which the archive cannot label and the photo session cannot produce at scale. This
-path is closed until that dataset exists.
+**Correction (same day): the "noise augmentation made it worse" claim was wrong.** The v3
+augmentation patch failed silently in a backgrounded shell; measured contour roughness is identical
+between the v2 and v3 datasets (mean |turn| 0.1910 vs 0.1911), so the -0.103 arm retrained on
+effectively the same data and its spread against -0.067 is seed and sample variance. Noise
+augmentation had not actually been tested. The correlated-wobble version - straight edges displaced
+by smooth boundary noise, labels still from the clean geometry, which is the failure the red-row
+rectangles actually show - runs next; its verdict replaces this paragraph.
+
+The pipeline stays as infrastructure (`tools/seq_data.py`, `seq_train.py`, `seq_eval.py`,
+`ab_seq.py`; `P2F_SEQNET=1` enables the losing path).
 
 ### 3. If the goal is beyond PrintCAD: test-time render-and-compare (item 5 below)
 
