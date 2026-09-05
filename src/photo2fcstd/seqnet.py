@@ -28,9 +28,9 @@ def encode_target(seq):
 
 
 class SeqNet(nn.Module):
-    def __init__(self, d=128, heads=4, enc_layers=4, dec_layers=4):
+    def __init__(self, d=128, heads=4, enc_layers=4, dec_layers=4, in_dim=5):
         super().__init__()
-        self.inp = nn.Linear(5, d)
+        self.inp = nn.Linear(in_dim, d)
         pos = torch.arange(N_POINTS)[:, None] * torch.exp(
             -np.log(10000.0) * torch.arange(0, d, 2)[None] / d)
         pe = torch.zeros(N_POINTS, d)

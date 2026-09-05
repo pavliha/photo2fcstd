@@ -458,6 +458,27 @@ learned result here; a gain still needs real photographs of *curved* parts the t
 fails on - neither the industrial corpus nor the printed archive, but the photo session pointed at
 the right shelf. `data/bop16.pt` holds the model; `P2F_SEQNET=1` gates it; off by default.
 
+### The pixel screen: light does not rescue the contour, in this form (2026-09-05)
+
+The one axis no attempt had changed was the input's information content, and shading was the
+measured candidate (the tilt result: pixels beat silhouettes by 3.6 deg). Screened for about a
+dollar on a rented 5090 (`tools/pixel_screen_remote.py`): the seqnet architecture with seven grey
+intensities sampled along each contour point's normal, against the identical architecture with
+those channels zeroed - 10,869 real T-LESS contours labelled through the pose, held out by object,
+two seeds:
+
+| arm | held-out-object token acc |
+|---|---|
+| contour only | 0.4152 |
+| contour + normal intensity profile | 0.4129 - **delta -0.0022, nothing** |
+
+A local intensity profile carries no breakpoint or span-type signal beyond the contour. The caveat
+is the encoding: this tested a 7-sample 1D profile, not a learned patch embedding - the tilt win
+used DINOv3 on full crops - so a richer pixel representation is not excluded, but it no longer has
+a cheap screen's presumption in its favour. The second expert move stands untouched by this null:
+printing curve-heavy parts and photographing them targets the data deficit, not the input encoding,
+and remains the one unexplored path to a drawing gain.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc
