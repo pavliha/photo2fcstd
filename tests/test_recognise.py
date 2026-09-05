@@ -87,3 +87,18 @@ def test_feature_scale_cell_drives_all_features(freecad, tmp_path):
         inside.unlink()
     vol = float(next(l for l in rr.stdout.splitlines() if l.startswith("VOL")).split()[1])
     assert abs(vol - 8.0*r0["volume"]) / (8.0*r0["volume"]) < 0.02
+
+
+def test_grille_is_a_valid_connected_web(freecad, tmp_path):
+    import json
+    from photo2fcstd import cli, recognise
+    loops = recognise.grille_loops(0, 0, 100, n_rings=4, n_spokes=2, web=0.10)
+    assert loops[0]["type"] == "circle" and len(loops) > 4   # outer disc + sector openings
+    spec = {"name": "g", "mode": "features", "mm_per_px": 1.0, "unit": "px", "scale_note": "t",
+            "views": {}, "outline": None, "revolve": None, "stl": None, "measured": [],
+            "features": [{"op": "pad", "depth_px": 4.0, "loops": loops}]}
+    sp = str(tmp_path / "g.spec.json"); json.dump(spec, open(sp, "w"))
+    r = cli.freecad_build(sp, str(tmp_path / "g.FCStd"))
+    assert r["valid"] and r["solids"] == 1                    # one connected web
+    for s in r["sketches"].values():
+        assert s["solve"] == 0

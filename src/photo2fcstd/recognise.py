@@ -126,6 +126,42 @@ def build(rec, photos, name="part", length_mm=None):
     return spec
 
 
+def grille_loops(cx, cy, R, n_rings, n_spokes, web=0.10):
+    """A fan grille as one valid region: outer disc minus the open annular-sectors.
+
+    The material is `n_rings` concentric bands plus `n_spokes` radial arms, all of relative width
+    `web`; everything between is an opening. Returns [outer circle] + [sector-opening hole loops],
+    which padded gives the connected grille web - a manufacturable feature, not overlapping circles.
+    """
+    loops = [{"type": "circle", "cx": cx, "cy": cy, "r": R}]
+    t = web * R                       # material half-pitch
+    edges = np.linspace(R, t, n_rings + 1)   # ring band boundaries, outer -> inner
+    sw = web * np.pi                  # spoke half-angle
+    arms = [i * 2 * np.pi / max(n_spokes * 2, 1) for i in range(n_spokes * 2)] if n_spokes else [0.0]
+    for k in range(n_rings):
+        r_out, r_in = edges[k] - t / 2, edges[k + 1] + t / 2
+        if r_out - r_in < t:
+            continue
+        for a in range(len(arms)):
+            a0 = arms[a] + sw
+            a1 = arms[(a + 1) % len(arms)] - sw
+            span = (a1 - a0) % (2 * np.pi)
+            if not (0.02 < span < 2 * np.pi):
+                continue
+            loops.append(_sector(cx, cy, r_in, r_out, a0, a0 + span))
+    return loops
+
+
+def _sector(cx, cy, r_in, r_out, a0, a1):
+    p = lambda r, a: [cx + r * np.cos(a), cy + r * np.sin(a)]
+    return {"type": "loop", "elements": [
+        {"type": "arc", "p0": p(r_out, a0), "p1": p(r_out, a1), "cx": cx, "cy": cy, "r": r_out, "ccw": True},
+        {"type": "line", "p0": p(r_out, a1), "p1": p(r_in, a1)},
+        {"type": "arc", "p0": p(r_in, a1), "p1": p(r_in, a0), "cx": cx, "cy": cy, "r": r_in, "ccw": False},
+        {"type": "line", "p0": p(r_in, a0), "p1": p(r_out, a0)}],
+        "kinds": ["A", "F", "A", "F"], "joins": ["", "", "", ""]}
+
+
 def build_program(recs, photos, name="part", face_index=0):
     """A multi-feature part from recognition: a box body, a bore, corner holes - each a real feature.
 
@@ -148,6 +184,12 @@ def build_program(recs, photos, name="part", face_index=0):
         f = fit_ellipse(np.asarray(max(sh["holes"], key=len), float))
         feats.append({"op": "pocket", "through": True,
                       "loops": [{"type": "circle", "cx": float(f["cx"]), "cy": float(f["cy"]), "r": float(f["a"])}]})
+    g = recs.get("grille")
+    if g and int(g.get("rings", 0)) >= 2 and sh["holes"]:
+        f0 = fit_ellipse(np.asarray(max(sh["holes"], key=len), float))
+        gl = grille_loops(float(f0["cx"]), float(f0["cy"]), float(f0["a"]) * 1.08,
+                          int(g["rings"]), int(g.get("spokes", 0)))
+        feats.append({"op": "pad", "plane_mm": depth * 0.94, "depth_px": 0.10 * depth, "loops": gl})
     screws = int(recs.get("screws", 0))
     if screws:
         holes = [{"type": "circle", "cx": sx, "cy": sy, "r": 0.03 * min(W, H)}
