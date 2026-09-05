@@ -378,3 +378,29 @@ ledger names the source of every number; the app never picks silently.
 (superseded by `fan/fan_enclosure_v2.FCStd`), `fan2.FCStd` (refused micro-fan - stale
 output from before the gate), `bottle.FCStd` (stacked-cylinder junk from the deleted general
 tier), `bottle_template.FCStd` (current bottle).
+
+
+## Dataset fidelity check (2026-09-06, after the user asked "does it match the shapes?")
+
+`tools/fidelity_gallery.py` draws photo -> STEP truth -> ours for the worst / median / best
+parts of the 148-part benchmark, and the F1 histogram is **bimodal**: 36% exact match,
+53% at F1 >= 0.8, **29% below 0.4 with a pile at zero**. The worst eight are seven
+**cylinders and rings photographed on their side** plus one many-curve part. The silhouette
+verify passes them (IoU 0.80-0.94) because the model does match the photo - the photo just
+never shows the extrusion face. That is a recognition failure class, not tracing, and the
+benchmark had bypassed recognition.
+
+`tools/route_vs_flat.py` re-ran those eight with real recognition and scored the *solids*
+against the STEP mesh (voxel IoU, scale-free): recognition flags `revolve` on 6 of 6 rods
+and leaves the oval ring and the figure-8 flat - the class is right every time. But the
+revolve tier from a single tilted photo is a coin flip on geometry: long rods improve
+(01265 0.76 -> 0.97, 01298 0.13 -> 0.48), short cylinders seen at an angle get worse
+(01362 0.76 -> 0.37) because the ellipse-topped silhouette revolves into a barrel. Mean
+solid IoU flat 0.497 vs routed 0.489 - no gain. A cylinder rule (constant radius when the
+silhouette is rectangle-like) was tried and reverted: neutral to slightly negative.
+
+**Conclusion, consistent with everything measured:** from one tilted photo the *class* is
+reliable and the *geometry* is not. For rods the length/diameter is simply not in the
+silhouette. The paths that would fix this class are the ones the plan already names: a
+square-on view of the end face (the disc) plus the side, or the orbit -> cloud -> revolve
+fit, which measured the bottle's profile to 95% containment.

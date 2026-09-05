@@ -1,0 +1,66 @@
+[
+ {
+  "part": "00725",
+  "flat_mode": "plan",
+  "flat_iou": 0.6544744868944838,
+  "rec_revolve": false,
+  "routed_tier": "assemble",
+  "routed_iou": 0.6544744868944838
+ },
+ {
+  "part": "01362",
+  "flat_mode": "plan",
+  "flat_iou": 0.7609075043630017,
+  "rec_revolve": true,
+  "routed_tier": "revolve",
+  "routed_iou": 0.3735802647760978
+ },
+ {
+  "part": "01741",
+  "flat_mode": "profile",
+  "flat_iou": 0.42658863350572485,
+  "rec_revolve": true,
+  "routed_tier": "revolve",
+  "routed_iou": 0.28058535620705
+ },
+ {
+  "part": "00882",
+  "flat_mode": "plan",
+  "flat_iou": 0.4148936170212766,
+  "rec_revolve": true,
+  "routed_tier": "revolve",
+  "routed_iou": 0.42857142857142855
+ },
+ {
+  "part": "00048",
+  "flat_mode": "plan",
+  "flat_iou": 0.5983928991695525,
+  "rec_revolve": false,
+  "routed_tier": "assemble",
+  "routed_iou": 0.5983928991695525
+ },
+ {
+  "part": "01298",
+  "flat_mode": "plan",
+  "flat_iou": 0.1325017325017325,
+  "rec_revolve": true,
+  "routed_tier": "revolve",
+  "routed_iou": 0.4849901395077058
+ },
+ {
+  "part": "01005",
+  "flat_mode": "profile",
+  "flat_iou": 0.23597554435267618,
+  "rec_revolve": true,
+  "routed_tier": "revolve",
+  "routed_iou": 0.10874045338828948
+ },
+ {
+  "part": "01265",
+  "flat_mode": "profile",
+  "flat_iou": 0.7558301427079708,
+  "rec_revolve": true,
+  "routed_tier": "revolve",
+  "routed_iou": 0.8840579710144928
+ }
+]
