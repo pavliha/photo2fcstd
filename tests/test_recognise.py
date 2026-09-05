@@ -102,3 +102,22 @@ def test_grille_is_a_valid_connected_web(freecad, tmp_path):
     assert r["valid"] and r["solids"] == 1                    # one connected web
     for s in r["sketches"].values():
         assert s["solve"] == 0
+
+
+def test_fan_guard_params_measures_bore_from_photo(tmp_path):
+    import numpy as np, cv2
+    from photo2fcstd import recognise, trace
+    trace.RECOVER_DARK = True
+    img = np.zeros((700, 700), np.uint8)
+    cv2.rectangle(img, (150, 150), (550, 550), 255, -1)
+    cv2.circle(img, (350, 350), 150, 0, -1)
+    p = str(tmp_path / "fan.png"); cv2.imwrite(p, img)
+    f = trace.cached_mask(p)
+    import os
+    os.path.exists(f) and os.remove(f)
+    rec = {"face_photo_index": 0, "outline": "square", "openings": ["bore"],
+           "screws": 4, "grille": {"rings": 6, "spokes": 2}, "single_extrusion": False}
+    par = recognise.fan_guard_params(rec, [p], frame_w_mm=80.0)
+    assert par["rings"] == 6
+    assert 0 < par["bore_d"] < par["frame_w"]
+    assert abs(par["bore_d"] - 80.0 * 300 / 400) < 8   # bore 300px in a 400px frame

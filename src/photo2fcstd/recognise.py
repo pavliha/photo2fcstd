@@ -212,6 +212,43 @@ def route(photos, name="part", rec=None):
     return build_program(rec, photos, name=name), rec
 
 
+def fan_guard_params(rec, photos, frame_w_mm=80.0):
+    from photo2fcstd import trace
+    from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
+    if rec.get("openings"):
+        trace.RECOVER_DARK = True
+    face = photos[int(rec.get("face_photo_index", 0))]
+    mask, _ = upright_mask(segment_photo(face))
+    poly, sh = outline(mask)
+    frame_px = float(max(np.ptp(poly[:, 0]), np.ptp(poly[:, 1])))
+    scale = frame_w_mm / frame_px
+    bore_mm = 0.9 * frame_w_mm
+    if sh["holes"]:
+        f = fit_ellipse(np.asarray(max(sh["holes"], key=len), float))
+        bore_mm = round(2 * float(f["a"]) * scale, 1)
+    g = rec.get("grille") or {}
+    return {"frame_w": frame_w_mm, "corner_r": round(0.05 * frame_w_mm, 1),
+            "plate_t": round(0.05 * frame_w_mm, 1), "bore_d": bore_mm,
+            "mount_pitch": round(0.894 * frame_w_mm, 1),
+            "mount_d": round(0.056 * frame_w_mm, 1),
+            "rings": int(g.get("rings", 4)), "wire_w": round(0.03 * frame_w_mm, 1)}
+
+
+def design_fan(photos, out, rec=None, frame_w_mm=80.0):
+    import json, subprocess, tempfile
+    rec = rec if rec is not None else recognise_live(photos)
+    params = fan_guard_params(rec, photos, frame_w_mm)
+    pj = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+    json.dump(params, pj); pj.close()
+    tool = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "tools", "fan_guard.py")
+    freecad = os.environ.get("FREECADCMD", os.path.expanduser("~/Code/FreeCAD/build/release/bin/FreeCADCmd"))
+    env = dict(os.environ, P2F_PARAMS=pj.name, P2F_OUT=out)
+    r = subprocess.run([freecad, tool], env=env, capture_output=True, text=True, timeout=300)
+    if "SAVED" not in r.stdout:
+        raise RuntimeError((r.stdout + r.stderr)[-600:])
+    return out, params
+
+
 def _view_of(path):
     from photo2fcstd import analysis
     return analysis.view(path)
