@@ -530,6 +530,25 @@ face-on model is reached by naming the face-on views or `P2F_VIEW_MODEL=0`. This
 wall again, priced exactly: the fix that models the fan costs the general case, so it is a switch,
 not a default.
 
+### The LLM belongs in recognition, not tracing - and it is the winning shape (2026-09-05)
+
+Sixteen learned attempts fed a contour to a small model and lost, every one replacing a geometric
+step. A vision LLM in that role loses too - it cannot place a primitive to sub-pixel. But in the
+*other* role, the only one that has ever won here (a selector / prior), it is decisive: it states
+WHAT the part is - object class, which photo is face-on, what primitives the sketch holds, which
+regions are openings - and the geometric engine measures WHERE. `tools/recognise.py` demonstrates
+it on the fan: recognition says "fan shroud, square plate, central bore, four corner screws," and
+the tracer measures the plate outline and bore radius from the recognised face photo. Result: a
+valid solid with plate + bore + 4 screws, the correct CAD sketch, where the pure-geometry pipeline
+needed two opt-in flags and still picked the wrong view.
+
+This is the resolution of the whole arc. The noise floor and the conservation law say the drawing
+cannot be improved by a better estimator on the contour - both were proven. The LLM does not touch
+the contour: it supplies the *identity* that no 2,000-part model and no matting network carries,
+turning the hardest single-view failures (a grille read as solid, a tilted view preferred) into
+trivial recognition. Recognition for structure, geometry for precision - the architecture the
+sixteen nulls were pointing at all along.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc
