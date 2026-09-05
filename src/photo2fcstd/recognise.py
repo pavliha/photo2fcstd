@@ -34,6 +34,9 @@ def recognise_prompt(n_photos):
         "from a side view if present, else your best estimate\n"
         '  "grille": {"rings": int, "spokes": int} or null - concentric grille rings and straight '
         "spoke bars across the centre (an X is 2 spokes); null if the opening is plain\n"
+        '  "single_extrusion": true|false - true if the whole part is one flat plate/profile of '
+        "constant thickness (route to the measured pipeline); false if it has a box body, a "
+        "recessed face, stacked levels or any depth structure (route to the feature builder)\n"
         "Judge only what is visible; do not invent features." % (n_photos, n_photos - 1))
 
 
@@ -199,6 +202,14 @@ def build_program(recs, photos, name="part", face_index=0):
             "scale_note": "UNSCALED: set from one caliper reading; the sheet is in pixels until you set scale",
             "views": {}, "outline": None, "revolve": None, "stl": None, "measured": [],
             "features": feats}
+
+
+def route(photos, name="part", rec=None):
+    from photo2fcstd import analysis, spec as spec_mod
+    rec = rec if rec is not None else recognise_live(photos)
+    if rec.get("single_extrusion"):
+        return spec_mod.assemble([analysis.view(p) for p in photos], name=name), rec
+    return build_program(rec, photos, name=name), rec
 
 
 def _view_of(path):
