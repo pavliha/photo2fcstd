@@ -32,6 +32,8 @@ def recognise_prompt(n_photos):
         '  "screws": integer 0..8 - visible corner/edge fastener holes\n'
         '  "depth_ratio": number - the part depth divided by the longest face dimension, judged '
         "from a side view if present, else your best estimate\n"
+        '  "grille": {"rings": int, "spokes": int} or null - concentric grille rings and straight '
+        "spoke bars across the centre (an X is 2 spokes); null if the opening is plain\n"
         "Judge only what is visible; do not invent features." % (n_photos, n_photos - 1))
 
 
@@ -94,7 +96,24 @@ def build(rec, photos, name="part", length_mm=None):
         loops.extend(traced or [_rect_loop(cx, cy, W, H, square=False)])
     if "bore" in (rec.get("openings") or []) and sh["holes"]:
         f = fit_ellipse(np.asarray(max(sh["holes"], key=len), float))
-        loops.append({"type": "circle", "cx": float(f["cx"]), "cy": float(f["cy"]), "r": float(f["a"])})
+        bx, by, br = float(f["cx"]), float(f["cy"]), float(f["a"])
+        g = rec.get("grille")
+        if g and int(g.get("rings", 0)) > 1:
+            nr = int(g["rings"])
+            for k in range(nr):
+                rk = br * (1.0 - 0.82 * k / max(nr - 1, 1))
+                loops.append({"type": "circle", "cx": bx, "cy": by, "r": rk})
+            bw = 0.04 * br
+            for a in _spoke_angles(int(g.get("spokes", 0))):
+                u = np.array([np.cos(a), np.sin(a)]); v = np.array([-u[1], u[0]])
+                c = np.array([bx, by])
+                pts = [c - u*br - v*bw, c + u*br - v*bw, c + u*br + v*bw, c - u*br + v*bw]
+                loops.append({"type": "loop",
+                              "elements": [{"type": "line", "p0": pts[i].tolist(),
+                                            "p1": pts[(i+1)%4].tolist()} for i in range(4)],
+                              "kinds": ["F","F","F","F"], "joins": ["","","",""]})
+        else:
+            loops.append({"type": "circle", "cx": bx, "cy": by, "r": br})
     for sx, sy in _corners(cx, cy, W, H)[:int(rec.get("screws", 0))]:
         loops.append({"type": "circle", "cx": sx, "cy": sy, "r": 0.03 * min(W, H)})
     depth_px = float(rec.get("depth_ratio", 0.5)) * max(W, H)
@@ -110,6 +129,11 @@ def build(rec, photos, name="part", length_mm=None):
 def _view_of(path):
     from photo2fcstd import analysis
     return analysis.view(path)
+
+
+def _spoke_angles(n):
+    import numpy as np
+    return [np.pi / 4 + i * np.pi / max(n, 1) for i in range(n)]
 
 
 def _rect_loop(cx, cy, w, h, square):
