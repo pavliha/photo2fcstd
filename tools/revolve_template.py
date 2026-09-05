@@ -66,8 +66,16 @@ print("profile fully constrained:", sk.FullyConstrained)
 rev = body.newObject("PartDesign::Revolution", "revolve")
 rev.Profile = sk; rev.ReferenceAxis = (sk, ["V_Axis"]); rev.Angle = 360
 doc.recompute()
-bb = body.Shape.BoundBox
-print("BBOX", [round(x, 2) for x in (bb.XLength, bb.YLength, bb.ZLength)], "valid", body.Shape.isValid(),
-      "vol", round(body.Shape.Volume, 1))
+final = body
+for i, b in enumerate(_m.get("bosses") or []):
+    cyl = Part.makeCylinder(float(b["r"]), float(b["len"]), Vector(*b["base"]), Vector(*b["axis"]))
+    obj = doc.addObject("Part::Feature", "boss_%d" % i); obj.Shape = cyl
+    fuse = doc.addObject("Part::MultiFuse", "part"); fuse.Shapes = [final, obj]; doc.recompute(); final = fuse
+    sh.set("A%d" % (len(rows) + 2 + i), "boss_%d" % i); sh.set("C%d" % (len(rows) + 2 + i), "measured cylinder r=%.1f len=%.1f" % (b["r"], b["len"]))
+    sh.set("D%d" % (len(rows) + 2 + i), _ledger.get("boss", "measured"))
+doc.recompute()
+bb = final.Shape.BoundBox
+print("BBOX", [round(x, 2) for x in (bb.XLength, bb.YLength, bb.ZLength)], "valid", final.Shape.isValid(),
+      "vol", round(final.Shape.Volume, 1), "solids", len(final.Shape.Solids))
 doc.saveAs(P)
 print("SAVED", P)

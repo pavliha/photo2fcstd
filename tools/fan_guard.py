@@ -135,11 +135,12 @@ if G["box_depth"] > 0:
 # grille: rings + X spokes as a fused solid, then union with the plate via a second body boolean
 R = G["bore_d"] / 2; w = G["wire_w"]; n = int(G["rings"])
 solids = []
-radii = [R * (1 - 0.9 * k / n) for k in range(n)]
+radii = [float(x) for x in _m["ring_radii"]] if _m.get("ring_radii") else [R * (1 - 0.9 * k / n) for k in range(n)]
+_spoke0 = math.radians(float(_m.get("spoke_deg", 45.0)))
 for rr in radii:
     ring = Part.makeCylinder(rr + w / 2, t).cut(Part.makeCylinder(rr - w / 2, t))
     solids.append(ring)
-for a in (math.radians(45), math.radians(135)):
+for a in (_spoke0, _spoke0 + math.radians(90)):
     bar = Part.makeBox(2 * R, w, t, Vector(-R, -w / 2, 0))
     bar.Placement = App.Placement(Vector(0, 0, 0), App.Rotation(Vector(0, 0, 1), math.degrees(a)))
     solids.append(bar)

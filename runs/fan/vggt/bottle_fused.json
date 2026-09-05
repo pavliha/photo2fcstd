@@ -1,0 +1,10 @@
+{
+ "frames": 59,
+ "cropped": true,
+ "fused_points": 81131,
+ "raw_points": 1849163,
+ "front_spread_over_width_fused": 0.0859545263889468,
+ "front_spread_over_width_raw": 0.0934626283299226,
+ "plane_inlier_frac": 0.743985,
+ "voxel_over_width": 0.003693292535671475
+}

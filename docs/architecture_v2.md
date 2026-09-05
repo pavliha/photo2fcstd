@@ -433,3 +433,32 @@ width down to the few-percent level where steps, tabs and nozzles become measura
 multi-feature reconstruction above pays off directly. Until then the app is honest about the
 line: gross form and proportions from the cloud, face outline and fitted class features from
 the square photo, everything labelled by source, and a refusal where none of that applies.
+
+
+## Fusion experiment result (2026-09-06, "do it and don't stop")
+
+**The bar was cloud noise low enough to measure the fan's face detail; it was met, and the
+face was then measured.** `tools/vggt_fuse.py` crops each frame to the object and TSDF-fuses
+VGGT depths: front-slice spread on the fan **1.1% of width** (raw 11.7%) - but TSDF keeps
+only textured patches. A **median height-map over all 5.6M raw per-view points** (41 views per
+cell) covers the face and shows the grille rings, the X spokes, the frame and the corner tabs
+(`runs/results/fan_grille_measured.png`).
+
+Measured from it, in mm at frame_w 80: **ring radii 32.9 / 23.4 / 18.0 / 11.9, bore 69.05
+(the photo path measured 69.75 - 1% agreement between 2D and 3D), X spokes at 49 deg**,
+depth 30.2 from the traced footprint. The fan_guard template now takes `ring_radii` and
+`spoke_deg`; `fan_measured.FCStd` is built from them (80 x 80 x 34.2, valid). Verify against
+the 3D coverage mask: outer outline 0.852.
+
+Two honest limits found and kept: the presumed raised-frame step **does not exist** (face flat
+to 1.4%); and the outline traced from the 3D coverage is worse than the photo's (patchy
+corners), so the outline stays with the 2D tracer at its ~2% tab limit. Each source is used
+where it is best, and the ledger says which.
+
+**Bottle:** revolve template fitted to the fused cloud (containment 0.871); the off-axis pump
+head is detected as a residual cluster (2,607 pts, one 50-degree sector, 86% up) and modelled
+as a cylinder along its own measured axis - it is 88 deg from radial, so a radial spout would
+have been a guess. Containment with the boss **0.896**. `revolve_template.py` takes `bosses`.
+
+This is the multi-feature-from-measured-3D path working end to end on both objects: LLM for
+class, fused video for numbers, templates for clean output, containment for verify.

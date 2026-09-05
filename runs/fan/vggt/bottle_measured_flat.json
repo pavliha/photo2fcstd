@@ -1,0 +1,36 @@
+{
+ "body_r": 92.43,
+ "body_h": 321.86,
+ "shoulder_h": 18.93,
+ "neck_r": 77.92,
+ "neck_h": 37.87,
+ "cap_r": 100.83,
+ "cap_h": 75.73,
+ "bosses": [
+  {
+   "base": [
+    15.41,
+    -120.12,
+    337.1
+   ],
+   "axis": [
+    0.157,
+    0.0793,
+    0.9844
+   ],
+   "r": 33.22,
+   "len": 154.95,
+   "n_points": 2607
+  }
+ ],
+ "_ledger": {
+  "body_r": "measured (3D cloud, 24 bands)",
+  "body_h": "measured (3D cloud, 24 bands)",
+  "shoulder_h": "measured (3D cloud, 24 bands)",
+  "neck_r": "measured (3D cloud, 24 bands)",
+  "neck_h": "measured (3D cloud, 24 bands)",
+  "cap_r": "measured (3D cloud, 24 bands)",
+  "cap_h": "measured (3D cloud, 24 bands)",
+  "boss": "measured (3D cloud cluster, 2607 pts)"
+ }
+}
