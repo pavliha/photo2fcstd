@@ -496,6 +496,25 @@ blades are invisible because black-on-black defeats matting, and depth is guesse
 photos show the same face. Which is the whole thesis in one object: the classic path gives the
 outline; the fan's real geometry needs the sixteen-photo fused path it now has.
 
+### Two general fixes the fan exposed (2026-09-05)
+
+A user's box-fan, three phone photos, drove two archive-safe corrections - and one honest scope
+limit. (1) `largest()` now drops a connected component that touches the image border unless it is
+the only one: clutter (a laptop, a cable) that runs off-frame is never the part, the part is
+centred. (2) `face_on()` gained a relative rectangularity veto - a view whose silhouette fills its
+bounding box far less than a sibling's (rect 0.29 against 0.96) is edge-on and refused, which the
+elongation veto missed because the stale pre-regularisation `select.elongation` read 1.14 on the
+cluttered edge-on frame. A/B on 197 trusted archive parts: **-0.0018 [-0.0113, +0.0076], 5 changed**
+- statistically zero, and the fan now auto-selects a face-on view and builds a valid, fully-
+constrained square shroud plate from all three photos.
+
+**The scope limit, kept honest.** The fan's central opening is a *grille* - dark wire, bright hub,
+background through the gaps - not a segmentable hole, so a single photo yields the shroud outline
+and nothing inside it. A dark-hole recovery that closed the grille into one bore was tried and
+reverted: it was fan-overfitting, unproven on the archive, and the repo's own rule forbids it. The
+bore, the blades and the depth are exactly what the sixteen-photo fused carve path (now in the
+pipeline) exists to recover.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc

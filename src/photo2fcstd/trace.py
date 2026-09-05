@@ -32,7 +32,18 @@ def largest(mask):
     lab, n = ndimage.label(mask)
     if n == 0:
         raise ValueError("no object found")
-    return lab == int(np.argmax(ndimage.sum(mask, lab, range(1, n + 1)))) + 1
+    sizes = ndimage.sum(mask, lab, range(1, n + 1))
+    order = np.argsort(sizes)[::-1]
+    border = np.zeros_like(mask)
+    border[0, :] = border[-1, :] = border[:, 0] = border[:, -1] = True
+    biggest = sizes[order[0]]
+    for i in order:
+        blob = lab == i + 1
+        if sizes[i] < 0.25 * biggest:
+            break
+        if not (blob & border).any():
+            return blob
+    return lab == int(order[0]) + 1
 
 
 def segment(a):
@@ -77,7 +88,7 @@ _RMBG = {}
 from photo2fcstd.settings import PACKAGE_ROOT, cache_dir
 
 
-MASK_VERSION = "3"
+MASK_VERSION = "4"
 TRIM_APPENDAGE = float(os.environ.get("P2F_TRIM_APPENDAGE", 0.0))
 
 

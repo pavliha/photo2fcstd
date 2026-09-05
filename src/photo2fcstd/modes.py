@@ -108,11 +108,12 @@ def roundest(specs):
 
 
 def source_for(mode, specs):
-    holed = max(specs, key=lambda v: v["shape"]["hole_frac"])
     if mode == "revolve":
         return roundest(specs) or specs[0]
+    faceable = face_on(specs)
+    holed = max(faceable, key=lambda v: v["shape"]["hole_frac"])
     if mode == "profile":
-        least_rect = min(specs, key=lambda v: v["shape"]["rectangularity"])
+        least_rect = min(faceable, key=lambda v: v["shape"]["rectangularity"])
         return holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else least_rect
     if mode == "plan":
         return holed if holed["shape"]["hole_frac"] > th.HOLE_FRAC_VISIBLE else pick_view(specs)
@@ -138,6 +139,9 @@ def stat(view, key):
     return view["elongation"] if key == "elongation" else view["shape"][key]
 
 
+RECT_VETO_FRAC = float(os.environ.get("P2F_RECT_VETO_FRAC", 0.6))
+
+
 def not_edge_on(chosen, specs, ratio=EDGE_ON_RATIO):
     """Veto a view that is far more elongated than the flattest available."""
     allowed = face_on(specs, ratio)
@@ -156,7 +160,11 @@ def face_on(specs, ratio=EDGE_ON_RATIO):
     if len(specs) < 2:
         return specs
     flattest = min(stat(v, "elongation") for v in specs)
-    kept = [v for v in specs if stat(v, "elongation") <= ratio * max(flattest, 1e-6)]
+    rect = lambda v: v.get("shape", {}).get("rectangularity", 1.0)
+    best_rect = max(rect(v) for v in specs)
+    kept = [v for v in specs
+            if stat(v, "elongation") <= ratio * max(flattest, 1e-6)
+            and rect(v) >= RECT_VETO_FRAC * best_rect]
     return kept or specs
 
 
