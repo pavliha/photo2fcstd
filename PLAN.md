@@ -548,8 +548,13 @@ needed two opt-in flags and still picked the wrong view.
 never coordinates. `build(rec, photos)` turns that answer into a buildable spec, the tracer
 measuring every dimension from the recognised face. Tested end to end on a synthetic square-with-
 bore (`tests/test_recognise.py`) and run on the fan with a real VLM answer: valid solid, plate +
-bore + 4 screws, zero free DoF. Wiring a live vision model is one call that fills `rec`; today the
-recognition is supplied by the assistant reading the photos, which is the same interface.
+bore + 4 screws, zero free DoF. It is now wired to a live vision model: `recognise_live(photos)` shells out to the installed
+Claude Code CLI in print mode (a real, authenticated vision call, no API key), copies the photos to
+a readable temp dir, and parses the contract JSON from the reply. Run end to end on the fan, the
+model independently chose the face-on photo and reported square + bore + 4 screws + depth 0.35, and
+the geometry built a valid solid - fully autonomous, no hand-supplied recognition. `P2F_VISION_CMD`
+points it at any other vision CLI; the parse is mocked in `tests/test_recognise.py` so CI needs no
+model.
 
 This is the resolution of the whole arc. The noise floor and the conservation law say the drawing
 cannot be improved by a better estimator on the contour - both were proven. The LLM does not touch

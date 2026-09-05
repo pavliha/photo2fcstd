@@ -28,3 +28,15 @@ def test_recognition_builds_the_declared_structure(freecad, tmp_path):
     assert r["valid"] and r["solids"] == 1
     for s in r["sketches"].values():
         assert s["solve"] == 0
+
+
+def test_recognise_live_parses_the_model_json(monkeypatch, tmp_path):
+    from photo2fcstd import recognise
+    import subprocess
+    class R:
+        stdout = 'here is the answer\n{"face_photo_index": 0, "outline": "disc", "openings": [], "screws": 0, "depth_ratio": 0.3}\nthanks'
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: R())
+    import numpy as np, cv2
+    p = str(tmp_path / "x.png"); cv2.imwrite(p, np.zeros((50, 50), np.uint8))
+    rec = recognise.recognise_live([p])
+    assert rec["outline"] == "disc" and rec["face_photo_index"] == 0

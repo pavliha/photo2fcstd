@@ -35,6 +35,42 @@ def recognise_prompt(n_photos):
         "Judge only what is visible; do not invent features." % (n_photos, n_photos - 1))
 
 
+VISION_CMD = os.environ.get("P2F_VISION_CMD", "claude")
+
+
+def recognise_live(photos, model=None):
+    """Ask the installed vision model to fill the contract from the photos. Returns the rec dict.
+
+    Shells out to the Claude Code CLI in print mode - a real, authenticated vision call, no key
+    plumbing. Set P2F_VISION_CMD to point at any CLI that takes a prompt and reads image paths.
+    Images are copied to a temp dir the tool is allowed to read.
+    """
+    import json as _json
+    import shutil
+    import subprocess
+    import tempfile
+    d = tempfile.mkdtemp(prefix="recog_")
+    local = []
+    for i, p in enumerate(photos):
+        q = os.path.join(d, "img%02d%s" % (i, os.path.splitext(p)[1] or ".jpg"))
+        shutil.copy(p, q)
+        local.append(q)
+    listing = "\n".join("  photo %d: %s" % (i, q) for i, q in enumerate(local))
+    prompt = ("Read these %d photographs of one manufactured part:\n%s\n\n%s\n"
+              "Reply with ONLY the JSON object, no prose, no code fence."
+              % (len(local), listing, recognise_prompt(len(local))))
+    cmd = [VISION_CMD, "-p", prompt, "--allowedTools", "Read"]
+    if model:
+        cmd += ["--model", model]
+    out = subprocess.run(cmd, capture_output=True, text=True, timeout=300).stdout
+    shutil.rmtree(d, ignore_errors=True)
+    start = out.find("{")
+    end = out.rfind("}")
+    if start < 0 or end < 0:
+        raise ValueError("vision model returned no JSON:\n" + out[-400:])
+    return _json.loads(out[start:end + 1])
+
+
 def build(rec, photos, name="part", length_mm=None):
     from photo2fcstd import cli
     from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
