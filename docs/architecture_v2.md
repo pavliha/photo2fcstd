@@ -213,6 +213,14 @@ the frame's sharpness in the carve (a soft hull, not a hard intersection).
 - **Accept:** >= 80% of frames from a slow phone orbit registered (vs 41% today); carve
   depth of the yellow fan within 5% of a caliper reading.
 - **Uses:** pretrained models only. No training.
+- **Status (2026-09-05):** frame selection alone took COLMAP registration from 11/27 to
+  35/36 on the fan clip. VGGT-1B on a rented 5090 with the app's per-frame masks (eroded,
+  percentile footprint) measures, from the phone clip: fan standing on edge -
+  height/width 1.008, depth/width 0.447; bottle upright - round footprint 0.998,
+  height/diameter 2.42 (pump tip under-sampled). Unmasked, desk clutter inflated the
+  footprint and gave a plausible-looking wrong number (0.389) by coincidence - masks are
+  not optional. The 5% accept still needs a caliper reading; the poses are saved for the
+  carve (`runs/fan/vggt/*_poses.npz`).
 
 ### V2 - Hull -> primitives  (M, the honest general path)
 RANSAC planes / cylinders / spheres on the carve hull, fit each, assemble as pad / pocket /

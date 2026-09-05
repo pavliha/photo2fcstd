@@ -27,7 +27,7 @@ def fit_plane_ransac(P, iters=300, tol=None, rng=np.random.default_rng(0)):
     return n, -n @ c, inl.mean()
 
 
-def main(frames_dir, out_json):
+def main(frames_dir, out_json, masks_dir=None):
     from vggt.models.vggt import VGGT
     from vggt.utils.load_fn import load_and_preprocess_images
     from vggt.utils.pose_enc import pose_encoding_to_extri_intri
@@ -42,30 +42,39 @@ def main(frames_dir, out_json):
     C = pred["world_points_conf"].squeeze(0).float().cpu().numpy()
     keep = C > np.quantile(C, 0.5)
     P = W[keep].reshape(-1, 3)
+    M = None
+    if masks_dir:
+        mp = [os.path.join(masks_dir, os.path.splitext(os.path.basename(p))[0] + ".png") for p in names]
+        Mt = (load_and_preprocess_images(mp)[:, 0] > 0.5).float()       # same resize/crop as the frames
+        Mt = 1 - torch.nn.functional.max_pool2d(1 - Mt[:, None], 7, stride=1, padding=3)[:, 0]  # erode: drop edge flying pixels
+        M = (Mt > 0.5).cpu().numpy()
     if len(P) > 400000:
         P = P[np.random.default_rng(0).choice(len(P), 400000, replace=False)]
     n, d, frac = fit_plane_ransac(P)
+    E = extr.squeeze(0).float().cpu().numpy()
+    cams = np.array([-E[i, :3, :3].T @ E[i, :3, 3] for i in range(len(E))])
+    if np.median(cams @ n + d) < 0:          # up = the side the cameras are on
+        n, d = -n, -d
     h = P @ n + d
-    if np.median(h) > 0:
-        n, d, h = -n, -d, -h
-    h = -h
     scale = np.ptp(P, 0).max()
-    fg = P[h > 0.02 * scale]
+    fg = W[keep & M].reshape(-1, 3) if M is not None else P[h > 0.02 * scale]
+    fg = fg[(fg @ n + d) > 0.01 * scale]
     if len(fg) < 200:
         raise SystemExit("no foreground above the desk plane")
     hf = fg @ n + d
-    hf = -hf if np.median(hf) < 0 else hf
     top = hf[hf >= np.quantile(hf, 0.8)]
     depth_p50_top, depth_p90 = float(np.median(top)), float(np.quantile(hf, 0.9))
     Q = fg - np.outer(fg @ n + d, n)
     c = Q.mean(0)
     u, s, vt = np.linalg.svd(Q - c, full_matrices=False)
-    ext = np.ptp((Q - c) @ vt.T, 0)
-    length = float(ext[:2].max())
-    res = {"frames": len(names), "plane_inlier_frac": float(frac), "length_units": length,
-           "depth_units_top_median": depth_p50_top, "depth_units_p90": depth_p90,
-           "depth_ratio": depth_p50_top / length, "depth_ratio_p90": depth_p90 / length,
-           "fg_points": int(len(fg))}
+    R = (Q - c) @ vt.T
+    ext = np.sort((np.quantile(R, 0.98, 0) - np.quantile(R, 0.02, 0))[:2])[::-1]
+    length, short = float(ext[0]), float(ext[1])
+    res = {"frames": len(names), "plane_inlier_frac": float(frac),
+           "footprint_long": length, "footprint_short": short, "height": depth_p50_top,
+           "height_p90": depth_p90, "height_over_long": depth_p50_top / length,
+           "short_over_long": short / length,
+           "fg_points": int(len(fg)), "masked": M is not None}
     np.savez(os.path.splitext(out_json)[0] + "_poses.npz",
              extrinsic=extr.squeeze(0).float().cpu().numpy(),
              intrinsic=intr.squeeze(0).float().cpu().numpy(),
@@ -75,4 +84,4 @@ def main(frames_dir, out_json):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
