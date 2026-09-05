@@ -183,6 +183,55 @@ baseline beside the score, validate on held-out REAL data not renders, and gate 
 end-to-end verify - never on the proxy metric. A trained model is a proposal the geometry
 and the verify gate still police.
 
+## Video -> CAD: what v2 above does and does not solve
+
+Reviewed specifically against the video use case (a phone orbit of a part). v2 solves it
+for **templated parts given a good orbit** (carve -> template fit, measured depth). It does
+**not** solve it generally, and it under-uses video, for these measured reasons:
+
+- "Extract 1 fps, hope 16 register" is what produced 11/27 and 10/32 registrations. Video's
+  asset is continuity: sharpness and angular coverage are measurable per frame, so frames
+  can be *selected*, not prayed over. v2 has no such stage.
+- Exhaustive COLMAP on sparse frames needs a textured background and fails on blur.
+  Feed-forward multi-view models (DUSt3R / MASt3R / VGGT) are pretrained, on HuggingFace,
+  and built for casual phone capture: poses + dense depth from a handful of frames. This is
+  the honest use of the GPU - inference of a geometry foundation model, not training.
+- T1 (single-view tilt) is a photo fix. From video, every frame's pose is known after V1,
+  so the square-on frame is *chosen by pose*, not estimated from one silhouette.
+- Untemplated objects are refused by design; the only general path is fitting primitives
+  to the hull, which is one clause in M4. It is honestly achievable (fitting measured 3D
+  cannot produce confident garbage the way single-photo guessing does) and needs to be a
+  real milestone.
+- A visual hull is unforgiving: one blurred-frame mask deletes correct material forever.
+  Frame selection and dense depth both mitigate it; v2 said nothing about per-frame masks.
+
+### V1 - Video-native capture  (M, unblocks the carve regime from a phone)
+Select frames by sharpness (variance of Laplacian) and angular coverage (tracked baseline),
+not by fps. Poses + dense depth from a pretrained MASt3R / VGGT run on vast.ai; fall back to
+COLMAP only if the model is unavailable. Per-frame masks from the app's matting, weighted by
+the frame's sharpness in the carve (a soft hull, not a hard intersection).
+- **Accept:** >= 80% of frames from a slow phone orbit registered (vs 41% today); carve
+  depth of the yellow fan within 5% of a caliper reading.
+- **Uses:** pretrained models only. No training.
+
+### V2 - Hull -> primitives  (M, the honest general path)
+RANSAC planes / cylinders / spheres on the carve hull, fit each, assemble as pad / pocket /
+revolve features, build clean. For an object with no template this is the only route that
+does not guess, because every primitive is fit to measured 3D. Verify against the hull and
+against the frames' silhouettes.
+- **Accept:** the fan body and the bottle each fit to primitives within carve tolerance
+  with no template; a refusal on a hull too noisy to fit (reported, not hidden).
+
+### V3 - Pose-aware template fit  (S, once V1 exists)
+Pick the frame most square to the face by its pose and run the template fit there; for
+revolves, take the profile from true side-on frames and average over azimuth.
+- **Accept:** template fit from video matches the square-photo fit within 3%; the bottle
+  profile is monotonic through the neck (no mid-body bulge like today's 166 px).
+
+**Priority change:** for the video path, V1 -> V2 -> V3 supersede T1. T1 stays for the
+photo-only path. Revised order becomes M0 -> M1+M3 -> M2 -> **V1 -> V3** -> M4 -> **V2** ->
+M5 -> M6, with T1 only if photo-only input turns out to matter.
+
 ## What survives v1
 
 - The tier registry (`design.TEMPLATES`, `@register`).
