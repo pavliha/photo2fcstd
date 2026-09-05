@@ -515,6 +515,21 @@ reverted: it was fan-overfitting, unproven on the archive, and the repo's own ru
 bore, the blades and the depth are exactly what the sixteen-photo fused carve path (now in the
 pipeline) exists to recover.
 
+### Dark-opening recovery: real, measured, opt-in (2026-09-05)
+
+The fan's face-on views segment as a solid square because the grille opening shows dark fan blades,
+not the background - `recover_holes` (background-colour match) cannot see it. `recover_dark_holes`
+does: it closes the dark grille fragments into one region and carves it, turning the face-on view
+into a correct square-plate-plus-central-bore sketch that builds a valid solid **from the existing
+photos, no reshoot**. But the archive A/B is decisive against shipping it on: **-0.0235
+[-0.0458, -0.0031], 41 of 158 parts hurt** - PrintCAD's printed parts have shadows and dark recesses
+that read as false holes. So it ships **off by default, `P2F_RECOVER_DARK=1` to enable**, for parts
+whose openings are genuinely dark cavities (a bore, a grille, a counterbore). The learned view
+ranker also does not prefer the newly-holed face-on view (it was trained without such parts), so the
+face-on model is reached by naming the face-on views or `P2F_VIEW_MODEL=0`. This is the single-view
+wall again, priced exactly: the fix that models the fan costs the general case, so it is a switch,
+not a default.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc

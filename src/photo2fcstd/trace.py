@@ -88,7 +88,7 @@ _RMBG = {}
 from photo2fcstd.settings import PACKAGE_ROOT, cache_dir
 
 
-MASK_VERSION = "4"
+MASK_VERSION = "5"
 TRIM_APPENDAGE = float(os.environ.get("P2F_TRIM_APPENDAGE", 0.0))
 
 
@@ -109,7 +109,7 @@ def cached_mask(path, version=MASK_VERSION):
     st = os.stat(path)
     raw = "%s|%d|%d" % (cache_identity(path), st.st_size, int(st.st_mtime))
     if version is not None:
-        raw += "|v%s|t%.4f" % (version, TRIM_APPENDAGE)
+        raw += "|v%s|t%.4f|d%d" % (version, TRIM_APPENDAGE, int(RECOVER_DARK))
     key = hashlib.sha1(raw.encode()).hexdigest()
     return os.path.join(cache_dir("masks"), key + ".npz")
 
@@ -153,6 +153,46 @@ def trim_appendages(mask, width_frac=None, keep_frac=0.55):
     return mask
 
 
+RECOVER_DARK = os.environ.get("P2F_RECOVER_DARK", "0") == "1"
+
+
+def recover_dark_holes(image, mask, min_frac=0.01, contrast=0.30):
+    """Carve an interior region much darker than the part - an opening showing shadow, not background.
+
+    `recover_holes` finds a hole that shows the background colour; a bore, counterbore or grille
+    shows darkness instead (a cavity, blades behind a mesh), which matting keeps as body. The dark
+    fragments are closed into one region so a mesh becomes a single opening, and it fires only on a
+    strongly-dark, mostly-dark, enclosed blob, never when it would eat most of the part. Off with
+    Off by default: it costs the PrintCAD archive -0.024 F1 (shadows read as holes).
+    Enable with P2F_RECOVER_DARK=1 for dark-opening parts (a bore, a grille, a counterbore).
+    """
+    if not RECOVER_DARK:
+        return mask
+    inner = ndimage.binary_erosion(mask, np.ones((9, 9)))
+    if inner.sum() < 500:
+        return mask
+    bright = image.max(axis=2)
+    body_v = float(np.median(bright[inner]))
+    candidates = (bright < body_v - contrast) & inner
+    if not candidates.any():
+        return mask
+    r = max(3, int(0.02 * np.sqrt(mask.sum())))
+    closed = ndimage.binary_fill_holes(ndimage.binary_closing(candidates, np.ones((r, r))) & inner)
+    labelled, count = ndimage.label(closed)
+    edge = ~ndimage.binary_erosion(mask, np.ones((5, 5)))
+    carved = np.zeros_like(mask)
+    for i in range(1, count + 1):
+        blob = labelled == i
+        if blob.sum() < min_frac * mask.sum() or (blob & edge).any():
+            continue
+        if float((candidates & blob).sum()) / max(blob.sum(), 1) < 0.30:
+            continue
+        carved |= blob
+    if not carved.any() or carved.sum() > 0.80 * mask.sum():
+        return mask
+    return mask & ~carved
+
+
 def recover_holes(image, mask, tol=0.10, min_frac=0.01):
     """Carve interior regions whose colour matches the background seen around the part."""
     inner = ndimage.binary_erosion(mask, np.ones((9, 9)))
@@ -184,7 +224,7 @@ def segment_photo(path):
     legacy = cached_mask(path, version=None)
     image = load(path)
     base = np.load(legacy)["mask"] if os.path.exists(legacy) else segment_rmbg(image)
-    mask = largest(trim_appendages(recover_holes(image, base)))
+    mask = largest(trim_appendages(recover_dark_holes(image, recover_holes(image, base))))
     os.makedirs(cache_dir("masks"), exist_ok=True)
     np.savez_compressed(f, mask=mask)
     return mask
