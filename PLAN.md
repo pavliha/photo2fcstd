@@ -578,9 +578,15 @@ cell and requires x8 volume across all features. Tested end to end (`tests/test_
 This lifts the project past its founding constraint. PrintCAD is single-extrusion and the whole
 benchmark measures that; the feature program is the first thing that builds a part the dataset
 could not represent. It composes with everything - recognition names the operations, geometry
-measures the dimensions, the tracer draws each sketch, the scale cell drives them all. The grille
-web (rings joined by spokes) is still not one valid region and would want a dedicated feature op or
-a boolean; the box, bore, holes and flanges - the manufacturable structure - now build.
+measures the dimensions, the tracer draws each sketch, the scale cell drives them all.
+
+The grille is now a feature op too. `recognise.grille_loops` builds it as one valid connected web -
+an outer disc minus the open annular-sectors between rings and spokes, not overlapping circles - and
+`build_program` pads it across the front face so it fuses to the shroud rim. The **complete fan is
+one valid solid**: enclosure (pad) + bore (through pocket) + grille web (pad) + four mounting holes
+(pocket), zero free DoF, rendered in `runs/fan/fan_full.png`, every feature scale-driven and tested
+(`tests/test_recognise.py`). This is the whole object - the thing a single extrusion, and the entire
+1,908-part benchmark, structurally could not be.
 
 ### What not to do, measured
 
