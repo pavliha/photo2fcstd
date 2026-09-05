@@ -171,6 +171,8 @@ def program_prompt(n):
         "PROGRAM a CAD kernel can build - a JSON object, structure only, no coordinates:\n"
         '  "face_photo_index": int 0..%d - the photo square-on to the largest flat face\n'
         '  "frame": "rect"|"rounded_rect"|"disc"|"trace" - the outer boundary of that face\n'
+        '  "part_class": a standard class name if you recognise one ("fan_guard","bracket",'
+        '"plate","enclosure"), else null\n'
         '  "features": ordered list, each {"op","profile",...}:\n'
         '     op = "pad" (add material) or "pocket" (remove)\n'
         '     profile = "frame" (the outer boundary), "bore" (central round hole), '

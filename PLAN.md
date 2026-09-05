@@ -588,6 +588,19 @@ one valid solid**: enclosure (pad) + bore (through pocket) + grille web (pad) + 
 (`tests/test_recognise.py`). This is the whole object - the thing a single extrusion, and the entire
 1,908-part benchmark, structurally could not be.
 
+### The pipeline architecture, implemented in tiers (2026-09-05)
+
+`photo2fcstd/design.py` is the orchestrator. `design(photos, out)` runs the two-plane pipeline:
+recognition (LLM emits a feature program + part_class, never coordinates) -> measurement (tracer,
+fit_ellipse, count_rings measure every number) -> build (compile_program -> build_features) ->
+`verify` (re-project the solid's silhouette against the input mask, return IoU + advice). The LLM
+picks the tier: **template** (a registered parametric class like fan_guard -> designer-clean,
+fully-constrained sketches), **general** (any part decomposed into pad/pocket primitives -> valid,
+editable, not hand-clean), or **assemble** (flat PrintCAD-like part -> the measured pipeline). CLI:
+`python -m photo2fcstd.design <photos> --out part.FCStd`. Ring count and bore are measured from the
+pixels; the VLM count is only a fallback. Generality lives in the compiler; quality lives in the
+template registry, grown one class at a time. Tested end to end (`tests/test_recognise.py`).
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc

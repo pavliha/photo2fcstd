@@ -121,3 +121,23 @@ def test_fan_guard_params_measures_bore_from_photo(tmp_path):
     assert par["rings"] == 6
     assert 0 < par["bore_d"] < par["frame_w"]
     assert abs(par["bore_d"] - 80.0 * 300 / 400) < 8   # bore 300px in a 400px frame
+
+
+def test_design_dispatches_tiers(freecad, tmp_path, monkeypatch):
+    from photo2fcstd import design
+    import numpy as np, cv2
+    img = np.zeros((700, 700), np.uint8)
+    cv2.rectangle(img, (150, 150), (550, 550), 255, -1)
+    cv2.circle(img, (350, 350), 120, 0, -1)
+    p = str(tmp_path / "part.png"); cv2.imwrite(p, img)
+    from photo2fcstd import trace
+    trace.RECOVER_DARK = True
+    import os
+    os.path.exists(trace.cached_mask(p)) and os.remove(trace.cached_mask(p))
+    rec = {"part_class": None, "face_photo_index": 0, "frame": "rect",
+           "features": [{"op": "pad", "profile": "frame", "depth_ratio": 0.3},
+                        {"op": "pocket", "profile": "bore", "through": True}]}
+    res = design.design([p], str(tmp_path / "out.FCStd"), rec=rec)
+    assert res["tier"] == "general" and res["valid"] and res["solids"] == 1
+    v = design.verify(str(tmp_path / "out.FCStd"), [p], rec)
+    assert v["silhouette_iou"] is not None and any("depth" in a for a in v["advice"])
