@@ -191,7 +191,7 @@ def build_program(recs, photos, name="part", face_index=0):
     if g and int(g.get("rings", 0)) >= 2 and sh["holes"]:
         f0 = fit_ellipse(np.asarray(max(sh["holes"], key=len), float))
         gl = grille_loops(float(f0["cx"]), float(f0["cy"]), float(f0["a"]) * 1.08,
-                          int(g["rings"]), int(g.get("spokes", 0)))
+                          int(g["rings"]), int(g.get("spokes", 0)), web=0.035)
         feats.append({"op": "pad", "plane_mm": depth * 0.94, "depth_px": 0.10 * depth, "loops": gl})
     screws = int(recs.get("screws", 0))
     if screws:
