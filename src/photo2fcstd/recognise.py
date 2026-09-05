@@ -429,8 +429,13 @@ def design_fan(photos, out, rec=None, frame_w_mm=80.0, depth_json=None):
     params["box_depth"], ledger["box_depth"] = 0.0, "default (flat guard; give a 3D depth for the enclosure)"
     if depth_json and os.path.exists(depth_json):
         d3 = json.load(open(depth_json))
-        thin = min(d3["short_over_long"], d3["height_over_long"], 1.0)   # the object's thinnest extent, any orientation
-        params["box_depth"], ledger["box_depth"] = round(thin * frame_w_mm, 2), "measured (3D, VGGT)"
+        if "trace_short_over_long" in d3:      # traced top footprint: flying pixels trimmed, agrees with the photo
+            thin = min(d3["trace_short_over_long"], d3["trace_height_over_long"], 1.0)
+            src = "measured (3D, traced footprint)"
+        else:
+            thin = min(d3["short_over_long"], d3["height_over_long"], 1.0)
+            src = "measured (3D, percentile extents)"
+        params["box_depth"], ledger["box_depth"] = round(thin * frame_w_mm, 2), src
     params = {**params, "_ledger": ledger}
     pj = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
     json.dump(params, pj); pj.close()

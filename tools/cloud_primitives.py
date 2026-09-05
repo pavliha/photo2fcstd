@@ -70,10 +70,15 @@ def box_spec(X, Y, H, name, scale=1000.0, res=512):
     q = ((px - mn) * s + 10).astype(int)
     q = q[(q[:, 0] >= 0) & (q[:, 0] < res) & (q[:, 1] >= 0) & (q[:, 1] < res)]
     img[q[:, 1], q[:, 0]] = 1
-    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, np.ones((15, 15), np.uint8))
     img = cv2.morphologyEx(img, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
-    view = analysis.view_from_mask(img > 0)
-    loops = spec_mod.traced_outline(view)
+    from scipy import ndimage
+    lab, k = ndimage.label(img > 0)
+    if k > 1:
+        img = (lab == (np.argmax(ndimage.sum(img > 0, lab, range(1, k + 1))) + 1)).astype(np.uint8)
+    img = ndimage.binary_fill_holes(img > 0)
+    view = analysis.view_from_mask(img)
+    loops = spec_mod.traced_outline(view)[:1]        # the outer footprint only; interior detail is not in a footprint
     depth_px = float(hi - lo) * scale
     unit_px = (res - 20) / max(np.ptp(np.vstack([mn, mx]), 0).max(), 1e-9)
     factor = scale / unit_px
@@ -100,6 +105,13 @@ def main(npz_path, out_json, name="part"):
     kind, stats, prof = classify(X, Y, H)
     spec = revolve_spec(prof, name) if kind == "revolve" else box_spec(X, Y, H, name)
     json.dump(spec, open(out_json, "w"))
+    if kind == "box":
+        pts = np.array([p for l in spec["features"][0]["loops"] for e in l["elements"] for p in (e["p0"], e["p1"])])
+        ext = np.sort(np.ptp(pts, 0))[::-1] / 1000.0
+        stats["trace_long"], stats["trace_short"] = float(ext[0]), float(ext[1])
+        stats["trace_short_over_long"] = float(ext[1] / ext[0])
+        stats["trace_height_over_long"] = float(stats["height"] / ext[0])
+    json.dump({"kind": kind, **stats}, open(os.path.splitext(out_json)[0] + ".stats.json", "w"), indent=1)
     print(json.dumps({"kind": kind, **stats, "spec": out_json}))
     return kind, stats
 

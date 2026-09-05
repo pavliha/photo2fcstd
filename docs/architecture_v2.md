@@ -264,11 +264,28 @@ against the frames' silhouettes.
 - **Accept:** the fan body and the bottle each fit to primitives within carve tolerance
   with no template; a refusal on a hull too noisy to fit (reported, not hidden).
 
+- **V2 status (2026-09-06):** `tools/cloud_primitives.py` on the VGGT clouds, no template:
+  the fan classifies box (roundness 0.43) and builds a clean box 1 : 0.875 : 0.378; the
+  bottle classifies revolve (roundness 0.99, rim spread 0.07) and builds a revolved
+  profile - body 82/81/82/81, shoulder 71, cap 58 - height/diameter 2.2. The fan's traced
+  footprint gives depth/width **0.378 against the tilted photo's 0.373 (1.3%)**, which
+  corrects V1b's 0.447: the 98th-percentile extents were inflated by flying pixels; the
+  traced top-half footprint is the cleaner measurement and now feeds the enclosure. Height
+  reads 12% low (the top-half selection trims the face edge) - noted, not hidden. A 3D
+  containment check (cloud points inside the built solid) is the honest next verify for
+  cloud-derived primitives; silhouette verify against a tilted frame is meaningless.
+
 ### V3 - Pose-aware template fit  (S, once V1 exists)
 Pick the frame most square to the face by its pose and run the template fit there; for
 revolves, take the profile from true side-on frames and average over azimuth.
 - **Accept:** template fit from video matches the square-photo fit within 3%; the bottle
   profile is monotonic through the neck (no mid-body bulge like today's 166 px).
+- **Status (2026-09-06):** the runner saves per-frame squareness. In this orbit the best
+  frame scores **0.813 (~35 deg off square)** - no frame is square, so the 2D fit from it is
+  poor (bore 38% off the photo consensus) though better than an arbitrary frame (48%). The
+  useful output is the squareness number itself: below ~0.95 the 2D fit is refused and the
+  cloud (V2) carries the geometry - exactly the tilted regime in the table. The bottle
+  profile from the cloud is monotonic (82 -> 71 -> 58), the accept's bulge is gone.
 
 **Priority change:** for the video path, V1 -> V2 -> V3 supersede T1. T1 stays for the
 photo-only path. Revised order becomes M0 -> M1+M3 -> M2 -> **V1 -> V3** -> M4 -> **V2** ->
