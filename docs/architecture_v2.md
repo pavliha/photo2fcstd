@@ -404,3 +404,32 @@ reliable and the *geometry* is not. For rods the length/diameter is simply not i
 silhouette. The paths that would fix this class are the ones the plan already names: a
 square-on view of the end face (the disc) plus the side, or the orbit -> cloud -> revolve
 fit, which measured the bottle's profile to 95% containment.
+
+
+## Long-term direction (decided 2026-09-06, "whatever is best long term")
+
+**Measured 3D becomes the primary path; templates stay the clean-output layer; the LLM stays
+the class-picker; nothing is emitted unverified.** The dataset check settled why: from one
+tilted photo the class is reliable and the geometry is not, and every remaining failure class
+(rods on their side, the fan's raised frame and tabs, the bottle's nozzle) is geometry that a
+single view does not contain. The path that grows toward fidelity is cloud -> multi-feature
+CAD: segment the cloud into levels / planes / cylinders, build each as a feature, verify by
+containment. The pieces exist (VGGT capture, `cloud_primitives`, `build_features`, the
+containment gate); what limits it today is cloud quality, not code.
+
+**Rung 1, tried on the existing fan cloud, recorded honestly:**
+- *Face levels* (`cloud_primitives.face_levels`): the raised frame vs recessed grille is a
+  ~3%-of-width step; the cloud's front slice spreads 12.8% of width (p10-p90) and yields only
+  noise peaks at low prominence. Unresolvable from a phone-orbit VGGT cloud.
+- *Traced face outline* (`design_fan(traced=True)`, default on): the shipped tracer
+  regularises the fan face to 4 points; at a 1%-of-frame polygon tolerance the corner tabs
+  (~2% features) appear, but so does a mask dent of the same size. Tab-sized detail sits at the
+  tracer's precision limit on a phone photo, so the regularised outline stays the default and
+  the ledger records "traced (photo, n points)".
+
+**So the next investment is capture fidelity, not another fitter:** denser multi-view fusion
+(more frames, MASt3R/VGGT with global alignment or TSDF) to bring cloud noise from ~13% of
+width down to the few-percent level where steps, tabs and nozzles become measurable - then the
+multi-feature reconstruction above pays off directly. Until then the app is honest about the
+line: gross form and proportions from the cloud, face outline and fitted class features from
+the square photo, everything labelled by source, and a refusal where none of that applies.

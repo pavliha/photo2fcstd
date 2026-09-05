@@ -46,21 +46,32 @@ def rounded_square(sk, half, r):
 
 sk = body.newObject("Sketcher::SketchObject", "sk_frame")
 sk.AttachmentSupport = [(doc.getObject("XY_Plane"), "")]; sk.MapMode = "FlatFace"
+_outline = _m.get("outline_pts")
 d = half - r
 cs = [Vector(d, d, 0), Vector(-d, d, 0), Vector(-d, -d, 0), Vector(d, -d, 0)]
 angs = [(0, 90), (90, 180), (180, 270), (270, 360)]
 arcs = [sk.addGeometry(Part.ArcOfCircle(Part.Circle(c, Vector(0, 0, 1), r),
         math.radians(a0), math.radians(a1)), False) for c, (a0, a1) in zip(cs, angs)]
-for i in range(4):
+if _outline:
+    for g in list(range(sk.GeometryCount))[::-1]:
+        sk.delGeometry(g)
+    pts = [Vector(x, y, 0) for x, y in _outline]
+    ids = [sk.addGeometry(Part.LineSegment(pts[i], pts[(i + 1) % len(pts)]), False) for i in range(len(pts))]
+    for i in range(len(ids)):
+        sk.addConstraint(Sketcher.Constraint("Coincident", ids[i], 2, ids[(i + 1) % len(ids)], 1))
+    sk.addConstraint(Sketcher.Constraint("Block", ids[0]))
+    arcs = []
+for i in range(4) if not _outline else []:
     l = sk.addGeometry(Part.LineSegment(sk.Geometry[arcs[i]].EndPoint,
                                         sk.Geometry[arcs[(i + 1) % 4]].StartPoint), False)
     sk.addConstraint(Sketcher.Constraint("Tangent", arcs[i], 2, l, 1))
     sk.addConstraint(Sketcher.Constraint("Tangent", l, 2, arcs[(i + 1) % 4], 1))
 # intent: all corners equal, each centre a half-diagonal out, one driving expr per corner
-for i in (1, 2, 3):
+for i in (1, 2, 3) if arcs else []:
     sk.addConstraint(Sketcher.Constraint("Equal", arcs[0], arcs[i]))
-rc = sk.addConstraint(Sketcher.Constraint("Radius", arcs[0], r))
-sk.renameConstraint(rc, "corner_r"); sk.setExpression("Constraints.corner_r", "params.corner_r")
+rc = sk.addConstraint(Sketcher.Constraint("Radius", arcs[0], r)) if arcs else None
+if arcs:
+    sk.renameConstraint(rc, "corner_r"); sk.setExpression("Constraints.corner_r", "params.corner_r")
 signs = [(1, 1), (-1, 1), (-1, -1), (1, -1)]
 for a, (sx, sy) in zip(arcs, signs):
     cx = sk.addConstraint(Sketcher.Constraint("DistanceX", -1, 1, a, 3, sx * d))
@@ -68,7 +79,7 @@ for a, (sx, sy) in zip(arcs, signs):
     cy = sk.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, a, 3, sy * d))
     sk.setExpression("Constraints[%d]" % cy, "%sparams.frame_w / 2 - %sparams.corner_r" % ("" if sy > 0 else "-", "" if sy > 0 else "-"))
 doc.recompute()
-print("frame fully constrained:", sk.FullyConstrained)
+print("frame fully constrained:", sk.FullyConstrained, "(traced outline: %d pts)" % len(_outline) if _outline else "")
 pad = body.newObject("PartDesign::Pad", "plate")
 pad.Profile = sk; pad.Length = t; pad.setExpression("Length", "params.plate_t")
 doc.recompute()

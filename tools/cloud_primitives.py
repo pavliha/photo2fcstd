@@ -213,3 +213,42 @@ def build_revolve_template(params, ledger, out):
     if "SAVED" not in r.stdout:
         raise RuntimeError((r.stdout + r.stderr)[-600:])
     return out
+
+
+def face_levels(npz_path, res=512):
+    import cv2
+    from scipy import ndimage
+    from scipy.signal import find_peaks
+    npz = np.load(npz_path)
+    P = npz["cloud"].astype(float)
+    axes = npz["object_axes"]
+    c = npz["object_centre"]
+    n = axes[2] / np.linalg.norm(axes[2])
+    t = (P - c) @ n
+    front = t >= np.quantile(t, 0.5)
+    if (t[front] - np.quantile(t, 0.5)).mean() < 0:
+        n, t = -n, -t
+        front = t >= np.quantile(t, 0.5)
+    tf = t[front]
+    hist, edges = np.histogram(tf, bins=80)
+    centers = 0.5 * (edges[1:] + edges[:-1])
+    peaks, props = find_peaks(hist, prominence=hist.max() * 0.08, distance=3)
+    levels = sorted(centers[peaks].tolist())[-2:]
+    step = float(levels[-1] - levels[0]) if len(levels) == 2 else 0.0
+    u = axes[0] / np.linalg.norm(axes[0]); v = np.cross(n, u)
+    face_pts = P[t >= np.quantile(t, 0.75)]
+    uv = np.column_stack([(face_pts - c) @ u, (face_pts - c) @ v])
+    mn, mx = np.quantile(uv, 0.005, 0), np.quantile(uv, 0.995, 0)
+    s = (res - 20) / max(np.ptp(np.vstack([mn, mx]), 0).max(), 1e-9)
+    img = np.zeros((res, res), np.uint8)
+    q = ((uv - mn) * s + 10).astype(int)
+    q = q[(q[:, 0] >= 0) & (q[:, 0] < res) & (q[:, 1] >= 0) & (q[:, 1] < res)]
+    img[q[:, 1], q[:, 0]] = 1
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, np.ones((11, 11), np.uint8))
+    lab, k = ndimage.label(img > 0)
+    if k > 1:
+        img = (lab == (np.argmax(ndimage.sum(img > 0, lab, range(1, k + 1))) + 1)).astype(np.uint8)
+    img = ndimage.binary_fill_holes(img > 0)
+    width = float(np.ptp(uv[:, 0]))
+    return {"step": step, "step_over_width": step / max(width, 1e-9), "levels": levels,
+            "face_raster": img, "px_per_unit": s, "width": width, "n_face_pts": int(len(face_pts))}

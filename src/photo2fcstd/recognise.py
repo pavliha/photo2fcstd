@@ -423,7 +423,35 @@ def fan_guard_params(rec, photos, frame_w_mm=80.0):
             "rings": rings, "wire_w": round(0.03 * frame_w_mm, 1)}
 
 
-def design_fan(photos, out, rec=None, frame_w_mm=80.0, depth_json=None):
+def traced_outline_mm(face, frame_w_mm, samples=180):
+    from photo2fcstd import analysis, spec as spec_mod, trace
+    from photo2fcstd.trace import segment_photo, upright_mask
+    was = trace.RECOVER_DARK
+    trace.RECOVER_DARK = False
+    try:
+        view = analysis.view(face)
+    finally:
+        trace.RECOVER_DARK = was
+    loops = spec_mod.traced_outline(view)
+    if not loops or loops[0]["type"] != "loop":
+        return None
+    pts = []
+    for e in loops[0]["elements"]:
+        if e["type"] == "line":
+            pts.append(e["p0"])
+        else:
+            a0 = np.arctan2(e["p0"][1] - e["cy"], e["p0"][0] - e["cx"]); a1 = np.arctan2(e["p1"][1] - e["cy"], e["p1"][0] - e["cx"])
+            if e.get("ccw", True) and a1 < a0: a1 += 2 * np.pi
+            if not e.get("ccw", True) and a1 > a0: a1 -= 2 * np.pi
+            for a in np.linspace(a0, a1, 12, endpoint=False):
+                pts.append([e["cx"] + e["r"] * np.cos(a), e["cy"] + e["r"] * np.sin(a)])
+    P = np.asarray(pts, float)
+    P -= P.mean(0)
+    s = frame_w_mm / max(np.ptp(P, 0).max(), 1e-9)
+    return (P * s).round(3).tolist()
+
+
+def design_fan(photos, out, rec=None, frame_w_mm=80.0, depth_json=None, traced=False):
     import json, subprocess, tempfile
     rec = rec if rec is not None else recognise_live(photos)
     fits = []
@@ -453,6 +481,11 @@ def design_fan(photos, out, rec=None, frame_w_mm=80.0, depth_json=None):
             thin = min(d3["short_over_long"], d3["height_over_long"], 1.0)
             src = "measured (3D, percentile extents)"
         params["box_depth"], ledger["box_depth"] = round(thin * frame_w_mm, 2), src
+    if traced:
+        best = photos[int(rec.get("face_photo_index", 0))]
+        pts = traced_outline_mm(best, frame_w_mm)
+        if pts and len(pts) >= 4:
+            params["outline_pts"], ledger["outline"] = pts, "traced (photo, %d points)" % len(pts)
     params = {**params, "_ledger": ledger}
     pj = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
     json.dump(params, pj); pj.close()

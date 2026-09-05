@@ -14,8 +14,8 @@ def register(cls):
 
 
 @register("fan_guard")
-def _fan_guard(rec, photos, out, frame_w_mm=80.0, depth_json=None):
-    path, params = recognise.design_fan(photos, out, rec=rec, frame_w_mm=frame_w_mm, depth_json=depth_json)
+def _fan_guard(rec, photos, out, frame_w_mm=80.0, depth_json=None, traced=True):
+    path, params = recognise.design_fan(photos, out, rec=rec, frame_w_mm=frame_w_mm, depth_json=depth_json, traced=traced)
     return {"tier": "template", "part_class": "fan_guard", "out": path,
             "params": params, "sketches_clean": True, "valid": True}
 
