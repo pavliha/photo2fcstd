@@ -105,6 +105,15 @@ benchmarked pipeline.
   is NOT refused - false-refusal rate reported; the micro-fan and the angled bottle ARE
   refused with a reshoot list.
 
+- **Status (2026-09-06): accepted on the dataset.** `tools/gate_bench.py`, 150 trusted
+  PrintCAD parts with real photos through the `assemble` path and the gate at 0.6: 148
+  valid builds, **9 refused (6%)**, refused parts score primitive F1 **0.425 against 0.655
+  for accepted** - the gate refuses the models that are actually worse. False refusal
+  **4 of 97 good parts (4.1%)**. Spearman(verify IoU, primitive F1) = 0.37: the outline
+  gate tracks drawing quality moderately, as the contract states (it certifies the
+  outline, the ledger the rest). Per mode: plan IoU 0.84 (8 refused of 89), profile 0.86
+  (1 of 39), revolve 0.96 (0 of 21). Threshold sweep in the commit; 0.6 stands.
+
 ### M2 - Templates fit, not fill  (M)
 Give each template a `fit(measurements) -> (params, ledger)` that least-squares its params
 to the observed silhouette rather than plugging one measured ratio. Convert `fan_guard`

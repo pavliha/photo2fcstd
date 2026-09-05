@@ -1,0 +1,1198 @@
+[
+ {
+  "part": "01504",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.931,
+  "refused": false
+ },
+ {
+  "part": "01540",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.96,
+  "refused": false
+ },
+ {
+  "part": "01520",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.28571428571428575,
+  "iou": 0.963,
+  "refused": false
+ },
+ {
+  "part": "00008",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.953,
+  "refused": false
+ },
+ {
+  "part": "00798",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.75,
+  "iou": 0.922,
+  "refused": false
+ },
+ {
+  "part": "00471",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.883,
+  "refused": false
+ },
+ {
+  "part": "00039",
+  "mode": "plan",
+  "valid": false,
+  "f1": 1.0,
+  "iou": null,
+  "refused": true
+ },
+ {
+  "part": "00595",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.837,
+  "refused": false
+ },
+ {
+  "part": "00386",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9090909090909091,
+  "iou": 0.937,
+  "refused": false
+ },
+ {
+  "part": "00724",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.4,
+  "iou": 0.831,
+  "refused": false
+ },
+ {
+  "part": "00005",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.96,
+  "refused": false
+ },
+ {
+  "part": "00280",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.967,
+  "refused": false
+ },
+ {
+  "part": "01630",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.957,
+  "refused": false
+ },
+ {
+  "part": "00096",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.14814814814814814,
+  "iou": 0.69,
+  "refused": false
+ },
+ {
+  "part": "00500",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8571428571428571,
+  "iou": 0.832,
+  "refused": false
+ },
+ {
+  "part": "01470",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.807,
+  "refused": false
+ },
+ {
+  "part": "00541",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.853,
+  "refused": false
+ },
+ {
+  "part": "01544",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.956,
+  "refused": false
+ },
+ {
+  "part": "00011",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.5454545454545455,
+  "iou": 0.943,
+  "refused": false
+ },
+ {
+  "part": "00794",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.14814814814814814,
+  "iou": 0.803,
+  "refused": false
+ },
+ {
+  "part": "01264",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.175,
+  "iou": 0.886,
+  "refused": false
+ },
+ {
+  "part": "00384",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.16666666666666666,
+  "iou": 0.858,
+  "refused": false
+ },
+ {
+  "part": "01744",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.947,
+  "refused": false
+ },
+ {
+  "part": "00245",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.971,
+  "refused": false
+ },
+ {
+  "part": "00149",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.984,
+  "refused": false
+ },
+ {
+  "part": "01448",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.25806451612903225,
+  "iou": 0.879,
+  "refused": false
+ },
+ {
+  "part": "01341",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.945,
+  "refused": false
+ },
+ {
+  "part": "00838",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8799999999999999,
+  "iou": 0.956,
+  "refused": false
+ },
+ {
+  "part": "00725",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.939,
+  "refused": false
+ },
+ {
+  "part": "01109",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.824,
+  "refused": false
+ },
+ {
+  "part": "00297",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.509,
+  "refused": true
+ },
+ {
+  "part": "01362",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.812,
+  "refused": false
+ },
+ {
+  "part": "00972",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.3076923076923077,
+  "iou": 0.929,
+  "refused": false
+ },
+ {
+  "part": "01741",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.927,
+  "refused": false
+ },
+ {
+  "part": "01364",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.922,
+  "refused": false
+ },
+ {
+  "part": "00060",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.05128205128205128,
+  "iou": 0.925,
+  "refused": false
+ },
+ {
+  "part": "00773",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.802,
+  "refused": false
+ },
+ {
+  "part": "00882",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.855,
+  "refused": false
+ },
+ {
+  "part": "00907",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6896551724137931,
+  "iou": 0.619,
+  "refused": false
+ },
+ {
+  "part": "00944",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6896551724137931,
+  "iou": 0.912,
+  "refused": false
+ },
+ {
+  "part": "01761",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9090909090909091,
+  "iou": 0.975,
+  "refused": false
+ },
+ {
+  "part": "01657",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.33333333333333337,
+  "iou": 0.89,
+  "refused": false
+ },
+ {
+  "part": "00224",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.20512820512820512,
+  "iou": 0.921,
+  "refused": false
+ },
+ {
+  "part": "00069",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.975,
+  "refused": false
+ },
+ {
+  "part": "01209",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.7499999999999999,
+  "iou": 0.89,
+  "refused": false
+ },
+ {
+  "part": "01107",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.888888888888889,
+  "iou": 0.903,
+  "refused": false
+ },
+ {
+  "part": "00048",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.872,
+  "refused": false
+ },
+ {
+  "part": "00968",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.966,
+  "refused": false
+ },
+ {
+  "part": "01584",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.941,
+  "refused": false
+ },
+ {
+  "part": "01391",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.888888888888889,
+  "iou": 0.835,
+  "refused": false
+ },
+ {
+  "part": "00643",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.7272727272727273,
+  "iou": 0.84,
+  "refused": false
+ },
+ {
+  "part": "01262",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.918,
+  "refused": false
+ },
+ {
+  "part": "01298",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.246,
+  "refused": true
+ },
+ {
+  "part": "00992",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.948,
+  "refused": false
+ },
+ {
+  "part": "01072",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.5,
+  "iou": 0.923,
+  "refused": false
+ },
+ {
+  "part": "00447",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.86,
+  "refused": false
+ },
+ {
+  "part": "01222",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.761904761904762,
+  "iou": 0.809,
+  "refused": false
+ },
+ {
+  "part": "00432",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9,
+  "iou": 0.744,
+  "refused": false
+ },
+ {
+  "part": "00478",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6666666666666665,
+  "iou": 0.891,
+  "refused": false
+ },
+ {
+  "part": "01721",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.44897959183673464,
+  "iou": 0.766,
+  "refused": false
+ },
+ {
+  "part": "01005",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.801,
+  "refused": false
+ },
+ {
+  "part": "01823",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.5,
+  "iou": 0.802,
+  "refused": false
+ },
+ {
+  "part": "01653",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.948,
+  "refused": false
+ },
+ {
+  "part": "00307",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9090909090909091,
+  "iou": 0.732,
+  "refused": false
+ },
+ {
+  "part": "00538",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.949,
+  "refused": false
+ },
+ {
+  "part": "00945",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.897,
+  "refused": false
+ },
+ {
+  "part": "01297",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9090909090909091,
+  "iou": 0.58,
+  "refused": true
+ },
+ {
+  "part": "01265",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.903,
+  "refused": false
+ },
+ {
+  "part": "00958",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8333333333333333,
+  "iou": 0.766,
+  "refused": false
+ },
+ {
+  "part": "01334",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.825,
+  "refused": false
+ },
+ {
+  "part": "01345",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "iou": 0.84,
+  "refused": false
+ },
+ {
+  "part": "00131",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.983,
+  "refused": false
+ },
+ {
+  "part": "01715",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.929,
+  "refused": false
+ },
+ {
+  "part": "00089",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.916,
+  "refused": false
+ },
+ {
+  "part": "01786",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.559,
+  "refused": true
+ },
+ {
+  "part": "01825",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.955,
+  "refused": false
+ },
+ {
+  "part": "01252",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9333333333333333,
+  "iou": 0.922,
+  "refused": false
+ },
+ {
+  "part": "01545",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.947,
+  "refused": false
+ },
+ {
+  "part": "01783",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.939,
+  "refused": false
+ },
+ {
+  "part": "01934",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.33333333333333337,
+  "iou": 0.873,
+  "refused": false
+ },
+ {
+  "part": "01187",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.911,
+  "refused": false
+ },
+ {
+  "part": "01071",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.941,
+  "refused": false
+ },
+ {
+  "part": "00460",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "iou": 0.866,
+  "refused": false
+ },
+ {
+  "part": "01719",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.961,
+  "refused": false
+ },
+ {
+  "part": "00677",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.9824561403508771,
+  "iou": 0.957,
+  "refused": false
+ },
+ {
+  "part": "00876",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.948,
+  "refused": false
+ },
+ {
+  "part": "01498",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.853,
+  "refused": false
+ },
+ {
+  "part": "01526",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.11764705882352942,
+  "iou": 0.501,
+  "refused": true
+ },
+ {
+  "part": "00721",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.847,
+  "refused": false
+ },
+ {
+  "part": "00455",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.846,
+  "refused": false
+ },
+ {
+  "part": "00698",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.717,
+  "refused": false
+ },
+ {
+  "part": "00747",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8,
+  "iou": 0.915,
+  "refused": false
+ },
+ {
+  "part": "01134",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.907,
+  "refused": false
+ },
+ {
+  "part": "00098",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8163265306122449,
+  "iou": 0.961,
+  "refused": false
+ },
+ {
+  "part": "00135",
+  "error": "every view of this part traces to an outline with no area: the silhouette is too thin to regularise, reshoot it square to the face"
+ },
+ {
+  "part": "01115",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "iou": 0.926,
+  "refused": false
+ },
+ {
+  "part": "01589",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.972,
+  "refused": false
+ },
+ {
+  "part": "00160",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8235294117647058,
+  "iou": 0.805,
+  "refused": false
+ },
+ {
+  "part": "01163",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.917,
+  "refused": false
+ },
+ {
+  "part": "00377",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.039999999999999994,
+  "iou": 0.971,
+  "refused": false
+ },
+ {
+  "part": "00608",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.899,
+  "refused": false
+ },
+ {
+  "part": "00766",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.849,
+  "refused": false
+ },
+ {
+  "part": "00653",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.888888888888889,
+  "iou": 0.951,
+  "refused": false
+ },
+ {
+  "part": "00112",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.866,
+  "refused": false
+ },
+ {
+  "part": "00610",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.963,
+  "refused": false
+ },
+ {
+  "part": "01751",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "iou": 0.881,
+  "refused": false
+ },
+ {
+  "part": "01279",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.872,
+  "refused": false
+ },
+ {
+  "part": "00863",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.4,
+  "iou": 0.938,
+  "refused": false
+ },
+ {
+  "part": "01731",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.923,
+  "refused": false
+ },
+ {
+  "part": "00943",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.761,
+  "refused": false
+ },
+ {
+  "part": "01908",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.886,
+  "refused": false
+ },
+ {
+  "part": "01426",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.961,
+  "refused": false
+ },
+ {
+  "part": "01884",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.984,
+  "refused": false
+ },
+ {
+  "part": "01055",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.888888888888889,
+  "iou": 0.872,
+  "refused": false
+ },
+ {
+  "part": "01089",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6363636363636364,
+  "iou": 0.77,
+  "refused": false
+ },
+ {
+  "part": "01512",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.943,
+  "refused": false
+ },
+ {
+  "part": "00873",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9600000000000001,
+  "iou": 0.938,
+  "refused": false
+ },
+ {
+  "part": "00982",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.35294117647058826,
+  "iou": 0.877,
+  "refused": false
+ },
+ {
+  "part": "01100",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.918,
+  "refused": false
+ },
+ {
+  "part": "01947",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.97,
+  "refused": false
+ },
+ {
+  "part": "01449",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.763,
+  "refused": false
+ },
+ {
+  "part": "01099",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.756,
+  "refused": false
+ },
+ {
+  "part": "01682",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.4166666666666667,
+  "iou": 0.839,
+  "refused": false
+ },
+ {
+  "part": "01179",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.915,
+  "refused": false
+ },
+ {
+  "part": "00174",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.46464646464646464,
+  "iou": 0.661,
+  "refused": false
+ },
+ {
+  "part": "01894",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.961,
+  "refused": false
+ },
+ {
+  "part": "00626",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.86,
+  "refused": false
+ },
+ {
+  "part": "01181",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.418,
+  "refused": true
+ },
+ {
+  "part": "01875",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.723,
+  "refused": false
+ },
+ {
+  "part": "00139",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.39,
+  "refused": true
+ },
+ {
+  "part": "01477",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.974,
+  "refused": false
+ },
+ {
+  "part": "01124",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.804,
+  "refused": false
+ },
+ {
+  "part": "01525",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.954,
+  "refused": false
+ },
+ {
+  "part": "01510",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.817,
+  "refused": false
+ },
+ {
+  "part": "00579",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.4571428571428572,
+  "iou": 0.907,
+  "refused": false
+ },
+ {
+  "part": "01254",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.873,
+  "refused": false
+ },
+ {
+  "part": "01560",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.927,
+  "refused": false
+ },
+ {
+  "part": "00697",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.852,
+  "refused": false
+ },
+ {
+  "part": "01674",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.968,
+  "refused": false
+ },
+ {
+  "part": "01380",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.929,
+  "refused": false
+ },
+ {
+  "part": "01609",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.13333333333333333,
+  "iou": 0.826,
+  "refused": false
+ },
+ {
+  "part": "00884",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.944,
+  "refused": false
+ },
+ {
+  "part": "01838",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "iou": 0.566,
+  "refused": true
+ },
+ {
+  "part": "01858",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.9,
+  "iou": 0.726,
+  "refused": false
+ },
+ {
+  "part": "00825",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.863,
+  "refused": false
+ },
+ {
+  "part": "00701",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.79,
+  "refused": false
+ },
+ {
+  "part": "01676",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8,
+  "iou": 0.9,
+  "refused": false
+ },
+ {
+  "part": "00208",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "iou": 0.62,
+  "refused": false
+ },
+ {
+  "part": "00718",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "iou": 0.978,
+  "refused": false
+ },
+ {
+  "part": "00027",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "iou": 0.783,
+  "refused": false
+ }
+]
