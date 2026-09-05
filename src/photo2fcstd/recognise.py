@@ -212,26 +212,49 @@ def route(photos, name="part", rec=None):
     return build_program(rec, photos, name=name), rec
 
 
+def count_rings(gray, cx, cy, r_bore):
+    from scipy.signal import find_peaks
+    angles = np.linspace(0, 2 * np.pi, 24, endpoint=False)
+    counts = []
+    for a in angles:
+        rs = np.linspace(0.08 * r_bore, 0.95 * r_bore, 120)
+        xs = np.clip((cx + rs * np.cos(a)).astype(int), 0, gray.shape[1] - 1)
+        ys = np.clip((cy + rs * np.sin(a)).astype(int), 0, gray.shape[0] - 1)
+        prof = gray[ys, xs].astype(float)
+        prof = (prof - prof.min()) / (np.ptp(prof) + 1e-6)
+        peaks, _ = find_peaks(prof, prominence=0.25, distance=4)
+        counts.append(len(peaks))
+    return int(np.median(counts)) if counts else 0
+
+
 def fan_guard_params(rec, photos, frame_w_mm=80.0):
     from photo2fcstd import trace
-    from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
+    from photo2fcstd.trace import fit_ellipse, load, outline, segment_photo, upright_mask
     if rec.get("openings"):
         trace.RECOVER_DARK = True
     face = photos[int(rec.get("face_photo_index", 0))]
-    mask, _ = upright_mask(segment_photo(face))
+    mask, angle = upright_mask(segment_photo(face))
     poly, sh = outline(mask)
     frame_px = float(max(np.ptp(poly[:, 0]), np.ptp(poly[:, 1])))
     scale = frame_w_mm / frame_px
+    g = rec.get("grille") or {}
+    rings = int(g.get("rings", 4))
     bore_mm = 0.9 * frame_w_mm
     if sh["holes"]:
+        from scipy import ndimage
         f = fit_ellipse(np.asarray(max(sh["holes"], key=len), float))
         bore_mm = round(2 * float(f["a"]) * scale, 1)
-    g = rec.get("grille") or {}
+        img = load(face)
+        gray = img.mean(axis=2) if img.ndim == 3 else img.astype(float)
+        gray = ndimage.rotate(gray, -angle, reshape=True, order=1)
+        measured = count_rings(gray, float(f["cx"]), float(f["cy"]), float(f["a"]))
+        if measured >= 2:
+            rings = measured
     return {"frame_w": frame_w_mm, "corner_r": round(0.05 * frame_w_mm, 1),
             "plate_t": round(0.05 * frame_w_mm, 1), "bore_d": bore_mm,
             "mount_pitch": round(0.894 * frame_w_mm, 1),
             "mount_d": round(0.056 * frame_w_mm, 1),
-            "rings": int(g.get("rings", 4)), "wire_w": round(0.03 * frame_w_mm, 1)}
+            "rings": rings, "wire_w": round(0.03 * frame_w_mm, 1)}
 
 
 def design_fan(photos, out, rec=None, frame_w_mm=80.0):
