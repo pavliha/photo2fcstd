@@ -141,6 +141,16 @@ existing 27 s handheld clip registered 11 of 27 frames and is not carve-grade.
 - **Accept:** the enclosure template's depth/width proportion agrees with VGGT's within
   10%; output is a clean parametric solid, not a blob.
 - **Reuses:** `sfm_real.py`, `fuse.measured_depth`, the template `fit()` from M2.
+- **Status (2026-09-05): the fan did not need the carve.** The enclosure is the fan_guard
+  template plus a skirt whose depth comes from V1b's dense-depth measurement - the
+  object's thinnest 3D extent, orientation-free - so `design_fan(..., depth_json=)` builds
+  80 x 80 x 39.8 with `box_depth = 35.78, measured (3D, VGGT)` in the ledger, gate 0.927.
+  The carve stays for shapes no template covers (V2). Adding the skirt also exposed a
+  verify bug: `_model_silhouette` took the *largest-volume object in the document*, which
+  for the flat guard was the plate Pad before its pockets - M0's 0.927 had been comparing
+  an un-pocketed plate. Verify now takes the document's final shape and fills interior
+  holes on both sides (the contract is the outer outline); the knowns re-measure at flat
+  0.925 / skirted 0.927 / bottle 0.951 against 0.427 / 0.32 for the wrong ones.
 
 ### M5 - Template library growth  (ongoing, one class per PR)
 Add templates as `@register` + a parametric builder + `fit()`. Priority by what real parts

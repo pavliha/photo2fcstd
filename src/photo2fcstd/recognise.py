@@ -406,7 +406,7 @@ def fan_guard_params(rec, photos, frame_w_mm=80.0):
             "rings": rings, "wire_w": round(0.03 * frame_w_mm, 1)}
 
 
-def design_fan(photos, out, rec=None, frame_w_mm=80.0):
+def design_fan(photos, out, rec=None, frame_w_mm=80.0, depth_json=None):
     import json, subprocess, tempfile
     rec = rec if rec is not None else recognise_live(photos)
     fits = []
@@ -426,6 +426,11 @@ def design_fan(photos, out, rec=None, frame_w_mm=80.0):
         if vals:
             params[k] = (int(np.median(vals)) if k == "rings" else round(float(np.median(vals)), 2))
             ledger[k] = "measured (%d views)" % len(vals)
+    params["box_depth"], ledger["box_depth"] = 0.0, "default (flat guard; give a 3D depth for the enclosure)"
+    if depth_json and os.path.exists(depth_json):
+        d3 = json.load(open(depth_json))
+        thin = min(d3["short_over_long"], d3["height_over_long"], 1.0)   # the object's thinnest extent, any orientation
+        params["box_depth"], ledger["box_depth"] = round(thin * frame_w_mm, 2), "measured (3D, VGGT)"
     params = {**params, "_ledger": ledger}
     pj = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
     json.dump(params, pj); pj.close()

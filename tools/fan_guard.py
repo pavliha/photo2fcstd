@@ -9,11 +9,12 @@ doc = App.newDocument("fan")
 
 sh = doc.addObject("Spreadsheet::Sheet", "params")
 _defaults = dict(frame_w=80.0, corner_r=4.0, plate_t=4.0, bore_d=76.0,
-                 mount_pitch=71.5, mount_d=4.5, rings=4, wire_w=2.4)
+                 mount_pitch=71.5, mount_d=4.5, rings=4, wire_w=2.4, box_depth=0.0, wall=2.4)
 _notes = dict(frame_w="outer square edge (mm)", corner_r="outer corner radius",
               plate_t="guard plate / grille thickness", bore_d="central opening diameter",
               mount_pitch="screw hole centre-to-centre", mount_d="screw hole diameter",
-              rings="concentric grille rings (edit + rerun)", wire_w="grille wire / spoke width")
+              rings="concentric grille rings (edit + rerun)", wire_w="grille wire / spoke width",
+              box_depth="enclosure skirt depth behind the guard (0 = flat guard)", wall="skirt wall thickness")
 _ledger = _m.get("_ledger", {})
 rows = [(k, float(_m.get(k, _defaults[k])), _notes[k]) for k in _defaults]
 sh.set("A1", "param"); sh.set("B1", "value"); sh.set("C1", "meaning"); sh.set("D1", "source")
@@ -28,6 +29,20 @@ G = {a: float(v) for a, v, _ in rows}
 half = G["frame_w"] / 2; r = G["corner_r"]; t = G["plate_t"]
 
 body = doc.addObject("PartDesign::Body", "Body")
+
+def rounded_square(sk, half, r):
+    d = half - r
+    cs = [Vector(d, d, 0), Vector(-d, d, 0), Vector(-d, -d, 0), Vector(d, -d, 0)]
+    angs = [(0, 90), (90, 180), (180, 270), (270, 360)]
+    arcs = [sk.addGeometry(Part.ArcOfCircle(Part.Circle(c, Vector(0, 0, 1), r),
+            math.radians(a0), math.radians(a1)), False) for c, (a0, a1) in zip(cs, angs)]
+    for i in range(4):
+        l = sk.addGeometry(Part.LineSegment(sk.Geometry[arcs[i]].EndPoint,
+                                            sk.Geometry[arcs[(i + 1) % 4]].StartPoint), False)
+        sk.addConstraint(Sketcher.Constraint("Tangent", arcs[i], 2, l, 1))
+        sk.addConstraint(Sketcher.Constraint("Tangent", l, 2, arcs[(i + 1) % 4], 1))
+    return arcs
+
 
 sk = body.newObject("Sketcher::SketchObject", "sk_frame")
 sk.AttachmentSupport = [(doc.getObject("XY_Plane"), "")]; sk.MapMode = "FlatFace"
@@ -93,6 +108,18 @@ mp = body.newObject("PartDesign::Pocket", "mounts")
 mp.Profile = msk; mp.Type = "ThroughAll"; mp.Midplane = True
 doc.recompute()
 print("mounts", round(body.Shape.Volume, 1), body.Shape.isValid())
+
+if G["box_depth"] > 0:
+    ssk = body.newObject("Sketcher::SketchObject", "sk_skirt")
+    ssk.AttachmentSupport = [(doc.getObject("XY_Plane"), "")]; ssk.MapMode = "FlatFace"
+    rounded_square(ssk, half, r)
+    rounded_square(ssk, half - G["wall"], max(r - G["wall"], 0.5))
+    doc.recompute()
+    skirt = body.newObject("PartDesign::Pad", "skirt")
+    skirt.Profile = ssk; skirt.Length = G["box_depth"]; skirt.Reversed = True
+    skirt.setExpression("Length", "params.box_depth")
+    doc.recompute()
+    print("skirt", round(body.Shape.Volume, 1), body.Shape.isValid())
 
 # grille: rings + X spokes as a fused solid, then union with the plate via a second body boolean
 R = G["bore_d"] / 2; w = G["wire_w"]; n = int(G["rings"])

@@ -14,8 +14,8 @@ def register(cls):
 
 
 @register("fan_guard")
-def _fan_guard(rec, photos, out, frame_w_mm=80.0):
-    path, params = recognise.design_fan(photos, out, rec=rec, frame_w_mm=frame_w_mm)
+def _fan_guard(rec, photos, out, frame_w_mm=80.0, depth_json=None):
+    path, params = recognise.design_fan(photos, out, rec=rec, frame_w_mm=frame_w_mm, depth_json=depth_json)
     return {"tier": "template", "part_class": "fan_guard", "out": path,
             "params": params, "sketches_clean": True, "valid": True}
 
@@ -96,8 +96,10 @@ def _model_silhouette(out):
     scr.write(
         "import FreeCAD, numpy as np\n"
         "doc=FreeCAD.openDocument(%r)\n"
+        "fuse=[o for o in doc.Objects if o.TypeId=='Part::MultiFuse']\n"
+        "bodies=[o for o in doc.Objects if o.TypeId=='PartDesign::Body']\n"
         "s=[o for o in doc.Objects if getattr(o,'Shape',None) and o.Shape.Solids]\n"
-        "sh=max(s,key=lambda o:o.Shape.Volume).Shape\n"
+        "sh=(fuse[-1] if fuse else bodies[-1] if bodies else max(s,key=lambda o:o.Shape.Volume)).Shape\n"
         "v,t=sh.tessellate(0.5)\n"
         "V=np.array([[p.x,p.y,p.z] for p in v]); T=np.array(t)\n"
         "ax=np.argsort(np.ptp(V,0))[-2:]\n"
@@ -129,8 +131,10 @@ def _canon(mask, size=512):
     import cv2
     import numpy as np
     from photo2fcstd.trace import upright_mask
+    from scipy import ndimage
     k = max(3, int(0.03 * max(mask.shape)))
     mask = cv2.morphologyEx(mask.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((k, k), np.uint8)) > 0
+    mask = ndimage.binary_fill_holes(mask)        # the contract is the outer outline; holes are the ledger's job
     m, _ = upright_mask(mask)
     ys, xs = np.nonzero(m)
     m = m[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
@@ -162,11 +166,12 @@ def main(argv=None):
     ap.add_argument("photos", nargs="+")
     ap.add_argument("--out", required=True)
     ap.add_argument("--frame-mm", type=float, default=80.0, help="longest face edge in mm, for scale")
+    ap.add_argument("--depth-json", default=None, help="vggt_depth.py result; gives the enclosure its measured depth")
     a = ap.parse_args(argv)
     rec = recognise._recognise_program_live(a.photos)
     print("recognised:", json.dumps(rec))
-    res = design(a.photos, a.out, rec=rec, frame_w_mm=a.frame_mm) if rec.get("part_class") == "fan_guard" \
-        else design(a.photos, a.out, rec=rec)
+    res = design(a.photos, a.out, rec=rec, frame_w_mm=a.frame_mm, depth_json=a.depth_json) \
+        if rec.get("part_class") == "fan_guard" else design(a.photos, a.out, rec=rec)
     if res.get("model", 1) is None:
         print("REFUSED:", res["reason"])
         for r in res["reshoot"]:
