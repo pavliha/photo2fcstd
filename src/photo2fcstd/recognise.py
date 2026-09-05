@@ -233,11 +233,23 @@ def design(photos, name="part", prog=None):
     return compile_program(prog, photos, name=name), prog
 
 
+def _to_jpeg(src, dst):
+    ext = os.path.splitext(src)[1].lower()
+    if ext in (".jpg", ".jpeg", ".png"):
+        import shutil
+        shutil.copy(src, dst)
+        return dst
+    from PIL import Image
+    from photo2fcstd.trace import load
+    arr = load(src)
+    Image.fromarray((arr * 255).astype("uint8") if arr.max() <= 1.0 else arr.astype("uint8")).save(dst, "JPEG")
+    return dst
+
+
 def _recognise_program_live(photos):
     import json as _json, shutil, subprocess, tempfile
     d = tempfile.mkdtemp(prefix="prog_")
-    local = [shutil.copy(p, os.path.join(d, "img%02d%s" % (i, os.path.splitext(p)[1] or ".jpg")))
-             for i, p in enumerate(photos)]
+    local = [_to_jpeg(p, os.path.join(d, "img%02d.jpg" % i)) for i, p in enumerate(photos)]
     listing = "\n".join("  photo %d: %s" % (i, q) for i, q in enumerate(local))
     prompt = "Read these %d photos:\n%s\n\n%s" % (len(local), listing, program_prompt(len(local)))
     out = subprocess.run([VISION_CMD, "-p", prompt, "--allowedTools", "Read"],
