@@ -172,8 +172,8 @@ def program_prompt(n):
         '  "face_photo_index": int 0..%d - the photo square-on to the largest flat face\n'
         '  "revolve": true|false - true if the whole part is turned round a central axis '
         "(a bottle, knob, wheel, cup); then features are ignored and the side profile is revolved\n"
-        '  "part_class": a standard class name if you recognise one ("fan_guard","bracket",'
-        '"plate","enclosure"), else null\n'
+        '  "part_class": a standard class name if you recognise one ("fan_guard","bottle",'
+        '"bracket","plate","enclosure"), else null\n'
         '  "single_extrusion": true|false - one flat profile of constant thickness\n'
         '  "openings": ["bore"] if there is a large central round opening, else []\n'
         '  "grille": {"rings": int, "spokes": int} or null\n'

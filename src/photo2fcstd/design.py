@@ -23,6 +23,23 @@ def _fan_guard(rec, photos, out, frame_w_mm=80.0, depth_json=None):
 THRESHOLD = {"template": 0.8, "revolve": 0.8, "assemble": 0.6}
 
 
+@register("bottle")
+def _bottle(rec, photos, out, cloud_npz=None, **kw):
+    if not cloud_npz:
+        spec = recognise.revolve_spec(photos, rec, name=_stem(out))
+        return _build(spec, out, "revolve", "bottle")
+    import sys
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "tools"))
+    import cloud_primitives as cp
+    params, ledger, st = cp.fit_revolve(cloud_npz)
+    cp.build_revolve_template(params, ledger, out)
+    return {"tier": "template", "part_class": "bottle", "out": out, "params": {**params, "_ledger": ledger},
+            "sketches_clean": True, "valid": True, "contain_fraction": st["contain_fraction"]}
+
+
+CONTAIN_THRESHOLD = 0.9
+
+
 def design(photos, out, rec=None, **kw):
     rec = rec if rec is not None else recognise._recognise_program_live(photos)
     cls = rec.get("part_class")
@@ -38,6 +55,11 @@ def design(photos, out, rec=None, **kw):
                        ["add a template for this class, or shoot a slow low 16-view orbit for the carve path"])
     if res.get("valid") is False:
         return _refuse(out, "build produced no valid solid", ["reshoot square to the face"])
+    if res.get("contain_fraction") is not None:          # built from a 3D cloud: gate on containment, not a 2D view
+        if res["contain_fraction"] < CONTAIN_THRESHOLD:
+            return _refuse(out, "solid contains only %.0f%% of the measured cloud" % (100 * res["contain_fraction"]),
+                           ["shoot a slower, lower orbit"])
+        return {**res, "verify": {"contain_fraction": res["contain_fraction"], "confidence": "ok"}}
     v = verify(out, photos, rec, threshold=THRESHOLD[res["tier"]])
     if v["confidence"] != "ok":
         return _refuse(out, "silhouette does not match the photo (IoU %s < %s)"
@@ -167,11 +189,13 @@ def main(argv=None):
     ap.add_argument("--out", required=True)
     ap.add_argument("--frame-mm", type=float, default=80.0, help="longest face edge in mm, for scale")
     ap.add_argument("--depth-json", default=None, help="vggt_depth.py result; gives the enclosure its measured depth")
+    ap.add_argument("--cloud", default=None, help="vggt_depth.py *_poses.npz; cloud-fitted templates (bottle)")
     a = ap.parse_args(argv)
     rec = recognise._recognise_program_live(a.photos)
     print("recognised:", json.dumps(rec))
-    res = design(a.photos, a.out, rec=rec, frame_w_mm=a.frame_mm, depth_json=a.depth_json) \
-        if rec.get("part_class") == "fan_guard" else design(a.photos, a.out, rec=rec)
+    cls = rec.get("part_class")
+    res = design(a.photos, a.out, rec=rec, frame_w_mm=a.frame_mm, depth_json=a.depth_json) if cls == "fan_guard" \
+        else design(a.photos, a.out, rec=rec, cloud_npz=a.cloud) if cls == "bottle" else design(a.photos, a.out, rec=rec)
     if res.get("model", 1) is None:
         print("REFUSED:", res["reason"])
         for r in res["reshoot"]:

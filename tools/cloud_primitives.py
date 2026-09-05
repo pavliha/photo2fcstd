@@ -49,12 +49,13 @@ def classify(X, Y, H, bands=12):
                   "footprint_long": float(ext[0]), "footprint_short": float(ext[1])}, prof
 
 
-def revolve_spec(prof, name, scale=1000.0):
+def revolve_spec(prof, name, scale=1000.0, frame=None):
     pts = [[0.0, 0.0]] + [[round(r * scale, 2), round(h * scale, 2)] for r, h in prof] + [[0.0, round(prof[-1][1] * scale, 2)]]
     return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "px",
             "scale_note": "UNSCALED: one caliper reading sets scale (cloud units x1000)",
             "views": {}, "outline": None, "stl": None, "measured": [],
-            "revolve": {"generic": True, "profile": pts, "holes": [], "rings": []}}
+            "revolve": {"generic": True, "profile": pts, "holes": [], "rings": []},
+            "_cloud_frame": frame}
 
 
 def box_spec(X, Y, H, name, scale=1000.0, res=512):
@@ -96,14 +97,53 @@ def box_spec(X, Y, H, name, scale=1000.0, res=512):
     return {"name": name, "mode": "features", "mm_per_px": 1.0, "unit": "px",
             "scale_note": "UNSCALED: one caliper reading sets scale (cloud units x1000)",
             "views": {}, "outline": None, "revolve": None, "stl": None, "measured": [],
-            "features": [{"op": "pad", "depth_px": round(depth_px, 2), "loops": [scale_loop(l) for l in loops]}]}
+            "features": [{"op": "pad", "depth_px": round(depth_px, 2), "loops": [scale_loop(l) for l in loops]}],
+            "_cloud_frame": {"kind": "box", "mn": mn.tolist(), "s": float(s), "factor": float(factor), "lo": float(lo), "scale": scale,
+                             "raster": img}}
+
+
+def contain_fraction(spec, X, Y, H, tol_frac=0.03):
+    fr = spec.get("_cloud_frame")
+    if not fr:
+        return None
+    idx = np.random.default_rng(1).choice(len(X), min(len(X), 20000), replace=False)
+    x, y, h = X[idx], Y[idx], H[idx]
+    if fr["kind"] == "revolve":
+        prof = np.array(spec["revolve"]["profile"][1:-1])
+        r = np.hypot(x - fr["cx"], y - fr["cy"]) * fr["scale"]
+        hh = (h - fr["lo"]) * fr["scale"]
+        rmax = np.interp(hh, prof[:, 1], prof[:, 0], left=prof[0, 0], right=prof[-1, 0])
+        tol = tol_frac * prof[:, 0].max()
+        inside = (r <= rmax + tol) & (hh >= -tol) & (hh <= prof[-1, 1] + tol)
+        return float(inside.mean())
+    import cv2
+    img = fr["raster"].astype(np.uint8)
+    k = max(3, int(tol_frac * max(img.shape)))
+    img = cv2.dilate(img, np.ones((k, k), np.uint8)) > 0
+    q = ((np.column_stack([x, y]) - np.array(fr["mn"])) * fr["s"] + 10).astype(int)
+    ok = (q[:, 0] >= 0) & (q[:, 0] < img.shape[1]) & (q[:, 1] >= 0) & (q[:, 1] < img.shape[0])
+    z = (h - fr["lo"]) * fr["scale"]
+    depth = spec["features"][0]["depth_px"]
+    tol = tol_frac * depth
+    inside = np.zeros(len(x), bool)
+    inside[ok] = img[q[ok, 1], q[ok, 0]]
+    inside &= (z >= -tol) & (z <= depth + tol)
+    return float(inside.mean())
 
 
 def main(npz_path, out_json, name="part"):
     npz = np.load(npz_path)
     X, Y, H = coords(npz)
     kind, stats, prof = classify(X, Y, H)
-    spec = revolve_spec(prof, name) if kind == "revolve" else box_spec(X, Y, H, name)
+    lo = float(np.quantile(H, 0.02))
+    if kind == "revolve":
+        spec = revolve_spec(prof, name, frame={"kind": "revolve", "cx": float(np.median(X)), "cy": float(np.median(Y)), "lo": lo, "scale": 1000.0})
+    else:
+        spec = box_spec(X, Y, H, name)
+    spec["contain_fraction"] = contain_fraction(spec, X, Y, H)
+    stats["contain_fraction"] = spec["contain_fraction"]
+    if spec.get("_cloud_frame"):
+        spec["_cloud_frame"].pop("raster", None)
     json.dump(spec, open(out_json, "w"))
     if kind == "box":
         pts = np.array([p for l in spec["features"][0]["loops"] for e in l["elements"] for p in (e["p0"], e["p1"])])
@@ -118,3 +158,49 @@ def main(npz_path, out_json, name="part"):
 
 if __name__ == "__main__":
     main(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "part")
+
+
+def fit_revolve(npz_path, scale=1000.0):
+    npz = np.load(npz_path)
+    X, Y, H = coords(npz)
+    kind, stats, prof = classify(X, Y, H, bands=24)
+    r = np.array([p[0] for p in prof]) * scale
+    h = np.array([p[1] for p in prof]) * scale
+    total = float(h[-1])
+    body_r = float(np.median(r[h < 0.5 * total]))
+    below = np.where(r < 0.85 * body_r)[0]
+    below = below[below > len(r) // 4] if len(below) else below
+    i_sh = int(below[0]) if len(below) else len(r) - 2
+    body_h = float(h[i_sh - 1]) if i_sh > 0 else 0.5 * total
+    upper = r[i_sh:]
+    neck_r = float(np.min(upper)) if len(upper) else 0.5 * body_r
+    i_neck = i_sh + int(np.argmin(upper)) if len(upper) else i_sh
+    shoulder_h = max(float(h[i_neck] - body_h), 0.02 * total)
+    cap_r = float(r[-1])
+    top = np.where(r[i_neck:] > neck_r * 1.15)[0]
+    cap_h = float(h[-1] - h[i_neck + top[0]]) if len(top) else 0.05 * total
+    cap_r = float(np.median(r[i_neck + top[0]:])) if len(top) else neck_r
+    neck_h = max(total - body_h - shoulder_h - cap_h, 0.02 * total)
+    params = {k: round(v, 2) for k, v in dict(body_r=body_r, body_h=body_h, shoulder_h=shoulder_h,
+                                              neck_r=neck_r, neck_h=neck_h, cap_r=cap_r, cap_h=cap_h).items()}
+    ledger = {k: "measured (3D cloud, %d bands)" % len(r) for k in params}
+    prof_pts = [[0, 0], [body_r, 0], [body_r, body_h], [neck_r, body_h + shoulder_h],
+                [neck_r, body_h + shoulder_h + neck_h], [cap_r, body_h + shoulder_h + neck_h], [cap_r, total], [0, total]]
+    spec_like = {"revolve": {"profile": [[0, 0]] + prof_pts[1:-1] + [[0, total]]},
+                 "_cloud_frame": {"kind": "revolve", "cx": float(np.median(X)), "cy": float(np.median(Y)),
+                                  "lo": float(np.quantile(H, 0.02)), "scale": scale}}
+    contain = contain_fraction(spec_like, X, Y, H)
+    return params, ledger, {"kind": kind, "contain_fraction": contain, **stats}
+
+
+def build_revolve_template(params, ledger, out):
+    import subprocess, tempfile
+    pj = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+    json.dump({**params, "_ledger": ledger}, pj); pj.close()
+    freecad = os.environ.get("FREECADCMD", os.path.expanduser("~/Code/FreeCAD/build/release/bin/FreeCADCmd"))
+    tool = os.path.join(os.path.dirname(os.path.abspath(__file__)), "revolve_template.py")
+    r = subprocess.run([freecad, tool], env=dict(os.environ, P2F_PARAMS=pj.name, P2F_OUT=out),
+                       capture_output=True, text=True, timeout=300)
+    if "SAVED" not in r.stdout:
+        raise RuntimeError((r.stdout + r.stderr)[-600:])
+    return out

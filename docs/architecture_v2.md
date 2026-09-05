@@ -160,6 +160,14 @@ knobs), `bracket` (L/plate + hole pattern). Each unlocks a whole class at design
   agree with an independent 3D measurement within 10% on one real physical example;
   refuses gracefully on out-of-class input.
 
+- **M5 status (2026-09-06): `bottle` template landed.** `tools/revolve_template.py` is a
+  7-parameter body/shoulder/neck/cap revolve, fully constrained, params sheet with source
+  column; `cloud_primitives.fit_revolve` fits it to the VGGT cloud's radius-per-height
+  profile (24 bands) and checks 3D containment. The Minoxidil bottle: body_r 81.6, body_h
+  285, shoulder 75, neck_r 56.9 (no distinct cap found - profile degenerates cleanly to
+  6 points), containment 0.951, gate ok. Registered as `part_class: bottle`; without a
+  cloud it falls back to the raw side-profile revolve.
+
 ### M6 - Ledger in the FCStd  (S)
 Add a measured/inferred/default column to the params sheet, and a one-line confidence
 summary in the doc. Depth is `inferred` until a caliper or carve makes it `measured`;
@@ -274,6 +282,10 @@ against the frames' silhouettes.
   reads 12% low (the top-half selection trims the face edge) - noted, not hidden. A 3D
   containment check (cloud points inside the built solid) is the honest next verify for
   cloud-derived primitives; silhouette verify against a tilted frame is meaningless.
+
+- **V2 verify (2026-09-06):** cloud-derived solids are now verified in 3D - the fraction of
+  the measured cloud inside the built solid (`contain_fraction`, gate 0.9): fan box 0.986,
+  bottle revolve 0.949. Silhouette verify against a tilted frame is not used for them.
 
 ### V3 - Pose-aware template fit  (S, once V1 exists)
 Pick the frame most square to the face by its pose and run the template fit there; for
