@@ -25,7 +25,20 @@ certified by the ledger (measured / inferred / default), not by the gate. Say ex
 
 - **Scale.** Every fit is in pixels. One caliper reading or a carve makes it metric.
   Without it the output is emitted in px with `scale` as a params cell - never guessed.
-- **Depth of a single face.** Inferred (ledger) until a caliper or carve measures it.
+  **Exact size is not a goal and never a gate: the product is correct proportions**, and
+  the user scales once.
+- **Depth of a single face.** Inferred (ledger) until a carve / dense depth measures it.
+
+## Acceptance is proportion agreement, not caliper agreement
+
+A milestone is accepted when two *independent* measurements of the same proportion agree
+within a stated tolerance, and the spread is written to the ledger. Current honest
+precision, from the fan clip: depth/width is **0.373** from the tilted side photo's
+silhouette and **0.447** from VGGT 3D - **20% apart**. The 3D number is the more
+trustworthy (foreshortening shrinks depth in a tilted 2D view), so the target is: template
+fit proportions agree with VGGT proportions within 10%, and the ledger reports the
+2D-vs-3D spread when both exist. "Within 5% of a caliper" appears below only as an
+optional stronger check when the user chooses to measure.
 
 ## Regimes (input quality decides, not the object)
 
@@ -98,8 +111,10 @@ to the observed silhouette rather than plugging one measured ratio. Convert `fan
 first: fit frame_w, corner_r, bore_d, mount_pitch to the mask outline + hole.
 Claims square-on shots only until T1 lands; a tilted input is fit with `tilt: flagged` in
 the ledger, or refused by M1.
-- **Accept:** on **real photos of the yellow fan with caliper truth**, fitted params within
-  5% of measured. Synthetic renders may be used to debug, never to accept.
+- **Accept:** on **real photos of the yellow fan**, fitted proportions (bore/frame,
+  pitch/frame, corner/frame) reproduce the silhouette (verify IoU > 0.9) and agree with
+  the VGGT proportions within 10% where both exist. Synthetic renders may be used to
+  debug, never to accept.
 - **Reuses:** `fan_guard.py` template, `count_rings`, `fit_ellipse`.
 
 ### M3 - Delete the general tier  (S, deletion)
@@ -115,16 +130,17 @@ primitives to the hull instead of tracing a raw section. Bottle -> cylinder+prof
 fan body -> box+bore fit. The hull is measurement; the template is the clean output.
 External dependency: a slow, low (20-40 deg) orbit of the fan on the textured desk - the
 existing 27 s handheld clip registered 11 of 27 frames and is not carve-grade.
-- **Accept:** that orbit fits the enclosure template to depth within carve's known 1-5%
-  against a caliper; output is a clean parametric solid, not a blob.
+- **Accept:** the enclosure template's depth/width proportion agrees with VGGT's within
+  10%; output is a clean parametric solid, not a blob.
 - **Reuses:** `sfm_real.py`, `fuse.measured_depth`, the template `fit()` from M2.
 
 ### M5 - Template library growth  (ongoing, one class per PR)
 Add templates as `@register` + a parametric builder + `fit()`. Priority by what real parts
 need: `enclosure` (box body, covers the fan's body), `revolve` (cylinder+neck, bottles/
 knobs), `bracket` (L/plate + hole pattern). Each unlocks a whole class at designer quality.
-- **Accept per template:** fits within 5% on real photos of one physical example with
-  caliper truth; refuses gracefully on out-of-class input.
+- **Accept per template:** fitted proportions reproduce the silhouette (verify) and
+  agree with an independent 3D measurement within 10% on one real physical example;
+  refuses gracefully on out-of-class input.
 
 ### M6 - Ledger in the FCStd  (S)
 Add a measured/inferred/default column to the params sheet, and a one-line confidence
