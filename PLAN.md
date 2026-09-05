@@ -542,6 +542,15 @@ the tracer measures the plate outline and bore radius from the recognised face p
 valid solid with plate + bore + 4 screws, the correct CAD sketch, where the pure-geometry pipeline
 needed two opt-in flags and still picked the wrong view.
 
+**It is now a general module, not a fan script.** `photo2fcstd/recognise.py` defines the contract
+- `recognise_prompt(n)` is the exact instruction a VLM gets with the photos; it returns a small JSON
+(`face_photo_index`, `outline` in square/rect/disc/trace, `openings`, `screws`, `depth_ratio`) and
+never coordinates. `build(rec, photos)` turns that answer into a buildable spec, the tracer
+measuring every dimension from the recognised face. Tested end to end on a synthetic square-with-
+bore (`tests/test_recognise.py`) and run on the fan with a real VLM answer: valid solid, plate +
+bore + 4 screws, zero free DoF. Wiring a live vision model is one call that fills `rec`; today the
+recognition is supplied by the assistant reading the photos, which is the same interface.
+
 This is the resolution of the whole arc. The noise floor and the conservation law say the drawing
 cannot be improved by a better estimator on the contour - both were proven. The LLM does not touch
 the contour: it supplies the *identity* that no 2,000-part model and no matting network carries,
