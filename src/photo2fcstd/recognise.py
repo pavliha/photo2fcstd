@@ -72,9 +72,11 @@ def recognise_live(photos, model=None):
 
 
 def build(rec, photos, name="part", length_mm=None):
-    from photo2fcstd import cli
+    from photo2fcstd import cli, trace
     from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
-    os.environ["P2F_RECOVER_DARK"] = "1" if rec.get("openings") else os.environ.get("P2F_RECOVER_DARK", "0")
+    want_bore = bool(rec.get("openings"))
+    if want_bore:
+        trace.RECOVER_DARK = True   # module flag, not just env - trace read env at import
     face = photos[int(rec.get("face_photo_index", 0))]
     mask, _ = upright_mask(segment_photo(face))
     poly, sh = outline(mask)
