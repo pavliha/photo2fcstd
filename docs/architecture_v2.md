@@ -116,6 +116,14 @@ the ledger, or refused by M1.
   the VGGT proportions within 10% where both exist. Synthetic renders may be used to
   debug, never to accept.
 - **Reuses:** `fan_guard.py` template, `count_rings`, `fit_ellipse`.
+- **Status (2026-09-05): done.** `fit_fan_guard` measures corner radius (circle fit on
+  boundary points with the straight edges excluded - unexcluded, the fit read 34% high on
+  a synthetic truth), bore (ellipse), ring count (radial profile) and mount pitch (screw
+  heads by low saturation in the corner windows). `design_fan` fits every face-on photo
+  and takes the median per parameter, ledger recording the view count. Yellow fan, three
+  views: corner 7.13 mm (2 views), bore 69.75 (3), pitch 59.2 (2), rings 4 (3); gate IoU
+  0.927. The pitch is the proof of fit-over-fill: the ratio default would have plugged
+  71.5 and put the screws 20% too far out.
 
 ### M3 - Delete the general tier  (S, deletion)
 Remove `compile_program` and the `general` branch from `design()`. No template + no carve

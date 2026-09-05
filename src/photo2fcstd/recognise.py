@@ -293,6 +293,89 @@ def count_rings(gray, cx, cy, r_bore):
     return int(np.median(counts)) if counts else 0
 
 
+def _circle_fit(pts):
+    x, y = pts[:, 0], pts[:, 1]
+    A = np.column_stack([2 * x, 2 * y, np.ones(len(x))])
+    (cx, cy, c), *_ = np.linalg.lstsq(A, x * x + y * y, rcond=None)
+    return cx, cy, float(np.sqrt(max(c + cx * cx + cy * cy, 0.0)))
+
+
+def fit_fan_guard(face, frame_w_mm=80.0, rec=None):
+    import cv2
+    from scipy import ndimage
+    from photo2fcstd import trace
+    from photo2fcstd.trace import fit_ellipse, load, outline, segment_photo, upright_mask
+    trace.RECOVER_DARK = True
+    mask, angle = upright_mask(segment_photo(face))
+    poly, sh = outline(mask)
+    ys, xs = np.nonzero(mask)
+    frame_px = float(max(np.ptp(xs), np.ptp(ys)))
+    s = frame_w_mm / frame_px
+    ledger = {"frame_w": "required"}
+    p = {"frame_w": frame_w_mm}
+
+    cnts, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cnt = max(cnts, key=cv2.contourArea).reshape(-1, 2).astype(float)
+    rs = []
+    P4 = np.asarray(poly, float)
+    for i, c in enumerate(P4):
+        near = cnt[np.linalg.norm(cnt - c, axis=1) < 0.12 * frame_px]
+        for nb in (P4[i - 1], P4[(i + 1) % len(P4)]):        # drop points on the straight edges
+            e = (nb - c) / (np.linalg.norm(nb - c) + 1e-9)
+            off = np.abs((near - c) @ np.array([-e[1], e[0]]))
+            near = near[off > 0.01 * frame_px]
+        if len(near) >= 8:
+            _, _, r = _circle_fit(near)
+            if 0.005 * frame_px < r < 0.3 * frame_px:
+                rs.append(r)
+    if len(rs) >= 3:
+        p["corner_r"], ledger["corner_r"] = round(float(np.median(rs)) * s, 2), "measured"
+    else:
+        p["corner_r"], ledger["corner_r"] = round(0.05 * frame_w_mm, 2), "default"
+
+    hole = max(sh["holes"], key=len) if sh["holes"] else None
+    if hole is not None:
+        f = fit_ellipse(np.asarray(hole, float))
+        p["bore_d"], ledger["bore_d"] = round(2 * float(f["a"]) * s, 2), "measured"
+        img = load(face)
+        gray = ndimage.rotate(img.mean(axis=2) if img.ndim == 3 else img.astype(float), -angle, reshape=True, order=1)
+        n = count_rings(gray, float(f["cx"]), float(f["cy"]), float(f["a"]))
+        g = (rec or {}).get("grille") or {}
+        p["rings"], ledger["rings"] = (n, "measured") if n >= 2 else (int(g.get("rings", 4)), "default")
+    else:
+        p["bore_d"], ledger["bore_d"] = round(0.9 * frame_w_mm, 2), "default"
+        p["rings"], ledger["rings"] = 4, "default"
+
+    rgb = load(face)
+    rgb = (rgb * 255).astype(np.uint8) if rgb.max() <= 1.0 else rgb.astype(np.uint8)
+    rgb = ndimage.rotate(rgb, -angle, reshape=True, order=1)
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
+    screw = (hsv[..., 1] < 70) & (hsv[..., 2] > 120) & mask[:hsv.shape[0], :hsv.shape[1]]
+    cx, cy = xs.mean(), ys.mean()
+    centres = []
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            x0, x1 = sorted([cx + sx * 0.30 * frame_px, cx + sx * 0.49 * frame_px])
+            y0, y1 = sorted([cy + sy * 0.30 * frame_px, cy + sy * 0.49 * frame_px])
+            win = np.zeros_like(screw); win[int(y0):int(y1), int(x0):int(x1)] = True
+            lab, k = ndimage.label(screw & win)
+            if k:
+                sizes = ndimage.sum(screw & win, lab, range(1, k + 1))
+                i = int(np.argmax(sizes)) + 1
+                if sizes[i - 1] > 0.0002 * frame_px ** 2:
+                    centres.append(ndimage.center_of_mass(lab == i))
+    if len(centres) == 4:
+        c = np.array(centres)[:, ::-1]
+        pitch = np.median([np.ptp(c[:, 0]), np.ptp(c[:, 1])])
+        p["mount_pitch"], ledger["mount_pitch"] = round(float(pitch) * s, 2), "measured"
+    else:
+        p["mount_pitch"], ledger["mount_pitch"] = round(0.894 * frame_w_mm, 2), "default"
+    p["mount_d"], ledger["mount_d"] = round(0.056 * frame_w_mm, 2), "default"
+    p["plate_t"], ledger["plate_t"] = round(0.05 * frame_w_mm, 2), "default"
+    p["wire_w"], ledger["wire_w"] = round(0.03 * frame_w_mm, 2), "default"
+    return p, ledger
+
+
 def fan_guard_params(rec, photos, frame_w_mm=80.0):
     from photo2fcstd import trace
     from photo2fcstd.trace import fit_ellipse, load, outline, segment_photo, upright_mask
@@ -326,7 +409,24 @@ def fan_guard_params(rec, photos, frame_w_mm=80.0):
 def design_fan(photos, out, rec=None, frame_w_mm=80.0):
     import json, subprocess, tempfile
     rec = rec if rec is not None else recognise_live(photos)
-    params = fan_guard_params(rec, photos, frame_w_mm)
+    fits = []
+    for ph in photos:
+        try:
+            p, l = fit_fan_guard(ph, frame_w_mm, rec=rec)
+        except Exception:
+            continue
+        if l.get("bore_d") == "measured":
+            fits.append((p, l))
+    if not fits:
+        face = photos[int(rec.get("face_photo_index", 0))]
+        fits = [fit_fan_guard(face, frame_w_mm, rec=rec)]
+    params, ledger = dict(fits[0][0]), dict(fits[0][1])
+    for k in ("corner_r", "bore_d", "mount_pitch", "rings"):
+        vals = [p[k] for p, l in fits if l.get(k) == "measured"]
+        if vals:
+            params[k] = (int(np.median(vals)) if k == "rings" else round(float(np.median(vals)), 2))
+            ledger[k] = "measured (%d views)" % len(vals)
+    params = {**params, "_ledger": ledger}
     pj = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
     json.dump(params, pj); pj.close()
     tool = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "tools", "fan_guard.py")

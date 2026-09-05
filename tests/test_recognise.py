@@ -160,3 +160,23 @@ def test_revolve_tier_builds_a_solid_of_revolution(freecad, tmp_path, monkeypatc
     assert len(prof) > 5 and prof[0][0] == 0.0 and prof[-1][0] == 0.0   # closes on the axis
     res = design.design([p], str(tmp_path / "b.FCStd"), rec={"part_class": None, "revolve": True, "face_photo_index": 0})
     assert res["tier"] == "revolve" and res["valid"] and res["solids"] == 1
+
+
+def test_fit_fan_guard_measures_corner_bore_and_pitch(tmp_path):
+    import numpy as np, cv2, os
+    from photo2fcstd import recognise, trace
+    img = np.zeros((700, 700, 3), np.uint8)
+    yellow = (0, 200, 230)                                   # BGR: a saturated frame
+    cv2.rectangle(img, (190, 150), (510, 550), yellow, -1)   # rounded 400x400 square, r=40
+    cv2.rectangle(img, (150, 190), (550, 510), yellow, -1)
+    for c in ((190, 190), (510, 190), (190, 510), (510, 510)):
+        cv2.circle(img, c, 40, yellow, -1)
+    cv2.circle(img, (350, 350), 120, (0, 0, 0), -1)          # bore, d = 240 px
+    for c in ((206, 206), (494, 206), (206, 494), (494, 494)):
+        cv2.circle(img, c, 12, (255, 255, 255), -1)          # screws at pitch 288 px
+    p = str(tmp_path / "guard.png"); cv2.imwrite(p, img)
+    os.path.exists(trace.cached_mask(p)) and os.remove(trace.cached_mask(p))
+    params, ledger = recognise.fit_fan_guard(p, frame_w_mm=80.0)
+    assert ledger["corner_r"] == "measured" and abs(params["corner_r"] - 8.0) < 1.5
+    assert ledger["bore_d"] == "measured" and abs(params["bore_d"] - 48.0) < 4.0
+    assert ledger["mount_pitch"] == "measured" and abs(params["mount_pitch"] - 57.6) < 5.0
