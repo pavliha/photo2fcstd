@@ -340,3 +340,41 @@ M5 -> M6, with T1 only if photo-only input turns out to matter.
 M0 (make verify true) -> M1+M3 (honesty core, together) -> M2 (fan fits, square shots) ->
 T1 (squares tilted shots; unblocks M2 generally) -> M4 (carve fits, needs the reshoot) ->
 M5 (grow library) -> M6 (ledger). T2 only after T1 and M5 have a real-photo set to train on.
+
+
+---
+
+## Autonomous session report (2026-09-06)
+
+Everything below is committed with its numbers; nothing is billing.
+
+| item | state | evidence |
+|---|---|---|
+| M0 verify worth gating on | done | final shape, outer outline; knowns 0.925 / 0.927 / 0.951 vs 0.427 / 0.32 |
+| M1 hard gate | **accepted on the dataset** | 150 PrintCAD parts: 9 refused (6%), refused F1 0.425 vs 0.655 accepted, false-refusal 4.1%; threshold sweep 0.5-0.8 in commit ea2aec0 |
+| M2 templates fit | done | fan corner/bore/pitch/rings measured, medians over views, gate 0.927 |
+| M3 general tier deleted | done | no template + no cloud + not flat => refuse |
+| M4 carve -> template | folded in | the fan's depth came from dense depth, not a carve; carve kept for V2 fallback |
+| M5 library | 2 classes | fan_guard (+ enclosure skirt), bottle (cloud or side photo) |
+| M6 ledger | done | params sheet 'source' column: required / measured (n views) / measured (3D ...) / default |
+| V1 video capture | done | registration 11/27 -> 35/36; VGGT dense depth on a rented 5090 |
+| V2 hull -> primitives | done | fan box 1 : 0.875 : 0.378, bottle revolve; 3D containment 0.986 / 0.949 |
+| V3 pose-aware frame | done, honest | best frame 0.813 square (~35 deg) => 2D fit refused, cloud used |
+| recognition determinism | done | cached per photo set + prompt; repeat run 7 s incl. build |
+| full test suite | green | 322 passed |
+| T1 tilt head | not started | superseded by video poses; only matters for photo-only input |
+| T3 clutter isolation | not started | no labelled clutter set exists; the finger-held micro-fan is still (correctly) refused |
+
+**Corrections made along the way, all recorded above:** verify's largest-volume bug, the
+flying-pixel inflation of percentile extents (0.447 -> 0.378 traced), the unmasked-cloud
+coincidence (0.389), the zsh word-splitting trap in shell harnesses (twice).
+
+**Honest open spreads:** fan depth/width 0.373 (photo) vs 0.378 (traced cloud) vs 0.447
+(percentile cloud); bottle height/diameter 3.9 (photo) vs 2.36 (cloud), truth ~3. The
+ledger names the source of every number; the app never picks silently.
+
+**Files in ~/Downloads for the user to keep or delete** (not touched): `fan/fan.FCStd` +
+`fan/make_fan.py` (hand-built reference), `fan/fan_app.FCStd`, `fan/fan_pipeline.FCStd`
+(superseded by `fan/fan_enclosure_v2.FCStd`), `fan2.FCStd` (refused micro-fan - stale
+output from before the gate), `bottle.FCStd` (stacked-cylinder junk from the deleted general
+tier), `bottle_template.FCStd` (current bottle).
