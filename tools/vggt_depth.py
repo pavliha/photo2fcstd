@@ -83,11 +83,13 @@ def main(frames_dir, out_json, masks_dir=None):
     squareness = np.abs(view_dirs @ face_n)             # 1 = looking straight at the largest face
     res["square_frame"] = os.path.basename(names[int(np.argmax(squareness))])
     res["square_score"] = float(squareness.max())
-    np.savez(os.path.splitext(out_json)[0] + "_poses.npz",
+    cloud = fg[np.random.default_rng(0).choice(len(fg), min(len(fg), 300000), replace=False)]
+    np.savez_compressed(os.path.splitext(out_json)[0] + "_poses.npz",
              extrinsic=extr.squeeze(0).float().cpu().numpy(),
              intrinsic=intr.squeeze(0).float().cpu().numpy(),
              plane_n=n, plane_d=d, names=np.array(names),
-             object_centre=fc, object_axes=axes, squareness=squareness)
+             object_centre=fc, object_axes=axes, squareness=squareness,
+             cloud=cloud.astype(np.float32))
     json.dump(res, open(out_json, "w"), indent=1)
     print(json.dumps(res))
 
