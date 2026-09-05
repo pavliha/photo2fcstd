@@ -123,24 +123,28 @@ def test_fan_guard_params_measures_bore_from_photo(tmp_path):
     assert abs(par["bore_d"] - 80.0 * 300 / 400) < 8   # bore 300px in a 400px frame
 
 
-def test_design_dispatches_tiers(freecad, tmp_path, monkeypatch):
+def test_design_refuses_when_no_path_applies(tmp_path):
     from photo2fcstd import design
-    import numpy as np, cv2
-    img = np.zeros((700, 700), np.uint8)
-    cv2.rectangle(img, (150, 150), (550, 550), 255, -1)
-    cv2.circle(img, (350, 350), 120, 0, -1)
-    p = str(tmp_path / "part.png"); cv2.imwrite(p, img)
-    from photo2fcstd import trace
-    trace.RECOVER_DARK = True
-    import os
-    os.path.exists(trace.cached_mask(p)) and os.remove(trace.cached_mask(p))
-    rec = {"part_class": None, "face_photo_index": 0, "frame": "rect",
-           "features": [{"op": "pad", "profile": "frame", "depth_ratio": 0.3},
-                        {"op": "pocket", "profile": "bore", "through": True}]}
-    res = design.design([p], str(tmp_path / "out.FCStd"), rec=rec)
-    assert res["tier"] == "general" and res["valid"] and res["solids"] == 1
-    v = design.verify(str(tmp_path / "out.FCStd"), [p], rec)
-    assert v["silhouette_iou"] is not None and any("depth" in a for a in v["advice"])
+    res = design.design(["/nonexistent.jpg"], str(tmp_path / "x.FCStd"),
+                        rec={"part_class": None, "revolve": False, "single_extrusion": False})
+    assert res["model"] is None and "no template" in res["reason"] and res["reshoot"]
+    assert not (tmp_path / "x.FCStd").exists()
+
+
+def test_verify_gate_refuses_a_wrong_silhouette(freecad, tmp_path):
+    import numpy as np, cv2, os
+    from photo2fcstd import design, trace
+    tall = np.zeros((600, 400), np.uint8)
+    cv2.rectangle(tall, (150, 300), (250, 560), 255, -1); cv2.rectangle(tall, (180, 120), (220, 300), 255, -1)
+    p = str(tmp_path / "bottle.png"); cv2.imwrite(p, tall)
+    sq = np.zeros((600, 600), np.uint8); cv2.rectangle(sq, (100, 100), (500, 500), 255, -1)
+    q = str(tmp_path / "square.png"); cv2.imwrite(q, sq)
+    for f in (p, q):
+        os.path.exists(trace.cached_mask(f)) and os.remove(trace.cached_mask(f))
+    ok = design.design([p], str(tmp_path / "ok.FCStd"), rec={"part_class": None, "revolve": True, "face_photo_index": 0})
+    assert ok.get("model", 1) is not None and ok["verify"]["silhouette_iou"] >= 0.8
+    v = design.verify(str(tmp_path / "ok.FCStd"), [q], {"face_photo_index": 0}, threshold=0.8)
+    assert v["confidence"] == "low" and v["silhouette_iou"] < 0.8
 
 
 def test_revolve_tier_builds_a_solid_of_revolution(freecad, tmp_path, monkeypatch):

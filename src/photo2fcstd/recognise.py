@@ -167,67 +167,18 @@ def _sector(cx, cy, r_in, r_out, a0, a1):
 
 def program_prompt(n):
     return (
-        "You are given %d photographs of one manufactured part. Decompose it into a FEATURE "
-        "PROGRAM a CAD kernel can build - a JSON object, structure only, no coordinates:\n"
+        "You are given %d photographs of one manufactured part. Classify it - a JSON object, "
+        "structure only, no coordinates:\n"
         '  "face_photo_index": int 0..%d - the photo square-on to the largest flat face\n'
         '  "revolve": true|false - true if the whole part is turned round a central axis '
         "(a bottle, knob, wheel, cup); then features are ignored and the side profile is revolved\n"
-        '  "frame": "rect"|"rounded_rect"|"disc"|"trace" - the outer boundary of that face\n'
         '  "part_class": a standard class name if you recognise one ("fan_guard","bracket",'
         '"plate","enclosure"), else null\n'
-        '  "features": ordered list, each {"op","profile",...}:\n'
-        '     op = "pad" (add material) or "pocket" (remove)\n'
-        '     profile = "frame" (the outer boundary), "bore" (central round hole), '
-        '"holes" (a corner/edge bolt pattern, give "count"), or "disc" (a solid round pad)\n'
-        '     "through": true for a pocket that cuts all the way; else omit\n'
-        '     "depth_ratio": for a pad, its height / the longest face dimension\n'
-        "Order matters: base pad first, then its cuts. Judge only what is visible.\n"
+        '  "single_extrusion": true|false - one flat profile of constant thickness\n'
+        '  "openings": ["bore"] if there is a large central round opening, else []\n'
+        '  "grille": {"rings": int, "spokes": int} or null\n'
+        "Judge only what is visible.\n"
         "Reply with ONLY the JSON." % (n, n - 1))
-
-
-def compile_program(prog, photos, name="part"):
-    from photo2fcstd import trace
-    from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
-    if any(f.get("profile") in ("bore",) for f in prog.get("features", [])):
-        trace.RECOVER_DARK = True
-    face = photos[int(prog.get("face_photo_index", 0))]
-    mask, _ = upright_mask(segment_photo(face))
-    poly, sh = outline(mask)
-    W, H = float(np.ptp(poly[:, 0])), float(np.ptp(poly[:, 1]))
-    cx, cy = float(poly[:, 0].mean()), float(poly[:, 1].mean())
-    kind = prog.get("frame", "rect")
-    bore = fit_ellipse(np.asarray(max(sh["holes"], key=len), float)) if sh["holes"] else None
-
-    def loops_for(f):
-        pr = f.get("profile")
-        if pr == "frame":
-            if kind == "disc":
-                return [{"type": "circle", "cx": cx, "cy": cy, "r": min(W, H) / 2}]
-            return [_rect_loop(cx, cy, W, H, square=abs(W - H) < 0.08 * max(W, H))]
-        if pr == "bore" and bore is not None:
-            return [{"type": "circle", "cx": float(bore["cx"]), "cy": float(bore["cy"]), "r": float(bore["a"])}]
-        if pr == "holes":
-            n = int(f.get("count", 4))
-            return [{"type": "circle", "cx": sx, "cy": sy, "r": 0.03 * min(W, H)}
-                    for sx, sy in _corners(cx, cy, W, H)[:n]]
-        if pr == "disc" and bore is not None:
-            return [{"type": "circle", "cx": float(bore["cx"]), "cy": float(bore["cy"]), "r": float(bore["a"])}]
-        return None
-
-    feats = []
-    for f in prog.get("features", []):
-        loops = loops_for(f)
-        if not loops:
-            continue
-        d = float(f.get("depth_ratio", 0.3)) * max(W, H)
-        feats.append({"op": f["op"], "loops": loops, "depth_px": d,
-                      "through": bool(f.get("through"))})
-    if not feats:
-        raise ValueError("no buildable features recognised")
-    return {"name": name, "mode": "features", "mm_per_px": 1.0, "unit": "px",
-            "scale_note": "UNSCALED: set from one caliper reading",
-            "views": {}, "outline": None, "revolve": None, "stl": None, "measured": [],
-            "features": feats}
 
 
 def revolve_spec(photos, rec, name="part", samples=48):
@@ -250,11 +201,6 @@ def revolve_spec(photos, rec, name="part", samples=48):
             "scale_note": "UNSCALED: set from one caliper reading",
             "views": {}, "outline": None, "stl": None, "measured": [],
             "revolve": {"generic": True, "profile": prof, "holes": [], "rings": []}}
-
-
-def design(photos, name="part", prog=None):
-    prog = prog if prog is not None else _recognise_program_live(photos)
-    return compile_program(prog, photos, name=name), prog
 
 
 def _to_jpeg(src, dst):
