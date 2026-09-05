@@ -75,10 +75,19 @@ def main(frames_dir, out_json, masks_dir=None):
            "height_p90": depth_p90, "height_over_long": depth_p50_top / length,
            "short_over_long": short / length,
            "fg_points": int(len(fg)), "masked": M is not None}
+    fc = fg.mean(0)
+    _, _, axes = np.linalg.svd(fg[np.random.default_rng(0).choice(len(fg), min(len(fg), 200000), replace=False)] - fc,
+                               full_matrices=False)
+    face_n = axes[2]                                   # smallest-extent axis = the largest face's normal
+    view_dirs = np.array([E[i, :3, :3].T @ np.array([0, 0, 1.0]) for i in range(len(E))])
+    squareness = np.abs(view_dirs @ face_n)             # 1 = looking straight at the largest face
+    res["square_frame"] = os.path.basename(names[int(np.argmax(squareness))])
+    res["square_score"] = float(squareness.max())
     np.savez(os.path.splitext(out_json)[0] + "_poses.npz",
              extrinsic=extr.squeeze(0).float().cpu().numpy(),
              intrinsic=intr.squeeze(0).float().cpu().numpy(),
-             plane_n=n, plane_d=d, names=np.array(names))
+             plane_n=n, plane_d=d, names=np.array(names),
+             object_centre=fc, object_axes=axes, squareness=squareness)
     json.dump(res, open(out_json, "w"), indent=1)
     print(json.dumps(res))
 

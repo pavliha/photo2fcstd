@@ -14,9 +14,15 @@ _notes = dict(frame_w="outer square edge (mm)", corner_r="outer corner radius",
               plate_t="guard plate / grille thickness", bore_d="central opening diameter",
               mount_pitch="screw hole centre-to-centre", mount_d="screw hole diameter",
               rings="concentric grille rings (edit + rerun)", wire_w="grille wire / spoke width")
+_ledger = _m.get("_ledger", {})
 rows = [(k, float(_m.get(k, _defaults[k])), _notes[k]) for k in _defaults]
+sh.set("A1", "param"); sh.set("B1", "value"); sh.set("C1", "meaning"); sh.set("D1", "source")
 for i, (a, v, n) in enumerate(rows, start=2):
     sh.set("A%d" % i, a); sh.set("B%d" % i, str(v)); sh.set("C%d" % i, n); sh.setAlias("B%d" % i, a)
+    sh.set("D%d" % i, _ledger.get(a, "default"))
+_n = len(rows) + 2
+sh.set("A%d" % _n, "confidence"); sh.set("C%d" % _n, "%d of %d dimensions measured from the photos; frame_w sets scale" % (
+    sum(1 for a, _, _ in rows if str(_ledger.get(a, "")).startswith("measured")), len(rows)))
 doc.recompute()
 G = {a: float(v) for a, v, _ in rows}
 half = G["frame_w"] / 2; r = G["corner_r"]; t = G["plate_t"]
