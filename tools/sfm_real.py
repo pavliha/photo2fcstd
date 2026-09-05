@@ -225,4 +225,15 @@ if __name__ == "__main__":
         if "--mask-dir" in args:
             i = args.index("--mask-dir")
             mask_dir = args[i + 1]; del args[i:i + 2]
-        measure(args[0], mask_dir=mask_dir, length_mm=length)
+        out = None
+        if "--out" in args:
+            i = args.index("--out")
+            out = args[i + 1]; del args[i:i + 2]
+        got = measure(args[0], mask_dir=mask_dir, length_mm=length)
+        if out:
+            from photo2fcstd import cli, fuse
+            spec = fuse.fused_spec(got["carved"], name=os.path.splitext(os.path.basename(out))[0], length_mm=length)
+            sp = os.path.splitext(out)[0] + ".spec.json"
+            json.dump(spec, open(sp, "w"))
+            r = cli.freecad_build(sp, out)
+            print("  built %s: valid=%s solids=%s" % (out, r["valid"], r["solids"]))
