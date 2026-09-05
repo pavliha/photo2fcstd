@@ -236,15 +236,19 @@ def face_levels(npz_path, res=512):
     levels = sorted(centers[peaks].tolist())[-2:]
     step = float(levels[-1] - levels[0]) if len(levels) == 2 else 0.0
     u = axes[0] / np.linalg.norm(axes[0]); v = np.cross(n, u)
-    face_pts = P[t >= np.quantile(t, 0.75)]
+    width_est = float(np.ptp((P - c) @ axes[0]))
+    t_front = np.quantile(t, 0.98)
+    face_pts = P[np.abs(t - t_front) <= 0.02 * width_est]        # a band at the front level: surface clouds have no interior
     uv = np.column_stack([(face_pts - c) @ u, (face_pts - c) @ v])
     mn, mx = np.quantile(uv, 0.005, 0), np.quantile(uv, 0.995, 0)
+    res = int(min(res, max(64, 1.2 * np.sqrt(len(face_pts)))))     # match raster to point density
     s = (res - 20) / max(np.ptp(np.vstack([mn, mx]), 0).max(), 1e-9)
     img = np.zeros((res, res), np.uint8)
     q = ((uv - mn) * s + 10).astype(int)
     q = q[(q[:, 0] >= 0) & (q[:, 0] < res) & (q[:, 1] >= 0) & (q[:, 1] < res)]
     img[q[:, 1], q[:, 0]] = 1
-    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, np.ones((11, 11), np.uint8))
+    kk = max(3, res // 40)
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, np.ones((kk, kk), np.uint8))
     lab, k = ndimage.label(img > 0)
     if k > 1:
         img = (lab == (np.argmax(ndimage.sum(img > 0, lab, range(1, k + 1))) + 1)).astype(np.uint8)
