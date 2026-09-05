@@ -1,52 +1,34 @@
 import numpy as np
 import pytest
 
-from photo2fcstd import fuse
+
+def synthetic_carve(w=120, h=70, d=16, vox=0.5):
+    xs, ys, zs = np.meshgrid(np.arange(w), np.arange(h), np.arange(d), indexing="ij")
+    keep = np.ones(xs.shape, bool)
+    keep[(xs - 60) ** 2 + (ys - 35) ** 2 < 12 ** 2] = False
+    pts = np.stack([xs[keep], ys[keep], zs[keep]], axis=1).astype(float) * vox
+    return {"points_mm": pts, "voxel_mm": vox, "views": 16,
+            "extents_mm": np.ptp(pts, axis=0) + vox}
 
 
-def test_a_flat_wall_backprojects_to_its_true_width():
-    K = np.array([[500.0, 0, 100], [0, 500.0, 100], [0, 0, 1]])
-    pts = fuse.backproject(np.full((200, 200), 1000.0), K, mad=0)
-    assert len(pts) == 200 * 200
-    assert abs(pts[:, 2].mean() - 1000.0) < 1e-6
-    assert abs((pts[:, 0].max() - pts[:, 0].min()) - 199 * 2.0) < 1e-3
+def test_fused_spec_measures_depth_and_keeps_the_hole():
+    from photo2fcstd import fuse
+    carved = synthetic_carve()
+    spec = fuse.fused_spec(carved, name="prism", length_mm=60.0)
+    ol = spec["outline"]
+    assert ol["depth_trusted"] is True
+    depth_mm = ol["depth_px"]
+    assert depth_mm == pytest.approx(8.0, rel=0.15)
+    assert len(ol["loops"]) == 2
 
 
-def test_the_object_frame_round_trips():
-    import cv2
-    rvec = np.array([[0.3], [-0.2], [0.5]])
-    R, _ = cv2.Rodrigues(rvec)
-    t = np.array([[10.0], [-5.0], [600.0]])
-    obj = np.array([[1.0, 2.0, 3.0], [-4.0, 0.5, 2.0]])
-    cam = obj @ R.T + t.reshape(3)
-    back = fuse.to_object_frame(cam, {"rvec": rvec, "tvec": t})
-    assert np.abs(back - obj).max() < 1e-9
-
-
-def test_eroding_pulls_the_mask_in():
-    m = np.zeros((40, 40), bool)
-    m[10:30, 10:30] = True
-    assert fuse.trim(m, 0).sum() == 400
-    assert fuse.trim(m, 3).sum() == 14 * 14
-
-
-def test_free_space_needs_more_than_one_view_to_agree():
-    """One noisy depth pixel must not delete a voxel; two agreeing views may."""
-    import cv2
-    K = np.array([[500.0, 0, 50], [0, 500.0, 50], [0, 0, 1]])
-    view = {"rvec": np.zeros((3, 1)), "tvec": np.array([[0.0], [0.0], [100.0]]),
-            "K": K, "dist": np.zeros(5)}
-    mask = np.ones((100, 100), bool)
-    # only the left half reports a distant surface, so only those voxels are free space
-    far = np.zeros((100, 100))
-    far[:, :50] = 200.0
-    bounds = [(-5.0, 5.0), (-5.0, 5.0), (-5.0, 5.0)]
-    kw = dict(voxel_mm=2.0, bounds=bounds, erode_px=0)
-    plain = fuse.carve_with_depth([view], [mask], [np.zeros((100, 100))], min_votes=1, **kw)
-    one = fuse.carve_with_depth([view], [mask], [far], min_votes=1, **kw)
-    two_needed = fuse.carve_with_depth([view], [mask], [far], min_votes=2, **kw)
-    both = fuse.carve_with_depth([view, view], [mask, mask], [far, far], min_votes=2, **kw)
-    n = lambda c: len(c["points_mm"])
-    assert n(one) < n(plain), "a distant surface should carve the voxels in front of it"
-    assert n(two_needed) == n(plain), "one view must not be enough when two votes are required"
-    assert n(both) == n(one), "two agreeing views should carve what one view alone could not"
+def test_fused_spec_builds_a_valid_solid(freecad, tmp_path):
+    import json
+    from photo2fcstd import cli, fuse
+    spec = fuse.fused_spec(synthetic_carve(), name="prism", length_mm=60.0)
+    sp = str(tmp_path / "fused.spec.json")
+    json.dump(spec, open(sp, "w"))
+    r = cli.freecad_build(sp, str(tmp_path / "fused.FCStd"))
+    assert r["valid"] and r["solids"] == 1
+    for s in r["sketches"].values():
+        assert s["solve"] == 0

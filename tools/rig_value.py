@@ -21,33 +21,11 @@ VOXEL_MM = float(os.environ.get("P2F_RIG_VOXEL", 0.25))
 CURVES = ("arc", "circle", "ellipse", "bsplinecurve")
 
 
+from photo2fcstd.fuse import section_mask as _fuse_section
+
+
 def section_mask(carved, axis, canvas=900):
-    from scipy import ndimage
-    from skimage import measure
-    pts = carved["points_mm"]
-    vox = carved["voxel_mm"]
-    lo, hi = pts[:, axis].min(), pts[:, axis].max()
-    mid = (lo + hi) / 2
-    band = pts[np.abs(pts[:, axis] - mid) <= vox * 0.6]
-    if len(band) < 20:
-        return None
-    keep = [i for i in range(3) if i != axis]
-    ij = np.round(band[:, keep] / vox).astype(int)
-    ij -= ij.min(axis=0)
-    grid = np.zeros(ij.max(axis=0) + 3, np.float32)
-    grid[ij[:, 0] + 1, ij[:, 1] + 1] = 1.0
-    grid = ndimage.gaussian_filter(grid, 0.8)
-    contours = [c for c in measure.find_contours(grid, 0.5) if len(c) >= 8]
-    if not contours:
-        return None
-    span = max(grid.shape)
-    scale = (canvas * 0.8) / span
-    img = np.zeros((canvas, canvas), np.uint8)
-    contours.sort(key=lambda c: -cv2.contourArea(np.round(c * scale).astype(np.int32)))
-    for rank, c in enumerate(contours):
-        q = np.round(c * scale + canvas * 0.1).astype(np.int32)[:, ::-1]
-        cv2.fillPoly(img, [q], 0 if rank else 1)
-    return img
+    return _fuse_section(carved, axis, canvas)[0]
 
 
 def one(part):

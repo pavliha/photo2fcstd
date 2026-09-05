@@ -153,25 +153,13 @@ def measure(image_dir, mask_dir=None, length_mm=None, voxel=0.4):
     carved = C.carve(views, masks, voxel_mm=fine, allow_misses=1, bounds=bounds, max_height_mm=z_max)
     if carved is None:
         raise SystemExit("carve produced nothing: check the masks")
+    from photo2fcstd import fuse
+    carved["views"] = len(views)
     ext = carved["extents_mm"]
-    pts_c = carved["points_mm"]
-    vox = carved["voxel_mm"]
-    ij = np.round(pts_c[:, :2] / vox).astype(int)
-    ij -= ij.min(axis=0)
-    occ = np.zeros(ij.max(axis=0) + 1, bool)
-    occ[ij[:, 0], ij[:, 1]] = True
-    from scipy import ndimage
-    core = ndimage.binary_erosion(occ, iterations=3)
-    tops = {}
-    for (i, j), z in zip(map(tuple, ij), pts_c[:, 2]):
-        if core[i, j]:
-            tops[(i, j)] = max(tops.get((i, j), 0.0), z)
-    axis = 2
-    depth = float(np.median(list(tops.values())) + vox) if tops else float(ext[2])
+    depth = fuse.measured_depth(carved)
     length = float(max(ext[0], ext[1]))
-    print("  carved %d voxels, extents %s units; the part lies flat, so depth is the median "
-          "top height over %d interior columns" % (len(carved["points_mm"]),
-          np.round(ext, 2).tolist(), len(tops)))
+    print("  carved %d voxels, extents %s units; depth is the median interior top height"
+          % (len(carved["points_mm"]), np.round(ext, 2).tolist()))
     print("  depth / length = %.3f" % (depth / length))
     if length_mm:
         mm = length_mm / length
@@ -179,7 +167,8 @@ def measure(image_dir, mask_dir=None, length_mm=None, voxel=0.4):
               % (length_mm, depth * mm, np.round(ext * mm, 2).tolist()))
     else:
         print("  scale unknown: give --length-mm from one caliper reading for millimetres")
-    return {"ratio": depth / length, "extents": ext.tolist(), "axis": int(axis), "views": len(views)}
+    return {"ratio": depth / length, "extents": ext.tolist(), "axis": 2,
+            "views": len(views), "carved": carved}
 
 
 def gate(part=None, views=16):
@@ -208,6 +197,17 @@ def gate(part=None, views=16):
     td, tl = float(min(te)), float(max(te))
     print("\n  truth: extents %s mm, depth/length %.3f -> recovered %.3f (%.1f%% off)"
           % (np.round(te, 2).tolist(), td / tl, got["ratio"], 100 * abs(got["ratio"] - td / tl) / (td / tl)))
+    from photo2fcstd import cli, fuse
+    doc = fuse.fused_spec(got["carved"], name=part, length_mm=tl)
+    sp = os.path.join(work, "fused.spec.json")
+    json.dump(doc, open(sp, "w"))
+    rep = cli.freecad_build(sp, os.path.join(work, "fused.FCStd"))
+    depth_param = doc["outline"]["depth_px"]
+    print("  fused FCStd: valid=%s solids=%d, depth in sheet %.2f mm (true %.2f), "
+          "sketches unsolved %d, trusted=%s"
+          % (rep["valid"], rep["solids"], depth_param, td,
+             sum(1 for s in rep["sketches"].values() if s["solve"] != 0),
+             doc["outline"]["depth_trusted"]))
     shutil.rmtree(work)
 
 

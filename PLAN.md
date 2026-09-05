@@ -479,6 +479,23 @@ a cheap screen's presumption in its favour. The second expert move stands untouc
 printing curve-heavy parts and photographing them targets the data deficit, not the input encoding,
 and remains the one unexplored path to a drawing gain.
 
+### Pose fusion is in the pipeline (2026-09-05)
+
+`photo2fcstd/fuse.py` closes the loop the record kept pointing at: a posed multi-view capture now
+produces a **buildable FCStd** through the normal spec and build path. `fused_spec(carved)` takes
+the carve, extracts the mid-section by marching squares, traces it with the production tracer, and
+emits an outline spec whose depth is the carve's measured interior-top-height - **the first spec
+whose `depth_trusted` is True on the pipeline's own evidence**. `tools/sfm_real.py --gate` now runs
+photographs-to-FCStd end to end on rendered frames: valid solid, sketch solved with zero free DoF,
+depth 3.50 mm in the params sheet against 3.73 true. Unit-tested (`tests/test_fuse.py`).
+
+Field-tested the same hour on the user's fan: three phone HEICs. The three-photo path chose the
+cluttered side view (a laptop in frame - outside the capture protocol) and its sketch conflicted;
+on the two face-on views it built a valid, fully-constrained square plate - and the grill and
+blades are invisible because black-on-black defeats matting, and depth is guessed because both
+photos show the same face. Which is the whole thesis in one object: the classic path gives the
+outline; the fan's real geometry needs the sixteen-photo fused path it now has.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc

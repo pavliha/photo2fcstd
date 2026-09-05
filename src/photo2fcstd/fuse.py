@@ -1,137 +1,89 @@
-"""Fuse posed depth maps into a point cloud.
+import os
 
-Carving cannot see into a recess: the silhouette of a boxed cavity is the box. Depth
-measures the cavity directly, so where depth is available it beats a visual hull on
-exactly the geometry the hull is blind to.
-"""
 import numpy as np
 
 
-ERODE_PX = 3
-DEPTH_MAD = 6.0
-
-
-def trim(mask, erode_px=ERODE_PX):
-    """Pull the mask in from its edge: boundary pixels mix object and background depth."""
+def section_mask(carved, axis=2, canvas=900):
+    """The carve's mid-depth cross-section as a clean mask, staircase removed by marching squares."""
     import cv2
-    if erode_px <= 0:
-        return mask
-    k = np.ones((2 * erode_px + 1, 2 * erode_px + 1), np.uint8)
-    return cv2.erode(mask.astype(np.uint8), k) > 0
-
-
-def backproject(depth_mm, K, mask=None, stride=1, erode_px=ERODE_PX, mad=DEPTH_MAD):
-    """Depth map to points in the camera frame, millimetres."""
-    h, w = depth_mm.shape
-    ys, xs = np.mgrid[0:h:stride, 0:w:stride]
-    z = depth_mm[::stride, ::stride].astype(float)
-    keep = z > 0
-    if mask is not None:
-        keep &= trim(mask, erode_px)[::stride, ::stride]
-    if mad and keep.any():
-        zk = z[keep]
-        med = np.median(zk)
-        spread = np.median(np.abs(zk - med)) or 1.0
-        keep &= np.abs(z - med) < mad * spread
-    if not keep.any():
-        return np.zeros((0, 3))
-    x = (xs[keep] - K[0, 2]) * z[keep] / K[0, 0]
-    y = (ys[keep] - K[1, 2]) * z[keep] / K[1, 1]
-    return np.column_stack([x, y, z[keep]])
-
-
-def to_object_frame(points_cam, view):
-    import cv2
-    R, _ = cv2.Rodrigues(np.asarray(view["rvec"], float))
-    t = np.asarray(view["tvec"], float).reshape(3)
-    return (points_cam - t) @ R
-
-
-def fuse(views, depths, masks, K_key="K", stride=2, voxel_mm=0.5, erode_px=ERODE_PX):
-    """Posed depth maps to one deduplicated point cloud in the object frame."""
-    chunks = []
-    for view, d, m in zip(views, depths, masks):
-        if d is None:
-            continue
-        pts = backproject(d, np.asarray(view[K_key], float), m, stride, erode_px)
-        if len(pts):
-            chunks.append(to_object_frame(pts, view))
-    if not chunks:
-        return np.zeros((0, 3))
-    pts = np.vstack(chunks)
-    keys = np.round(pts / voxel_mm).astype(np.int64)
-    _, idx = np.unique(keys, axis=0, return_index=True)
-    return pts[np.sort(idx)]
-
-
-def occupancy(points_mm, voxel_mm=0.5):
-    return set(map(tuple, np.round(np.asarray(points_mm) / voxel_mm).astype(int)))
-
-
-def demo():
-    K = np.array([[500.0, 0, 100], [0, 500.0, 100], [0, 0, 1]])
-    d = np.full((200, 200), 1000.0)
-    pts = backproject(d, K)
-    assert len(pts) == 200 * 200
-    assert abs(pts[:, 2].mean() - 1000.0) < 1e-6
-    span = pts[:, 0].max() - pts[:, 0].min()
-    assert abs(span - 199 * 1000.0 / 500.0) < 1e-3, span
-    print("fuse self-check ok: flat wall at 1000 mm backprojects to %.1f mm across" % span)
-
-
-if __name__ == "__main__":
-    demo()
-
-
-FREE_SPACE_MM = 2.0
-
-
-def carve_with_depth(views, masks, depths, voxel_mm=0.8, bounds=None, allow_misses=1,
-                     free_space_mm=FREE_SPACE_MM, erode_px=ERODE_PX, min_votes=2):
-    """Silhouette carving, then remove voxels the depth maps prove are empty.
-
-    A voxel closer to the camera than the measured surface has nothing in front of it,
-    so it is free space. That is how a cavity gets carved: its interior is in front of
-    the surface behind it, which no silhouette can express. `min_votes` views must agree
-    before a voxel is removed, so one noisy depth pixel cannot delete real surface.
-    """
-    from photo2fcstd import carve as C
-    carved = C.carve(views, masks, voxel_mm=voxel_mm, bounds=bounds, allow_misses=allow_misses)
-    if carved is None:
-        return None
+    from scipy import ndimage
+    from skimage import measure
     pts = carved["points_mm"]
-    votes = np.zeros(len(pts), int)
-    for view, d, m in zip(views, depths, masks):
-        if d is None:
-            continue
-        uv = C.project(pts, view)
-        h, w = d.shape
-        u = np.round(uv[:, 0]).astype(int)
-        v = np.round(uv[:, 1]).astype(int)
-        on = (u >= 0) & (u < w) & (v >= 0) & (v < h)
-        if not on.any():
-            continue
-        # only trust depth well inside the mask: at the silhouette edge the pixel is
-        # background, which sits far behind the part and would delete real surface
-        inside = trim(m, erode_px) if m is not None else None
-        seen = np.zeros(len(pts), float)
-        seen[on] = d[v[on], u[on]]
-        if inside is not None:
-            ok = np.zeros(len(pts), bool)
-            ok[on] = inside[v[on], u[on]]
-            seen[~ok] = 0.0
-        import cv2
-        R, _ = cv2.Rodrigues(np.asarray(view["rvec"], float))
-        t = np.asarray(view["tvec"], float).reshape(3)
-        z = (pts @ R.T + t)[:, 2]
-        votes += on & (seen > 0) & (z < seen - free_space_mm)
-    alive = votes < min_votes
-    kept = pts[alive]
-    if not len(kept):
-        return carved
-    out = dict(carved)
-    out["points_mm"] = kept
-    out["extents_mm"] = np.ptp(kept, axis=0) + voxel_mm
-    out["volume_mm3"] = float(len(kept) * voxel_mm ** 3)
-    out["removed_by_depth"] = int((~alive).sum())
-    return out
+    vox = carved["voxel_mm"]
+    lo, hi = pts[:, axis].min(), pts[:, axis].max()
+    band = pts[np.abs(pts[:, axis] - (lo + hi) / 2) <= vox * 0.6]
+    if len(band) < 20:
+        return None, None
+    keep = [i for i in range(3) if i != axis]
+    ij = np.round(band[:, keep] / vox).astype(int)
+    ij -= ij.min(axis=0)
+    grid = np.zeros(ij.max(axis=0) + 3, np.float32)
+    grid[ij[:, 0] + 1, ij[:, 1] + 1] = 1.0
+    grid = ndimage.gaussian_filter(grid, 0.8)
+    contours = [c for c in measure.find_contours(grid, 0.5) if len(c) >= 8]
+    if not contours:
+        return None, None
+    span = max(grid.shape)
+    scale = (canvas * 0.8) / span
+    img = np.zeros((canvas, canvas), np.uint8)
+    contours.sort(key=lambda c: -cv2.contourArea(np.round(c * scale).astype(np.int32)))
+    for rank, c in enumerate(contours):
+        q = np.round(c * scale + canvas * 0.1).astype(np.int32)[:, ::-1]
+        cv2.fillPoly(img, [q], 0 if rank else 1)
+    return img, scale / vox
+
+
+def measured_depth(carved, axis=2):
+    """Median top-surface height over interior columns - the hull's skirt cannot reach them."""
+    from scipy import ndimage
+    pts = carved["points_mm"]
+    vox = carved["voxel_mm"]
+    keep = [i for i in range(3) if i != axis]
+    ij = np.round(pts[:, keep] / vox).astype(int)
+    ij -= ij.min(axis=0)
+    occ = np.zeros(ij.max(axis=0) + 1, bool)
+    occ[ij[:, 0], ij[:, 1]] = True
+    core = ndimage.binary_erosion(occ, iterations=3)
+    tops = {}
+    for (i, j), z in zip(map(tuple, ij), pts[:, axis]):
+        if core[i, j]:
+            tops[(i, j)] = max(tops.get((i, j), 0.0), z)
+    if not tops:
+        return float(np.ptp(pts[:, axis])) + vox
+    return float(np.median(list(tops.values())) + vox)
+
+
+def fused_spec(carved, name="part", axis=2, length_mm=None):
+    """A buildable outline spec from a posed multi-view carve: the one path whose depth is measured.
+
+    The drawing comes from the mid-section through the production tracer (measured at parity with
+    the photo path); the depth comes from the carve (measured to 1-5% on the gate), so this is the
+    first spec whose `depth_trusted` is True on the pipeline's own evidence rather than a guess.
+    """
+    from photo2fcstd import analysis, spec as spec_mod
+    mask, px_per_unit = section_mask(carved, axis)
+    if mask is None:
+        raise ValueError("the carve has no usable mid-section - check the masks and poses")
+    view = analysis.view_from_mask(mask)
+    loops = spec_mod.traced_outline(view)
+    if not loops:
+        raise ValueError("the section traced to no area")
+    depth_px = measured_depth(carved, axis) * px_per_unit
+    outline = {"source": "fused:%d views" % carved.get("views", 0), "loops": loops,
+               "depth_px": depth_px,
+               "depth_note": "depth measured by the %d-view carve (median interior top height)"
+                             " (px units)" % carved.get("views", 0),
+               "depth_trusted": True}
+    mpp, scale_note = (length_mm / view["length_px"],
+                       "from --length-mm %s over %.1f px" % (length_mm, view["length_px"])) \
+        if length_mm else (1.0, "UNSCALED: set this from one caliper reading (mm / px)")
+    known = length_mm is not None
+    from photo2fcstd import thresholds as th
+    q = th.ROUND_MM if known else 1.0
+    rnd = lambda v: round(round(v * mpp / q) * q, 4)
+    outline["loops"] = spec_mod.rounded_loops(outline["loops"], rnd)
+    outline["depth_px"] = rnd(outline["depth_px"])
+    return {"name": name, "mode": "fused", "mm_per_px": 1.0,
+            "unit": "mm" if known else "px",
+            "scale_note": scale_note if known else scale_note + "; the sheet is in pixels until you set scale",
+            "views": {}, "outline": outline, "revolve": None, "stl": None, "measured": []}
