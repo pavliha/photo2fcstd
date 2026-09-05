@@ -25,16 +25,19 @@ THRESHOLD = {"template": 0.8, "revolve": 0.8, "assemble": 0.6}
 
 @register("bottle")
 def _bottle(rec, photos, out, cloud_npz=None, **kw):
-    if not cloud_npz:
-        spec = recognise.revolve_spec(photos, rec, name=_stem(out))
-        return _build(spec, out, "revolve", "bottle")
     import sys
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "tools"))
     import cloud_primitives as cp
-    params, ledger, st = cp.fit_revolve(cloud_npz)
+    if cloud_npz:
+        params, ledger, st = cp.fit_revolve(cloud_npz)
+        contain = st["contain_fraction"]
+    else:
+        prof = recognise.revolve_spec(photos, rec, name=_stem(out))["revolve"]["profile"][1:-1]
+        params, ledger = cp.fit_revolve_profile([(r, h) for r, h in prof], "side photo")
+        contain = None
     cp.build_revolve_template(params, ledger, out)
     return {"tier": "template", "part_class": "bottle", "out": out, "params": {**params, "_ledger": ledger},
-            "sketches_clean": True, "valid": True, "contain_fraction": st["contain_fraction"]}
+            "sketches_clean": True, "valid": True, "contain_fraction": contain}
 
 
 CONTAIN_THRESHOLD = 0.9

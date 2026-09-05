@@ -164,8 +164,23 @@ def fit_revolve(npz_path, scale=1000.0):
     npz = np.load(npz_path)
     X, Y, H = coords(npz)
     kind, stats, prof = classify(X, Y, H, bands=24)
-    r = np.array([p[0] for p in prof]) * scale
-    h = np.array([p[1] for p in prof]) * scale
+    params, ledger = fit_revolve_profile([(p[0] * scale, p[1] * scale) for p in prof], "3D cloud")
+    prof_pts = _template_profile(params)
+    spec_like = {"revolve": {"profile": prof_pts},
+                 "_cloud_frame": {"kind": "revolve", "cx": float(np.median(X)), "cy": float(np.median(Y)),
+                                  "lo": float(np.quantile(H, 0.02)), "scale": scale}}
+    return params, ledger, {"kind": kind, "contain_fraction": contain_fraction(spec_like, X, Y, H), **stats}
+
+
+def _template_profile(p):
+    h1 = p["body_h"] + p["shoulder_h"]; h2 = h1 + p["neck_h"]; h3 = h2 + p["cap_h"]
+    return [[0, 0], [p["body_r"], 0], [p["body_r"], p["body_h"]], [p["neck_r"], h1], [p["neck_r"], h2],
+            [p["cap_r"], h2], [p["cap_r"], h3], [0, h3]]
+
+
+def fit_revolve_profile(prof, source):
+    r = np.array([p[0] for p in prof], float)
+    h = np.array([p[1] for p in prof], float)
     total = float(h[-1])
     body_r = float(np.median(r[h < 0.5 * total]))
     below = np.where(r < 0.85 * body_r)[0]
@@ -183,14 +198,8 @@ def fit_revolve(npz_path, scale=1000.0):
     neck_h = max(total - body_h - shoulder_h - cap_h, 0.02 * total)
     params = {k: round(v, 2) for k, v in dict(body_r=body_r, body_h=body_h, shoulder_h=shoulder_h,
                                               neck_r=neck_r, neck_h=neck_h, cap_r=cap_r, cap_h=cap_h).items()}
-    ledger = {k: "measured (3D cloud, %d bands)" % len(r) for k in params}
-    prof_pts = [[0, 0], [body_r, 0], [body_r, body_h], [neck_r, body_h + shoulder_h],
-                [neck_r, body_h + shoulder_h + neck_h], [cap_r, body_h + shoulder_h + neck_h], [cap_r, total], [0, total]]
-    spec_like = {"revolve": {"profile": [[0, 0]] + prof_pts[1:-1] + [[0, total]]},
-                 "_cloud_frame": {"kind": "revolve", "cx": float(np.median(X)), "cy": float(np.median(Y)),
-                                  "lo": float(np.quantile(H, 0.02)), "scale": scale}}
-    contain = contain_fraction(spec_like, X, Y, H)
-    return params, ledger, {"kind": kind, "contain_fraction": contain, **stats}
+    ledger = {k: "measured (%s, %d bands)" % (source, len(r)) for k in params}
+    return params, ledger
 
 
 def build_revolve_template(params, ledger, out):

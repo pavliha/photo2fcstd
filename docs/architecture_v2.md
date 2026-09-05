@@ -177,6 +177,14 @@ knobs), `bracket` (L/plate + hole pattern). Each unlocks a whole class at design
   6 points), containment 0.951, gate ok. Registered as `part_class: bottle`; without a
   cloud it falls back to the raw side-profile revolve.
 
+- **Bottle from a single side photo (no cloud):** the same template fits the side-silhouette
+  profile; gate 0.82 (passes 0.8), ledger 'side photo'. Its height/diameter reads ~3.9 against
+  the cloud fit's 2.36 (truth ~3): the tilted photo inflates height, the cloud under-samples
+  the pump tip. Both are labelled by source; when both exist the cloud wins and the spread
+  goes to the ledger.
+- **Recognition is cached** per (photo set, prompt) under `~/.cache/photo2fcstd/recognition`,
+  so the app cannot change its answer between two runs on the same input.
+
 ### M6 - Ledger in the FCStd  (S)
 Add a measured/inferred/default column to the params sheet, and a one-line confidence
 summary in the doc. Depth is `inferred` until a caliper or carve makes it `measured`;

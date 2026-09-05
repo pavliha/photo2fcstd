@@ -216,8 +216,23 @@ def _to_jpeg(src, dst):
     return dst
 
 
+def _recognition_cache_path(photos):
+    import hashlib
+    h = hashlib.sha1()
+    for p in photos:
+        st = os.stat(p)
+        h.update(("%s|%d|%d" % (os.path.abspath(p), st.st_size, int(st.st_mtime))).encode())
+    h.update(program_prompt(len(photos)).encode())
+    d = os.path.join(os.path.expanduser("~/.cache/photo2fcstd"), "recognition")
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(d, h.hexdigest() + ".json")
+
+
 def _recognise_program_live(photos):
     import json as _json, shutil, subprocess, tempfile
+    cache = _recognition_cache_path(photos)
+    if os.path.exists(cache):
+        return _json.load(open(cache))
     d = tempfile.mkdtemp(prefix="prog_")
     local = [_to_jpeg(p, os.path.join(d, "img%02d.jpg" % i)) for i, p in enumerate(photos)]
     listing = "\n".join("  photo %d: %s" % (i, q) for i, q in enumerate(local))
@@ -228,7 +243,9 @@ def _recognise_program_live(photos):
     s, e = out.find("{"), out.rfind("}")
     if s < 0:
         raise ValueError("no JSON:\n" + out[-400:])
-    return _json.loads(out[s:e + 1])
+    rec = _json.loads(out[s:e + 1])
+    _json.dump(rec, open(cache, "w"))
+    return rec
 
 
 def build_program(recs, photos, name="part", face_index=0):
