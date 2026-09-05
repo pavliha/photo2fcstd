@@ -563,6 +563,25 @@ turning the hardest single-view failures (a grille read as solid, a tilted view 
 trivial recognition. Recognition for structure, geometry for precision - the architecture the
 sixteen nulls were pointing at all along.
 
+### Multi-feature build: the single-extrusion wall is down (2026-09-05)
+
+The fan proved a single sketch cannot be a fan, and the frontier it named is now built.
+`build.build_features` executes a **feature program** - an ordered list of pad / through-pocket /
+blind-pocket operations, each its own sketch at its own plane height, reusing `add_loop` and the
+scale binding verbatim. `recognise.build_program` turns a recognition into one: box body (pad),
+bore (through pocket), corner holes (pockets). Result on the fan: a **valid multi-feature solid** -
+a box enclosure 1888x1888x804 px with a through-bore and four mounting holes, one recompute,
+rendered in 3D (`runs/fan/fan_enclosure_3d.png`). Every feature's depth binds to `params.scale`, so
+one caliper reading still makes the whole multi-body part metric - verified by a test that edits the
+cell and requires x8 volume across all features. Tested end to end (`tests/test_recognise.py`).
+
+This lifts the project past its founding constraint. PrintCAD is single-extrusion and the whole
+benchmark measures that; the feature program is the first thing that builds a part the dataset
+could not represent. It composes with everything - recognition names the operations, geometry
+measures the dimensions, the tracer draws each sketch, the scale cell drives them all. The grille
+web (rings joined by spokes) is still not one valid region and would want a dedicated feature op or
+a boolean; the box, bore, holes and flanges - the manufacturable structure - now build.
+
 ### What not to do, measured
 
 A fifteenth replacement at current data scale (expected value zero, tight CI), another local arc

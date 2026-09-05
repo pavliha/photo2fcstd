@@ -126,6 +126,39 @@ def build(rec, photos, name="part", length_mm=None):
     return spec
 
 
+def build_program(recs, photos, name="part", face_index=0):
+    """A multi-feature part from recognition: a box body, a bore, corner holes - each a real feature.
+
+    `recs` is the structured recognition; the face photo gives the plate outline (measured) and the
+    bore radius. Produces a features spec the build engine turns into pad + pocket features.
+    """
+    from photo2fcstd import trace
+    from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
+    if recs.get("openings"):
+        trace.RECOVER_DARK = True
+    face = photos[int(recs.get("face_photo_index", face_index))]
+    mask, _ = upright_mask(segment_photo(face))
+    poly, sh = outline(mask)
+    W, H = float(np.ptp(poly[:, 0])), float(np.ptp(poly[:, 1]))
+    cx, cy = float(poly[:, 0].mean()), float(poly[:, 1].mean())
+    depth = float(recs.get("depth_ratio", 0.5)) * max(W, H)
+    plate = _rect_loop(cx, cy, W, H, square=(recs.get("outline") == "square"))
+    feats = [{"op": "pad", "depth_px": depth, "loops": [plate]}]
+    if "bore" in (recs.get("openings") or []) and sh["holes"]:
+        f = fit_ellipse(np.asarray(max(sh["holes"], key=len), float))
+        feats.append({"op": "pocket", "through": True,
+                      "loops": [{"type": "circle", "cx": float(f["cx"]), "cy": float(f["cy"]), "r": float(f["a"])}]})
+    screws = int(recs.get("screws", 0))
+    if screws:
+        holes = [{"type": "circle", "cx": sx, "cy": sy, "r": 0.03 * min(W, H)}
+                 for sx, sy in _corners(cx, cy, W, H)[:screws]]
+        feats.append({"op": "pocket", "through": True, "loops": holes})
+    return {"name": name, "mode": "features", "mm_per_px": 1.0, "unit": "px",
+            "scale_note": "UNSCALED: set from one caliper reading; the sheet is in pixels until you set scale",
+            "views": {}, "outline": None, "revolve": None, "stl": None, "measured": [],
+            "features": feats}
+
+
 def _view_of(path):
     from photo2fcstd import analysis
     return analysis.view(path)

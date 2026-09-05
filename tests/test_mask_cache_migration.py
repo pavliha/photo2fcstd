@@ -24,7 +24,7 @@ def old_key(old_root, new_root, photo, version, trim):
     st = os.stat(photo)
     raw = "%s|%d|%d" % (identity, st.st_size, int(st.st_mtime))
     if version is not None:
-        raw += "|v%s|t%.4f" % (version, trim)
+        raw += "|v%s|t%.4f|d0" % (version, trim)
     return hashlib.sha1(raw.encode()).hexdigest()
 
 

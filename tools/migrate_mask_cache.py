@@ -26,7 +26,7 @@ PHOTO_SUFFIXES = (".jpg", ".jpeg", ".png")
 def key(identity, size, mtime, version, trim):
     raw = "%s|%d|%d" % (identity, size, int(mtime))
     if version is not None:
-        raw += "|v%s|t%.4f" % (version, trim)
+        raw += "|v%s|t%.4f|d0" % (version, trim)
     return hashlib.sha1(raw.encode()).hexdigest()
 
 

@@ -40,3 +40,50 @@ def test_recognise_live_parses_the_model_json(monkeypatch, tmp_path):
     p = str(tmp_path / "x.png"); cv2.imwrite(p, np.zeros((50, 50), np.uint8))
     rec = recognise.recognise_live([p])
     assert rec["outline"] == "disc" and rec["face_photo_index"] == 0
+
+
+def test_feature_program_builds_a_box_with_a_bore(freecad, tmp_path):
+    import json
+    from photo2fcstd import cli
+    def sq(a):
+        c = [(-a,-a),(a,-a),(a,a),(-a,a)]
+        return {"type":"loop","elements":[{"type":"line","p0":list(c[i]),"p1":list(c[(i+1)%4])} for i in range(4)],
+                "kinds":["H","V","H","V"],"joins":["","","",""]}
+    spec = {"name":"enc","mode":"features","mm_per_px":1.0,"unit":"px","scale_note":"t",
+            "views":{},"outline":None,"revolve":None,"stl":None,"measured":[],
+            "features":[{"op":"pad","depth_px":40.0,"loops":[sq(50)]},
+                        {"op":"pocket","through":True,"loops":[{"type":"circle","cx":0,"cy":0,"r":35}]}]}
+    sp = str(tmp_path/"enc.spec.json"); json.dump(spec, open(sp,"w"))
+    r = cli.freecad_build(sp, str(tmp_path/"enc.FCStd"))
+    import math
+    want = 100*100*40 - math.pi*35*35*40
+    assert r["valid"] and r["solids"] == 1
+    assert abs(r["volume"] - want) / want < 0.02
+
+
+def test_feature_scale_cell_drives_all_features(freecad, tmp_path):
+    import json, subprocess, pathlib
+    from photo2fcstd import cli, spec as spec_mod
+    def sq(a):
+        c = [(-a,-a),(a,-a),(a,a),(-a,a)]
+        return {"type":"loop","elements":[{"type":"line","p0":list(c[i]),"p1":list(c[(i+1)%4])} for i in range(4)],
+                "kinds":["H","V","H","V"],"joins":["","","",""]}
+    spec = {"name":"enc","mode":"features","mm_per_px":1.0,"unit":"px","scale_note":"t",
+            "views":{},"outline":None,"revolve":None,"stl":None,"measured":[],
+            "features":[{"op":"pad","depth_px":40.0,"loops":[sq(50)]},
+                        {"op":"pocket","through":True,"loops":[{"type":"circle","cx":0,"cy":0,"r":35}]}]}
+    out = str(tmp_path/"enc.FCStd"); sp = str(tmp_path/"enc.spec.json"); json.dump(spec, open(sp,"w"))
+    r0 = cli.freecad_build(sp, out)
+    inside = pathlib.Path(spec_mod.__file__).parents[2] / "_test_featscale.py"
+    inside.write_text("import FreeCAD\n"
+        "doc = FreeCAD.openDocument(%r)\n"
+        "doc.getObject('params').set('B1','2.0')\n"
+        "doc.recompute()\n"
+        "b = next(o for o in doc.Objects if o.TypeId=='PartDesign::Body')\n"
+        "print('VOL', b.Shape.Volume)\n" % out)
+    try:
+        rr = subprocess.run([freecad, str(inside)], capture_output=True, text=True, timeout=300)
+    finally:
+        inside.unlink()
+    vol = float(next(l for l in rr.stdout.splitlines() if l.startswith("VOL")).split()[1])
+    assert abs(vol - 8.0*r0["volume"]) / (8.0*r0["volume"]) < 0.02

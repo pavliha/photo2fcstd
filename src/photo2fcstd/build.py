@@ -416,6 +416,51 @@ def measured_rows(spec):
     return out
 
 
+def build_features(spec, doc, params):
+    """A short feature program: each entry is a sketch + a pad or pocket, in order.
+
+    Every feature carries its own loops in the same format the single-outline path uses, so
+    add_loop / the scale binding are reused verbatim. `plane_mm` lifts a feature's sketch to a
+    height (a grille cut into the front face sits at the box depth); `through` cuts all the way.
+    """
+    mpp = spec["mm_per_px"]
+    unit = spec.get("unit", "px")
+    feats = spec["features"]
+    for k, ft in enumerate(feats):
+        for j, loop in enumerate(ft["loops"]):
+            pre = "f%d_%s" % (k, "o" if j == 0 else "h%d" % (j - 1))
+            params += [(n, round(val, 3), "feature %d %s (%s)" % (k, n.split("_", 1)[1], unit))
+                       for n, val in loop_dims(loop, pre)]
+        params.append(("f%d_depth" % k, round(ft.get("depth_px", 1.0), 3), "feature %d depth (%s)" % (k, unit)))
+    sheet_with(doc, params)
+    body = doc.addObject("PartDesign::Body", "Body")
+    body.Label = spec.get("name", "part")
+    for k, ft in enumerate(feats):
+        loops = ft["loops"]
+        sk = doc.addObject("Sketcher::SketchObject", "sk_%d_%s" % (k, ft["op"]))
+        body.addObject(sk)
+        if ft.get("plane_mm"):
+            sk.Placement = Placement(Vector(0, 0, ft["plane_mm"] * mpp), Rotation())
+        for j, loop in enumerate(loops):
+            add_loop(sk, loop, "f%d_%s" % (k, "o" if j == 0 else "h%d" % (j - 1)), mpp)
+        if ft["op"] == "pad":
+            f = doc.addObject("PartDesign::Pad", "pad_%d" % k)
+            body.addObject(f); f.Profile = sk; f.Length = ft["depth_px"] * mpp
+            f.setExpression("Length", "params.f%d_depth * params.scale" % k)
+        else:
+            f = doc.addObject("PartDesign::Pocket", "pocket_%d" % k)
+            body.addObject(f); f.Profile = sk
+            if ft.get("through"):
+                f.Type = "ThroughAll"
+                f.Midplane = True
+            else:
+                f.Length = ft.get("depth_px", 1.0) * mpp
+                f.Reversed = True
+                f.setExpression("Length", "params.f%d_depth * params.scale" % k)
+        doc.recompute()
+    return body
+
+
 def build(spec, out):
     doc = App.newDocument(spec.get("name", "part"))
     unit = spec.get("unit", "px")
@@ -423,7 +468,10 @@ def build(spec, out):
                "multiplies every dimension below; change it to rescale the whole part. %s" % spec["scale_note"])]
     for name, value, note in measured_rows(spec):
         params.append((name, value, note))
-    if spec.get("revolve"):
+    if spec.get("features"):
+        body = build_features(spec, doc, params)
+        views = {}
+    elif spec.get("revolve"):
         body = build_revolve(spec, doc, params)
         views = {}
     elif spec.get("outline"):
