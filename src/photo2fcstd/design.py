@@ -25,6 +25,9 @@ def design(photos, out, rec=None, **kw):
     cls = rec.get("part_class")
     if cls in TEMPLATES:
         return TEMPLATES[cls](rec, photos, out, **kw)
+    if rec.get("revolve"):
+        spec = recognise.revolve_spec(photos, rec, name=_stem(out))
+        return _build(spec, out, "revolve", cls)
     if rec.get("single_extrusion"):
         spec, _ = recognise.route(photos, name=_stem(out), rec=rec)
         return _build(spec, out, "assemble", cls)
@@ -76,8 +79,9 @@ def _top_silhouette(out):
         "doc=FreeCAD.openDocument(%r)\n"
         "s=[o for o in doc.Objects if getattr(o,'Shape',None) and o.Shape.Solids]\n"
         "sh=max(s,key=lambda o:o.Shape.Volume).Shape\n"
-        "vs=np.array([[v.X,v.Y] for v in sh.Vertexes])\n"
-        "np.savez(%r,v=vs)\n" % (out, npz))
+        "vs=np.array([[v.X,v.Y,v.Z] for v in sh.Vertexes])\n"
+        "ax=np.argsort(np.ptp(vs,0))[-2:]\n"     # two widest axes = the largest visible face
+        "np.savez(%r,v=vs[:,ax])\n" % (out, npz))
     scr.close()
     try:
         subprocess.run([freecad, scr.name], capture_output=True, text=True, timeout=120)

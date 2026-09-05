@@ -141,3 +141,18 @@ def test_design_dispatches_tiers(freecad, tmp_path, monkeypatch):
     assert res["tier"] == "general" and res["valid"] and res["solids"] == 1
     v = design.verify(str(tmp_path / "out.FCStd"), [p], rec)
     assert v["silhouette_iou"] is not None and any("depth" in a for a in v["advice"])
+
+
+def test_revolve_tier_builds_a_solid_of_revolution(freecad, tmp_path, monkeypatch):
+    import numpy as np, cv2, os
+    from photo2fcstd import design, recognise, trace
+    img = np.zeros((600, 400), np.uint8)             # a tapered bottle silhouette
+    cv2.rectangle(img, (150, 300), (250, 560), 255, -1)
+    cv2.rectangle(img, (180, 120), (220, 300), 255, -1)
+    p = str(tmp_path / "bottle.png"); cv2.imwrite(p, img)
+    os.path.exists(trace.cached_mask(p)) and os.remove(trace.cached_mask(p))
+    spec = recognise.revolve_spec([p], {"face_photo_index": 0}, name="b")
+    prof = spec["revolve"]["profile"]
+    assert len(prof) > 5 and prof[0][0] == 0.0 and prof[-1][0] == 0.0   # closes on the axis
+    res = design.design([p], str(tmp_path / "b.FCStd"), rec={"part_class": None, "revolve": True, "face_photo_index": 0})
+    assert res["tier"] == "revolve" and res["valid"] and res["solids"] == 1

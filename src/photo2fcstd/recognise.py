@@ -170,6 +170,8 @@ def program_prompt(n):
         "You are given %d photographs of one manufactured part. Decompose it into a FEATURE "
         "PROGRAM a CAD kernel can build - a JSON object, structure only, no coordinates:\n"
         '  "face_photo_index": int 0..%d - the photo square-on to the largest flat face\n'
+        '  "revolve": true|false - true if the whole part is turned round a central axis '
+        "(a bottle, knob, wheel, cup); then features are ignored and the side profile is revolved\n"
         '  "frame": "rect"|"rounded_rect"|"disc"|"trace" - the outer boundary of that face\n'
         '  "part_class": a standard class name if you recognise one ("fan_guard","bracket",'
         '"plate","enclosure"), else null\n'
@@ -226,6 +228,28 @@ def compile_program(prog, photos, name="part"):
             "scale_note": "UNSCALED: set from one caliper reading",
             "views": {}, "outline": None, "revolve": None, "stl": None, "measured": [],
             "features": feats}
+
+
+def revolve_spec(photos, rec, name="part", samples=48):
+    from photo2fcstd.trace import segment_photo, upright_mask
+    face = photos[int(rec.get("face_photo_index", 0))]
+    mask, _ = upright_mask(segment_photo(face))
+    ys, xs = np.nonzero(mask)
+    y0, y1 = ys.min(), ys.max()
+    axis = (xs.min() + xs.max()) / 2.0
+    hs = np.linspace(y0, y1, samples)
+    prof = [[0.0, 0.0]]
+    for y in hs:
+        row = xs[np.abs(ys - y) <= max((y1 - y0) / samples, 1)]
+        if len(row) == 0:
+            continue
+        r = max(float(row.max() - axis), float(axis - row.min()))
+        prof.append([round(r, 2), round(float(y - y0), 2)])
+    prof.append([0.0, round(float(y1 - y0), 2)])
+    return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "px",
+            "scale_note": "UNSCALED: set from one caliper reading",
+            "views": {}, "outline": None, "stl": None, "measured": [],
+            "revolve": {"generic": True, "profile": prof, "holes": [], "rings": []}}
 
 
 def design(photos, name="part", prog=None):
