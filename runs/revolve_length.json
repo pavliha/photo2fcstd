@@ -1,0 +1,338 @@
+[
+ {
+  "part": "00008",
+  "ld_model": 0.15,
+  "ld_truth": 0.105,
+  "err": 0.354,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 2
+ },
+ {
+  "part": "00005",
+  "ld_model": 4.165,
+  "ld_truth": 4.011,
+  "err": 0.038,
+  "note": "length from the side view 00005_2.jpg (4.04 x diameter)",
+  "side_view": 1
+ },
+ {
+  "part": "01630",
+  "ld_model": 0.556,
+  "ld_truth": 0.4,
+  "err": 0.33,
+  "note": "disc seen edge-on in 01630_3.jpg: thickness 0.56 x diameter",
+  "side_view": 2
+ },
+ {
+  "part": "01744",
+  "ld_model": 0.15,
+  "ld_truth": 0.161,
+  "err": -0.073,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 0
+ },
+ {
+  "part": "00149",
+  "ld_model": 0.352,
+  "ld_truth": 0.75,
+  "err": -0.756,
+  "note": "standing part seen from 45 deg above in 00149_3.jpg: length from the band below ",
+  "side_view": 2
+ },
+ {
+  "part": "01362",
+  "ld_model": 2.747,
+  "ld_truth": 2.716,
+  "err": 0.011,
+  "note": "length from the side view 01362_3.jpg (2.49 x diameter)",
+  "side_view": 2
+ },
+ {
+  "part": "01741",
+  "ld_model": 1.519,
+  "ld_truth": 1.583,
+  "err": -0.041,
+  "note": "length from the side view 01741_2.jpg (1.62 x diameter); standing part seen from",
+  "side_view": 1
+ },
+ {
+  "part": "00882",
+  "ld_model": 25.125,
+  "ld_truth": 30.084,
+  "err": -0.18,
+  "note": "length from the side view 00882_1.jpg (22.37 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "01298",
+  "ld_model": 6.715,
+  "ld_truth": 6.296,
+  "err": 0.065,
+  "note": "length from the side view 01298_3.jpg (6.67 x diameter)",
+  "side_view": 2
+ },
+ {
+  "part": "00992",
+  "ld_model": 0.081,
+  "ld_truth": 0.063,
+  "err": 0.256,
+  "note": "disc seen edge-on in 00992_2.jpg: thickness 0.08 x diameter",
+  "side_view": 1
+ },
+ {
+  "part": "01072",
+  "ld_model": 4.451,
+  "ld_truth": 4.096,
+  "err": 0.083,
+  "note": "length from the side view 01072_1.jpg (4.39 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "00447",
+  "ld_model": 0.15,
+  "ld_truth": 0.048,
+  "err": 1.134,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 1
+ },
+ {
+  "part": "01005",
+  "ld_model": 4.646,
+  "ld_truth": 8.022,
+  "err": -0.546,
+  "note": "length from the side view 01005_1.jpg (4.36 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "00945",
+  "ld_model": 1.279,
+  "ld_truth": 0.52,
+  "err": 0.9,
+  "note": "length from the side view 00945_2.jpg (1.25 x diameter)",
+  "side_view": 1
+ },
+ {
+  "part": "01265",
+  "ld_model": 8.394,
+  "ld_truth": 8.022,
+  "err": 0.045,
+  "note": "length from the side view 01265_2.jpg (8.02 x diameter)",
+  "side_view": 1
+ },
+ {
+  "part": "00089",
+  "ld_model": 0.133,
+  "ld_truth": 0.076,
+  "err": 0.559,
+  "note": "disc seen edge-on in 00089_3.jpg: thickness 0.13 x diameter",
+  "side_view": 2
+ },
+ {
+  "part": "01786",
+  "ld_model": 7.921,
+  "ld_truth": 7.917,
+  "err": 0.001,
+  "note": "length from the side view 01786_1.jpg (7.83 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "01825",
+  "ld_model": 0.15,
+  "ld_truth": 0.114,
+  "err": 0.278,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 0
+ },
+ {
+  "part": "01071",
+  "ld_model": 0.15,
+  "ld_truth": 0.25,
+  "err": -0.511,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 0
+ },
+ {
+  "part": "00876",
+  "ld_model": 1.467,
+  "ld_truth": 1.254,
+  "err": 0.157,
+  "note": "length from the side view 00876_3.jpg (1.45 x diameter)",
+  "side_view": 2
+ },
+ {
+  "part": "00698",
+  "ld_model": 1.38,
+  "ld_truth": 1.234,
+  "err": 0.112,
+  "note": "length from the side view 00698_1.jpg (1.38 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "01134",
+  "ld_model": 2.656,
+  "ld_truth": 2.273,
+  "err": 0.156,
+  "note": "length from the side view 01134_3.jpg (2.55 x diameter)",
+  "side_view": 2
+ },
+ {
+  "part": "00135",
+  "ld_model": 38.828,
+  "ld_truth": 81.978,
+  "err": -0.747,
+  "note": "length from the side view 00135_1.jpg (37.57 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "01589",
+  "ld_model": 3.33,
+  "ld_truth": 0.3,
+  "err": 2.407,
+  "note": "length from the side view 01589_1.jpg (3.27 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "00112",
+  "ld_model": 3.707,
+  "ld_truth": 3.51,
+  "err": 0.055,
+  "note": "length from the side view 00112_3.jpg (3.65 x diameter)",
+  "side_view": 2
+ },
+ {
+  "part": "01908",
+  "ld_model": 40.652,
+  "ld_truth": 42.251,
+  "err": -0.039,
+  "note": "length from the side view 01908_1.jpg (36.00 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "01426",
+  "ld_model": 0.15,
+  "ld_truth": 0.222,
+  "err": -0.393,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 2
+ },
+ {
+  "part": "01512",
+  "ld_model": 0.764,
+  "ld_truth": 0.571,
+  "err": 0.291,
+  "note": "disc seen edge-on in 01512_3.jpg: thickness 0.76 x diameter",
+  "side_view": 2
+ },
+ {
+  "part": "01100",
+  "ld_model": 1.22,
+  "ld_truth": 1.17,
+  "err": 0.042,
+  "note": "length from the side view 01100_1.jpg (1.18 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "01947",
+  "ld_model": 0.392,
+  "ld_truth": 0.6,
+  "err": -0.427,
+  "note": "standing part seen from 41 deg above in 01947_1.jpg: length from the band below ",
+  "side_view": 0
+ },
+ {
+  "part": "01449",
+  "ld_model": 2.849,
+  "ld_truth": 2.674,
+  "err": 0.063,
+  "note": "length from the side view 01449_2.jpg (2.84 x diameter)",
+  "side_view": 1
+ },
+ {
+  "part": "01179",
+  "ld_model": 0.15,
+  "ld_truth": 0.222,
+  "err": -0.39,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 1
+ },
+ {
+  "part": "01894",
+  "ld_model": 0.489,
+  "ld_truth": 0.8,
+  "err": -0.491,
+  "note": "standing part seen from 56 deg above in 01894_1.jpg: length from the band below ",
+  "side_view": 0
+ },
+ {
+  "part": "00139",
+  "ld_model": 7.135,
+  "ld_truth": 3.501,
+  "err": 0.712,
+  "note": "length from the side view 00139_1.jpg (6.93 x diameter)",
+  "side_view": 0
+ },
+ {
+  "part": "01477",
+  "ld_model": 0.564,
+  "ld_truth": 0.5,
+  "err": 0.12,
+  "note": "disc seen edge-on in 01477_3.jpg: thickness 0.56 x diameter",
+  "side_view": 2
+ },
+ {
+  "part": "01525",
+  "ld_model": 13.016,
+  "ld_truth": 6.405,
+  "err": 0.709,
+  "note": "length from the side view 01525_2.jpg (11.71 x diameter)",
+  "side_view": 1
+ },
+ {
+  "part": "01254",
+  "ld_model": 0.768,
+  "ld_truth": 0.997,
+  "err": -0.262,
+  "note": "length from the side view 01254_1.jpg (1.18 x diameter); standing part seen from",
+  "side_view": 0
+ },
+ {
+  "part": "01560",
+  "ld_model": 0.774,
+  "ld_truth": 0.923,
+  "err": -0.175,
+  "note": "disc seen edge-on in 01560_3.jpg: thickness 0.77 x diameter",
+  "side_view": 2
+ },
+ {
+  "part": "01380",
+  "ld_model": 7.176,
+  "ld_truth": 8.022,
+  "err": -0.112,
+  "note": "length from the side view 01380_3.jpg (7.08 x diameter)",
+  "side_view": 2
+ },
+ {
+  "part": "00825",
+  "ld_model": 0.575,
+  "ld_truth": 0.802,
+  "err": -0.334,
+  "note": "standing part seen from 52 deg above in 00825_1.jpg: length from the band below ",
+  "side_view": 0
+ },
+ {
+  "part": "00208",
+  "ld_model": 3.289,
+  "ld_truth": 3.0,
+  "err": 0.092,
+  "note": "length from the side view 00208_2.jpg (3.18 x diameter)",
+  "side_view": 1
+ },
+ {
+  "part": "00718",
+  "ld_model": 0.15,
+  "ld_truth": 0.04,
+  "err": 1.322,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "side_view": 1
+ }
+]

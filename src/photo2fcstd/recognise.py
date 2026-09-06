@@ -181,28 +181,43 @@ def program_prompt(n):
         "Reply with ONLY the JSON." % (n, n - 1))
 
 
-DISC_THICKNESS = 0.15
+DISC_THICKNESS = 0.17
 
 
-def side_view(photos):
+def revolve_views(photos):
     from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
-    best = None
+    views = []
     for i, p in enumerate(photos):
         m, _ = upright_mask(segment_photo(p))
         ys, xs = np.nonzero(m)
+        raw = np.asarray(outline(m)[1]["raw"], float)
+        f = fit_ellipse(raw)
         elong = float((np.ptp(ys) + 1) / (np.ptp(xs) + 1))
-        f = fit_ellipse(np.asarray(outline(m)[1]["raw"], float))
-        elliptical = bool(f and f["rms"] < 0.04 * f["b"])
-        if best is None or (elong > best[1] and not elliptical) or (best[3] and not elliptical):
-            best = (i, elong, m, elliptical)
-    return best
+        views.append({"i": i, "mask": m, "elong": elong, "elliptical": bool(f and f["rms"] < 0.04 * f["b"]), "top_aspect": _top_ellipse_aspect(raw, ys, xs)})
+    bars = [v for v in views if v["elong"] >= 1.15 and not v["elliptical"]]
+    bar = max(bars, key=lambda v: v["elong"]) if bars else None
+    family = "disc" if sum(v["elliptical"] for v in views) >= 2 else "rod"
+    return views, bar, family
+
+
+def _top_ellipse_aspect(raw, ys, xs, frac=0.45):
+    from photo2fcstd.trace import fit_ellipse
+    top = raw[raw[:, 1] < ys.min() + frac * np.ptp(ys)]
+    if len(top) < 12:
+        return None
+    f = fit_ellipse(top)
+    if not f or f["rms"] > 0.05 * max(f["a"], 1e-9) or abs(2 * f["a"] - (np.ptp(xs) + 1)) > 0.15 * (np.ptp(xs) + 1):
+        return None
+    return float(min(f["b"] / f["a"], 1.0))
 
 
 def revolve_spec(photos, rec, name="part", samples=48):
-    i, elong, mask, elliptical = side_view(photos)
-    has_side = elong >= 1.15 and not elliptical
+    views, bar, family = revolve_views(photos)
+    has_side = bar is not None
+    v = bar if has_side else max(views, key=lambda v: v["elong"])
+    i, elong, mask = v["i"], v["elong"], v["mask"]
     length_note = "length from the side view %s (%.2f x diameter)" % (os.path.basename(photos[i]), elong) if has_side \
-        else "no side view among the photos: thickness set to %.2f x diameter (a guess, put a caliper on it)" % DISC_THICKNESS
+        else "no side view among the photos: thickness set to %.2f x diameter (the dataset median for discs, a guess for this part: put a caliper on it)" % DISC_THICKNESS
     ys, xs = np.nonzero(mask)
     y0, y1 = ys.min(), ys.max()
     axis = (xs.min() + xs.max()) / 2.0
@@ -217,9 +232,27 @@ def revolve_spec(photos, rec, name="part", samples=48):
     prof.append([0.0, round(float(y1 - y0), 2)])
     profile = straight_or_traced(prof)
     R = max(abs(r) for r, _ in profile)
+    if has_side and family == "disc":
+        R = float((np.ptp(ys) + 1) / 2.0); L = float(np.ptp(xs) + 1)
+        profile = [[0.0, 0.0], [round(R, 2), 0.0], [round(R, 2), round(L, 2)], [0.0, round(L, 2)]]
+        length_note = "disc seen edge-on in %s: thickness %.2f x diameter" % (os.path.basename(photos[i]), L / (2 * R))
+    elif has_side and len(profile) == 4 and v["top_aspect"] and 0.15 < v["top_aspect"] < 0.85:
+        s_ = v["top_aspect"]; H = float(np.ptp(ys) + 1); D = 2 * R
+        L = max((H - D * s_) / float(np.sqrt(1 - s_ ** 2)), 0.05 * D)
+        profile = [[0.0, 0.0], [round(R, 2), 0.0], [round(R, 2), round(L, 2)], [0.0, round(L, 2)]]
+        length_note += "; standing part seen from %.0f deg above, end face removed from the length" % np.degrees(np.arcsin(s_))
     if not has_side:
         R = float(max(np.ptp(xs), np.ptp(ys)) / 2.0)
-        profile = [[0.0, 0.0], [round(R, 2), 0.0], [round(R, 2), round(2 * R * DISC_THICKNESS, 2)], [0.0, round(2 * R * DISC_THICKNESS, 2)]]
+        L = 2 * R * DISC_THICKNESS
+        standing = [w for w in views if w["top_aspect"] and 0.15 < w["top_aspect"] < 0.85]
+        if standing:
+            w = max(standing, key=lambda w: w["elong"]); s_ = w["top_aspect"]
+            wy, wx = np.nonzero(w["mask"]); H = float(np.ptp(wy) + 1); D = float(np.ptp(wx) + 1)
+            band = (H - D * s_) / float(np.sqrt(1 - s_ ** 2))
+            if band > 0.05 * D:
+                R = D / 2.0; L = band; i = w["i"]
+                length_note = "standing part seen from %.0f deg above in %s: length from the band below the top face (%.2f x diameter)" % (np.degrees(np.arcsin(s_)), os.path.basename(photos[i]), L / D)
+        profile = [[0.0, 0.0], [round(R, 2), 0.0], [round(R, 2), round(L, 2)], [0.0, round(L, 2)]]
     ratio, how = (bore_ratio(photos) if "bore" in (rec.get("openings") or []) else (None, None))
     holes = [{"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how}] if ratio else []
     return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "px",

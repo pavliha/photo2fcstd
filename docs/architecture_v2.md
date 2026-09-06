@@ -786,3 +786,21 @@ MAX_MIN (180), SSH has failed for 14 minutes, there is no log 30 minutes after s
 done and idle IDLE_MIN (5, the user's minimum). Decisions are logged to
 `~/.cache/photo2fcstd/watchdog_<id>.log`. Pool jobs print `progress k/n` so the log heartbeat is
 real (`imap_unordered`, never a silent `map`).
+
+## Overnight 2026-09-07: solid bench and revolve length
+
+`tools/solid_bench.py` (shipped app, FreeCAD build on a rented box with conda-forge FreeCAD 1.0,
+`score.best_iou` vs the STEP mesh) on the 150 bench parts: built 133, refused 17, 3D IoU mean
+0.561, median 0.600, >= 0.8 on 22 parts (15%). Sketch scores overstate: with the sketch right
+(region >= 0.9, n=41) the solid still fails (< 0.6) on 13; revolves with the right circle: 13 of 30
+match, 10 fail. The third dimension is the lever, and for revolves it needs no FreeCAD to test:
+`tools/revolve_length_bench.py` compares the profile length/diameter with the truth mesh.
+
+Fixes in `recognise.revolve_spec`: `revolve_views` scores every photo (elongation, elliptical
+outline, top-ellipse aspect); a disc (>= 2 elliptical views) seen edge-on takes its thickness from
+the bar's short side instead of becoming a 12:1 rod; a standing part seen from above takes its
+tilt from the top ellipse and its length from the band below the rim, also when no bar view exists.
+Length |log ratio| median 0.349 -> 0.259, parts more than 2x off 16 -> 8. Solid bench on the 42
+revolve parts (local, 2 workers): 3D IoU 0.579 -> 0.655, >= 0.8 13 -> 15, 12 wins / 2 losses.
+Still wrong: very thin discs with no visible edge (guess), one disc read as a rod (01589), rods whose
+only side view is foreshortened (00135, 00139, 01005), the thin cup 00945.
