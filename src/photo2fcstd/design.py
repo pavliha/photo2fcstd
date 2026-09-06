@@ -109,8 +109,16 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
         json.dump({"short_over_long": float(ext[1] / ext[0]), "height_over_long": float(carved["top_mm"] / ext[0]), "source": "board hull"}, dj); dj.close()
         res = TEMPLATES[cls](rec, photos, out, frame_w_mm=float(ext[0]), depth_json=dj.name, traced=kw.get("traced", True))
         res["params"]["_ledger"]["frame_w"] = "measured (board hull)"
+    elif rec.get("revolve"):
+        spec = carve.revolve_from_carve(carved, _stem(out), rec)
+        if not spec["revolve"]["holes"] and "bore" in (rec.get("openings") or []):
+            ratio, how = recognise.bore_ratio(photos)
+            if ratio:
+                R = spec["revolve"]["profile"][1][0]
+                spec["revolve"]["holes"].append({"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how})
+        res = _build(spec, out, "board", cls)
     else:
-        spec = carve.spec_from_carve(carved, _stem(out))
+        spec = carve.spec_from_carve(carved, _stem(out), views=carved["board_views"], masks=carved["board_masks"])
         res = _build(spec, out, "board", cls)
     if res.get("valid") is False:
         return _refuse(out, "build produced no valid solid", ["reshoot with the target fully in frame"])

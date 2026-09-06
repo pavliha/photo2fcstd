@@ -176,18 +176,41 @@ def section_constancy(carved, axis):
     return float(np.median(trimmed) / max(trimmed.max(), 1)) if len(trimmed) else 0.0
 
 
-def spec_from_carve(carved, name="part", stl=None, axis=None):
+TOP_PPMM = 10.0
+
+
+def top_face_mask(views, masks, top_mm, bounds_xy, ppmm=TOP_PPMM):
+    (x0, x1), (y0, y1) = bounds_xy
+    w, h = int(np.ceil((x1 - x0) * ppmm)), int(np.ceil((y1 - y0) * ppmm))
+    face = np.ones((h, w), bool)
+    for view, mask in zip(views, masks):
+        R = cv2.Rodrigues(np.asarray(view["rvec"], float))[0]; t = np.asarray(view["tvec"], float).reshape(3)
+        Hp = view["K"] @ np.column_stack([R[:, 0], R[:, 1], R[:, 2] * top_mm + t])
+        grid = np.array([[1 / ppmm, 0, x0], [0, 1 / ppmm, y0], [0, 0, 1.0]])
+        warped = cv2.warpPerspective(mask.astype(np.uint8), Hp @ grid, (w, h), flags=cv2.WARP_INVERSE_MAP | cv2.INTER_NEAREST) > 0
+        face &= warped
+    return face
+
+
+def spec_from_carve(carved, name="part", stl=None, axis=None, views=None, masks=None):
     from photo2fcstd.trace import outline, primitives
     axis = base_axis(carved) if axis is None else axis
-    plan = occupancy(carved, axis=axis)
+    voxel = carved["voxel_mm"]
+    if axis == 2 and views is not None and carved.get("top_mm"):
+        pts = carved["points_mm"]
+        pad = 2.0
+        bounds_xy = ((float(pts[:, 0].min()) - pad, float(pts[:, 0].max()) + pad), (float(pts[:, 1].min()) - pad, float(pts[:, 1].max()) + pad))
+        plan = top_face_mask(views, masks, carved["top_mm"], bounds_xy)
+        voxel = 1.0 / TOP_PPMM
+    else:
+        plan = occupancy(carved, axis=axis)
     poly, shape = outline(plan)
     loops_px = [shape["raw"]] + shape["raw_holes"]
     centre = np.array(shape["raw"], float).mean(axis=0)
-    voxel = carved["voxel_mm"]
     centred = [[[(x - centre[0]) * voxel, -(y - centre[1]) * voxel] for x, y in loop] for loop in loops_px]
     length_mm = max(np.ptp(np.array(shape["raw"], float), axis=0)) * voxel
     loops = primitives(centred, length_mm)
-    height = float(carved["top_mm"]) if axis == 2 and carved.get("top_mm") else float(np.ptp(carved["points_mm"][:, axis]) + voxel)
+    height = float(carved["top_mm"]) if axis == 2 and carved.get("top_mm") else float(np.ptp(carved["points_mm"][:, axis]) + carved["voxel_mm"])
     constancy = section_constancy(carved, axis)
     warning = None
     if constancy < PRISM_CONSTANCY:
@@ -203,6 +226,31 @@ def spec_from_carve(carved, name="part", stl=None, axis=None):
                         "section_constancy": round(constancy, 3),
                         **({"warning": warning} if warning else {})},
             "revolve": None, "stl": stl}
+
+
+def revolve_from_carve(carved, name="part", rec=None):
+    from photo2fcstd.trace import fit_ellipse, outline
+    ext = np.asarray(carved["extents_mm"], float)
+    if carved.get("top_mm"):
+        ext = ext.copy(); ext[2] = float(carved["top_mm"])
+    axis = int(np.argmax(np.abs(ext - np.median(ext))))
+    others = [i for i in range(3) if i != axis]
+    R = float(np.mean(ext[others]) / 2.0)
+    L = float(ext[axis])
+    holes = []
+    if "bore" in ((rec or {}).get("openings") or []):
+        poly, sh = outline(occupancy(carved, axis=axis))
+        inner = [fit_ellipse(np.asarray(h, float)) for h in sh["holes"] if len(h) >= 8]
+        inner = [f for f in inner if f and 0.05 < f["a"] * carved["voxel_mm"] / R < 0.95]
+        if inner:
+            r = max(f["a"] for f in inner) * carved["voxel_mm"]
+            holes.append({"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(float(r), 2), "source": "board hull, seen through the bore"})
+    return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "mm",
+            "scale_note": "metric from the ChArUco board: %d views, %.2f mm voxels" % (carved["views"], carved["voxel_mm"]),
+            "views": {}, "outline": None, "stl": None, "measured": [],
+            "revolve": {"generic": True, "profile": [[0.0, 0.0], [round(R, 2), 0.0], [round(R, 2), round(L, 2)], [0.0, round(L, 2)]],
+                        "holes": holes, "rings": [], "axis": axis,
+                        "source": "radius and length from the board hull (measured)"}}
 
 
 def mesh_of(carved):
@@ -230,8 +278,11 @@ def board_views(paths):
         p = pose(image, K, cal["dist"] if cal else None)
         if p is None:
             continue
+        m = board_mask(image, p)
+        if m.sum() < 50:
+            continue
         views.append(p)
-        masks.append(board_mask(image, p))
+        masks.append(m)
         used.append(path)
     return views, masks, used, cal
 
@@ -242,6 +293,7 @@ def from_photos(paths, segment_fn=None, voxel_mm=VOXEL_MM):
         raise CaptureError("need the ChArUco target visible in at least %d photos, found %d"
                            % (MIN_POSED_VIEWS, len(views)))
     carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))
+    carved["board_views"], carved["board_masks"] = views, masks
     carved["min_elevation_deg"] = min(view_elevation_deg(v) for v in views)
     carved["sources"] = used
     carved["calibration_rms_px"] = cal["rms_px"] if cal else None

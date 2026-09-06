@@ -78,7 +78,7 @@ def board_mask(image, view, min_frac=0.0005, open_px=5):
     sizes = ndimage.sum(mask & (patch > 0), lab, range(1, n + 1))
     if sizes.max() < min_frac * mask.size:
         return np.zeros_like(mask)
-    return ndimage.binary_fill_holes(lab == (int(np.argmax(sizes)) + 1))
+    return lab == (int(np.argmax(sizes)) + 1)
 
 
 def camera_matrix(shape, focal_px=None):

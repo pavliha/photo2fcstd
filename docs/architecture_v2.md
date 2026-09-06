@@ -649,3 +649,33 @@ six known cameras, then through `design.design` and FreeCAD):
 
 Not yet done: a real photo on the printed target. The dataset has none; the user's fan on the A3
 sheet is the first real test.
+
+## Board path benchmarked on the dataset (2026-09-07, "use data from dataset")
+
+No target photos exist, so `tools/board_bench.py` renders each STEP truth mesh (rested on its
+largest face, footprint scaled to 80 mm, on the A3 target) through six known cameras at 25-55 deg
+and runs the real code from there: pose detection, `board_mask`, hull, knee height, sketch. Ran on a
+192-core vast.ai box (nothing heavy on the laptop, user's rule); 141 of 150 parts, 9 too thin for
+0.4 mm voxels.
+
+Steps that moved the number (paired against the photo path on the same parts):
+
+| step | F1 | region IoU | exact |
+|---|---|---|---|
+| photo path (gate_bench_round) | 0.741 | 0.651 | 46% |
+| hull occupancy sketch, thinnest-axis rule | 0.490 | 0.591 | 22% |
+| + learned axis model | 0.497 | 0.666 | 21% |
+| + recognition says revolve -> circle of hull radius | 0.681 | 0.709 | 35% |
+| + sketch traced from the top face rectified exactly at the knee height (`carve.top_face_mask`, intersection of all views' masks warped onto z = top) | 0.706 | 0.728 | 36% |
+| + keep holes in `board_mask` (the hole fill from hand removal was deleting every bore and frame) | **0.727** | **0.765** | 43% |
+
+Per family (board vs photo): rect F1 0.96 vs 0.91, region 0.89 vs 0.70; circle 0.92 vs 0.89,
+region 0.98 vs 0.92; tube 0.80 vs 0.90 (bore only where a view sees through it; real photos add
+`bore_ratio`); frame 0.80 vs 0.87 but region 0.56 vs 0.32; octagons 0.42 vs 0.40 (the primitive
+fitter, common to both). Height median error 7%, extents 2%.
+
+Reading: with the pose known, the metric shape (region IoU) is better across the board and the
+sketch topology (F1) is at parity, on views the photo path never gets in real life (it was
+scored on square-on photos). The remaining F1 gap is the outline tracer on polygons, shared.
+Design entry: `design.design` -> board tier -> `revolve_from_carve` (+ `bore_ratio` on real photos)
+or `spec_from_carve(views, masks)` with the rectified top face.
