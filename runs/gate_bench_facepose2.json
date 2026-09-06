@@ -1,0 +1,2793 @@
+[
+ {
+  "part": "01504",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.7980255978438467,
+  "iou": 0.931,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   20.53701489679634,
+   19.892072389070513,
+   18.17964494456556
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01540",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.8989929115231741,
+  "iou": 0.96,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   11.936342940107991,
+   14.399200730286978,
+   19.237256223196475
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01520",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.28571428571428575,
+  "region_iou": 0.8524850596075604,
+  "iou": 0.963,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00008",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.938070202659311,
+  "iou": 0.953,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00798",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.75,
+  "region_iou": 0.21408448547111525,
+  "iou": 0.922,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   25.74085862098989,
+   40.880517787598386,
+   11.788458614775664
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00471",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.056869499458273284,
+  "iou": 0.883,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00039",
+  "mode": "plan",
+  "valid": false,
+  "f1": 1.0,
+  "region_iou": 0.9647150975486991,
+  "iou": null,
+  "refused": true,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   12.416748213428235,
+   48.05667712967011,
+   41.902849017364495
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00595",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.7871290706319708,
+  "iou": 0.923,
+  "refused": false,
+  "rectified": true,
+  "tilt": 39.05897858709242,
+  "tilts": [
+   39.05897858709242,
+   47.285480010995855,
+   47.285480010995855
+  ],
+  "agreement": [
+   0.42252344427735317,
+   0.7112617221386766,
+   0.7112617221386766
+  ],
+  "view": 1,
+  "face_inliers": 0.6025177253653595
+ },
+ {
+  "part": "00386",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "region_iou": 0.7981768361578733,
+  "iou": 0.952,
+  "refused": false,
+  "rectified": true,
+  "tilt": 22.94556258798963,
+  "tilts": [
+   38.73676815678272,
+   28.282819546324898,
+   22.94556258798963
+  ],
+  "agreement": [
+   0.36896814090071317,
+   0.2556027339560996,
+   0.4396329926305733
+  ],
+  "view": 2,
+  "face_inliers": 0.620309791858595
+ },
+ {
+  "part": "00724",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.4,
+  "region_iou": 0.29065123193975895,
+  "iou": 0.831,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   11.640163088590274,
+   10.679691586675617,
+   43.75502243920936
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00005",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.7622616929861098,
+  "iou": 0.96,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00280",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9330152517995561,
+  "iou": 0.967,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01630",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "iou": 0.957,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00096",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.14814814814814814,
+  "region_iou": 0.6161039942053402,
+  "iou": 0.69,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   5.047468586174887,
+   34.54822787824,
+   47.67297687257896
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00500",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8571428571428571,
+  "region_iou": 0.021769744463080203,
+  "iou": 0.832,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01470",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.75,
+  "region_iou": 0.06109876521988251,
+  "iou": 0.613,
+  "refused": false,
+  "rectified": true,
+  "tilt": 25.596824550495796,
+  "tilts": [
+   24.269854411162644,
+   37.843009435792936,
+   25.596824550495796
+  ],
+  "agreement": [
+   0.3792999168367733,
+   0.3792999168367733,
+   0.0
+  ],
+  "view": 0,
+  "face_inliers": 0.742030108479079
+ },
+ {
+  "part": "00541",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.10373498129521223,
+  "iou": 0.954,
+  "refused": false,
+  "rectified": true,
+  "tilt": 38.755647482729,
+  "tilts": [
+   33.742621048498705,
+   38.755647482729,
+   45.051735332163695
+  ],
+  "agreement": [
+   0.0259130515928099,
+   0.0259130515928099,
+   0.0
+  ],
+  "view": 0,
+  "face_inliers": 0.5579919488515274
+ },
+ {
+  "part": "01544",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303345,
+  "iou": 0.956,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   13.116305484134775,
+   16.195783346216157,
+   12.066208807715224
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00011",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.5454545454545455,
+  "region_iou": 0.1820184082577773,
+  "iou": 0.943,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   14.566149492767947,
+   10.796505872908307,
+   14.876353077493105
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00794",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.14814814814814814,
+  "region_iou": 0.846272547875749,
+  "iou": 0.803,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   13.38046351883001,
+   43.760640944172486,
+   43.10931925064724
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01264",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.175,
+  "region_iou": 0.7741613904984038,
+  "iou": 0.886,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   17.000806730012282,
+   14.185591287448663,
+   19.2641786510287
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00384",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.16666666666666666,
+  "region_iou": 0.39454088572472573,
+  "iou": 0.858,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01744",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303341,
+  "iou": 0.947,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00245",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9994228571428575,
+  "iou": 0.971,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   9.468507283686394,
+   31.00032024711054,
+   11.971418172721998
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00149",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303343,
+  "iou": 0.984,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01448",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.2222222222222222,
+  "region_iou": 0.9057322627740501,
+  "iou": 0.926,
+  "refused": false,
+  "rectified": true,
+  "tilt": 38.04501277575669,
+  "tilts": [
+   13.705510440877521,
+   48.610802520365034,
+   38.04501277575669
+  ],
+  "agreement": [
+   0.7862593707755371,
+   0.8248633362516965,
+   0.7866476393026718
+  ],
+  "view": 1,
+  "face_inliers": 0.528865
+ },
+ {
+  "part": "01341",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.8900046289888494,
+  "iou": 0.88,
+  "refused": false,
+  "rectified": true,
+  "tilt": 44.18854659796652,
+  "tilts": [
+   17.176738754188122,
+   44.18854659796652,
+   51.685221402852775
+  ],
+  "agreement": [
+   0.8168477059191579,
+   0.8785974049383828,
+   0.8430955252543186
+  ],
+  "view": 1,
+  "face_inliers": 0.7750694654598476
+ },
+ {
+  "part": "00838",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8799999999999999,
+  "region_iou": 0.7075918393294991,
+  "iou": 0.956,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   4.367659645913149,
+   12.099717249655793,
+   36.273154881328416
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00725",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.6913677037103791,
+  "iou": 0.939,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   12.549261344967492,
+   50.14536488795507,
+   19.366158810906878
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01109",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.7648435628242175,
+  "iou": 0.824,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00297",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9523809523809523,
+  "region_iou": 0.8099593923048292,
+  "iou": 0.448,
+  "refused": true,
+  "rectified": true,
+  "tilt": 31.083997518466052,
+  "tilts": [
+   30.47662530984414,
+   31.083997518466052,
+   33.51976907152033
+  ],
+  "agreement": [
+   0.32587113290256914,
+   0.35503061724991436,
+   0.38181001114986857
+  ],
+  "view": 2,
+  "face_inliers": 0.34049235258478927
+ },
+ {
+  "part": "01362",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.7106937566237342,
+  "iou": 0.812,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   14.934426246820722,
+   39.958098720851844,
+   49.506569860752634
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00972",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.3076923076923077,
+  "region_iou": 0.24285459440415105,
+  "iou": 0.929,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   26.408205521330025,
+   24.307190096963865,
+   15.869416535012952
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01741",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.25829720618103036,
+  "iou": 0.927,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01364",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9912064000000013,
+  "iou": 0.967,
+  "refused": false,
+  "rectified": true,
+  "tilt": 31.551542786629522,
+  "tilts": [
+   32.189252762236556,
+   31.551542786629522,
+   39.1545994760756
+  ],
+  "agreement": [
+   0.2430351653363964,
+   0.13704142105149072,
+   0.2342979961902406
+  ],
+  "view": 0,
+  "face_inliers": 0.6526912181303116
+ },
+ {
+  "part": "00060",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.05128205128205128,
+  "region_iou": 0.7905445485963424,
+  "iou": 0.925,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   1.505647161681333,
+   9.660654397199277,
+   54.374699695995616
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00773",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9921991036414568,
+  "iou": 0.802,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   15.519961280715698,
+   39.26767855234533,
+   55.316212428698776
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00882",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.013753230145850953,
+  "iou": 0.438,
+  "refused": true,
+  "rectified": true,
+  "tilt": 51.09811167993016,
+  "tilts": [
+   8.430111217239242,
+   51.09811167993016,
+   11.356512986186313
+  ],
+  "agreement": [
+   0.034714276462079835,
+   0.0,
+   0.034714276462079835
+  ],
+  "view": 0,
+  "face_inliers": 0.7281586479487528
+ },
+ {
+  "part": "00907",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6896551724137931,
+  "region_iou": 0.5556687834210575,
+  "iou": 0.625,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00944",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6896551724137931,
+  "region_iou": 0.42273793117339026,
+  "iou": 0.912,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01761",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9090909090909091,
+  "region_iou": 0.9561556107833326,
+  "iou": 0.975,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   12.744380878258715,
+   53.83436217253705,
+   8.153162930570856
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01657",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.33333333333333337,
+  "region_iou": 0.35799156204441446,
+  "iou": 0.89,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00224",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.20512820512820512,
+  "region_iou": 0.15136744399134164,
+  "iou": 0.929,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   9.717763148930601,
+   13.841664079749181,
+   16.34972708458714
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00069",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303345,
+  "iou": 0.975,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01209",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.7499999999999999,
+  "region_iou": 0.5606239255158287,
+  "iou": 0.754,
+  "refused": false,
+  "rectified": true,
+  "tilt": 23.094065130918327,
+  "tilts": [
+   18.053353260514232,
+   23.094065130918327,
+   22.88623110605235
+  ],
+  "agreement": [
+   0.22878009117212258,
+   0.35440385571302246,
+   0.23056038103249116
+  ],
+  "view": 1,
+  "face_inliers": 0.3650364837842491
+ },
+ {
+  "part": "01107",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.888888888888889,
+  "region_iou": 0.7848550275397776,
+  "iou": 0.903,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00048",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.6189579470441385,
+  "iou": 0.872,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   6.083852479110543,
+   12.6927471005466,
+   37.1010153588378
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00968",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9812409812409812,
+  "iou": 0.966,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   35.90052183818592,
+   10.824429302151714,
+   39.27808866895946
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01584",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9959462705993631,
+  "iou": 0.95,
+  "refused": false,
+  "rectified": true,
+  "tilt": 26.095344790890184,
+  "tilts": [
+   27.180270324318062,
+   26.095344790890184,
+   25.164647149375167
+  ],
+  "agreement": [
+   0.5192016779680517,
+   0.5332132586102174,
+   0.14004157111212007
+  ],
+  "view": 1,
+  "face_inliers": 0.8524366001355901
+ },
+ {
+  "part": "01391",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.8246631906452851,
+  "iou": 0.429,
+  "refused": true,
+  "rectified": true,
+  "tilt": 31.652751158740585,
+  "tilts": [
+   7.574353375795859,
+   29.155396387935582,
+   31.652751158740585
+  ],
+  "agreement": [
+   0.6379946935316246,
+   0.5741601898955019,
+   0.5605887365543464
+  ],
+  "view": 0,
+  "face_inliers": 0.5249652814870206
+ },
+ {
+  "part": "00643",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.7272727272727273,
+  "region_iou": 0.6780276864188104,
+  "iou": 0.84,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01262",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.5822634782608688,
+  "iou": 0.917,
+  "refused": false,
+  "rectified": true,
+  "tilt": 31.5639809374219,
+  "tilts": [
+   29.542071304952184,
+   31.5639809374219,
+   22.05855995825173
+  ],
+  "agreement": [
+   0.07558562550324734,
+   0.1671633698931625,
+   0.11441831576370481
+  ],
+  "view": 1,
+  "face_inliers": 0.9686030308308657
+ },
+ {
+  "part": "01298",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.2623682444112312,
+  "iou": 0.246,
+  "refused": true,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   15.823042501272598,
+   12.125478280694564,
+   9.315594584488183
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00992",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303347,
+  "iou": 0.948,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01072",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.5,
+  "region_iou": 0.3924379005660706,
+  "iou": 0.923,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00447",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303347,
+  "iou": 0.846,
+  "refused": false,
+  "rectified": true,
+  "tilt": 31.426911025070815,
+  "tilts": [
+   43.94051888991963,
+   57.40628991106578,
+   31.426911025070815
+  ],
+  "agreement": [
+   0.6645500329706866,
+   0.6262995468121368,
+   0.47887996403641653
+  ],
+  "view": 0,
+  "face_inliers": 0.5291589822557252
+ },
+ {
+  "part": "01222",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.761904761904762,
+  "region_iou": 0.2646596150062694,
+  "iou": 0.809,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00432",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8421052631578948,
+  "region_iou": 0.6210703722308191,
+  "iou": 0.641,
+  "refused": false,
+  "rectified": true,
+  "tilt": 32.8131811921066,
+  "tilts": [
+   31.586185118086174,
+   32.8131811921066,
+   29.925156517637966
+  ],
+  "agreement": [
+   0.3650801974529373,
+   0.12270890412473189,
+   0.41362867177052154
+  ],
+  "view": 2,
+  "face_inliers": 0.12291024424946645
+ },
+ {
+  "part": "00478",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6666666666666665,
+  "region_iou": 0.8388932828264158,
+  "iou": 0.891,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01721",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.44897959183673464,
+  "region_iou": 0.3448480609601502,
+  "iou": 0.766,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01005",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.41903978404727915,
+  "iou": 0.801,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01823",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.5,
+  "region_iou": 0.15553743982535884,
+  "iou": 0.802,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01653",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.3107681016078515,
+  "iou": 0.948,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   11.790424162834729,
+   32.70581041702477,
+   20.825268014908666
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00307",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.9090909090909091,
+  "region_iou": 0.4179510119219274,
+  "iou": 0.732,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   7.3533573390807785,
+   14.609203869585118,
+   18.871824972128543
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00538",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.8641354071363221,
+  "iou": 0.949,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   19.00559631825961,
+   57.452857444311825,
+   58.90887575729705
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00945",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.07669567326267432,
+  "iou": 0.897,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01297",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8181818181818182,
+  "region_iou": 0.341566246092515,
+  "iou": 0.752,
+  "refused": false,
+  "rectified": true,
+  "tilt": 21.51987483613002,
+  "tilts": [
+   23.54124658153453,
+   28.954159741676403,
+   21.51987483613002
+  ],
+  "agreement": [
+   0.6228397304234194,
+   0.4855998044640655,
+   0.55655568317744
+  ],
+  "view": 0,
+  "face_inliers": 0.1443182527301092
+ },
+ {
+  "part": "01265",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.1695906419333769,
+  "iou": 0.903,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00958",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8333333333333333,
+  "region_iou": 0.5704366558375462,
+  "iou": 0.766,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01334",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.06218182659548453,
+  "iou": 0.825,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   16.505763307437356,
+   25.025728146691705,
+   30.98793421035767
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01345",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.8497642623065503,
+  "iou": 0.803,
+  "refused": false,
+  "rectified": true,
+  "tilt": 51.45886861273279,
+  "tilts": [
+   17.71431565223185,
+   51.45886861273279,
+   53.967385176326005
+  ],
+  "agreement": [
+   0.7907422397933286,
+   0.7859704358517363,
+   0.8003600858436175
+  ],
+  "view": 2,
+  "face_inliers": 0.32699166870702834
+ },
+ {
+  "part": "00131",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.7942926474316968,
+  "iou": 0.983,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   5.459025840301019,
+   11.913040956177683,
+   19.876611360715255
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01715",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.6943033440659293,
+  "iou": 0.929,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   51.766978002077295,
+   7.84052854981059,
+   31.41948804611887
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00089",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "iou": 0.916,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01786",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.37076344508761677,
+  "iou": 0.559,
+  "refused": true,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   13.852039248254474,
+   17.93229498905965,
+   37.88674935691972
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01825",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303346,
+  "iou": 0.955,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01252",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.43478260869565216,
+  "region_iou": 0.3407030905765308,
+  "iou": 0.371,
+  "refused": true,
+  "rectified": true,
+  "tilt": 64.9387006361953,
+  "tilts": [
+   65.74708405976193,
+   64.9387006361953,
+   52.69174100198851
+  ],
+  "agreement": [
+   0.0,
+   0.09219258295380611,
+   0.09219258295380611
+  ],
+  "view": 1,
+  "face_inliers": 0.09836706462574805
+ },
+ {
+  "part": "01545",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.13859722905335894,
+  "iou": 0.947,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01783",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666665,
+  "region_iou": 0.6593116184524744,
+  "iou": 0.863,
+  "refused": false,
+  "rectified": true,
+  "tilt": 53.72500978354214,
+  "tilts": [
+   40.685277018418915,
+   8.145631200082686,
+   53.72500978354214
+  ],
+  "agreement": [
+   0.6945227439709397,
+   0.6845096783096617,
+   0.7138152210604946
+  ],
+  "view": 2,
+  "face_inliers": 0.22823138522239095
+ },
+ {
+  "part": "01934",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.7499999999999999,
+  "region_iou": 0.6296722050477181,
+  "iou": 0.732,
+  "refused": false,
+  "rectified": true,
+  "tilt": 50.19808702364367,
+  "tilts": [
+   50.12077562131141,
+   16.193353574074777,
+   50.19808702364367
+  ],
+  "agreement": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "view": 0,
+  "face_inliers": 0.14811704762175856
+ },
+ {
+  "part": "01187",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.6127999556213016,
+  "iou": 0.911,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   15.294293026555275,
+   20.62630195722852,
+   21.156433555513082
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01071",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.6429383837325301,
+  "iou": 0.941,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00460",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.2706527027144217,
+  "iou": 0.916,
+  "refused": false,
+  "rectified": true,
+  "tilt": 64.47121194146024,
+  "tilts": [
+   65.47108603230612,
+   64.77096525325292,
+   64.47121194146024
+  ],
+  "agreement": [
+   0.6143274857420769,
+   0.5256681310733338,
+   0.5540289690780764
+  ],
+  "view": 0,
+  "face_inliers": 0.17236509274873524
+ },
+ {
+  "part": "01719",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.6283696521801451,
+  "iou": 0.961,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00677",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.9824561403508771,
+  "region_iou": 0.6888634848733096,
+  "iou": 0.957,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00876",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.7214720129328317,
+  "iou": 0.948,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01498",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9987697487697484,
+  "iou": 0.844,
+  "refused": false,
+  "rectified": true,
+  "tilt": 33.332246560463595,
+  "tilts": [
+   33.332246560463595,
+   22.991136363606625,
+   32.522426179104734
+  ],
+  "agreement": [
+   0.8203025766220373,
+   0.7654376319597267,
+   0.7434654269872638
+  ],
+  "view": 0,
+  "face_inliers": 0.6283354510800508
+ },
+ {
+  "part": "01526",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.1111111111111111,
+  "region_iou": 0.43336425404233386,
+  "iou": 0.714,
+  "refused": false,
+  "rectified": true,
+  "tilt": 21.478182637015,
+  "tilts": [
+   21.478182637015,
+   25.797830963546204,
+   28.899344422571414
+  ],
+  "agreement": [
+   0.04793625538860932,
+   9.238396830203399e-05,
+   0.047843871420307285
+  ],
+  "view": 0,
+  "face_inliers": 0.3848190348525469
+ },
+ {
+  "part": "00721",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.909842347700381,
+  "iou": 0.847,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   13.181270543056337,
+   47.96156676569735,
+   56.685569659457904
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00455",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.13409159756056618,
+  "iou": 0.846,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00698",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9907947143917916,
+  "iou": 0.717,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   38.04302928366383,
+   15.867578298574417,
+   28.89282971392778
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00747",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8,
+  "region_iou": 0.7100888230874571,
+  "iou": 0.913,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01134",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.47469045353998257,
+  "iou": 0.907,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00098",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8163265306122449,
+  "region_iou": 0.7460399446115236,
+  "iou": 0.961,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   7.014390398129388,
+   13.635440130375288,
+   37.47659238057868
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00135",
+  "error": "every view of this part traces to an outline with no area: the silhouette is too thin to regularise, reshoot it square to the face"
+ },
+ {
+  "part": "01115",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.5,
+  "region_iou": 0.05636571968999084,
+  "iou": 0.644,
+  "refused": false,
+  "rectified": true,
+  "tilt": 33.223679093139054,
+  "tilts": [
+   33.223679093139054,
+   38.645908685820196,
+   31.321909216403945
+  ],
+  "agreement": [
+   0.13047156110682304,
+   0.1358216381251917,
+   0.02358553570246544
+  ],
+  "view": 1,
+  "face_inliers": 0.33418189426698286
+ },
+ {
+  "part": "01589",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "iou": 0.972,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00160",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8235294117647058,
+  "region_iou": 0.80889561202925,
+  "iou": 0.805,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   5.927168908530222,
+   20.96561157291379,
+   1.8793178757012086
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01163",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.8563243920756664,
+  "iou": 0.825,
+  "refused": false,
+  "rectified": true,
+  "tilt": 25.518467271502356,
+  "tilts": [
+   25.518467271502356,
+   27.00428369607591,
+   33.62925739564008
+  ],
+  "agreement": [
+   0.6429217973129536,
+   0.6887233276258324,
+   0.5240116842472893
+  ],
+  "view": 1,
+  "face_inliers": 0.34637714137112763
+ },
+ {
+  "part": "00377",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.039999999999999994,
+  "region_iou": 0.7573452360828189,
+  "iou": 0.971,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00608",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9793495136778109,
+  "iou": 0.979,
+  "refused": false,
+  "rectified": true,
+  "tilt": 34.66820333933999,
+  "tilts": [
+   32.205780467658855,
+   34.66820333933999,
+   32.92697622027007
+  ],
+  "agreement": [
+   0.19472985569020565,
+   0.2688638881300308,
+   0.16050126291287248
+  ],
+  "view": 1,
+  "face_inliers": 0.5025938793965066
+ },
+ {
+  "part": "00766",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.8199428655555424,
+  "iou": 0.849,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00653",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.888888888888889,
+  "region_iou": 0.03729460833960015,
+  "iou": 0.951,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00112",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.5723528833446412,
+  "iou": 0.873,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00610",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.17405712373944465,
+  "iou": 0.452,
+  "refused": true,
+  "rectified": true,
+  "tilt": 38.728706843356065,
+  "tilts": [
+   11.699519076098577,
+   38.728706843356065,
+   35.516337421311064
+  ],
+  "agreement": [
+   0.42203077143729467,
+   0.534902593446445,
+   0.28834108178627843
+  ],
+  "view": 1,
+  "face_inliers": 0.5838850782087723
+ },
+ {
+  "part": "01751",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "region_iou": 0.33533725837942985,
+  "iou": 0.957,
+  "refused": false,
+  "rectified": true,
+  "tilt": 45.18257900366644,
+  "tilts": [
+   41.55983116507226,
+   45.18257900366644,
+   7.288176435682847
+  ],
+  "agreement": [
+   0.6815424987376025,
+   0.5405140474431009,
+   0.6620475922932239
+  ],
+  "view": 0,
+  "face_inliers": 0.60988
+ },
+ {
+  "part": "01279",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.6909788812773441,
+  "iou": 0.875,
+  "refused": false,
+  "rectified": true,
+  "tilt": 28.274778385354303,
+  "tilts": [
+   29.104230665981166,
+   28.274778385354303,
+   24.46512008474087
+  ],
+  "agreement": [
+   0.5132023864115844,
+   0.556339192400748,
+   0.574213632452838
+  ],
+  "view": 2,
+  "face_inliers": 0.8026842387009611
+ },
+ {
+  "part": "00863",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.4,
+  "region_iou": 0.43053254454438084,
+  "iou": 0.938,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01731",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.9224764737720161,
+  "iou": 0.923,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   7.916153338219743,
+   46.78542674107851,
+   4.176785709415266
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00943",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.04997325706592401,
+  "iou": 0.761,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   1.311485019010369,
+   24.451548004286643,
+   14.905147708154352
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01908",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.015186443657630732,
+  "iou": 0.886,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01426",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9656351190686883,
+  "iou": 0.961,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01884",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666665,
+  "region_iou": 0.9096115202391406,
+  "iou": 0.926,
+  "refused": false,
+  "rectified": true,
+  "tilt": 25.113419698037177,
+  "tilts": [
+   16.669241958545985,
+   25.113419698037177,
+   10.12744285737674
+  ],
+  "agreement": [
+   0.5211668827069718,
+   0.42576109032746695,
+   0.3741356484292018
+  ],
+  "view": 0,
+  "face_inliers": 0.641673822813797
+ },
+ {
+  "part": "01055",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.42997296012894604,
+  "iou": 0.733,
+  "refused": false,
+  "rectified": true,
+  "tilt": 55.83172827476932,
+  "tilts": [
+   55.83172827476932,
+   62.596013440235254,
+   54.38002769719834
+  ],
+  "agreement": [
+   0.3104658678347796,
+   0.3335645621260905,
+   0.355465236004721
+  ],
+  "view": 2,
+  "face_inliers": 0.21089571320479036
+ },
+ {
+  "part": "01089",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666667,
+  "region_iou": 0.5780214339065588,
+  "iou": 0.886,
+  "refused": false,
+  "rectified": true,
+  "tilt": 28.926931149212493,
+  "tilts": [
+   31.493576797199573,
+   27.6215452619672,
+   28.926931149212493
+  ],
+  "agreement": [
+   0.3879372215101597,
+   0.06583452456532916,
+   0.3797751821169355
+  ],
+  "view": 0,
+  "face_inliers": 0.3655724551733761
+ },
+ {
+  "part": "01512",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.7805323421007571,
+  "iou": 0.943,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00873",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.47058823529411764,
+  "region_iou": 0.7662370596204122,
+  "iou": 0.755,
+  "refused": false,
+  "rectified": true,
+  "tilt": 78.52700364628689,
+  "tilts": [
+   87.10165565685921,
+   78.52700364628689,
+   55.8206583092269
+  ],
+  "agreement": [
+   0.25511738793609223,
+   0.0,
+   0.25511738793609223
+  ],
+  "view": 0,
+  "face_inliers": 0.2664677900507942
+ },
+ {
+  "part": "00982",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.4,
+  "region_iou": 0.3730517549470406,
+  "iou": 0.908,
+  "refused": false,
+  "rectified": true,
+  "tilt": 23.667090604467734,
+  "tilts": [
+   5.801370420622093,
+   23.667090604467734,
+   31.009361233461412
+  ],
+  "agreement": [
+   0.5125883367294977,
+   0.5054760792113677,
+   0.25118948237761174
+  ],
+  "view": 0,
+  "face_inliers": 0.27051422113392354
+ },
+ {
+  "part": "01100",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.8849291381534874,
+  "iou": 0.913,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01947",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.633727457077479,
+  "iou": 0.97,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01449",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.7428265633392664,
+  "iou": 0.763,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   8.192072868523052,
+   16.17325625442587,
+   44.865744848749955
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01099",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.6821878357670816,
+  "iou": 0.866,
+  "refused": false,
+  "rectified": true,
+  "tilt": 26.877390706441794,
+  "tilts": [
+   26.877390706441794,
+   30.67610737612516,
+   24.69396883797156
+  ],
+  "agreement": [
+   0.13650965002626453,
+   0.1604319219470638,
+   0.10098300515383435
+  ],
+  "view": 1,
+  "face_inliers": 0.6601086956521739
+ },
+ {
+  "part": "01682",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.3333333333333333,
+  "region_iou": 0.4230739297445074,
+  "iou": 0.939,
+  "refused": false,
+  "rectified": true,
+  "tilt": 27.44959326250817,
+  "tilts": [
+   10.146192237685803,
+   41.74003709911272,
+   27.44959326250817
+  ],
+  "agreement": [
+   0.3249492500848694,
+   0.16920391667907891,
+   0.3042879460315987
+  ],
+  "view": 0,
+  "face_inliers": 0.46717412987558404
+ },
+ {
+  "part": "01179",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "iou": 0.764,
+  "refused": false,
+  "rectified": true,
+  "tilt": 22.842829471898934,
+  "tilts": [
+   22.842829471898934,
+   23.61793442362428,
+   22.59122812412787
+  ],
+  "agreement": [
+   0.5105971589332634,
+   0.04925820573812294,
+   0.5094147609276005
+  ],
+  "view": 0,
+  "face_inliers": 0.692972388477335
+ },
+ {
+  "part": "00174",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.21052631578947367,
+  "region_iou": 0.24766109018742738,
+  "iou": 0.673,
+  "refused": false,
+  "rectified": true,
+  "tilt": 52.857555307030104,
+  "tilts": [
+   7.880910092411994,
+   27.812058800210554,
+   52.857555307030104
+  ],
+  "agreement": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "view": 0,
+  "face_inliers": 0.0835252167734635
+ },
+ {
+  "part": "01894",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.312315350550461,
+  "iou": 0.961,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00626",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9898309686640577,
+  "iou": 0.71,
+  "refused": false,
+  "rectified": true,
+  "tilt": 41.07469871939465,
+  "tilts": [
+   12.391570144863616,
+   41.07469871939465,
+   30.977889559957916
+  ],
+  "agreement": [
+   0.5327898247755765,
+   0.4180946273986057,
+   0.5334284532490176
+  ],
+  "view": 2,
+  "face_inliers": 0.355065
+ },
+ {
+  "part": "01181",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.049270968804589726,
+  "iou": 0.418,
+  "refused": true,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01875",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.7425280607623607,
+  "iou": 0.949,
+  "refused": false,
+  "rectified": true,
+  "tilt": 71.87795527747298,
+  "tilts": [
+   71.87795527747298,
+   75.69063155296969,
+   80.63653003269961
+  ],
+  "agreement": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "view": 0,
+  "face_inliers": 0.5085599699210427
+ },
+ {
+  "part": "00139",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.22569525945860536,
+  "iou": 0.3,
+  "refused": true,
+  "rectified": true,
+  "tilt": 20.958363296315948,
+  "tilts": [
+   7.333348098716343,
+   20.958363296315948,
+   41.778412806884724
+  ],
+  "agreement": [
+   0.0,
+   0.17239021908486757,
+   0.17239021908486757
+  ],
+  "view": 1,
+  "face_inliers": 0.2805706784045716
+ },
+ {
+  "part": "01477",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "iou": 0.974,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01124",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.888888888888889,
+  "region_iou": 0.4149383991145905,
+  "iou": 0.904,
+  "refused": false,
+  "rectified": true,
+  "tilt": 29.053387212016503,
+  "tilts": [
+   29.306856365495097,
+   29.053387212016503,
+   29.097556879960486
+  ],
+  "agreement": [
+   0.2495348776623946,
+   0.28341453476788814,
+   0.3278366548141981
+  ],
+  "view": 2,
+  "face_inliers": 0.46525206296373345
+ },
+ {
+  "part": "01525",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.03938157650741979,
+  "iou": 0.954,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01510",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.7499999999999999,
+  "region_iou": 0.6911272386007417,
+  "iou": 0.861,
+  "refused": false,
+  "rectified": true,
+  "tilt": 28.8243410752085,
+  "tilts": [
+   29.527261855191725,
+   30.81828469691485,
+   28.8243410752085
+  ],
+  "agreement": [
+   0.6020285041213931,
+   0.5087458178273696,
+   0.5525613596860387
+  ],
+  "view": 0,
+  "face_inliers": 0.1174493005097061
+ },
+ {
+  "part": "00579",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.4571428571428572,
+  "region_iou": 0.4061032669476864,
+  "iou": 0.907,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": [
+   5.763974420060777,
+   39.239090757125254,
+   42.50957976644946
+  ],
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01254",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.6495576190344774,
+  "iou": 0.8,
+  "refused": false,
+  "rectified": true,
+  "tilt": 22.49097919603907,
+  "tilts": [
+   18.439050779827966,
+   22.49097919603907,
+   36.288668189131215
+  ],
+  "agreement": [
+   0.4228185667551607,
+   0.39014825928214236,
+   0.4887524391652455
+  ],
+  "view": 2,
+  "face_inliers": 0.24100699255889207
+ },
+ {
+  "part": "01560",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9908007688967626,
+  "iou": 0.806,
+  "refused": false,
+  "rectified": true,
+  "tilt": 35.51618602460829,
+  "tilts": [
+   28.158188690912297,
+   35.51618602460829,
+   30.12602631168922
+  ],
+  "agreement": [
+   0.7025760221048236,
+   0.7070943755215657,
+   0.528246079230902
+  ],
+  "view": 1,
+  "face_inliers": 0.5356578514650561
+ },
+ {
+  "part": "00697",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.8584468378378383,
+  "iou": 0.957,
+  "refused": false,
+  "rectified": true,
+  "tilt": 48.425537628837446,
+  "tilts": [
+   35.65561331249918,
+   51.095108736578204,
+   48.425537628837446
+  ],
+  "agreement": [
+   0.6069387612204,
+   0.6041868907856058,
+   0.3057136303790531
+  ],
+  "view": 0,
+  "face_inliers": 0.968252809808787
+ },
+ {
+  "part": "01674",
+  "mode": "profile",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.48930290244328073,
+  "iou": 0.968,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01380",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.16919024554200401,
+  "iou": 0.929,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "01609",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.13333333333333333,
+  "region_iou": 0.7441167698937615,
+  "iou": 0.826,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00884",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.6734188668983949,
+  "iou": 0.711,
+  "refused": false,
+  "rectified": true,
+  "tilt": 52.96494024930267,
+  "tilts": [
+   54.33937842562194,
+   84.29237813066038,
+   52.96494024930267
+  ],
+  "agreement": [
+   0.38313085753434856,
+   0.38655795433953927,
+   0.0034292314591632795
+  ],
+  "view": 1,
+  "face_inliers": 0.24521910819741904
+ },
+ {
+  "part": "01838",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.8,
+  "region_iou": 0.632539844783843,
+  "iou": 0.891,
+  "refused": false,
+  "rectified": true,
+  "tilt": 36.358058872979726,
+  "tilts": [
+   31.5527583507077,
+   36.358058872979726,
+   39.794696224440436
+  ],
+  "agreement": [
+   0.5609229270441138,
+   0.6185600059486632,
+   0.5470469111044947
+  ],
+  "view": 1,
+  "face_inliers": 0.18689
+ },
+ {
+  "part": "01858",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.9,
+  "region_iou": 0.6867180197243573,
+  "iou": 0.726,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00825",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.8083906417236195,
+  "iou": 0.863,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00701",
+  "mode": "plan",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.9668569014983929,
+  "iou": 0.917,
+  "refused": false,
+  "rectified": true,
+  "tilt": 34.76630210297076,
+  "tilts": [
+   34.76630210297076,
+   35.109429840453636,
+   44.330806738062066
+  ],
+  "agreement": [
+   0.2757866932633266,
+   0.5981557206463326,
+   0.5906249444857148
+  ],
+  "view": 1,
+  "face_inliers": 0.9010967927605282
+ },
+ {
+  "part": "01676",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.8,
+  "region_iou": 0.5989737485232985,
+  "iou": 0.9,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00208",
+  "mode": "plan",
+  "valid": true,
+  "f1": 0.0,
+  "region_iou": 0.06965721273236138,
+  "iou": 0.493,
+  "refused": true,
+  "rectified": true,
+  "tilt": 42.70324813023303,
+  "tilts": [
+   46.2157444968389,
+   14.401636269425602,
+   42.70324813023303
+  ],
+  "agreement": [
+   0.2848906759578078,
+   0.2848906759578078,
+   0.0
+  ],
+  "view": 0,
+  "face_inliers": 0.15390419089390983
+ },
+ {
+  "part": "00718",
+  "mode": "revolve",
+  "valid": true,
+  "f1": 1.0,
+  "region_iou": 0.6748881130834641,
+  "iou": 0.978,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ },
+ {
+  "part": "00027",
+  "mode": "profile",
+  "valid": true,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.07575783701353078,
+  "iou": 0.783,
+  "refused": false,
+  "rectified": false,
+  "tilt": null,
+  "tilts": null,
+  "agreement": null,
+  "view": null,
+  "face_inliers": null
+ }
+]

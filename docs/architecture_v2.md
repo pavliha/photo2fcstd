@@ -530,3 +530,11 @@ the 150-part mean**; the 0.85 variant is 9/1 but smaller. `design()` now builds 
 verifies it, and only then rectifies and rebuilds when both conditions hold (plan-mode specs
 only; profile/revolve keep their own construction). 00701 through the app: tilt 35, raw
 verify 0.79 -> rectified, region IoU 0.976, F1 1.000, solid IoU 0.985.
+
+**Picker (2026-09-07):** re-benched with per-view agreement and face-inlier fraction logged
+(50 parts rectified this run - VGGT on MPS is not bit-deterministic, so the trigger set moves).
+On those 50: base 0.604, always-rectify 0.617, per-part oracle 0.671. Truth-free rules:
+agreement > 0.5 -> **+0.034 (n=24, 15 wins / 4 losses)**; tilt in [30,45) +0.038 (a tuned
+window, n=19); face inliers do not separate. Rank correlation of gain with agreement is only
+0.23, so this is a modest, credible gain (~+0.011 over the whole set), not a breakthrough.
+Shipped as the trigger (tilt > 20 deg AND agreement > 0.5), still opt-in via P2F_FACEPOSE=1.

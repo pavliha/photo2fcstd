@@ -127,6 +127,9 @@ def maybe_rectify(photos, spec, name="part"):
     if tilt <= TILT_RECTIFY_DEG:
         return spec, {"applied": False, "reason": "chosen view tilt %.0f deg <= %.0f" % (tilt, TILT_RECTIFY_DEG), "tilts": info["tilts_deg"]}
     best = int(np.argmax(info["agreement"]))
+    if info["agreement"][best] <= AGREEMENT_MIN:
+        return spec, {"applied": False, "reason": "rectified views disagree (agreement %.2f <= %.2f)" % (info["agreement"][best], AGREEMENT_MIN),
+                      "tilts": info["tilts_deg"], "agreement": info["agreement"]}
     new = spec_from_mask(info["rectified"][best], name, source="rectified:%s" % os.path.basename(photos[best]))
     if new is None:
         return spec, {"applied": False, "reason": "rectified mask traced to nothing", "tilts": info["tilts_deg"]}
