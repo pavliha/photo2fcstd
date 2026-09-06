@@ -518,3 +518,15 @@ damages others when the face-plane fit or warp fails (00873 0.98 -> 0.59, VGGT t
 photo path was weak (< 0.85): +0.021. So the gain exists but is not separable with the signals
 logged (tilt alone); the rule ships opt-in. Next: log the rectified views' cross-agreement and
 face inlier fraction and test truth-free pickers on the same paired set.
+
+**Population result and the deployed rule (2026-09-06).** Re-benching 150 parts with
+rectification applied whenever VGGT tilt > 20 deg fired on 71 parts and was a coin flip:
+31 wins / 29 losses, mean region IoU 0.598 vs 0.599 baseline, refusals 9 -> 17. Paired against
+the same parts' baseline it splits on two runtime signals: it helps at 30-40 deg (+0.022) and
+hurts at 20-30 (-0.023); it helps when the raw build verifies below 0.85-0.90 against the photo
+and hurts when the raw build already matches. The combined rule **tilt >= 30 deg AND raw
+verify IoU < 0.90** fires on 27 of 150, **+0.081 IoU on those (19 wins / 4 losses), +0.015 on
+the 150-part mean**; the 0.85 variant is 9/1 but smaller. `design()` now builds the raw spec,
+verifies it, and only then rectifies and rebuilds when both conditions hold (plan-mode specs
+only; profile/revolve keep their own construction). 00701 through the app: tilt 35, raw
+verify 0.79 -> rectified, region IoU 0.976, F1 1.000, solid IoU 0.985.

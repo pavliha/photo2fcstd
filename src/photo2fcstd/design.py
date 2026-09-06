@@ -52,12 +52,18 @@ def design(photos, out, rec=None, **kw):
         res = _build(recognise.revolve_spec(photos, rec, name=_stem(out)), out, "revolve", cls)
     elif rec.get("single_extrusion"):
         spec, _ = recognise.route(photos, name=_stem(out), rec=rec)
-        if os.environ.get("P2F_FACEPOSE", "0") == "1":
+        res = {**_build(spec, out, "assemble", cls), "tilt": {"applied": False, "reason": "disabled"}}
+        if os.environ.get("P2F_FACEPOSE", "1") == "1" and res.get("valid") and spec.get("mode") == "plan":
             from photo2fcstd import facepose
-            spec, tilt_info = facepose.maybe_rectify(photos, spec, name=_stem(out))
-        else:
-            tilt_info = {"applied": False, "reason": "disabled"}
-        res = {**_build(spec, out, "assemble", cls), "tilt": tilt_info}
+            raw = verify(out, photos, rec)
+            if raw["silhouette_iou"] is not None and raw["silhouette_iou"] < facepose.RAW_VERIFY_MAX:
+                spec2, tilt_info = facepose.maybe_rectify(photos, spec, name=_stem(out))
+                if tilt_info.get("applied"):
+                    res = {**_build(spec2, out, "assemble", cls), "tilt": {**tilt_info, "raw_verify_iou": raw["silhouette_iou"]}}
+                else:
+                    res["tilt"] = tilt_info
+            else:
+                res["tilt"] = {"applied": False, "reason": "raw build already matches the photo (%.2f)" % raw["silhouette_iou"]}
     else:
         return _refuse(out, "no template for this part and it is not a revolve or a flat extrusion",
                        ["add a template for this class, or shoot a slow low 16-view orbit for the carve path"])
