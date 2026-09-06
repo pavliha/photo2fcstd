@@ -21,7 +21,7 @@ def one(part):
     try:
         spec, _ = recognise.route(photos, name=part, rec=rec)
         tilt = {"applied": False}
-        if os.environ.get("P2F_FACEPOSE", "1") == "1":
+        if os.environ.get("P2F_FACEPOSE", "0") == "1":
             from photo2fcstd import facepose
             spec, tilt = facepose.maybe_rectify(photos, spec, name=part)
         sp = os.path.join(d, part + ".spec.json")

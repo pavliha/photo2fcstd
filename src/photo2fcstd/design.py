@@ -52,7 +52,7 @@ def design(photos, out, rec=None, **kw):
         res = _build(recognise.revolve_spec(photos, rec, name=_stem(out)), out, "revolve", cls)
     elif rec.get("single_extrusion"):
         spec, _ = recognise.route(photos, name=_stem(out), rec=rec)
-        if os.environ.get("P2F_FACEPOSE", "1") == "1":
+        if os.environ.get("P2F_FACEPOSE", "0") == "1":
             from photo2fcstd import facepose
             spec, tilt_info = facepose.maybe_rectify(photos, spec, name=_stem(out))
         else:
