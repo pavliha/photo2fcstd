@@ -52,7 +52,7 @@ def main(n=150, seed=0):
     parts = bench.with_photos([p for p in sorted(IDEAL) if SS.trustworthy(IDEAL[p])])[0]
     rng = np.random.default_rng(seed)
     parts = [parts[i] for i in rng.choice(len(parts), min(n, len(parts)), replace=False)]
-    with Pool(6) as pool:
+    with Pool(int(os.environ.get("GATE_WORKERS", "6"))) as pool:
         rows = pool.map(one, parts)
     out = os.path.join(ROOT, "runs", os.environ.get("GATE_BENCH_OUT", "gate_bench.json"))
     os.makedirs(os.path.dirname(out), exist_ok=True)
