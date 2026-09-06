@@ -775,3 +775,14 @@ thick tube 00876 0.291 and thin cup 00945 0.068 (length from an oblique view; wa
 few-percent level makes IoU unforgiving), bent strip 00027 0.487, letter 00297 refused by the gate.
 Bores are cut correctly (volume check matches 1 - ratio^2). Widening the bore search to 0.97
 found the cup's rim but broke the thick tube (0.89 -> 0.97); reverted to the bench-validated 0.9.
+
+## Guardrails for rented boxes (2026-09-07, "don't burn money on stalled work")
+
+Every remote job now runs under `tools/vast_run.sh LOG MAX_SEC cmd...` (hard `timeout`, JOB_START /
+JOB_EXIT / JOB_DONE markers in the log) and every instance gets a local watchdog
+`tools/vast_watchdog.sh ID LOG MAX_MIN STALL_MIN IDLE_MIN` that polls every two minutes and destroys
+the instance when: the log has not changed for STALL_MIN (default 20), the job has run longer than
+MAX_MIN (180), SSH has failed for 14 minutes, there is no log 30 minutes after start, or the job is
+done and idle IDLE_MIN (5, the user's minimum). Decisions are logged to
+`~/.cache/photo2fcstd/watchdog_<id>.log`. Pool jobs print `progress k/n` so the log heartbeat is
+real (`imap_unordered`, never a silent `map`).
