@@ -732,3 +732,27 @@ Three independent photo-only pose recoveries (VGGT face pose, joint silhouette f
 points) now give the same result on the dataset: about zero on average. The board path with a
 known pose gives region 0.765 vs 0.651. The pose has to come from capture, not from the pixels.
 `vanish.py` deleted; the bench tool stays for the facepose rectifier.
+
+## Where the pose can come from without printing (2026-09-07)
+
+The user's phone is an iPhone 15 Pro Max (LiDAR, ARKit). Apps such as 3D Scanner App, Record3D
+or Polycam export per-frame RGB, intrinsics and ARKit camera poses in metres, which is exactly what
+the board supplies: known pose plus scale, no sheet. ARKit poses drift by the order of 0.5-1 deg
+over a short orbit, so the question is how much pose error the silhouette hull tolerates.
+`tools/board_bench.py` with `POSE_NOISE_DEG=n` carves from truth poses perturbed by n deg of
+rotation and 2n mm of translation (`carve.from_known_poses`), same renders, same masks.
+
+Result of the pose-noise sweep (`runs/board_noise_{0,0.5,1}.json`, 6 views at 520 mm):
+
+| pose error | region IoU | footprint err (median) | height err (median) |
+|---|---|---|---|
+| 0 deg | 0.717 | 2.0% | 6.2% |
+| 0.5 deg + 1 mm | 0.632 | 6.5% | 10.5% |
+| 1 deg + 2 mm | 0.549 | 15.0% | 14.1% |
+
+One degree at 500 mm moves a ray 9 mm at the part: silhouette cones stop intersecting where the
+part is. The printed target solves poses to ~0.05 deg (0.3 px reprojection); phone AR poses are
+0.3-1 deg and would need a refinement step. Two refinements were tried on the synthetic box at
+1 deg (leave-one-out silhouette fit; hull-volume maximisation, Powell, 6 dof per view): neither
+recovered the box (34 x 22 x 18 for 30 x 18 x 9). Both deleted. The sheet is the pose source
+that works today; `carve.from_known_poses` stays as the entry for any external pose source.

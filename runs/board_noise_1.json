@@ -1,0 +1,4337 @@
+[
+ {
+  "part": "01264",
+  "error": "too thin: 0.02 mm at 0.4 mm voxels"
+ },
+ {
+  "part": "01504",
+  "error": "too thin: 0.27 mm at 0.4 mm voxels"
+ },
+ {
+  "part": "00907",
+  "error": "too thin: 0.57 mm at 0.4 mm voxels"
+ },
+ {
+  "part": "01761",
+  "error": "too thin: 0.61 mm at 0.4 mm voxels"
+ },
+ {
+  "part": "01584",
+  "error": "too thin: 0.29 mm at 0.4 mm voxels"
+ },
+ {
+  "part": "01341",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "01470",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "00882",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "01362",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908163266655273,
+  "top_mm": 38.199999999999996,
+  "true_height_mm": 29.456937789916992,
+  "ext_err_pct": [
+   -54.0,
+   -45.8,
+   -59.3
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.44351940884370245,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.3514237797108694,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.4013858554928861,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00224",
+  "views": 6,
+  "f1": 0.05882352941176471,
+  "region_iou": 0.0,
+  "top_mm": 3.0000000000000004,
+  "true_height_mm": 1.8735363483428955,
+  "ext_err_pct": [
+   -99.5,
+   -91.1,
+   -78.7
+  ],
+  "section_constancy": 1.0,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.0,
+    "f1": 0.05882352941176471
+   },
+   "1": {
+    "region": 0.0,
+    "f1": 0.05882352941176471
+   },
+   "2": {
+    "region": 0.19786666436448547,
+    "f1": 0.21621621621621626
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00471",
+  "views": 6,
+  "f1": 0.5,
+  "region_iou": 0.036936267702290256,
+  "top_mm": 2.6000000000000005,
+  "true_height_mm": 5.334244251251221,
+  "ext_err_pct": [
+   5.0,
+   57.5,
+   -47.5
+  ],
+  "section_constancy": 0.936,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.25056552244546265,
+    "f1": 0.5333333333333333
+   },
+   "1": {
+    "region": 0.0,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.036936267702290256,
+    "f1": 0.5
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01072",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.9907413358908023,
+  "top_mm": 21.400000000000002,
+  "true_height_mm": 19.531801223754883,
+  "ext_err_pct": [
+   10.0,
+   14.0,
+   10.6
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.8050330836219951,
+    "f1": 0.4444444444444445
+   },
+   "1": {
+    "region": 0.232353745590293,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.14090088111998908,
+    "f1": 0.3076923076923077
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00005",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.35600277145735354,
+  "top_mm": 17.8,
+  "true_height_mm": 19.944076538085938,
+  "ext_err_pct": [
+   4.0,
+   -10.0,
+   -13.8
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.24007575385271557,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.0874530795976238,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.08760880494875041,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "01005",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "01298",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9907742138482812,
+  "top_mm": 6.2,
+  "true_height_mm": 12.706572532653809,
+  "ext_err_pct": [
+   14.5,
+   15.5,
+   -49.6
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.36272476644242424,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.07422246271011897,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.13574879835330986,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00798",
+  "views": 6,
+  "f1": 0.6,
+  "region_iou": 0.28465925147576443,
+  "top_mm": 12.2,
+  "true_height_mm": 12.310340497302214,
+  "ext_err_pct": [
+   1.0,
+   0.7,
+   -35.0
+  ],
+  "section_constancy": 0.907,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.28465925147576443,
+    "f1": 0.6
+   },
+   "1": {
+    "region": 0.8622730327530482,
+    "f1": 0.888888888888889
+   },
+   "2": {
+    "region": 0.3911197738369566,
+    "f1": 0.75
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "01364",
+  "views": 6,
+  "f1": 0.6666666666666665,
+  "region_iou": 0.5023223233813428,
+  "top_mm": 3.4000000000000004,
+  "true_height_mm": 3.556288480758667,
+  "ext_err_pct": [
+   16.5,
+   -14.9,
+   1.2
+  ],
+  "section_constancy": 0.983,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.8424901598743745,
+    "f1": 0.8
+   },
+   "1": {
+    "region": 0.0,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.5023223233813428,
+    "f1": 0.6666666666666665
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00541",
+  "views": 6,
+  "f1": 0.7272727272727273,
+  "region_iou": 0.03690514036220673,
+  "top_mm": 12.2,
+  "true_height_mm": 2.1052632331848145,
+  "ext_err_pct": [
+   -9.0,
+   -69.3,
+   489.0
+  ],
+  "section_constancy": 0.04,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.004368479088850175,
+    "f1": 0.888888888888889
+   },
+   "1": {
+    "region": 0.03690514036220673,
+    "f1": 0.7272727272727273
+   },
+   "2": {
+    "region": 0.030323828923357953,
+    "f1": 0.823529411764706
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "01540",
+  "views": 6,
+  "f1": 0.5,
+  "region_iou": 0.38779832759361754,
+  "top_mm": 6.2,
+  "true_height_mm": 4.002238190149979,
+  "ext_err_pct": [
+   -5.0,
+   -22.5,
+   59.9
+  ],
+  "section_constancy": 0.72,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.38779832759361754,
+    "f1": 0.5
+   },
+   "1": {
+    "region": 0.2914979982615802,
+    "f1": 0.8
+   },
+   "2": {
+    "region": 0.19330065501371313,
+    "f1": 0.6666666666666666
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00384",
+  "views": 6,
+  "f1": 0.25,
+  "region_iou": 0.7272592707407382,
+  "top_mm": 21.400000000000002,
+  "true_height_mm": 21.763233184814453,
+  "ext_err_pct": [
+   7.5,
+   -8.1,
+   -0.8
+  ],
+  "section_constancy": 0.974,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.7272592707407382,
+    "f1": 0.25
+   },
+   "1": {
+    "region": 0.3502615379482307,
+    "f1": 0.2
+   },
+   "2": {
+    "region": 0.26173945544260147,
+    "f1": 0.7499999999999999
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "01391",
+  "views": 6,
+  "f1": 0.75,
+  "region_iou": 0.1734416455905438,
+  "top_mm": 15.0,
+  "true_height_mm": 12.658278465270996,
+  "ext_err_pct": [
+   2.0,
+   -1.0,
+   20.1
+  ],
+  "section_constancy": 0.94,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1734416455905438,
+    "f1": 0.75
+   },
+   "1": {
+    "region": 0.8112714768468611,
+    "f1": 0.888888888888889
+   },
+   "2": {
+    "region": 0.6939576514964235,
+    "f1": 0.5
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "01262",
+  "views": 6,
+  "f1": 0.6666666666666665,
+  "region_iou": 0.4883371008132556,
+  "top_mm": 5.000000000000001,
+  "true_height_mm": 4.413793087005615,
+  "ext_err_pct": [
+   18.5,
+   0.9,
+   17.8
+  ],
+  "section_constancy": 0.892,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.48348100482365086,
+    "f1": 0.8
+   },
+   "1": {
+    "region": 3.8488147568625464e-16,
+    "f1": 0.8571428571428571
+   },
+   "2": {
+    "region": 0.4883371008132556,
+    "f1": 0.6666666666666665
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00447",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303345,
+  "top_mm": 9.4,
+  "true_height_mm": 3.861849069595337,
+  "ext_err_pct": [
+   -1.0,
+   -2.2,
+   148.6
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.14336178187847717,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.1530050504838564,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.8385637205737663,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00245",
+  "views": 6,
+  "f1": 0.888888888888889,
+  "region_iou": 0.29501524632386367,
+  "top_mm": 2.2,
+  "true_height_mm": 1.4368668794631958,
+  "ext_err_pct": [
+   -0.0,
+   -43.9,
+   67.0
+  ],
+  "section_constancy": 0.966,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1467971817964015,
+    "f1": 0.3333333333333333
+   },
+   "1": {
+    "region": 0.0,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.29501524632386367,
+    "f1": 0.888888888888889
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01334",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "00643",
+  "views": 6,
+  "f1": 0.34782608695652173,
+  "region_iou": 0.6674748218162202,
+  "top_mm": 24.6,
+  "true_height_mm": 24.0,
+  "ext_err_pct": [
+   7.0,
+   -1.2,
+   3.3
+  ],
+  "section_constancy": 0.924,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.3829516489757881,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.7954852787371068,
+    "f1": 0.6
+   },
+   "2": {
+    "region": 0.6674748218162202,
+    "f1": 0.34782608695652173
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00595",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.5133145800976824,
+  "top_mm": 3.8000000000000003,
+  "true_height_mm": 1.9512194395065308,
+  "ext_err_pct": [
+   -3.0,
+   -21.6,
+   105.0
+  ],
+  "section_constancy": 0.906,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2662171871616582,
+    "f1": 0.888888888888889
+   },
+   "1": {
+    "region": 0.11316742175666433,
+    "f1": 1.0
+   },
+   "2": {
+    "region": 0.5133145800976824,
+    "f1": 1.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01741",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.4996641703139864,
+  "top_mm": 48.60000000000001,
+  "true_height_mm": 50.5273323059082,
+  "ext_err_pct": [
+   17.5,
+   -11.3,
+   -3.4
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.43545097833652624,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.24142543963924445,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.19215715698765018,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00008",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.7013286717315383,
+  "top_mm": 6.2,
+  "true_height_mm": 8.421052932739258,
+  "ext_err_pct": [
+   1.5,
+   -0.7,
+   -24.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.04651532060433555,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.041482253597353046,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.5790021238095494,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01109",
+  "views": 6,
+  "f1": 0.8333333333333334,
+  "region_iou": 0.23831836079876065,
+  "top_mm": 11.8,
+  "true_height_mm": 12.0,
+  "ext_err_pct": [
+   20.0,
+   4.0,
+   0.0
+  ],
+  "section_constancy": 0.745,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2075693873313261,
+    "f1": 0.7692307692307692
+   },
+   "1": {
+    "region": 0.11768438002511544,
+    "f1": 0.5454545454545454
+   },
+   "2": {
+    "region": 0.23831836079876065,
+    "f1": 0.8333333333333334
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00039",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.43891841265333803,
+  "top_mm": 5.000000000000001,
+  "true_height_mm": 4.444462617313752,
+  "ext_err_pct": [
+   1.0,
+   -6.4,
+   17.0
+  ],
+  "section_constancy": 0.971,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.08659864358387565,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.05114523798644246,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.43891841265333803,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01545",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "00386",
+  "views": 6,
+  "f1": 0.4444444444444445,
+  "region_iou": 0.8662764393346059,
+  "top_mm": 21.0,
+  "true_height_mm": 20.126651763916016,
+  "ext_err_pct": [
+   22.5,
+   18.9,
+   5.3
+  ],
+  "section_constancy": 0.967,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.7586071021098874,
+    "f1": 0.8333333333333334
+   },
+   "1": {
+    "region": 0.4498394426415928,
+    "f1": 0.923076923076923
+   },
+   "2": {
+    "region": 0.8662764393346059,
+    "f1": 0.4444444444444445
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01265",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9907938873978754,
+  "top_mm": 6.2,
+  "true_height_mm": 9.972038269042969,
+  "ext_err_pct": [
+   1.0,
+   24.0,
+   -35.8
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.4743702963349708,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.08596689972065721,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.10377846939638707,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00725",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.4730390985003786,
+  "top_mm": 24.6,
+  "true_height_mm": 22.14054298400879,
+  "ext_err_pct": [
+   5.0,
+   0.4,
+   12.0
+  ],
+  "section_constancy": 0.944,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1817093244266902,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.1656343341569683,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.4730390985003786,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01630",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "top_mm": 31.8,
+  "true_height_mm": 32.0,
+  "ext_err_pct": [
+   12.5,
+   12.8,
+   0.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.42124139076857003,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.42354188387709124,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.6438345355522388,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00149",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303345,
+  "top_mm": 59.800000000000004,
+  "true_height_mm": 60.0,
+  "ext_err_pct": [
+   12.5,
+   2.8,
+   0.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.7802214693717597,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.7348836362769107,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.9908009457303347,
+    "f1": 1.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00048",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.49337358567273915,
+  "top_mm": 40.2,
+  "true_height_mm": 36.48185348510742,
+  "ext_err_pct": [
+   15.0,
+   8.5,
+   10.7
+  ],
+  "section_constancy": 0.949,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.4070235851380741,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.3513476900470254,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.49337358567273915,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01744",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303346,
+  "top_mm": 13.4,
+  "true_height_mm": 12.903225898742676,
+  "ext_err_pct": [
+   10.5,
+   1.8,
+   5.4
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.18971759055742063,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.1812072452538829,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.8027772188006199,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00500",
+  "views": 6,
+  "f1": 0.8421052631578948,
+  "region_iou": 0.060044722522823925,
+  "top_mm": 39.00000000000001,
+  "true_height_mm": 4.439577579498291,
+  "ext_err_pct": [
+   15.0,
+   -0.2,
+   783.0
+  ],
+  "section_constancy": 0.168,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.02132639868353931,
+    "f1": 0.761904761904762
+   },
+   "1": {
+    "region": 0.05154485097332213,
+    "f1": 0.5882352941176471
+   },
+   "2": {
+    "region": 0.060044722522823925,
+    "f1": 0.8421052631578948
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00992",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303346,
+  "top_mm": 10.6,
+  "true_height_mm": 5.015110969543457,
+  "ext_err_pct": [
+   12.5,
+   9.3,
+   115.3
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.175877881963095,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.168449188835779,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.8490737337595397,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01222",
+  "views": 6,
+  "f1": 0.6101694915254238,
+  "region_iou": 0.27377281157303224,
+  "top_mm": 12.6,
+  "true_height_mm": 19.200000762939453,
+  "ext_err_pct": [
+   1.0,
+   3.6,
+   -33.3
+  ],
+  "section_constancy": 0.941,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2264173699150468,
+    "f1": 0.2666666666666667
+   },
+   "1": {
+    "region": 0.15368975424698844,
+    "f1": 0.18604651162790695
+   },
+   "2": {
+    "region": 0.27377281157303224,
+    "f1": 0.6101694915254238
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01786",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908178719930735,
+  "top_mm": 6.2,
+  "true_height_mm": 10.104998588562012,
+  "ext_err_pct": [
+   -77.5,
+   -25.0,
+   -36.7
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.6443711746194651,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.3813269313416823,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.2346016123436968,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00011",
+  "views": 6,
+  "f1": 0.4848484848484849,
+  "region_iou": 0.14856552149422272,
+  "top_mm": 37.800000000000004,
+  "true_height_mm": 39.9999980924941,
+  "ext_err_pct": [
+   7.5,
+   11.1,
+   -5.0
+  ],
+  "section_constancy": 0.975,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.0937469250852685,
+    "f1": 0.4444444444444444
+   },
+   "1": {
+    "region": 0.09623514776491356,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.14856552149422272,
+    "f1": 0.4848484848484849
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00307",
+  "views": 6,
+  "f1": 0.8000000000000002,
+  "region_iou": 0.7558011214617344,
+  "top_mm": 10.6,
+  "true_height_mm": 10.671609878540039,
+  "ext_err_pct": [
+   -1.0,
+   -1.6,
+   1.2
+  ],
+  "section_constancy": 0.72,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.7558011214617344,
+    "f1": 0.8000000000000002
+   },
+   "1": {
+    "region": 0.16194170224968746,
+    "f1": 0.888888888888889
+   },
+   "2": {
+    "region": 0.11417933168833265,
+    "f1": 0.888888888888889
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00096",
+  "views": 6,
+  "f1": 0.10810810810810811,
+  "region_iou": 0.5174595824346122,
+  "top_mm": 25.0,
+  "true_height_mm": 27.01846919645836,
+  "ext_err_pct": [
+   15.0,
+   8.6,
+   -6.7
+  ],
+  "section_constancy": 0.876,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2878469041637699,
+    "f1": 0.14814814814814814
+   },
+   "1": {
+    "region": 0.18947856704810181,
+    "f1": 0.14285714285714285
+   },
+   "2": {
+    "region": 0.5174595824346122,
+    "f1": 0.10810810810810811
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00098",
+  "error": "too thin: 0.16 mm at 0.4 mm voxels"
+ },
+ {
+  "part": "00432",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.5288222377325351,
+  "top_mm": 36.6,
+  "true_height_mm": 43.0418701171875,
+  "ext_err_pct": [
+   -7.5,
+   10.9,
+   -14.5
+  ],
+  "section_constancy": 0.991,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.7361399700553711,
+    "f1": 0.5714285714285715
+   },
+   "1": {
+    "region": 0.7388779218889368,
+    "f1": 0.5714285714285715
+   },
+   "2": {
+    "region": 0.5288222377325351,
+    "f1": 0.6666666666666666
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00944",
+  "views": 6,
+  "f1": 0.8125,
+  "region_iou": 0.3251318076270817,
+  "top_mm": 42.60000000000001,
+  "true_height_mm": 41.779624938964844,
+  "ext_err_pct": [
+   10.0,
+   6.2,
+   2.4
+  ],
+  "section_constancy": 0.929,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.4223514340102879,
+    "f1": 0.4
+   },
+   "1": {
+    "region": 0.37716641092534076,
+    "f1": 0.4
+   },
+   "2": {
+    "region": 0.3251318076270817,
+    "f1": 0.8125
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00280",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.03726580297302692,
+  "top_mm": 3.4000000000000004,
+  "true_height_mm": 1.2000000476837158,
+  "ext_err_pct": [
+   -0.5,
+   -13.3,
+   200.0
+  ],
+  "section_constancy": 0.93,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.014411292440605168,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.018824592097386256,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.03726580297302692,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00838",
+  "views": 6,
+  "f1": 0.9130434782608695,
+  "region_iou": 0.4413100512728742,
+  "top_mm": 21.400000000000002,
+  "true_height_mm": 16.0,
+  "ext_err_pct": [
+   15.5,
+   3.1,
+   35.0
+  ],
+  "section_constancy": 0.963,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.393859657741393,
+    "f1": 0.4
+   },
+   "1": {
+    "region": 0.29177983901295423,
+    "f1": 0.3448275862068966
+   },
+   "2": {
+    "region": 0.4413100512728742,
+    "f1": 0.9130434782608695
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00972",
+  "views": 6,
+  "f1": 0.7272727272727273,
+  "region_iou": 0.5488150387281447,
+  "top_mm": 17.0,
+  "true_height_mm": 12.159085273742676,
+  "ext_err_pct": [
+   21.0,
+   262.4,
+   41.5
+  ],
+  "section_constancy": 0.826,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.25875176053926197,
+    "f1": 0.5333333333333333
+   },
+   "1": {
+    "region": 0.6265982430547016,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.5488150387281447,
+    "f1": 0.7272727272727273
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01544",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.7600458816083823,
+  "top_mm": 13.0,
+  "true_height_mm": 7.2727274894714355,
+  "ext_err_pct": [
+   -1.0,
+   -1.5,
+   81.5
+  ],
+  "section_constancy": 0.951,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1647133381877175,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.199144780740457,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.7600458816083823,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01448",
+  "views": 6,
+  "f1": 0.37037037037037035,
+  "region_iou": 0.7471723294316241,
+  "top_mm": 14.2,
+  "true_height_mm": 10.0,
+  "ext_err_pct": [
+   22.5,
+   2.8,
+   44.0
+  ],
+  "section_constancy": 0.949,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1839878599603006,
+    "f1": 0.26666666666666666
+   },
+   "1": {
+    "region": 0.190895694456632,
+    "f1": 0.35714285714285715
+   },
+   "2": {
+    "region": 0.7471723294316241,
+    "f1": 0.37037037037037035
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00794",
+  "views": 6,
+  "f1": 0.11428571428571428,
+  "region_iou": 0.4055032116729099,
+  "top_mm": 8.6,
+  "true_height_mm": 12.651737213134766,
+  "ext_err_pct": [
+   22.0,
+   -3.1,
+   -30.4
+  ],
+  "section_constancy": 0.942,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.06861645176483215,
+    "f1": 0.1818181818181818
+   },
+   "1": {
+    "region": 0.05682737877101312,
+    "f1": 0.1818181818181818
+   },
+   "2": {
+    "region": 0.4055032116729099,
+    "f1": 0.11428571428571428
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00653",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "00478",
+  "views": 6,
+  "f1": 0.5,
+  "region_iou": 0.8447343312157586,
+  "top_mm": 54.2,
+  "true_height_mm": 56.36036491394043,
+  "ext_err_pct": [
+   22.5,
+   -5.8,
+   -3.5
+  ],
+  "section_constancy": 0.933,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.8829326553834089,
+    "f1": 0.6666666666666666
+   },
+   "1": {
+    "region": 0.8143014395230515,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.8447343312157586,
+    "f1": 0.5
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00773",
+  "views": 6,
+  "f1": 0.2666666666666667,
+  "region_iou": 0.6140511348149242,
+  "top_mm": 17.0,
+  "true_height_mm": 16.17863655090332,
+  "ext_err_pct": [
+   20.0,
+   36.3,
+   6.3
+  ],
+  "section_constancy": 0.983,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.21492065544656408,
+    "f1": 0.8
+   },
+   "1": {
+    "region": 0.191336542075379,
+    "f1": 0.75
+   },
+   "2": {
+    "region": 0.6140511348149242,
+    "f1": 0.2666666666666667
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00060",
+  "views": 6,
+  "f1": 0.03846153846153846,
+  "region_iou": 0.2947481606033426,
+  "top_mm": 22.2,
+  "true_height_mm": 18.24092674255371,
+  "ext_err_pct": [
+   17.0,
+   64.6,
+   22.8
+  ],
+  "section_constancy": 0.944,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2860915393853461,
+    "f1": 0.05714285714285715
+   },
+   "1": {
+    "region": 0.21484112324114385,
+    "f1": 0.046511627906976744
+   },
+   "2": {
+    "region": 0.2947481606033426,
+    "f1": 0.03846153846153846
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00069",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.7857933026861671,
+  "top_mm": 5.800000000000001,
+  "true_height_mm": 2.0,
+  "ext_err_pct": [
+   -0.5,
+   -4.2,
+   200.0
+  ],
+  "section_constancy": 0.974,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.07848070195391278,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.07980886461866216,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.7857933026861671,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01209",
+  "views": 6,
+  "f1": 0.4,
+  "region_iou": 0.5112423602401752,
+  "top_mm": 25.8,
+  "true_height_mm": 26.967233657836914,
+  "ext_err_pct": [
+   22.5,
+   13.0,
+   -3.6
+  ],
+  "section_constancy": 0.891,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.328604751224998,
+    "f1": 0.35294117647058826
+   },
+   "1": {
+    "region": 0.3410207725095125,
+    "f1": 0.7499999999999999
+   },
+   "2": {
+    "region": 0.5112423602401752,
+    "f1": 0.4
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00297",
+  "views": 6,
+  "f1": 0.64,
+  "region_iou": 0.44530281800994787,
+  "top_mm": 5.800000000000001,
+  "true_height_mm": 3.999999761581421,
+  "ext_err_pct": [
+   11.0,
+   1.1,
+   50.0
+  ],
+  "section_constancy": 0.949,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.0761014450560261,
+    "f1": 0.28571428571428575
+   },
+   "1": {
+    "region": 0.04741428912648582,
+    "f1": 0.4285714285714285
+   },
+   "2": {
+    "region": 0.44530281800994787,
+    "f1": 0.64
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00945",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.09629422135168457,
+  "top_mm": 44.2,
+  "true_height_mm": 41.599998474121094,
+  "ext_err_pct": [
+   9.5,
+   7.8,
+   6.7
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.03553007405802096,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.03641341481087143,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.012527321145885686,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01107",
+  "views": 6,
+  "f1": 0.5,
+  "region_iou": 0.7665427058935668,
+  "top_mm": 57.800000000000004,
+  "true_height_mm": 60.0,
+  "ext_err_pct": [
+   22.5,
+   14.0,
+   -3.3
+  ],
+  "section_constancy": 0.95,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.9996513780834999,
+    "f1": 1.0
+   },
+   "1": {
+    "region": 0.6956882433843491,
+    "f1": 1.0
+   },
+   "2": {
+    "region": 0.7665427058935668,
+    "f1": 0.5
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01657",
+  "views": 6,
+  "f1": 0.4337349397590362,
+  "region_iou": 0.3606505764060981,
+  "top_mm": 61.00000000000001,
+  "true_height_mm": 65.95381164550781,
+  "ext_err_pct": [
+   20.0,
+   27.4,
+   -7.2
+  ],
+  "section_constancy": 0.891,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.3606505764060981,
+    "f1": 0.4337349397590362
+   },
+   "1": {
+    "region": 0.34285625940115555,
+    "f1": 0.39506172839506176
+   },
+   "2": {
+    "region": 0.1674935695616238,
+    "f1": 0.39506172839506176
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "01908",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "01721",
+  "views": 6,
+  "f1": 0.44,
+  "region_iou": 0.32651437286296675,
+  "top_mm": 28.2,
+  "true_height_mm": 27.530351638793945,
+  "ext_err_pct": [
+   7.5,
+   11.8,
+   3.2
+  ],
+  "section_constancy": 0.925,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2693290791572945,
+    "f1": 0.23809523809523808
+   },
+   "1": {
+    "region": 0.24635032064122012,
+    "f1": 0.15
+   },
+   "2": {
+    "region": 0.32651437286296675,
+    "f1": 0.44
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01823",
+  "views": 6,
+  "f1": 0.7741935483870968,
+  "region_iou": 0.22247781199206812,
+  "top_mm": 6.2,
+  "true_height_mm": 13.333333015441895,
+  "ext_err_pct": [
+   18.5,
+   13.4,
+   -52.0
+  ],
+  "section_constancy": 0.833,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.21586513274163666,
+    "f1": 0.25
+   },
+   "1": {
+    "region": 1.7146710549903017e-20,
+    "f1": 0.4
+   },
+   "2": {
+    "region": 0.22247781199206812,
+    "f1": 0.7741935483870968
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00968",
+  "views": 6,
+  "f1": 0.5714285714285715,
+  "region_iou": 0.5176714621920498,
+  "top_mm": 25.8,
+  "true_height_mm": 24.0,
+  "ext_err_pct": [
+   22.5,
+   12.5,
+   8.3
+  ],
+  "section_constancy": 0.992,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.0,
+    "f1": 0.0,
+    "error": "TopologyException: unable to assign free hole to a shell at "
+   },
+   "1": {
+    "region": 0.20889181832342316,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.5176714621920498,
+    "f1": 0.5714285714285715
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01653",
+  "views": 6,
+  "f1": 0.5333333333333333,
+  "region_iou": 0.3831992280648203,
+  "top_mm": 37.00000000000001,
+  "true_height_mm": 31.689382553100586,
+  "ext_err_pct": [
+   5.0,
+   -0.6,
+   17.4
+  ],
+  "section_constancy": 0.95,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.7093952790046588,
+    "f1": 0.75
+   },
+   "1": {
+    "region": 0.7467761872900691,
+    "f1": 1.0
+   },
+   "2": {
+    "region": 0.3831992280648203,
+    "f1": 0.5333333333333333
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00724",
+  "views": 6,
+  "f1": 0.3076923076923077,
+  "region_iou": 0.3335312165427426,
+  "top_mm": 35.00000000000001,
+  "true_height_mm": 38.4469945109177,
+  "ext_err_pct": [
+   11.0,
+   31.3,
+   -8.4
+  ],
+  "section_constancy": 0.789,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.39990784516612526,
+    "f1": 0.5
+   },
+   "1": {
+    "region": 0.3830340559331904,
+    "f1": 0.22222222222222224
+   },
+   "2": {
+    "region": 0.3335312165427426,
+    "f1": 0.3076923076923077
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01520",
+  "views": 6,
+  "f1": 0.3448275862068966,
+  "region_iou": 0.2846738777332913,
+  "top_mm": 23.400000000000002,
+  "true_height_mm": 21.3430551940543,
+  "ext_err_pct": [
+   22.5,
+   20.6,
+   10.6
+  ],
+  "section_constancy": 0.952,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.12210786076872325,
+    "f1": 0.3636363636363636
+   },
+   "1": {
+    "region": 0.12648885480944824,
+    "f1": 0.5000000000000001
+   },
+   "2": {
+    "region": 0.2846738777332913,
+    "f1": 0.3448275862068966
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01345",
+  "views": 6,
+  "f1": 0.4444444444444445,
+  "region_iou": 0.7520664642926954,
+  "top_mm": 20.6,
+  "true_height_mm": 24.0,
+  "ext_err_pct": [
+   19.5,
+   5.7,
+   -13.3
+  ],
+  "section_constancy": 0.99,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.956344789985632,
+    "f1": 0.888888888888889
+   },
+   "1": {
+    "region": 0.39216467314768494,
+    "f1": 0.5333333333333333
+   },
+   "2": {
+    "region": 0.7520664642926954,
+    "f1": 0.4444444444444445
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01825",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303341,
+  "top_mm": 13.8,
+  "true_height_mm": 9.087236404418945,
+  "ext_err_pct": [
+   0.5,
+   -1.7,
+   54.1
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.21299233680466648,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.19222823746065368,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.7887368777184541,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00958",
+  "views": 6,
+  "f1": 0.8,
+  "region_iou": 0.5533245888322944,
+  "top_mm": 39.00000000000001,
+  "true_height_mm": 36.3636360168457,
+  "ext_err_pct": [
+   22.5,
+   11.8,
+   7.8
+  ],
+  "section_constancy": 0.972,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.3628914019238494,
+    "f1": 0.4444444444444445
+   },
+   "1": {
+    "region": 0.23087441897045494,
+    "f1": 0.4210526315789473
+   },
+   "2": {
+    "region": 0.5533245888322944,
+    "f1": 0.8
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01252",
+  "views": 6,
+  "f1": 0.45454545454545453,
+  "region_iou": 0.37341896443930656,
+  "top_mm": 35.800000000000004,
+  "true_height_mm": 38.24109963540316,
+  "ext_err_pct": [
+   -32.5,
+   20.2,
+   -5.9
+  ],
+  "section_constancy": 0.901,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.274483033764725,
+    "f1": 0.5
+   },
+   "1": {
+    "region": 0.39220394221073074,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.37341896443930656,
+    "f1": 0.45454545454545453
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01134",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9907980357976542,
+  "top_mm": 32.6,
+  "true_height_mm": 35.19542694091797,
+  "ext_err_pct": [
+   10.0,
+   -7.1,
+   -26.1
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.750350609476708,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.45714510316791784,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.40712087772540806,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "00089",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303343,
+  "top_mm": 9.8,
+  "true_height_mm": 6.060606002807617,
+  "ext_err_pct": [
+   14.0,
+   0.8,
+   65.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.13996637029802822,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.13680076803322583,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.8030841587145657,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00131",
+  "views": 6,
+  "f1": 0.8,
+  "region_iou": 0.0567227626660659,
+  "top_mm": 4.2,
+  "true_height_mm": 3.7370643615722656,
+  "ext_err_pct": [
+   11.0,
+   -12.1,
+   17.7
+  ],
+  "section_constancy": 0.922,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.023658029005269875,
+    "f1": 0.823529411764706
+   },
+   "1": {
+    "region": 0.05213572116185207,
+    "f1": 0.7999999999999999
+   },
+   "2": {
+    "region": 0.0567227626660659,
+    "f1": 0.8
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01783",
+  "views": 6,
+  "f1": 0.23529411764705882,
+  "region_iou": 0.41286253437272796,
+  "top_mm": 29.8,
+  "true_height_mm": 13.398149818159611,
+  "ext_err_pct": [
+   22.5,
+   61.8,
+   70.2
+  ],
+  "section_constancy": 0.544,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.37055227414484626,
+    "f1": 0.15384615384615385
+   },
+   "1": {
+    "region": 0.41286253437272796,
+    "f1": 0.23529411764705882
+   },
+   "2": {
+    "region": 0.5274880254019393,
+    "f1": 0.4
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "01715",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.5087200476858683,
+  "top_mm": 7.4,
+  "true_height_mm": 7.380180358886719,
+  "ext_err_pct": [
+   1.5,
+   -1.8,
+   3.0
+  ],
+  "section_constancy": 0.965,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.06614098587087758,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.06137531440562429,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.5087200476858683,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00460",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.3504209574694448,
+  "top_mm": 12.6,
+  "true_height_mm": 11.411639213562012,
+  "ext_err_pct": [
+   -5.0,
+   -10.8,
+   12.2
+  ],
+  "section_constancy": 0.497,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.20401783795463302,
+    "f1": 0.2857142857142857
+   },
+   "1": {
+    "region": 0.39453953895002997,
+    "f1": 0.25
+   },
+   "2": {
+    "region": 0.3504209574694448,
+    "f1": 0.6666666666666666
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01297",
+  "views": 6,
+  "f1": 0.7142857142857143,
+  "region_iou": 0.22763516165326744,
+  "top_mm": 39.800000000000004,
+  "true_height_mm": 31.578947067260742,
+  "ext_err_pct": [
+   17.5,
+   26.0,
+   26.7
+  ],
+  "section_constancy": 0.758,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.3367242126210629,
+    "f1": 0.5263157894736842
+   },
+   "1": {
+    "region": 0.40587975945939486,
+    "f1": 0.6363636363636365
+   },
+   "2": {
+    "region": 0.22763516165326744,
+    "f1": 0.7142857142857143
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01181",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "01187",
+  "views": 6,
+  "f1": 0.4210526315789474,
+  "region_iou": 0.6858911082588277,
+  "top_mm": 15.8,
+  "true_height_mm": 18.390804290771484,
+  "ext_err_pct": [
+   22.5,
+   30.5,
+   -13.0
+  ],
+  "section_constancy": 0.94,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.39149308804760286,
+    "f1": 0.7272727272727273
+   },
+   "1": {
+    "region": 0.6188225616172524,
+    "f1": 0.5714285714285715
+   },
+   "2": {
+    "region": 0.6858911082588277,
+    "f1": 0.4210526315789474
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00698",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9907947143917912,
+  "top_mm": 61.00000000000001,
+  "true_height_mm": 64.81824493408203,
+  "ext_err_pct": [
+   17.5,
+   -5.8,
+   -38.3
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.7348041632634403,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.7297152043036454,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.41728014534959806,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "00876",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.7428309213721537,
+  "top_mm": 61.400000000000006,
+  "true_height_mm": 63.821044921875,
+  "ext_err_pct": [
+   17.5,
+   -3.7,
+   -27.9
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.551626348146194,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.4929547727040474,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.2651587914641429,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "00538",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.8372097432616555,
+  "top_mm": 72.60000000000001,
+  "true_height_mm": 80.0,
+  "ext_err_pct": [
+   22.5,
+   12.5,
+   -9.0
+  ],
+  "section_constancy": 0.983,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.8372097432616555,
+    "f1": 1.0
+   },
+   "1": {
+    "region": 0.7323651573788156,
+    "f1": 1.0
+   },
+   "2": {
+    "region": 0.7506962463677495,
+    "f1": 0.6153846153846153
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00112",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9907960429551201,
+  "top_mm": 27.0,
+  "true_height_mm": 22.793230056762695,
+  "ext_err_pct": [
+   15.0,
+   19.0,
+   -8.7
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.7354357858461524,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.27139210297483884,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.18858974817595617,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "00139",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9910556217059373,
+  "top_mm": 12.599999999999996,
+  "true_height_mm": 22.85199341724119,
+  "ext_err_pct": [
+   -85.0,
+   -76.6,
+   -73.7
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.48259643356339504,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.19458534778391423,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.160605707138341,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "00697",
+  "error": "too thin: 0.35 mm at 0.4 mm voxels"
+ },
+ {
+  "part": "01071",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.41377506196224073,
+  "top_mm": 37.00000000000001,
+  "true_height_mm": 20.0,
+  "ext_err_pct": [
+   32.5,
+   2.8,
+   86.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.040030408427500073,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.07237356167218027,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.08465964018684351,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01934",
+  "views": 6,
+  "f1": 0.3076923076923077,
+  "region_iou": 0.3625270707938738,
+  "top_mm": 33.800000000000004,
+  "true_height_mm": 24.0,
+  "ext_err_pct": [
+   22.5,
+   50.4,
+   41.7
+  ],
+  "section_constancy": 0.912,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2519491551971316,
+    "f1": 0.37499999999999994
+   },
+   "1": {
+    "region": 0.3346245259483214,
+    "f1": 0.3478260869565218
+   },
+   "2": {
+    "region": 0.3625270707938738,
+    "f1": 0.3076923076923077
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01498",
+  "views": 6,
+  "f1": 0.47058823529411764,
+  "region_iou": 0.7624021977733791,
+  "top_mm": 8.6,
+  "true_height_mm": 6.400000095367432,
+  "ext_err_pct": [
+   4.5,
+   1.1,
+   37.5
+  ],
+  "section_constancy": 0.968,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.11683457615956486,
+    "f1": 0.4444444444444445
+   },
+   "1": {
+    "region": 0.11669259142325387,
+    "f1": 1.0
+   },
+   "2": {
+    "region": 0.7624021977733791,
+    "f1": 0.47058823529411764
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00943",
+  "views": 6,
+  "f1": 0.8,
+  "region_iou": 0.07377122149930497,
+  "top_mm": 6.2,
+  "true_height_mm": 7.061167676138766,
+  "ext_err_pct": [
+   -27.5,
+   -37.1,
+   -9.4
+  ],
+  "section_constancy": 0.91,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.07421794712947688,
+    "f1": 0.5
+   },
+   "1": {
+    "region": 0.048575312765684366,
+    "f1": 0.3333333333333333
+   },
+   "2": {
+    "region": 0.07377122149930497,
+    "f1": 0.8
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01115",
+  "views": 6,
+  "f1": 0.7368421052631579,
+  "region_iou": 0.04307429180952099,
+  "top_mm": 9.8,
+  "true_height_mm": 4.538521766662598,
+  "ext_err_pct": [
+   4.5,
+   -0.0,
+   120.3
+  ],
+  "section_constancy": 0.83,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.07251887334906741,
+    "f1": 0.9600000000000001
+   },
+   "1": {
+    "region": 0.05756297991865104,
+    "f1": 0.7368421052631579
+   },
+   "2": {
+    "region": 0.04307429180952099,
+    "f1": 0.7368421052631579
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01526",
+  "views": 6,
+  "f1": 0.12500000000000003,
+  "region_iou": 0.05506185558487779,
+  "top_mm": 13.0,
+  "true_height_mm": 13.509234428405762,
+  "ext_err_pct": [
+   15.0,
+   -1.7,
+   -2.3
+  ],
+  "section_constancy": 0.928,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.10376390295933524,
+    "f1": 0.15384615384615385
+   },
+   "1": {
+    "region": 0.06089420832573698,
+    "f1": 0.1290322580645161
+   },
+   "2": {
+    "region": 0.05506185558487779,
+    "f1": 0.12500000000000003
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00455",
+  "views": 6,
+  "f1": 0.7368421052631579,
+  "region_iou": 0.08887631352630404,
+  "top_mm": 40.2,
+  "true_height_mm": 38.29062271118164,
+  "ext_err_pct": [
+   13.0,
+   31.2,
+   5.5
+  ],
+  "section_constancy": 0.893,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.06438703297182724,
+    "f1": 0.7058823529411765
+   },
+   "1": {
+    "region": 0.04219326011396906,
+    "f1": 0.6153846153846154
+   },
+   "2": {
+    "region": 0.08887631352630404,
+    "f1": 0.7368421052631579
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01719",
+  "views": 6,
+  "f1": 0.5263157894736841,
+  "region_iou": 0.5380083822216704,
+  "top_mm": 31.8,
+  "true_height_mm": 38.815574645996094,
+  "ext_err_pct": [
+   14.0,
+   6.8,
+   -17.6
+  ],
+  "section_constancy": 0.927,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.553372239659854,
+    "f1": 0.4210526315789474
+   },
+   "1": {
+    "region": 0.47912962393004505,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.5380083822216704,
+    "f1": 0.5263157894736841
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01884",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.5350555855451706,
+  "top_mm": 37.8,
+  "true_height_mm": 53.31394577026367,
+  "ext_err_pct": [
+   5.0,
+   -45.2,
+   -58.7
+  ],
+  "section_constancy": 0.957,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.6837377639221207,
+    "f1": 0.888888888888889
+   },
+   "1": {
+    "region": 0.5350555855451706,
+    "f1": 1.0
+   },
+   "2": {
+    "region": 0.23168860302045122,
+    "f1": 1.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "01525",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.30200135685234825,
+  "top_mm": 6.2,
+  "true_height_mm": 12.490876197814941,
+  "ext_err_pct": [
+   0.5,
+   -0.8,
+   -48.8
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.06880649814116839,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.021889869565211755,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.028572757214047846,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00721",
+  "views": 6,
+  "f1": 0.5217391304347826,
+  "region_iou": 0.7721608225387313,
+  "top_mm": 36.6,
+  "true_height_mm": 33.95627975463867,
+  "ext_err_pct": [
+   17.0,
+   1.7,
+   8.4
+  ],
+  "section_constancy": 0.936,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.5905600084629503,
+    "f1": 0.8
+   },
+   "1": {
+    "region": 0.49530288279866047,
+    "f1": 0.6
+   },
+   "2": {
+    "region": 0.7721608225387313,
+    "f1": 0.5217391304347826
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00027",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 344, in from_known_poses\n    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "00135",
+  "views": 4,
+  "f1": 1.0,
+  "region_iou": 0.9912806072832951,
+  "top_mm": 41.00000000000001,
+  "true_height_mm": 0.9758666157722473,
+  "ext_err_pct": [
+   38.0,
+   10404.8,
+   4121.9
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.2905530223154654,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.23123314330715247,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.26962493045653896,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00677",
+  "views": 6,
+  "f1": 0.7692307692307692,
+  "region_iou": 0.22095560859116448,
+  "top_mm": 29.0,
+  "true_height_mm": 18.461538314819336,
+  "ext_err_pct": [
+   22.5,
+   66.0,
+   58.2
+  ],
+  "section_constancy": 0.956,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.22201198091696756,
+    "f1": 0.25
+   },
+   "1": {
+    "region": 0.14204394758561284,
+    "f1": 0.3414634146341463
+   },
+   "2": {
+    "region": 0.22095560859116448,
+    "f1": 0.7692307692307692
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00610",
+  "views": 6,
+  "f1": 0.4444444444444445,
+  "region_iou": 0.1973515315873293,
+  "top_mm": 25.400000000000002,
+  "true_height_mm": 25.0,
+  "ext_err_pct": [
+   6.0,
+   -5.5,
+   2.4
+  ],
+  "section_constancy": 0.894,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1934426906196334,
+    "f1": 1.0
+   },
+   "1": {
+    "region": 0.175138512370477,
+    "f1": 1.0
+   },
+   "2": {
+    "region": 0.1973515315873293,
+    "f1": 0.4444444444444445
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01380",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9907938873978749,
+  "top_mm": 10.600000000000005,
+  "true_height_mm": 9.972038269042969,
+  "ext_err_pct": [
+   -89.5,
+   -20.0,
+   -31.8
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.3487702841228423,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.6572831634996006,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.18410545988690513,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01751",
+  "views": 6,
+  "f1": 0.5,
+  "region_iou": 0.396459869312796,
+  "top_mm": 18.2,
+  "true_height_mm": 14.117647171020508,
+  "ext_err_pct": [
+   15.5,
+   10.5,
+   30.3
+  ],
+  "section_constancy": 0.991,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.43940796379167707,
+    "f1": 0.5
+   },
+   "1": {
+    "region": 0.9109115804803573,
+    "f1": 0.4210526315789474
+   },
+   "2": {
+    "region": 0.396459869312796,
+    "f1": 0.5
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01099",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.2986018598233737,
+  "top_mm": 5.4,
+  "true_height_mm": 4.55592679977417,
+  "ext_err_pct": [
+   1.0,
+   -23.7,
+   22.9
+  ],
+  "section_constancy": 0.675,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2986018598233737,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.41166376530543725,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.4955451776502868,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00377",
+  "views": 6,
+  "f1": 0.20183486238532108,
+  "region_iou": 0.03218601492798138,
+  "top_mm": 4.2,
+  "true_height_mm": 1.1428571939468384,
+  "ext_err_pct": [
+   -6.0,
+   -10.2,
+   285.0
+  ],
+  "section_constancy": 0.892,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.01260695148510522,
+    "f1": 0.05940594059405941
+   },
+   "1": {
+    "region": 0.04092097705610489,
+    "f1": 0.13333333333333333
+   },
+   "2": {
+    "region": 0.03218601492798138,
+    "f1": 0.20183486238532108
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01589",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.9825558767320822,
+  "top_mm": 27.0,
+  "true_height_mm": 24.0,
+  "ext_err_pct": [
+   22.5,
+   12.8,
+   13.3
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.3535372070184444,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.3012787230996268,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.6011322057792234,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01449",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.7428265633392663,
+  "top_mm": 24.6,
+  "true_height_mm": 29.916114807128906,
+  "ext_err_pct": [
+   22.0,
+   130.7,
+   -17.1
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.24686538898883692,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.16264183411464228,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.15640927641178984,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01279",
+  "views": 6,
+  "f1": 0.0,
+  "region_iou": 0.7295777861489974,
+  "top_mm": 3.8000000000000003,
+  "true_height_mm": 3.3315310174352724,
+  "ext_err_pct": [
+   -2.5,
+   -11.6,
+   20.1
+  ],
+  "section_constancy": 0.962,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.09946612696688566,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 9.430571748230598e-17,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.7295777861489974,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00747",
+  "views": 6,
+  "f1": 0.5333333333333333,
+  "region_iou": 0.6855572700628653,
+  "top_mm": 28.6,
+  "true_height_mm": 29.026937537979887,
+  "ext_err_pct": [
+   17.5,
+   6.9,
+   -0.8
+  ],
+  "section_constancy": 0.972,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.4361918621857592,
+    "f1": 1.0
+   },
+   "1": {
+    "region": 0.3868870373593095,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.6855572700628653,
+    "f1": 0.5333333333333333
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01163",
+  "views": 6,
+  "f1": 0.32,
+  "region_iou": 0.881078654408551,
+  "top_mm": 33.800000000000004,
+  "true_height_mm": 36.61957525868571,
+  "ext_err_pct": [
+   15.0,
+   10.7,
+   -7.2
+  ],
+  "section_constancy": 0.971,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.5230949053095377,
+    "f1": 0.5
+   },
+   "1": {
+    "region": 0.43348673921136116,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.881078654408551,
+    "f1": 0.32
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00160",
+  "views": 6,
+  "f1": 0.6530612244897959,
+  "region_iou": 0.6669681337246324,
+  "top_mm": 10.2,
+  "true_height_mm": 6.666664600115124,
+  "ext_err_pct": [
+   9.0,
+   -7.0,
+   56.0
+  ],
+  "section_constancy": 0.954,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.10423405029064176,
+    "f1": 0.45454545454545453
+   },
+   "1": {
+    "region": 0.08798638282674955,
+    "f1": 0.38095238095238093
+   },
+   "2": {
+    "region": 0.6669681337246324,
+    "f1": 0.6530612244897959
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01512",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.4875348370391013,
+  "top_mm": 44.60000000000001,
+  "true_height_mm": 45.71428680419922,
+  "ext_err_pct": [
+   22.5,
+   10.3,
+   -2.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.22307763234244976,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.15792922703502757,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.4177059272195537,
+    "f1": 0.125
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01100",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908059760238064,
+  "top_mm": 64.60000000000001,
+  "true_height_mm": 68.37969207763672,
+  "ext_err_pct": [
+   20.0,
+   13.8,
+   -5.2
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.6729220857612674,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.7396029976079569,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.4453269977260782,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "01477",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "top_mm": 41.00000000000001,
+  "true_height_mm": 40.0,
+  "ext_err_pct": [
+   15.0,
+   5.3,
+   3.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.5859190286565695,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.5161513586698189,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.9908009457303346,
+    "f1": 1.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01682",
+  "views": 6,
+  "f1": 0.4800000000000001,
+  "region_iou": 0.18814529808313113,
+  "top_mm": 4.2,
+  "true_height_mm": 3.000732660293579,
+  "ext_err_pct": [
+   -1.0,
+   -14.2,
+   46.6
+  ],
+  "section_constancy": 0.944,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.25957264622949056,
+    "f1": 0.4
+   },
+   "1": {
+    "region": 1.60709115986916e-05,
+    "f1": 0.3157894736842105
+   },
+   "2": {
+    "region": 0.18814529808313113,
+    "f1": 0.4800000000000001
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00766",
+  "views": 6,
+  "f1": 0.48,
+  "region_iou": 0.5437920941440637,
+  "top_mm": 31.8,
+  "true_height_mm": 25.980762481689453,
+  "ext_err_pct": [
+   13.0,
+   9.7,
+   23.2
+  ],
+  "section_constancy": 0.942,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2854657168108917,
+    "f1": 0.7272727272727273
+   },
+   "1": {
+    "region": 0.26234873132499353,
+    "f1": 0.7058823529411764
+   },
+   "2": {
+    "region": 0.5437920941440637,
+    "f1": 0.48
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01426",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.8407617336307329,
+  "top_mm": 24.2,
+  "true_height_mm": 17.77777862548828,
+  "ext_err_pct": [
+   17.5,
+   10.3,
+   37.2
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.1805900848032864,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.20198221303397026,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.5236886380155815,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01179",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303342,
+  "top_mm": 22.2,
+  "true_height_mm": 17.725317001342773,
+  "ext_err_pct": [
+   15.0,
+   4.3,
+   26.4
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.34580076157345413,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.2606461475679065,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.8183658374040832,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00174",
+  "views": 6,
+  "f1": 0.2903225806451613,
+  "region_iou": 0.2493503287703077,
+  "top_mm": 28.2,
+  "true_height_mm": 26.942272186279297,
+  "ext_err_pct": [
+   22.5,
+   10.3,
+   5.4
+  ],
+  "section_constancy": 0.951,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2493503287703077,
+    "f1": 0.2903225806451613
+   },
+   "1": {
+    "region": 0.17885312338812215,
+    "f1": 0.10344827586206896
+   },
+   "2": {
+    "region": 0.1816644229680214,
+    "f1": 0.3055555555555556
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "00608",
+  "views": 6,
+  "f1": 0.6153846153846153,
+  "region_iou": 0.30330504690773497,
+  "top_mm": 5.000000000000001,
+  "true_height_mm": 3.3333332538604736,
+  "ext_err_pct": [
+   13.5,
+   -7.3,
+   56.0
+  ],
+  "section_constancy": 0.772,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.25145838848506624,
+    "f1": 0.5
+   },
+   "1": {
+    "region": 1.113688939401804e-05,
+    "f1": 0.8571428571428571
+   },
+   "2": {
+    "region": 0.30330504690773497,
+    "f1": 0.6153846153846153
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01254",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.9015315284967063,
+  "top_mm": 71.80000000000001,
+  "true_height_mm": 79.77630615234375,
+  "ext_err_pct": [
+   20.5,
+   -10.0,
+   -12.3
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.7395872293705054,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.691859796155222,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.6293047957779134,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "01089",
+  "views": 6,
+  "f1": 0.6875,
+  "region_iou": 0.6530604961721258,
+  "top_mm": 15.8,
+  "true_height_mm": 5.88805615107788,
+  "ext_err_pct": [
+   15.0,
+   -2.2,
+   171.7
+  ],
+  "section_constancy": 0.949,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.25560549916468184,
+    "f1": 0.5263157894736842
+   },
+   "1": {
+    "region": 0.16825957505718137,
+    "f1": 0.47058823529411764
+   },
+   "2": {
+    "region": 0.6530604961721258,
+    "f1": 0.6875
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00208",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.18737854158030312,
+  "top_mm": 33.000000000000014,
+  "true_height_mm": 26.66652202606201,
+  "ext_err_pct": [
+   17.5,
+   21.5,
+   -17.5
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.058492328347486175,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.03480839797820998,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.025469730769025964,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 1
+  }
+ },
+ {
+  "part": "01731",
+  "views": 6,
+  "f1": 0.34782608695652173,
+  "region_iou": 0.5758512415085071,
+  "top_mm": 5.800000000000001,
+  "true_height_mm": 2.6666667461395264,
+  "ext_err_pct": [
+   22.0,
+   -7.5,
+   125.0
+  ],
+  "section_constancy": 0.911,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1116846402423344,
+    "f1": 0.75
+   },
+   "1": {
+    "region": 0.10344558466626193,
+    "f1": 0.75
+   },
+   "2": {
+    "region": 0.5758512415085071,
+    "f1": 0.34782608695652173
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00982",
+  "views": 6,
+  "f1": 0.3243243243243243,
+  "region_iou": 0.329634224767508,
+  "top_mm": 14.6,
+  "true_height_mm": 10.169305801391602,
+  "ext_err_pct": [
+   1.5,
+   -10.8,
+   45.5
+  ],
+  "section_constancy": 0.861,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.2507308156747969,
+    "f1": 0.3333333333333333
+   },
+   "1": {
+    "region": 0.2126414402107504,
+    "f1": 0.3478260869565218
+   },
+   "2": {
+    "region": 0.329634224767508,
+    "f1": 0.3243243243243243
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01894",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.15128172127185768,
+  "top_mm": 60.60000000000001,
+  "true_height_mm": 64.0,
+  "ext_err_pct": [
+   18.0,
+   7.8,
+   -5.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.08181927447091615,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.0789956616139055,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.12585203826991015,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01875",
+  "views": 6,
+  "f1": 0.5714285714285715,
+  "region_iou": 0.7093473154955154,
+  "top_mm": 10.6,
+  "true_height_mm": 10.0,
+  "ext_err_pct": [
+   18.0,
+   -0.4,
+   8.0
+  ],
+  "section_constancy": 0.94,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.4307235450899146,
+    "f1": 0.7692307692307693
+   },
+   "1": {
+    "region": 0.18416243466733198,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.7093473154955154,
+    "f1": 0.5714285714285715
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01947",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.6337274570774791,
+  "top_mm": 43.400000000000006,
+  "true_height_mm": 48.0,
+  "ext_err_pct": [
+   35.0,
+   22.8,
+   -9.2
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.17378356123213665,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.2167783298937324,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.0,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00579",
+  "views": 6,
+  "f1": 0.35294117647058826,
+  "region_iou": 0.29717201482378386,
+  "top_mm": 9.8,
+  "true_height_mm": 7.335571765899658,
+  "ext_err_pct": [
+   3.0,
+   -7.3,
+   36.3
+  ],
+  "section_constancy": 0.924,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1985563675693953,
+    "f1": 0.27586206896551724
+   },
+   "1": {
+    "region": 0.12747988955134928,
+    "f1": 0.27586206896551724
+   },
+   "2": {
+    "region": 0.29717201482378386,
+    "f1": 0.35294117647058826
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01055",
+  "views": 6,
+  "f1": 0.3636363636363636,
+  "region_iou": 0.4056851150875544,
+  "top_mm": 25.0,
+  "true_height_mm": 22.231809616088867,
+  "ext_err_pct": [
+   2.5,
+   0.5,
+   13.4
+  ],
+  "section_constancy": 0.905,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.3453175284437272,
+    "f1": 0.888888888888889
+   },
+   "1": {
+    "region": 0.31290050447359097,
+    "f1": 0.7272727272727273
+   },
+   "2": {
+    "region": 0.4056851150875544,
+    "f1": 0.3636363636363636
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00863",
+  "views": 6,
+  "f1": 0.6399999999999999,
+  "region_iou": 0.4933946567628324,
+  "top_mm": 37.400000000000006,
+  "true_height_mm": 37.2532958984375,
+  "ext_err_pct": [
+   15.0,
+   7.6,
+   0.9
+  ],
+  "section_constancy": 0.901,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.45106109629578733,
+    "f1": 0.7777777777777777
+   },
+   "1": {
+    "region": 0.5246841137872073,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.4933946567628324,
+    "f1": 0.6399999999999999
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01560",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.990800768896762,
+  "top_mm": 66.60000000000001,
+  "true_height_mm": 73.8272705078125,
+  "ext_err_pct": [
+   22.5,
+   29.7,
+   -9.5
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.6791199199765986,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.7465549224736817,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.3946217764890881,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 0
+  }
+ },
+ {
+  "part": "01609",
+  "views": 6,
+  "f1": 0.13333333333333333,
+  "region_iou": 0.46015577947631814,
+  "top_mm": 31.8,
+  "true_height_mm": 40.624999016392835,
+  "ext_err_pct": [
+   10.0,
+   -40.1,
+   -34.0
+  ],
+  "section_constancy": 0.977,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.6302633113615888,
+    "f1": 0.14285714285714288
+   },
+   "1": {
+    "region": 0.5744390004640129,
+    "f1": 0.14285714285714288
+   },
+   "2": {
+    "region": 0.46015577947631814,
+    "f1": 0.13333333333333333
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00626",
+  "views": 6,
+  "f1": 0.4444444444444445,
+  "region_iou": 0.7785604627109269,
+  "top_mm": 20.6,
+  "true_height_mm": 20.0,
+  "ext_err_pct": [
+   20.0,
+   1.3,
+   4.0
+  ],
+  "section_constancy": 0.975,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.4419026828012904,
+    "f1": 0.888888888888889
+   },
+   "1": {
+    "region": 0.2205131862570752,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.7785604627109269,
+    "f1": 0.4444444444444445
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01510",
+  "views": 6,
+  "f1": 0.5217391304347826,
+  "region_iou": 0.5785858331253224,
+  "top_mm": 37.00000000000001,
+  "true_height_mm": 40.0,
+  "ext_err_pct": [
+   15.0,
+   2.0,
+   -7.0
+  ],
+  "section_constancy": 0.925,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.4412284812538579,
+    "f1": 0.8
+   },
+   "1": {
+    "region": 0.33395772357501524,
+    "f1": 0.9090909090909091
+   },
+   "2": {
+    "region": 0.5785858331253224,
+    "f1": 0.5217391304347826
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01674",
+  "views": 6,
+  "f1": 0.5454545454545454,
+  "region_iou": 0.5693780504899628,
+  "top_mm": 32.6,
+  "true_height_mm": 30.0,
+  "ext_err_pct": [
+   15.0,
+   12.0,
+   9.3
+  ],
+  "section_constancy": 0.897,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.6515053791924479,
+    "f1": 0.7499999999999999
+   },
+   "1": {
+    "region": 0.42549918706850404,
+    "f1": 0.8571428571428571
+   },
+   "2": {
+    "region": 0.5693780504899628,
+    "f1": 0.5454545454545454
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00873",
+  "views": 6,
+  "f1": 0.7333333333333334,
+  "region_iou": 0.551567468734513,
+  "top_mm": 12.2,
+  "true_height_mm": 8.0,
+  "ext_err_pct": [
+   19.0,
+   1.4,
+   55.0
+  ],
+  "section_constancy": 0.935,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.1679901798058242,
+    "f1": 0.3157894736842105
+   },
+   "1": {
+    "region": 0.10055634253424064,
+    "f1": 0.7826086956521738
+   },
+   "2": {
+    "region": 0.551567468734513,
+    "f1": 0.7333333333333334
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00825",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9908009457303341,
+  "top_mm": 63.800000000000004,
+  "true_height_mm": 64.17459106445312,
+  "ext_err_pct": [
+   22.5,
+   7.8,
+   -0.3
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.7911507662374537,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.734328332518579,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.982649461768952,
+    "f1": 0.33333333333333337
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01124",
+  "views": 6,
+  "f1": 0.5333333333333333,
+  "region_iou": 0.44868241437190426,
+  "top_mm": 7.800000000000001,
+  "true_height_mm": 5.0,
+  "ext_err_pct": [
+   11.5,
+   38.0,
+   60.0
+  ],
+  "section_constancy": 0.9,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.08507587029744304,
+    "f1": 0.8000000000000002
+   },
+   "1": {
+    "region": 0.06001514965661457,
+    "f1": 0.5714285714285714
+   },
+   "2": {
+    "region": 0.44868241437190426,
+    "f1": 0.5333333333333333
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01858",
+  "views": 6,
+  "f1": 0.8695652173913044,
+  "region_iou": 0.39333424101493825,
+  "top_mm": 5.800000000000001,
+  "true_height_mm": 7.662940502166748,
+  "ext_err_pct": [
+   -13.0,
+   -10.6,
+   -21.7
+  ],
+  "section_constancy": 0.941,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.14627281567738773,
+    "f1": 0.4285714285714285
+   },
+   "1": {
+    "region": 0.11972967804899771,
+    "f1": 0.30769230769230765
+   },
+   "2": {
+    "region": 0.39333424101493825,
+    "f1": 0.8695652173913044
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00884",
+  "views": 6,
+  "f1": 0.7272727272727273,
+  "region_iou": 0.75349477482751,
+  "top_mm": 18.2,
+  "true_height_mm": 14.117647171020508,
+  "ext_err_pct": [
+   13.0,
+   3.9,
+   30.3
+  ],
+  "section_constancy": 0.954,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.3159642877864109,
+    "f1": 0.7692307692307693
+   },
+   "1": {
+    "region": 0.2716307300765065,
+    "f1": 0.6666666666666666
+   },
+   "2": {
+    "region": 0.75349477482751,
+    "f1": 0.7272727272727273
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01838",
+  "views": 6,
+  "f1": 0.4444444444444445,
+  "region_iou": 0.47239487091979293,
+  "top_mm": 24.6,
+  "true_height_mm": 22.85714340209961,
+  "ext_err_pct": [
+   17.5,
+   10.0,
+   8.5
+  ],
+  "section_constancy": 0.986,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.80234964740719,
+    "f1": 0.6666666666666665
+   },
+   "1": {
+    "region": 0.8386882818770809,
+    "f1": 0.75
+   },
+   "2": {
+    "region": 0.47239487091979293,
+    "f1": 0.4444444444444445
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00718",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.35600185924087685,
+  "top_mm": 6.2,
+  "true_height_mm": 3.200000047683716,
+  "ext_err_pct": [
+   -2.0,
+   -3.2,
+   100.0
+  ],
+  "section_constancy": null,
+  "mode": "revolve",
+  "per_axis": {
+   "0": {
+    "region": 0.05446541331858217,
+    "f1": 0.0
+   },
+   "1": {
+    "region": 0.02967930264195867,
+    "f1": 0.0
+   },
+   "2": {
+    "region": 0.05151252645568484,
+    "f1": 0.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "00701",
+  "views": 6,
+  "f1": 0.6666666666666666,
+  "region_iou": 0.21943137364457596,
+  "top_mm": 7.000000000000001,
+  "true_height_mm": 2.0705349445343018,
+  "ext_err_pct": [
+   6.5,
+   -4.2,
+   247.7
+  ],
+  "section_constancy": 0.883,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.11467162183848721,
+    "f1": 0.47058823529411764
+   },
+   "1": {
+    "region": 0.09324729908883264,
+    "f1": 0.5
+   },
+   "2": {
+    "region": 0.21943137364457596,
+    "f1": 0.6666666666666666
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ },
+ {
+  "part": "01676",
+  "views": 6,
+  "f1": 1.0,
+  "region_iou": 0.9545117961438969,
+  "top_mm": 47.00000000000001,
+  "true_height_mm": 52.5,
+  "ext_err_pct": [
+   20.0,
+   9.3,
+   -10.1
+  ],
+  "section_constancy": 0.978,
+  "mode": null,
+  "per_axis": {
+   "0": {
+    "region": 0.6017663981413232,
+    "f1": 1.0
+   },
+   "1": {
+    "region": 0.5123093437910501,
+    "f1": 0.888888888888889
+   },
+   "2": {
+    "region": 0.9545117961438969,
+    "f1": 1.0
+   }
+  },
+  "choices": {
+   "learned": 2
+  }
+ }
+]

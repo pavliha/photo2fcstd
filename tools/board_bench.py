@@ -27,6 +27,17 @@ def rest_on_largest_face(m):
     return m
 
 
+def noisy(views, deg, seed_part):
+    rng = np.random.default_rng(int(seed_part))
+    out = []
+    for v in views:
+        R = cv2.Rodrigues(v["rvec"])[0]
+        dR = cv2.Rodrigues(rng.normal(0, np.radians(deg), 3))[0]
+        t = v["tvec"].reshape(3) + rng.normal(0, deg * 2.0, 3)
+        out.append({**v, "rvec": cv2.Rodrigues(dR @ R)[0], "tvec": t.reshape(3, 1)})
+    return out
+
+
 def render_mesh(mesh, R, t, K):
     import test_board_path as T
     from photo2fcstd import make_target
@@ -61,14 +72,16 @@ def one(part):
         centre = np.array([W / 2, Hh / 2, 0.0])
         m.apply_translation(centre - np.array([m.bounds[:, 0].mean(), m.bounds[:, 1].mean(), m.bounds[0][2]]))
         K = T._camera(SIZE[0], SIZE[1], FOCAL)
-        photos = []
+        photos, truth_views = [], []
         for k, (az, el) in enumerate(VIEWS):
             eye = centre + 520.0 * np.array([np.cos(np.radians(az)) * np.cos(np.radians(el)), np.sin(np.radians(az)) * np.cos(np.radians(el)), np.sin(np.radians(el))])
             R, t = T._look_at(eye, target=centre)
             path = os.path.join(d, "v%d.jpg" % k)
             cv2.imwrite(path, cv2.cvtColor(render_mesh(m, R, t, K), cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 92])
             photos.append(path)
-        carved = carve.from_photos(photos, voxel_mm=VOXEL)
+            truth_views.append({"rvec": cv2.Rodrigues(R)[0], "tvec": t.reshape(3, 1), "K": K, "dist": np.zeros(5)})
+        noise = float(os.environ.get("POSE_NOISE_DEG", "-1"))
+        carved = carve.from_photos(photos, voxel_mm=VOXEL) if noise < 0 else carve.from_known_poses(photos, noisy(truth_views, noise, part), voxel_mm=VOXEL)
         rec = RECS.get(part, {})
         per_axis = {}
         for ax in (0, 1, 2):
@@ -96,8 +109,12 @@ def one(part):
 
 
 def main(parts):
+    rows = []
     with Pool(int(os.environ.get("BOARD_WORKERS", "4"))) as pool:
-        rows = pool.map(one, parts)
+        for k, r in enumerate(pool.imap_unordered(one, parts), 1):
+            rows.append(r)
+            if k % 10 == 0 or k == len(parts):
+                print("progress %d/%d" % (k, len(parts)), flush=True)
     out = os.path.join(ROOT, "runs", os.environ.get("BOARD_BENCH_OUT", "board_bench.json"))
     json.dump(rows, open(out, "w"), indent=1)
     ok = [r for r in rows if "error" not in r]

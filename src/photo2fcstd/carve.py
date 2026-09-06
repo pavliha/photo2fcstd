@@ -293,6 +293,22 @@ def board_views(paths):
     return views, masks, used, cal
 
 
+def from_known_poses(paths, views, voxel_mm=VOXEL_MM):
+    from photo2fcstd.capture import board_mask
+    from photo2fcstd.trace import load
+    masks = [board_mask(load(p), v) for p, v in zip(paths, views)]
+    keep = [i for i, m in enumerate(masks) if m.sum() >= 50]
+    views, masks, used = [views[i] for i in keep], [masks[i] for i in keep], [paths[i] for i in keep]
+    if len(views) < MIN_POSED_VIEWS:
+        raise CaptureError("need at least %d posed views with a visible part, found %d" % (MIN_POSED_VIEWS, len(views)))
+    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))
+    carved["board_views"], carved["board_masks"] = views, masks
+    carved["min_elevation_deg"] = min(view_elevation_deg(v) for v in views)
+    carved["sources"] = used
+    carved["calibration_rms_px"] = None
+    return carved
+
+
 def from_photos(paths, segment_fn=None, voxel_mm=VOXEL_MM):
     views, masks, used, cal = board_views(paths)
     if len(views) < MIN_POSED_VIEWS:
