@@ -478,3 +478,12 @@ yields the photo's homography and camera tilt for free. `tools/tilt_labels.py` o
 square - and rectification is worth **+0.132 region IoU (0.775 -> 0.907), >= 0.9 on 89%**. The
 plan's T1 (a DINOv3 tilt head) now has real-photo, own-domain labels; the earlier record's
 "rectification does not help" was measured on renders with side walls, not on these plates.
+
+**T1 verdict on real labels (2026-09-06):** 197 labelled photos over all photographed parts,
+median tilt 27.9 deg; the re-posed target (symmetric stretch in the image frame, rotation
+factored out) has an oracle of 0.897 region IoU against 0.825 for doing nothing - the label is
+right. But no predictor learns it from 197 samples of DINOv3 features: ridge 0.817, gradient
+boosting 0.797, kNN 0.798, all below the do-nothing baseline. T1 is a measured null at this data
+size; not pursued further. The label factory (`tools/tilt_labels.py`) stays for a larger set.
+The route that needs no learning - poses from VGGT on the part's own three photos, silhouette
+projected onto the recovered face plane - is the next experiment.

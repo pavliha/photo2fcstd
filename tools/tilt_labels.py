@@ -35,6 +35,7 @@ def match(O, T):
                         best = (d, (flip, rot, sh, rev))
     flip, rot, sh, rev = best[1]
     R = np.array([[np.cos(rot * np.pi / 2), -np.sin(rot * np.pi / 2)], [np.sin(rot * np.pi / 2), np.cos(rot * np.pi / 2)]])
+    match.last_M = R @ np.diag([flip, 1.0])          # Om = M @ O (before the index reorder)
     return np.roll(((O * np.array([flip, 1])) @ R.T)[::rev], sh, axis=0), best[0]
 
 
@@ -70,13 +71,16 @@ def one(part):
                 continue
             H, _ = cv2.findHomography(Om.astype(np.float32), T.astype(np.float32), 0)
             A, _ = cv2.estimateAffine2D(Om.astype(np.float32), T.astype(np.float32))
+            A_img = A[:, :2] @ match.last_M                    # image frame -> truth frame, no match rotation baked in
+            U, S, Vt = np.linalg.svd(A_img); Rm = U @ Vt; P = Vt.T @ np.diag(S) @ Vt   # A = R P, P symmetric stretch in image frame
             sv = np.linalg.svd(A[:, :2], compute_uv=False)
             box = (T.min(0), T.max(0)); Tr = raster(T, box)
             Sim = (Om - Om.mean(0)) * (np.ptp(T, 0).max() / np.ptp(Om, 0).max()) + T.mean(0)
             Rect = cv2.perspectiveTransform(Om.reshape(-1, 1, 2).astype(np.float32), H).reshape(-1, 2)
             out.append({"part": part, "view": i, "photo": p, "n_vertices": int(len(T)), "match_resid": float(resid),
                         "foreshorten": float(sv[1] / sv[0]), "tilt_deg": float(np.degrees(np.arccos(min(sv[1] / sv[0], 1.0)))),
-                        "H": H.tolist(), "iou_similarity": iou(raster(Sim, box), Tr), "iou_rectified": iou(raster(Rect, box), Tr)})
+                        "H": H.tolist(), "P_img": (P / S[0]).tolist(), "M": match.last_M.tolist(),
+                        "iou_similarity": iou(raster(Sim, box), Tr), "iou_rectified": iou(raster(Rect, box), Tr)})
         except Exception:
             continue
     return out
