@@ -21,12 +21,16 @@ def one(part):
     try:
         spec, _ = recognise.route(photos, name=part, rec=rec)
         tilt = {"applied": False}
-        if os.environ.get("P2F_FACEPOSE", "0") == "1":
-            from photo2fcstd import facepose
-            spec, tilt = facepose.maybe_rectify(photos, spec, name=part)
         sp = os.path.join(d, part + ".spec.json")
         json.dump(spec, open(sp, "w"))
         r = cli.freecad_build(sp, out)
+        if os.environ.get("P2F_FACEPOSE", "1") == "1" and r["valid"] and spec.get("mode") == "plan":
+            from photo2fcstd import facepose
+            raw = max((design.verify(out, photos, {"face_photo_index": i})["silhouette_iou"] or 0.0) for i in range(len(photos)))
+            if raw < facepose.RAW_VERIFY_MAX:
+                spec2, tilt = facepose.maybe_rectify(photos, spec, name=part)
+                if tilt.get("applied"):
+                    spec = spec2; json.dump(spec, open(sp, "w")); r = cli.freecad_build(sp, out)
         sc = SS.score_one(spec, IDEAL[part])
         f1 = float((sc.get("primitive_f1") or {}).get("f1", 0.0)); region = float(sc["region_iou"])
         ious = []
