@@ -160,27 +160,24 @@ def verify(out, photos, rec, threshold=None, mask=None):
     import numpy as np
     from photo2fcstd.trace import segment_photo, upright_mask
     from photo2fcstd import trace
-    if mask is None:
-        face = photos[int(rec.get("face_photo_index", 0))]
-        was = trace.RECOVER_DARK
-        trace.RECOVER_DARK = False          # gross outline only; verify must not inherit build state
-        try:
-            mask, _ = upright_mask(segment_photo(face))
-        finally:
-            trace.RECOVER_DARK = was
-    else:
-        mask, _ = upright_mask(mask)
+    was = trace.RECOVER_DARK
+    trace.RECOVER_DARK = False
+    try:
+        masks = [upright_mask(mask)[0]] if mask is not None else [upright_mask(segment_photo(p))[0] for p in photos]
+    finally:
+        trace.RECOVER_DARK = was
     model = _model_silhouette(out)
     advice = []
     iou = None
     if model is not None:
-        iou = round(_aligned_iou(mask, model), 3)
+        ious = [round(_aligned_iou(m, model), 3) for m in masks]
+        iou = max(ious)
         if threshold is not None and iou < threshold:
-            advice.append("face silhouette off (IoU %.2f) - reshoot square to the face" % iou)
+            advice.append("silhouette off in every view (best IoU %.2f) - reshoot square to the face" % iou)
     if not rec.get("_depth_measured"):
         advice.append("depth is estimated (untrusted) - set params or shoot a 16-view orbit")
     ok = iou is not None and (threshold is None or iou >= threshold)
-    return {"silhouette_iou": iou, "advice": advice, "confidence": "ok" if ok else "low"}
+    return {"silhouette_iou": iou, "views": ious if model is not None else None, "advice": advice, "confidence": "ok" if ok else "low"}
 
 
 def _model_silhouette(out):

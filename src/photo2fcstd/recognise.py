@@ -181,10 +181,28 @@ def program_prompt(n):
         "Reply with ONLY the JSON." % (n, n - 1))
 
 
+DISC_THICKNESS = 0.15
+
+
+def side_view(photos):
+    from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
+    best = None
+    for i, p in enumerate(photos):
+        m, _ = upright_mask(segment_photo(p))
+        ys, xs = np.nonzero(m)
+        elong = float((np.ptp(ys) + 1) / (np.ptp(xs) + 1))
+        f = fit_ellipse(np.asarray(outline(m)[1]["raw"], float))
+        elliptical = bool(f and f["rms"] < 0.04 * f["b"])
+        if best is None or (elong > best[1] and not elliptical) or (best[3] and not elliptical):
+            best = (i, elong, m, elliptical)
+    return best
+
+
 def revolve_spec(photos, rec, name="part", samples=48):
-    from photo2fcstd.trace import segment_photo, upright_mask
-    face = photos[int(rec.get("face_photo_index", 0))]
-    mask, _ = upright_mask(segment_photo(face))
+    i, elong, mask, elliptical = side_view(photos)
+    has_side = elong >= 1.15 and not elliptical
+    length_note = "length from the side view %s (%.2f x diameter)" % (os.path.basename(photos[i]), elong) if has_side \
+        else "no side view among the photos: thickness set to %.2f x diameter (a guess, put a caliper on it)" % DISC_THICKNESS
     ys, xs = np.nonzero(mask)
     y0, y1 = ys.min(), ys.max()
     axis = (xs.min() + xs.max()) / 2.0
@@ -199,12 +217,15 @@ def revolve_spec(photos, rec, name="part", samples=48):
     prof.append([0.0, round(float(y1 - y0), 2)])
     profile = straight_or_traced(prof)
     R = max(abs(r) for r, _ in profile)
+    if not has_side:
+        R = float(max(np.ptp(xs), np.ptp(ys)) / 2.0)
+        profile = [[0.0, 0.0], [round(R, 2), 0.0], [round(R, 2), round(2 * R * DISC_THICKNESS, 2)], [0.0, round(2 * R * DISC_THICKNESS, 2)]]
     ratio, how = (bore_ratio(photos) if "bore" in (rec.get("openings") or []) else (None, None))
     holes = [{"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how}] if ratio else []
     return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "px",
             "scale_note": "UNSCALED: set from one caliper reading",
             "views": {}, "outline": None, "stl": None, "measured": [],
-            "revolve": {"generic": True, "profile": profile, "holes": holes, "rings": []}}
+            "revolve": {"generic": True, "profile": profile, "holes": holes, "rings": [], "length_note": length_note, "side_view": i}}
 
 
 def bore_ratio(photos, min_ratio=0.08):

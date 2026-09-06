@@ -1,0 +1,33 @@
+{
+ "01362": {
+  "iou3d": 0.984,
+  "note": "length from the side view 01362_3.jpg (2.49 x diameter)"
+ },
+ "00005": {
+  "iou3d": 0.833,
+  "note": "length from the side view 00005_2.jpg (4.04 x diameter)"
+ },
+ "01134": {
+  "iou3d": 0.753,
+  "note": "length from the side view 01134_3.jpg (2.55 x diameter)"
+ },
+ "00008": {
+  "iou3d": 0.608,
+  "note": "no side view among the photos: thickness set to 0.15 x diameter (a gue"
+ },
+ "00876": {
+  "iou3d": 0.291,
+  "note": "length from the side view 00876_3.jpg (1.45 x diameter)"
+ },
+ "00945": {
+  "iou3d": 0.068,
+  "note": "length from the side view 00945_2.jpg (1.25 x diameter)"
+ },
+ "00027": {
+  "iou3d": 0.487,
+  "note": ""
+ },
+ "00297": {
+  "refused": "silhouette does not match the photo (IoU 0.509 < 0.6)"
+ }
+}

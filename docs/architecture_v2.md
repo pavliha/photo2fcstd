@@ -756,3 +756,22 @@ part is. The printed target solves poses to ~0.05 deg (0.3 px reprojection); pho
 1 deg (leave-one-out silhouette fit; hull-volume maximisation, Powell, 6 dof per view): neither
 recovered the box (34 x 22 x 18 for 30 x 18 x 9). Both deleted. The sheet is the pose source
 that works today; `carve.from_known_poses` stays as the entry for any external pose source.
+
+## End-to-end verification on dataset parts, in 3D (2026-09-07, "pick items from the dataset")
+
+`runs/verify/`: the shipped photo path (`design.design`, live recognition, FreeCAD build) on
+dataset parts, solid compared with the STEP mesh by `score.best_iou`. This exposed two defects the
+sketch metrics never saw:
+- `revolve_spec` took the profile from the *face* photo (looking down the axis): a standing rod
+  became a rounded blob, a washer a lens. Now `side_view()` picks the most elongated non-elliptical
+  mask for the profile; when no side view exists (a disc seen only face-on) the thickness is an
+  explicit `DISC_THICKNESS` guess with a caliper note in `length_note`.
+- `design.verify` compared the model's widest projection with the face photo only, so a correct
+  long revolve was refused; it now checks every photo and keeps the best (as the bench did).
+
+Results (3D IoU vs truth): rod 01362 0.984, tube 00005 0.833, rod 01134 0.753 (oblique side view
+overstates length 2.66 vs 2.27), washer 00008 0.608 (thickness guessed 0.15 D, true 0.105 D),
+thick tube 00876 0.291 and thin cup 00945 0.068 (length from an oblique view; wall thickness at the
+few-percent level makes IoU unforgiving), bent strip 00027 0.487, letter 00297 refused by the gate.
+Bores are cut correctly (volume check matches 1 - ratio^2). Widening the bore search to 0.97
+found the cup's rim but broke the thick tube (0.89 -> 0.97); reverted to the bench-validated 0.9.
