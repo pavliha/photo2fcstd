@@ -123,6 +123,11 @@ def trimmed_to_top(carved):
             "volume_mm3": float(len(pts) * carved["voxel_mm"] ** 3)}
 
 
+def axis_facing(view):
+    R = cv2.Rodrigues(np.asarray(view["rvec"], float))[0]
+    return int(np.argmax(np.abs(R[2])))
+
+
 def view_elevation_deg(view):
     R, _ = cv2.Rodrigues(np.asarray(view["rvec"], float))
     eye = -R.T @ np.asarray(view["tvec"], float).reshape(3)
@@ -200,7 +205,8 @@ def spec_from_carve(carved, name="part", stl=None, axis=None, views=None, masks=
         pts = carved["points_mm"]
         pad = 2.0
         bounds_xy = ((float(pts[:, 0].min()) - pad, float(pts[:, 0].max()) + pad), (float(pts[:, 1].min()) - pad, float(pts[:, 1].max()) + pad))
-        plan = top_face_mask(views, masks, carved["top_mm"], bounds_xy)
+        from photo2fcstd.trace import upright_mask
+        plan, _ = upright_mask(top_face_mask(views, masks, carved["top_mm"], bounds_xy))
         voxel = 1.0 / TOP_PPMM
     else:
         plan = occupancy(carved, axis=axis)

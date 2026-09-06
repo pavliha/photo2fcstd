@@ -679,3 +679,30 @@ sketch topology (F1) is at parity, on views the photo path never gets in real li
 scored on square-on photos). The remaining F1 gap is the outline tracer on polygons, shared.
 Design entry: `design.design` -> board tier -> `revolve_from_carve` (+ `bore_ratio` on real photos)
 or `spec_from_carve(views, masks)` with the rectified top face.
+
+## Sketch-axis study on the board bench (2026-09-07, "keep going")
+
+The low region scores that remained were not the tracer. Scoring every extrusion part under all
+three sketch axes (`runs/board_bench_axes.json`, 101 non-revolve parts):
+
+| axis rule | region IoU |
+|---|---|
+| oracle (best of three) | 0.714 |
+| learned `axis_model` (v1 classifier) | 0.674, right 80% |
+| prism consistency (hull volume / extruded projection) | 0.660, right 81%, different mistakes; no margin blend beats learned |
+| always the board normal | 0.620 |
+| photo path on the same parts | 0.582 |
+
+The "octagon" family from the census is rounded shapes drawn with 2-6 arcs or a bspline in the
+STEP truth; our arc+line decomposition of the same region scores F1 near 0 while region IoU is
+0.9-0.99, so F1 on those families is a decomposition disagreement, not a shape error. Region IoU
+is the fidelity metric to read.
+
+Kept: the learned chooser as default; the prism rule deleted. Added `carve.axis_facing(view)`:
+when recognition names the face photo and that photo solved a board pose, the sketch axis is the
+axis that photo looks along, which is the photo path's own rule made metric. Not benchable on
+renders (no recognition of rendered views); it is the rule for real captures. Standing tubes still
+lose their bore in silhouette (the floor seen through the bore lies at z = 0, not at the top
+plane); real photos get it from `bore_ratio`'s rim edge, so renders now carry Lambertian shading.
+Second bench run (per-axis) : F1 0.725, region 0.710 under the prism rule; the 0.727 / 0.765 of
+the holes run stands as the shipped number (learned chooser).

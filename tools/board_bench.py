@@ -32,11 +32,16 @@ def render_mesh(mesh, R, t, K):
     from photo2fcstd import make_target
     img = T._render((0.0, 0.0, 0.0), R, t, K, SIZE)
     V = np.asarray(mesh.vertices, float)
-    p = (K @ (V @ R.T + t).T).T
+    cam = (V @ R.T + t)
+    p = (K @ cam.T).T
     uv = (p[:, :2] / p[:, 2:3]).astype(np.int32)
-    tri = uv[np.asarray(mesh.faces)]
-    for tr in tri:
-        cv2.fillConvexPoly(img, tr, (40, 90, 200))
+    F = np.asarray(mesh.faces)
+    depth = cam[F][:, :, 2].mean(axis=1)
+    normals = np.asarray(mesh.face_normals)
+    light = np.array([0.3, -0.5, 0.8]); light /= np.linalg.norm(light)
+    shade = 0.45 + 0.55 * np.clip(normals @ light, 0, 1)
+    for i in np.argsort(-depth):
+        cv2.fillConvexPoly(img, uv[F[i]], tuple(int(c * shade[i]) for c in (40, 90, 200)))
     return img
 
 
@@ -65,13 +70,23 @@ def one(part):
             photos.append(path)
         carved = carve.from_photos(photos, voxel_mm=VOXEL)
         rec = RECS.get(part, {})
+        per_axis = {}
+        for ax in (0, 1, 2):
+            try:
+                sp = carve.spec_from_carve(carved, part, axis=ax, views=carved["board_views"], masks=carved["board_masks"])
+                s2 = SS.score_one(sp, ideal[part])
+                per_axis[ax] = {"region": float(s2["region_iou"]), "f1": float((s2.get("primitive_f1") or {}).get("f1", 0.0))}
+            except Exception as e:
+                per_axis[ax] = {"region": 0.0, "f1": 0.0, "error": str(e)[:60]}
+        choices = {"learned": carve.base_axis(carved)}
         spec = carve.revolve_from_carve(carved, part, rec) if rec.get("revolve") else carve.spec_from_carve(carved, part, views=carved["board_views"], masks=carved["board_masks"])
         sc = SS.score_one(spec, ideal[part])
         e_true, e_carve = np.sort(m.extents)[::-1], np.sort(carved["extents_mm"])[::-1]
         return {"part": part, "views": carved["views"], "f1": float((sc.get("primitive_f1") or {}).get("f1", 0.0)), "region_iou": float(sc["region_iou"]),
                 "top_mm": float(carved["top_mm"]), "true_height_mm": float(m.extents[2]),
                 "ext_err_pct": [round(100 * float((c - t) / t), 1) for c, t in zip(e_carve, e_true)],
-                "section_constancy": (spec.get("outline") or {}).get("section_constancy"), "mode": spec.get("mode")}
+                "section_constancy": (spec.get("outline") or {}).get("section_constancy"), "mode": spec.get("mode"),
+                "per_axis": per_axis, "choices": choices}
     except Exception as e:
         import traceback
         return {"part": part, "error": "%s: %s" % (type(e).__name__, str(e)[:120]), "trace": traceback.format_exc()[-600:]}

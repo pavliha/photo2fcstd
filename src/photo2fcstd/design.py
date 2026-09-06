@@ -118,7 +118,10 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
                 spec["revolve"]["holes"].append({"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how})
         res = _build(spec, out, "board", cls)
     else:
-        spec = carve.spec_from_carve(carved, _stem(out), views=carved["board_views"], masks=carved["board_masks"])
+        face = rec.get("face_photo_index")
+        axis = carve.axis_facing(carved["board_views"][carved["sources"].index(photos[face])]) \
+            if face is not None and photos[face] in carved["sources"] else None
+        spec = carve.spec_from_carve(carved, _stem(out), axis=axis, views=carved["board_views"], masks=carved["board_masks"])
         res = _build(spec, out, "board", cls)
     if res.get("valid") is False:
         return _refuse(out, "build produced no valid solid", ["reshoot with the target fully in frame"])
