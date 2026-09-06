@@ -618,3 +618,34 @@ per-part F1 of 40 revolve-flagged round parts (`data/regression/round_parts.json
 `tools/record_regression.py`, mean 0.950, 85% exact) - any part scoring below its golden fails;
 `tests/test_regression_fan_video.py` builds the fan from the three checked-in video frames with
 hand-free masks and the COLMAP extents and asserts bore 54-60, depth 23-26, gate IoU >= 0.85.
+
+## Board path as the trunk (2026-09-07, "architecture is completely wrong, perspective issues")
+
+The measure step assumed square-on photos with unknown pose; every failure this week was that
+assumption. The fix is capture with a known pose, not more inference: the printed ChArUco target
+from v1 (`make_target.py`, `capture.py`, `carve.py`), which had never been run on a real photo.
+
+Made real on rendered photos (`tests/test_board_path.py`: a 30 x 18 x 9 box on the board through
+six known cameras, then through `design.design` and FreeCAD):
+- `rectify.board_points` had its y axis reversed: solvePnP put the camera *below* the board and
+  the old rectified images were mirror images. Fixed at the source; `image_points_mm` keeps the
+  image-space rectification y-down. `capture.board_quad` follows the same frame.
+- `capture.board_mask`: inside the clear patch anything non-paper is part; above it (the clear
+  patch extruded 120 mm) a pixel is part when it differs from the rendered board by > 60 grey
+  levels or is saturated; open, close, largest component overlapping the patch. Mask IoU vs the
+  true silhouette >= 0.99 in every view incl. 15 deg.
+- Visual hulls from views above 15 deg cannot bound a flat top: the roof over a 9 mm box reaches
+  13 mm even with perfect masks, and the board is undetectable below 15 deg. `carve.top_height`
+  takes the knee of hull cross-section area against z (area constant up to the top, then shrinks):
+  9.2 / 4.2 / 20.2 mm on 9 / 4 / 20 mm boxes. `trimmed_to_top` cuts the hull there.
+- Footprint from six views at 260 mm overshoots by ~1.5 mm (perspective cones intersecting):
+  that is the honest hull error at this view count; more azimuths tighten it.
+- Focal length from EXIF when fewer than 4 views calibrate; `carve.from_photos` uses board masks.
+- `design.design` takes the board tier first whenever >= 3 photos solve a pose: generic parts get
+  `spec_from_carve` in millimetres; `fan_guard` gets frame_w and depth from the hull. Gate: model
+  silhouette vs hull occupancy >= 0.8. Ledger says "measured (board hull)".
+- Targets: A4 (15 mm squares, clear patch 46 x 51 mm) and A3 (30 mm squares, 92 x 102 mm, needed
+  for the 80 mm fan), `make_target.run` picks the page from the filename.
+
+Not yet done: a real photo on the printed target. The dataset has none; the user's fan on the A3
+sheet is the first real test.

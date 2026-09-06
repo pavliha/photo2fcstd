@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from photo2fcstd.make_target import SQUARE_MM, board
-from photo2fcstd.rectify import PPMM, board_points, detect
+from photo2fcstd.rectify import PPMM, board_points, detect, image_points_mm
 
 MIN_CORNERS = 6
 PHONE_FOCAL_FRACTION = 1.2
@@ -21,13 +21,13 @@ def board_corners(image):
 
 
 def homography(corners, ids):
-    H, _ = cv2.findHomography(corners, board_points(ids) * PPMM, cv2.RANSAC, 3.0)
+    H, _ = cv2.findHomography(corners, image_points_mm(ids) * PPMM, cv2.RANSAC, 3.0)
     return H
 
 
 def reprojection_mm(H, corners, ids):
     projected = cv2.perspectiveTransform(corners.reshape(-1, 1, 2), H).reshape(-1, 2)
-    return float(np.linalg.norm(projected - board_points(ids) * PPMM, axis=1).mean() / PPMM)
+    return float(np.linalg.norm(projected - image_points_mm(ids) * PPMM, axis=1).mean() / PPMM)
 
 
 def rectified(image, pad_mm=5.0):
@@ -44,6 +44,41 @@ def rectified(image, pad_mm=5.0):
     warped = cv2.warpPerspective(arr, shift @ H, tuple(size))
     return {"image": warped, "mm_per_px": 1.0 / PPMM, "corners": len(ids),
             "reprojection_mm": reprojection_mm(H, corners, ids)}
+
+
+def focal_px_from_exif(path, shape):
+    try:
+        from PIL import Image
+        f35 = float(Image.open(path).getexif().get_ifd(0x8769).get(41989) or 0)
+    except Exception:
+        f35 = 0.0
+    return f35 * max(shape[:2]) / 36.0 if f35 else None
+
+
+def board_mask(image, view, min_frac=0.0005, open_px=5):
+    from photo2fcstd.rectify import as_uint8
+    from scipy import ndimage
+    img = as_uint8(image)
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV) if img.ndim == 3 else None
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) if img.ndim == 3 else img
+    prism = np.zeros(gray.shape, np.uint8)
+    cv2.fillConvexPoly(prism, cv2.convexHull(clear_prism(view).astype(np.int32)), 1)
+    patch = np.zeros(gray.shape, np.uint8)
+    cv2.fillConvexPoly(patch, clear_quad(view).astype(np.int32), 1)
+    paper = (gray > 185) & ((hsv[..., 1] < 45) if hsv is not None else True)
+    expected = cv2.cvtColor(board_render(view, gray.shape), cv2.COLOR_BGR2GRAY)
+    differs = np.abs(cv2.GaussianBlur(gray, (0, 0), 1.5).astype(int) - cv2.GaussianBlur(expected, (0, 0), 1.5).astype(int)) > 60
+    coloured = (hsv[..., 1] > 60) if hsv is not None else np.zeros(gray.shape, bool)
+    mask = ((~paper) & (patch > 0)) | ((differs | coloured) & (prism > 0) & (patch == 0))
+    mask = cv2.morphologyEx(mask.astype(np.uint8), cv2.MORPH_OPEN, np.ones((open_px, open_px), np.uint8)) > 0
+    mask = cv2.morphologyEx(mask.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((3 * open_px, 3 * open_px), np.uint8)) > 0
+    lab, n = ndimage.label(mask)
+    if n == 0:
+        return mask
+    sizes = ndimage.sum(mask & (patch > 0), lab, range(1, n + 1))
+    if sizes.max() < min_frac * mask.size:
+        return np.zeros_like(mask)
+    return ndimage.binary_fill_holes(lab == (int(np.argmax(sizes)) + 1))
 
 
 def camera_matrix(shape, focal_px=None):
@@ -113,7 +148,7 @@ def board_quad(view):
     """The printed target's four corners in the image, from a solved pose."""
     from photo2fcstd.make_target import COLS, ROWS, SQUARE_MM
     w, h = COLS * SQUARE_MM, ROWS * SQUARE_MM
-    plane = np.float32([[0, 0, 0], [w, 0, 0], [w, h, 0], [0, h, 0]])
+    plane = np.float32([[0, h, 0], [w, h, 0], [w, 0, 0], [0, 0, 0]])
     uv, _ = cv2.projectPoints(plane, view["rvec"], view["tvec"], view["K"], view["dist"])
     return uv.reshape(-1, 2)
 
@@ -136,6 +171,14 @@ def clear_quad(view):
     from photo2fcstd.make_target import clear_rect_mm
     x0, y0, x1, y1 = clear_rect_mm()
     pts = np.float32([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]])
+    uv, _ = cv2.projectPoints(pts, view["rvec"], view["tvec"], view["K"], view["dist"])
+    return uv.reshape(-1, 2)
+
+
+def clear_prism(view, height_mm=120.0):
+    from photo2fcstd.make_target import clear_rect_mm
+    x0, y0, x1, y1 = clear_rect_mm()
+    pts = np.float32([[x, y, z] for z in (0.0, height_mm) for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))])
     uv, _ = cv2.projectPoints(pts, view["rvec"], view["tvec"], view["K"], view["dist"])
     return uv.reshape(-1, 2)
 

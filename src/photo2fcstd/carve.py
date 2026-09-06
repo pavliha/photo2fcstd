@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from photo2fcstd.capture import calibrate, pose
+from photo2fcstd.capture import MIN_CALIBRATION_VIEWS, calibrate, pose
 from photo2fcstd.errors import CaptureError
 from photo2fcstd.make_target import COLS, ROWS, SQUARE_MM
 
@@ -107,6 +107,22 @@ def carve(views, masks, voxel_mm=VOXEL_MM, allow_misses=1, bounds=None, max_heig
             "volume_mm3": float(len(occupied) * voxel_mm ** 3)}
 
 
+def top_height(carved, frac=0.9):
+    z = carved["points_mm"][:, 2]; vox = carved["voxel_mm"]
+    zs = np.arange(z.min(), z.max() + vox, vox)
+    area = np.array([((z >= s - vox / 2) & (z < s + vox / 2)).sum() for s in zs])
+    ref = np.median(area[:max(3, len(area) // 4)])
+    ok = np.nonzero(area >= frac * ref)[0]
+    return float(zs[ok[-1]] + vox / 2)
+
+
+def trimmed_to_top(carved):
+    h = top_height(carved)
+    pts = carved["points_mm"][carved["points_mm"][:, 2] <= h + 1e-6]
+    return {**carved, "points_mm": pts, "top_mm": h, "extents_mm": np.ptp(pts, axis=0) + carved["voxel_mm"],
+            "volume_mm3": float(len(pts) * carved["voxel_mm"] ** 3)}
+
+
 def view_elevation_deg(view):
     R, _ = cv2.Rodrigues(np.asarray(view["rvec"], float))
     eye = -R.T @ np.asarray(view["tvec"], float).reshape(3)
@@ -171,7 +187,7 @@ def spec_from_carve(carved, name="part", stl=None, axis=None):
     centred = [[[(x - centre[0]) * voxel, -(y - centre[1]) * voxel] for x, y in loop] for loop in loops_px]
     length_mm = max(np.ptp(np.array(shape["raw"], float), axis=0)) * voxel
     loops = primitives(centred, length_mm)
-    height = float(np.ptp(carved["points_mm"][:, axis]) + voxel)
+    height = float(carved["top_mm"]) if axis == 2 and carved.get("top_mm") else float(np.ptp(carved["points_mm"][:, axis]) + voxel)
     constancy = section_constancy(carved, axis)
     warning = None
     if constancy < PRISM_CONSTANCY:
@@ -203,24 +219,29 @@ def mesh_of(carved):
     return mesh
 
 
-def from_photos(paths, segment_fn, voxel_mm=VOXEL_MM):
+def board_views(paths):
+    from photo2fcstd.capture import board_mask, camera_matrix, focal_px_from_exif
     from photo2fcstd.trace import load
     images = [load(p) for p in paths]
-    cal = calibrate(images)
-    K = cal["K"] if cal else None
-    dist = cal["dist"] if cal else None
+    cal = calibrate(images) if len(images) >= MIN_CALIBRATION_VIEWS else None
     views, masks, used = [], [], []
     for path, image in zip(paths, images):
-        p = pose(image, K, dist)
+        K = cal["K"] if cal else camera_matrix(image.shape, focal_px_from_exif(path, image.shape))
+        p = pose(image, K, cal["dist"] if cal else None)
         if p is None:
             continue
         views.append(p)
-        masks.append(segment_fn(path))
+        masks.append(board_mask(image, p))
         used.append(path)
+    return views, masks, used, cal
+
+
+def from_photos(paths, segment_fn=None, voxel_mm=VOXEL_MM):
+    views, masks, used, cal = board_views(paths)
     if len(views) < MIN_POSED_VIEWS:
         raise CaptureError("need the ChArUco target visible in at least %d photos, found %d"
                            % (MIN_POSED_VIEWS, len(views)))
-    carved = carve(views, masks, voxel_mm)
+    carved = trimmed_to_top(carve(views, masks, voxel_mm, allow_misses=0))
     carved["min_elevation_deg"] = min(view_elevation_deg(v) for v in views)
     carved["sources"] = used
     carved["calibration_rms_px"] = cal["rms_px"] if cal else None

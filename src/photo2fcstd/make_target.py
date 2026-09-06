@@ -63,6 +63,7 @@ if __name__ == "__main__":
 
 
 A4_MM = (210.0, 297.0)
+A3_MM = (297.0, 420.0)
 
 
 def measured_cell_px(art):
@@ -109,7 +110,7 @@ def pdf(path, page_mm=A4_MM, dpi=DPI):
     return path
 
 
-def verify(path, dpi=DPI):
+def verify(path, dpi=DPI, page_mm=A4_MM):
     from PIL import Image
     from photo2fcstd.capture import board_corners
     page = np.array(Image.open(path).convert("L")) if not path.endswith(".pdf") else None
@@ -122,7 +123,7 @@ def verify(path, dpi=DPI):
     corners, ids = board_corners(cv2.cvtColor(page, cv2.COLOR_GRAY2RGB))
     if corners is None:
         return None
-    ppmm = page.shape[1] / A4_MM[0]
+    ppmm = page.shape[1] / page_mm[0]
     xs = np.unique(np.round(corners[:, 0] / 2.0) * 2.0)
     return float(np.median(np.diff(xs)) / ppmm)
 
@@ -130,8 +131,9 @@ def verify(path, dpi=DPI):
 def run():
     import sys
     out = sys.argv[1] if len(sys.argv) > 1 else "charuco_target_A4.pdf"
-    pdf(out)
-    square = verify(out)
+    page_mm = A3_MM if "A3" in os.path.basename(out) else A4_MM
+    pdf(out, page_mm=page_mm)
+    square = verify(out, page_mm=page_mm)
     if square is None:
         print("wrote %s but could not verify it - check the print by hand" % out)
         return

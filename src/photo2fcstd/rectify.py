@@ -39,10 +39,15 @@ def detect(gray):
 
 
 def board_points(ids):
-    per_row = board().getChessboardSize()[0] - 1
+    per_row, rows = board().getChessboardSize()[0] - 1, board().getChessboardSize()[1]
     return np.array([[((int(i) % per_row) + 1) * SQUARE_MM,
-                      ((int(i) // per_row) + 1) * SQUARE_MM] for i in ids],
+                      (rows - 1 - (int(i) // per_row)) * SQUARE_MM] for i in ids],
                     dtype=np.float32)
+
+
+def image_points_mm(ids):
+    pts = board_points(ids)
+    return np.c_[pts[:, 0], board().getChessboardSize()[1] * SQUARE_MM - pts[:, 1]].astype(np.float32)
 
 
 def rectify(path, out):
@@ -50,7 +55,7 @@ def rectify(path, out):
     if img is None:
         raise CaptureError("cannot read %s" % path)
     corners, ids = detect(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
-    H, _ = cv2.findHomography(corners, board_points(ids) * PPMM, cv2.RANSAC, 3.0)
+    H, _ = cv2.findHomography(corners, image_points_mm(ids) * PPMM, cv2.RANSAC, 3.0)
     h, w = img.shape[:2]
     box = cv2.perspectiveTransform(
         np.array([[[0, 0], [w, 0], [w, h], [0, h]]], dtype=np.float32), H)[0]
@@ -61,7 +66,7 @@ def rectify(path, out):
     cv2.imwrite(out, warp)
     err = np.linalg.norm(
         cv2.perspectiveTransform(corners.reshape(-1, 1, 2), H).reshape(-1, 2)
-        - board_points(ids) * PPMM, axis=1).mean() / PPMM
+        - image_points_mm(ids) * PPMM, axis=1).mean() / PPMM
     print("%s -> %s  %d corners, %.2f px/mm, mean reprojection %.3f mm"
           % (path, out, len(ids), PPMM, err))
 

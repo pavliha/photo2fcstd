@@ -1,6 +1,8 @@
 import json
 import os
 
+import numpy as np
+
 from photo2fcstd import cli, recognise
 
 TEMPLATES = {}
@@ -20,7 +22,7 @@ def _fan_guard(rec, photos, out, frame_w_mm=80.0, depth_json=None, traced=True):
             "params": params, "sketches_clean": True, "valid": True}
 
 
-THRESHOLD = {"template": 0.8, "revolve": 0.8, "assemble": 0.6}
+THRESHOLD = {"template": 0.8, "revolve": 0.8, "assemble": 0.6, "board": 0.8}
 
 
 @register("bottle")
@@ -46,6 +48,9 @@ CONTAIN_THRESHOLD = 0.9
 def design(photos, out, rec=None, **kw):
     rec = rec if rec is not None else recognise._recognise_program_live(photos)
     cls = rec.get("part_class")
+    board = _board_carve(photos)
+    if board is not None:
+        return _design_from_board(board, photos, out, rec, cls, **kw)
     if cls in TEMPLATES:
         res = TEMPLATES[cls](rec, photos, out, **kw)
     elif rec.get("revolve"):
@@ -82,6 +87,39 @@ def design(photos, out, rec=None, **kw):
         return _refuse(out, "silhouette does not match the photo (IoU %s < %s)"
                        % (v["silhouette_iou"], THRESHOLD[res["tier"]]), v["advice"])
     return {**res, "verify": v}
+
+
+def _board_carve(photos):
+    from photo2fcstd import carve
+    from photo2fcstd.errors import CaptureError
+    if len(photos) < carve.MIN_POSED_VIEWS:
+        return None
+    try:
+        return carve.from_photos(photos)
+    except CaptureError:
+        return None
+
+
+def _design_from_board(carved, photos, out, rec, cls, **kw):
+    import tempfile
+    from photo2fcstd import carve
+    ext = np.sort(carved["extents_mm"])[::-1]
+    if cls == "fan_guard":
+        dj = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        json.dump({"short_over_long": float(ext[1] / ext[0]), "height_over_long": float(carved["top_mm"] / ext[0]), "source": "board hull"}, dj); dj.close()
+        res = TEMPLATES[cls](rec, photos, out, frame_w_mm=float(ext[0]), depth_json=dj.name, traced=kw.get("traced", True))
+        res["params"]["_ledger"]["frame_w"] = "measured (board hull)"
+    else:
+        spec = carve.spec_from_carve(carved, _stem(out))
+        res = _build(spec, out, "board", cls)
+    if res.get("valid") is False:
+        return _refuse(out, "build produced no valid solid", ["reshoot with the target fully in frame"])
+    mask = carve.occupancy(carved, axis=2)
+    v = verify(out, photos, rec, threshold=THRESHOLD["board"], mask=mask)
+    if v["confidence"] != "ok":
+        return _refuse(out, "model does not match the carved hull (IoU %s < %s)" % (v["silhouette_iou"], THRESHOLD["board"]), v["advice"])
+    return {**res, "board": {"views": carved["views"], "extents_mm": [round(float(x), 2) for x in carved["extents_mm"]], "top_mm": round(float(carved["top_mm"]), 2),
+                             "min_elevation_deg": round(float(carved["min_elevation_deg"]), 1)}, "verify": v}
 
 
 def _refuse(out, reason, reshoot):
