@@ -218,6 +218,12 @@ def recover_holes(image, mask, tol=0.10, min_frac=0.01):
 
 
 def segment_photo(path):
+    given = os.path.join(os.environ.get("P2F_MASK_DIR", ""), os.path.splitext(os.path.basename(path))[0] + ".png")
+    if os.environ.get("P2F_MASK_DIR") and os.path.exists(given):
+        from PIL import Image as _Image
+        image = load(path)
+        base = np.array(_Image.open(given).convert("L")) > 128
+        return largest(trim_appendages(recover_dark_holes(image, recover_holes(image, base))))
     f = cached_mask(path)
     if os.path.exists(f):
         return np.load(f)["mask"]

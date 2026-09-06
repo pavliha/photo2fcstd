@@ -210,7 +210,10 @@ def main(argv=None):
     ap.add_argument("--frame-mm", type=float, default=80.0, help="longest face edge in mm, for scale")
     ap.add_argument("--depth-json", default=None, help="vggt_depth.py result; gives the enclosure its measured depth")
     ap.add_argument("--cloud", default=None, help="vggt_depth.py *_poses.npz; cloud-fitted templates (bottle)")
+    ap.add_argument("--masks", default=None, help="directory of <photo stem>.png masks to use instead of segmenting (video path: hands removed)")
     a = ap.parse_args(argv)
+    if a.masks:
+        os.environ["P2F_MASK_DIR"] = a.masks
     rec = recognise._recognise_program_live(a.photos)
     print("recognised:", json.dumps(rec))
     cls = rec.get("part_class")

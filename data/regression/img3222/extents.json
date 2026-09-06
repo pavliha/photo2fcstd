@@ -1,0 +1,12 @@
+{
+ "points": 1019,
+ "cameras": 45,
+ "long": 21.43029647261747,
+ "short": 19.216785649240194,
+ "height": 6.571110907235045,
+ "short_over_long": 0.8967111432076739,
+ "height_over_long": 0.30662715822113207,
+ "camera_dist_over_long": 3.0529694363421727,
+ "camera_dist_spread": 0.1637097809412889,
+ "view_arc_deg": 16.3818891472405
+}

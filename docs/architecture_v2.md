@@ -589,3 +589,32 @@ COLMAP on 158 dense masked frames with sequential matching registered 45 frames 
 away, spread 16%, arc 16 deg); `tools/colmap_extents.py` turns the sparse model into the extents json
 `design_fan` reads. Result 80 x 80 x 29 mm (true depth 34: the arc never sees the back). The chain
 and ICP tools were deleted; they live in this commit's parent history only as this paragraph.
+
+## Round parts: recognition churn, bores, regression tests (2026-09-07, "do it all")
+
+Census of the 1892 STEP sketches (`runs/template_families.json`): rect 20.6%, circle 18.1%,
+circle + circle 15.4%, hexagon 5.7%, octagon 3.4%; three families cover 54%. On the 150-part
+bench the round families scored F1 0.50 (circle) and 0.69 (tube) while rect scored 0.93.
+
+The cylinder gap was **recognition churn, not geometry**: rescoring the same 30 cylinders through
+`revolve_spec` with one consistent recognition run gives F1 0.93, 93% exact (bench had used an
+earlier live run whose `revolve` flags differed). The revolve path was already right.
+
+Tubes lacked the bore. `revolve_spec` now measures it from the end-on view: dark-hole ellipse,
+and an edge-ring search (median Sobel magnitude along scaled copies of the end ellipse) when the
+hole is not dark; candidates from all views vote, edge wins ties; only searched when recognition
+lists a `bore` opening. Tubes F1 0.67 -> 0.90, exact 12% -> 69%; cylinders 0.92 (one false bore
+where recognition also claimed a bore).
+
+Fan video path: `design --masks DIR` and `P2F_MASK_DIR` feed given masks through the normal
+hole-recovery chain (`segment_photo`), so the hand-free video masks reach every measurement.
+Hand removal is by hue (skin 0-15 deg / 170+, the shaded yellow fooled YCrCb). The bore on a
+1080p frame reads 57 mm against 69.75 from the 12 MP photos: the 1.5 mm gap outside the outer
+grille ring is below video resolution, so the radial dark search stops one ring short. Recorded,
+not hidden: the ledger says "measured (3 views)" and the frames are the limit.
+
+Regression tests (user: "setup regression tests"): `tests/test_regression_round.py` locks the
+per-part F1 of 40 revolve-flagged round parts (`data/regression/round_parts.json`, recorded by
+`tools/record_regression.py`, mean 0.950, 85% exact) - any part scoring below its golden fails;
+`tests/test_regression_fan_video.py` builds the fan from the three checked-in video frames with
+hand-free masks and the COLMAP extents and asserts bore 54-60, depth 23-26, gate IoU >= 0.85.

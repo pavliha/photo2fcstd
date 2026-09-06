@@ -12,8 +12,8 @@ sys.path.insert(0, os.path.join(ROOT, "src"))
 def without_skin(mask, image):
     import cv2
     from scipy import ndimage
-    ycc = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2YCrCb)
-    skin = (ycc[..., 1] > 133) & (ycc[..., 1] < 173) & (ycc[..., 2] > 77) & (ycc[..., 2] < 127)
+    hsv = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2HSV)
+    skin = ((hsv[..., 0] < 15) | (hsv[..., 0] > 170)) & (hsv[..., 1] > 40) & (hsv[..., 2] > 60)
     skin = cv2.dilate(skin.astype(np.uint8), np.ones((15, 15), np.uint8)) > 0
     m = mask & ~skin
     lab, k = ndimage.label(m)

@@ -197,10 +197,62 @@ def revolve_spec(photos, rec, name="part", samples=48):
         r = max(float(row.max() - axis), float(axis - row.min()))
         prof.append([round(r, 2), round(float(y - y0), 2)])
     prof.append([0.0, round(float(y1 - y0), 2)])
+    profile = straight_or_traced(prof)
+    R = max(abs(r) for r, _ in profile)
+    ratio, how = (bore_ratio(photos) if "bore" in (rec.get("openings") or []) else (None, None))
+    holes = [{"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how}] if ratio else []
     return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "px",
             "scale_note": "UNSCALED: set from one caliper reading",
             "views": {}, "outline": None, "stl": None, "measured": [],
-            "revolve": {"generic": True, "profile": straight_or_traced(prof), "holes": [], "rings": []}}
+            "revolve": {"generic": True, "profile": profile, "holes": holes, "rings": []}}
+
+
+def bore_ratio(photos, min_ratio=0.08):
+    from photo2fcstd import trace
+    from photo2fcstd.trace import fit_ellipse, load, outline, segment_photo
+    cands = []
+    was = trace.RECOVER_DARK; trace.RECOVER_DARK = True
+    try:
+        for p in photos:
+            mask = segment_photo(p)
+            poly, sh = outline(mask)
+            outer = fit_ellipse(np.asarray(sh["raw"], float))
+            if not outer or outer["aspect"] < 0.55:
+                continue
+            cx, cy = outer["cx"], outer["cy"]
+            for h in sh["holes"]:
+                f = fit_ellipse(np.asarray(h, float)) if len(h) >= 8 else None
+                if f and np.hypot(f["cx"] - cx, f["cy"] - cy) <= 0.15 * outer["a"] and min_ratio < f["a"] / outer["a"] < 0.95:
+                    cands.append((float(f["a"] / outer["a"]), "end view dark hole", outer["aspect"]))
+            img = load(p)
+            t = _bore_from_edges(img.mean(axis=2) if img.ndim == 3 else img.astype(float), mask, outer)
+            if t:
+                cands.append((t, "end view edge ring", outer["aspect"]))
+    finally:
+        trace.RECOVER_DARK = was
+    if not cands:
+        return None, None
+    agreeing = [(r, how, asp, sum(abs(r2 - r) <= 0.15 * r for r2, _, _ in cands)) for r, how, asp in cands]
+    r, how, asp, votes = max(agreeing, key=lambda c: (c[3], c[1] == "end view edge ring", c[2]))
+    return r, "%s (%d of %d views agree)" % (how, votes, len(cands))
+
+
+def _bore_from_edges(gray, mask, outer, n=360):
+    from scipy import ndimage
+    g = np.hypot(ndimage.sobel(gray, 0), ndimage.sobel(gray, 1))
+    th = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    ang = float(outer.get("theta", 0.0))
+    ts = np.linspace(0.12, 0.9, 60)
+    prof = []
+    for t in ts:
+        ex, ey = t * outer["a"] * np.cos(th), t * outer["b"] * np.sin(th)
+        xs = outer["cx"] + ex * np.cos(ang) - ey * np.sin(ang); ys = outer["cy"] + ex * np.sin(ang) + ey * np.cos(ang)
+        ok = (xs >= 1) & (ys >= 1) & (xs < mask.shape[1] - 1) & (ys < mask.shape[0] - 1)
+        v = ndimage.map_coordinates(g, [ys[ok], xs[ok]], order=1) if ok.sum() > n // 2 else np.zeros(1)
+        prof.append(float(np.median(v)))
+    prof = np.array(prof)
+    k = int(np.argmax(prof))
+    return float(ts[k]) if prof[k] > 2.5 * np.median(prof) else None
 
 
 def straight_or_traced(prof, spread_max=1.25):
@@ -326,6 +378,36 @@ def _circle_fit(pts):
     return cx, cy, float(np.sqrt(max(c + cx * cx + cy * cy, 0.0)))
 
 
+def _bore_hull(holes, frame_px):
+    import cv2
+    big = [np.asarray(h, float) for h in holes if len(h) >= 8]
+    if not big:
+        return None
+    cx, cy = np.vstack(big).mean(0)
+    near = [h for h in big if np.linalg.norm(h.mean(0) - (cx, cy)) < 0.35 * frame_px]
+    pts = np.vstack(near if near else big).astype(np.float32)
+    return cv2.convexHull(pts).reshape(-1, 2)
+
+
+def _bore_radial(gray, mask, cx, cy, frame_px, n_dirs=360):
+    from scipy import ndimage
+    plate = gray[mask] if mask.any() else gray
+    dark = gray < (np.quantile(plate, 0.15) + np.quantile(plate, 0.85)) / 2
+    r = np.arange(0.05 * frame_px, 0.5 * frame_px, 1.0)
+    radii = []
+    for a in np.linspace(0, 2 * np.pi, n_dirs, endpoint=False):
+        xs, ys = cx + r * np.cos(a), cy + r * np.sin(a)
+        ok = (xs >= 0) & (ys >= 0) & (xs < mask.shape[1] - 1) & (ys < mask.shape[0] - 1)
+        if ok.sum() < 10:
+            continue
+        inside = ndimage.map_coordinates(mask.astype(np.uint8), [ys[ok], xs[ok]], order=0) > 0
+        d = ndimage.map_coordinates(dark.astype(np.uint8), [ys[ok], xs[ok]], order=0) > 0
+        hit = np.nonzero(inside & d)[0]
+        if len(hit):
+            radii.append(r[ok][hit[-1]])
+    return float(np.median(radii)) if len(radii) >= n_dirs // 2 else None
+
+
 def fit_fan_guard(face, frame_w_mm=80.0, rec=None):
     import cv2
     from scipy import ndimage
@@ -359,12 +441,13 @@ def fit_fan_guard(face, frame_w_mm=80.0, rec=None):
     else:
         p["corner_r"], ledger["corner_r"] = round(0.05 * frame_w_mm, 2), "default"
 
-    hole = max(sh["holes"], key=len) if sh["holes"] else None
+    hole = _bore_hull(sh["holes"], frame_px) if sh["holes"] else None
     if hole is not None:
         f = fit_ellipse(np.asarray(hole, float))
-        p["bore_d"], ledger["bore_d"] = round(2 * float(f["a"]) * s, 2), "measured"
         img = load(face)
         gray = ndimage.rotate(img.mean(axis=2) if img.ndim == 3 else img.astype(float), -angle, reshape=True, order=1)
+        r_bore = _bore_radial(gray, mask, float(f["cx"]), float(f["cy"]), frame_px)
+        p["bore_d"], ledger["bore_d"] = round(2 * (r_bore if r_bore else float(f["a"])) * s, 2), "measured" if r_bore else "measured (hole hull)"
         n = count_rings(gray, float(f["cx"]), float(f["cy"]), float(f["a"]))
         g = (rec or {}).get("grille") or {}
         p["rings"], ledger["rings"] = (n, "measured") if n >= 2 else (int(g.get("rings", 4)), "default")
