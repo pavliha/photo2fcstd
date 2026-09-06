@@ -29,7 +29,7 @@ def one(part):
             from photo2fcstd import facepose
             raw = max((design.verify(out, photos, {"face_photo_index": i})["silhouette_iou"] or 0.0) for i in range(len(photos)))
             if raw < facepose.RAW_VERIFY_MAX:
-                spec2, tilt = facepose.maybe_rectify(photos, spec, name=part)
+                spec2, tilt = design._rectifier().maybe_rectify(photos, spec, name=part)
                 if tilt.get("applied"):
                     spec = spec2; json.dump(spec, open(sp, "w")); r = cli.freecad_build(sp, out)
         sc = SS.score_one(spec, IDEAL[part])
