@@ -501,3 +501,11 @@ cross-view consistency) beats the photo overall. The rule that holds: **rectify 
 says the best view is tilted > 20 deg**; here that fires only on 00701, taking the 12-part mean
 0.958 -> 0.970 with no losses. That is the honest, deployable form of T1: a pose from three
 photos, not a learned head.
+
+**Deployed (2026-09-06):** `photo2fcstd/facepose.py` runs VGGT locally (MPS, 5 s for three
+photos; pins untouched) and `design()`'s assemble tier calls `facepose.maybe_rectify`: when the
+chosen view's tilt exceeds 20 deg, the outline is traced from the most self-consistent rectified
+view and verify compares against that rectified mask. Bench 00701 end to end through the app:
+tilt 35 deg detected, **region IoU 0.976 (was 0.810), F1 1.000, solid IoU 0.985 (was 0.817)** -
+the bench target is met by the shipped path, not a one-off script. 150-part re-bench with the
+rule on is running; acceptance is no loss on the untilted parts.

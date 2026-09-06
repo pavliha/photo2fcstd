@@ -20,19 +20,29 @@ def one(part):
     out = os.path.join(d, part + ".FCStd")
     try:
         spec, _ = recognise.route(photos, name=part, rec=rec)
+        tilt = {"applied": False}
+        if os.environ.get("P2F_FACEPOSE", "1") == "1":
+            from photo2fcstd import facepose
+            spec, tilt = facepose.maybe_rectify(photos, spec, name=part)
         sp = os.path.join(d, part + ".spec.json")
         json.dump(spec, open(sp, "w"))
         r = cli.freecad_build(sp, out)
-        f1 = float((SS.score_one(spec, IDEAL[part]).get("primitive_f1") or {}).get("f1", 0.0))
+        sc = SS.score_one(spec, IDEAL[part])
+        f1 = float((sc.get("primitive_f1") or {}).get("f1", 0.0)); region = float(sc["region_iou"])
         ious = []
         if r["valid"]:
-            for i in range(len(photos)):
-                v = design.verify(out, photos, {"face_photo_index": i})
+            if tilt.get("applied"):
+                v = design.verify(out, photos, {"face_photo_index": 0}, mask=tilt["mask"])
                 ious.append(v["silhouette_iou"] if v["silhouette_iou"] is not None else 0.0)
+            else:
+                for i in range(len(photos)):
+                    v = design.verify(out, photos, {"face_photo_index": i})
+                    ious.append(v["silhouette_iou"] if v["silhouette_iou"] is not None else 0.0)
         iou = max(ious) if ious else None
         refused = (not r["valid"]) or iou is None or iou < THRESHOLD
-        return {"part": part, "mode": spec.get("mode"), "valid": bool(r["valid"]), "f1": f1,
-                "iou": iou, "refused": bool(refused)}
+        return {"part": part, "mode": spec.get("mode"), "valid": bool(r["valid"]), "f1": f1, "region_iou": region,
+                "iou": iou, "refused": bool(refused), "rectified": bool(tilt.get("applied")),
+                "tilt": float(tilt["tilt"]) if tilt.get("applied") else None}
     except Exception as e:
         return {"part": part, "error": str(e)[:200]}
 
@@ -44,7 +54,7 @@ def main(n=150, seed=0):
     parts = [parts[i] for i in rng.choice(len(parts), min(n, len(parts)), replace=False)]
     with Pool(6) as pool:
         rows = pool.map(one, parts)
-    out = os.path.join(ROOT, "runs", "gate_bench.json")
+    out = os.path.join(ROOT, "runs", os.environ.get("GATE_BENCH_OUT", "gate_bench.json"))
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(rows, open(out, "w"), indent=1)
     ok = [r for r in rows if "error" not in r]
@@ -58,6 +68,8 @@ def main(n=150, seed=0):
     if len(with_iou) > 5:
         from scipy.stats import spearmanr
         rho = float(spearmanr([r["iou"] for r in with_iou], [r["f1"] for r in with_iou]).correlation)
+    rect = [r for r in ok if r.get("rectified")]
+    print("RECTIFIED %d parts; mean region IoU all %.3f" % (len(rect), float(np.mean([r["region_iou"] for r in ok])) if ok else -1))
     print("GATEBENCH n=%d errors=%d valid=%d accepted=%d refused=%d | F1 accepted %.3f refused %.3f | "
           "good(F1>=0.6)=%d false_refused=%d (%.1f%%) | spearman(iou,f1)=%s"
           % (len(rows), len(rows) - len(ok), len(valid), len(acc), len(ref),

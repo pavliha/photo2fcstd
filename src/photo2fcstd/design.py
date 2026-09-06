@@ -52,7 +52,12 @@ def design(photos, out, rec=None, **kw):
         res = _build(recognise.revolve_spec(photos, rec, name=_stem(out)), out, "revolve", cls)
     elif rec.get("single_extrusion"):
         spec, _ = recognise.route(photos, name=_stem(out), rec=rec)
-        res = _build(spec, out, "assemble", cls)
+        if os.environ.get("P2F_FACEPOSE", "1") == "1":
+            from photo2fcstd import facepose
+            spec, tilt_info = facepose.maybe_rectify(photos, spec, name=_stem(out))
+        else:
+            tilt_info = {"applied": False, "reason": "disabled"}
+        res = {**_build(spec, out, "assemble", cls), "tilt": tilt_info}
     else:
         return _refuse(out, "no template for this part and it is not a revolve or a flat extrusion",
                        ["add a template for this class, or shoot a slow low 16-view orbit for the carve path"])
@@ -63,7 +68,10 @@ def design(photos, out, rec=None, **kw):
             return _refuse(out, "solid contains only %.0f%% of the measured cloud" % (100 * res["contain_fraction"]),
                            ["shoot a slower, lower orbit"])
         return {**res, "verify": {"contain_fraction": res["contain_fraction"], "confidence": "ok"}}
-    v = verify(out, photos, rec, threshold=THRESHOLD[res["tier"]])
+    tilt = res.get("tilt", {})
+    v = verify(out, photos, rec, threshold=THRESHOLD[res["tier"]], mask=tilt.get("mask") if tilt.get("applied") else None)
+    if "tilt" in res:
+        res["tilt"] = {k: val for k, val in tilt.items() if k != "mask"}
     if v["confidence"] != "ok":
         return _refuse(out, "silhouette does not match the photo (IoU %s < %s)"
                        % (v["silhouette_iou"], THRESHOLD[res["tier"]]), v["advice"])
@@ -88,17 +96,20 @@ def _stem(out):
     return os.path.splitext(os.path.basename(out))[0]
 
 
-def verify(out, photos, rec, threshold=None):
+def verify(out, photos, rec, threshold=None, mask=None):
     import numpy as np
     from photo2fcstd.trace import segment_photo, upright_mask
     from photo2fcstd import trace
-    face = photos[int(rec.get("face_photo_index", 0))]
-    was = trace.RECOVER_DARK
-    trace.RECOVER_DARK = False          # gross outline only; verify must not inherit build state
-    try:
-        mask, _ = upright_mask(segment_photo(face))
-    finally:
-        trace.RECOVER_DARK = was
+    if mask is None:
+        face = photos[int(rec.get("face_photo_index", 0))]
+        was = trace.RECOVER_DARK
+        trace.RECOVER_DARK = False          # gross outline only; verify must not inherit build state
+        try:
+            mask, _ = upright_mask(segment_photo(face))
+        finally:
+            trace.RECOVER_DARK = was
+    else:
+        mask, _ = upright_mask(mask)
     model = _model_silhouette(out)
     advice = []
     iou = None
