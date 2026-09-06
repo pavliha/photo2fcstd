@@ -804,3 +804,17 @@ Length |log ratio| median 0.349 -> 0.259, parts more than 2x off 16 -> 8. Solid 
 revolve parts (local, 2 workers): 3D IoU 0.579 -> 0.655, >= 0.8 13 -> 15, 12 wins / 2 losses.
 Still wrong: very thin discs with no visible edge (guess), one disc read as a rod (01589), rods whose
 only side view is foreshortened (00135, 00139, 01005), the thin cup 00945.
+
+Merged solid headline after the revolve fixes (`runs/solid_bench_merged.json`): built 134 of 150,
+3D IoU mean 0.581, median 0.620, >= 0.8 on 24 parts (16%), < 0.3 on 22.
+
+The silhouette gate cannot see the third dimension: within each mode the gate IoU and the 3D IoU
+are uncorrelated (Spearman -0.05 plan, 0.37 profile, -0.12 revolve), and no threshold between 0.6
+and 0.85 removes the < 0.3 builds without removing the >= 0.8 ones. Refusals are mostly justified
+(3 of 17 had a right sketch). A global scale on the learned plan depth (bias +0.24 in log) made the
+median worse (0.27 -> 0.37): its errors are asymmetric, so no constant fixes them; reverted. The
+seven "edge-on" parts carry depth as bar length by design and score 0.06-1.0 in 3D.
+
+`tests/test_regression_solid.py` locks the 3D IoU of eleven parts (`data/regression/solid_parts.json`,
+rods, tubes, a washer, a cup, three plates, two profiles): any part more than 0.05 below its golden
+fails.

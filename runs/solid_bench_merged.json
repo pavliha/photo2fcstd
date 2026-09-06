@@ -1,0 +1,1406 @@
+[
+ {
+  "part": "00005",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8333,
+  "region": 0.9295,
+  "f1": 1.0,
+  "verify": 0.967,
+  "note": "length from the side view 00005_2.jpg (4.04 x diameter)"
+ },
+ {
+  "part": "00008",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.6084,
+  "region": 0.9506,
+  "f1": 1.0,
+  "verify": 0.961,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "00011",
+  "refused": "no template for this part and it is not a revolve or a flat extrusion"
+ },
+ {
+  "part": "00027",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.4875,
+  "region": 0.0802,
+  "f1": 0.6667,
+  "verify": 0.707,
+  "note": ""
+ },
+ {
+  "part": "00039",
+  "refused": "build produced no valid solid"
+ },
+ {
+  "part": "00048",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5497,
+  "region": 0.5521,
+  "f1": 0.0,
+  "verify": 0.872,
+  "note": ""
+ },
+ {
+  "part": "00060",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6635,
+  "region": 0.7905,
+  "f1": 0.0513,
+  "verify": 0.925,
+  "note": ""
+ },
+ {
+  "part": "00069",
+  "tier": "assemble",
+  "mode": "revolve",
+  "iou3d": 0.1891,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.967,
+  "note": ""
+ },
+ {
+  "part": "00089",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.5498,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.956,
+  "note": "disc seen edge-on in 00089_3.jpg: thickness 0.13 x diameter"
+ },
+ {
+  "part": "00096",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5988,
+  "region": 0.6161,
+  "f1": 0.1481,
+  "verify": 0.69,
+  "note": ""
+ },
+ {
+  "part": "00098",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3009,
+  "region": 0.746,
+  "f1": 0.8163,
+  "verify": 0.961,
+  "note": ""
+ },
+ {
+  "part": "00112",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9317,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.974,
+  "note": "length from the side view 00112_3.jpg (3.65 x diameter)"
+ },
+ {
+  "part": "00131",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5312,
+  "region": 0.7943,
+  "f1": 1.0,
+  "verify": 0.983,
+  "note": ""
+ },
+ {
+  "part": "00135",
+  "refused": "silhouette does not match the photo (IoU 0.797 < 0.8)"
+ },
+ {
+  "part": "00139",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8652,
+  "region": 0.9911,
+  "f1": 1.0,
+  "verify": 0.97,
+  "note": "length from the side view 00139_1.jpg (6.93 x diameter)"
+ },
+ {
+  "part": "00149",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.4677,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.954,
+  "note": "standing part seen from 45 deg above in 00149_3.jpg: length "
+ },
+ {
+  "part": "00160",
+  "refused": "no template for this part and it is not a revolve or a flat extrusion"
+ },
+ {
+  "part": "00174",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.2098,
+  "region": 0.1864,
+  "f1": 0.4646,
+  "verify": 0.661,
+  "note": ""
+ },
+ {
+  "part": "00208",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.2363,
+  "region": 0.1874,
+  "f1": 0.6667,
+  "verify": 0.962,
+  "note": "length from the side view 00208_2.jpg (3.18 x diameter)"
+ },
+ {
+  "part": "00224",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.619,
+  "region": 0.3859,
+  "f1": 0.2162,
+  "verify": 0.926,
+  "note": ""
+ },
+ {
+  "part": "00245",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3333,
+  "region": 0.9994,
+  "f1": 1.0,
+  "verify": 0.971,
+  "note": ""
+ },
+ {
+  "part": "00280",
+  "tier": "assemble",
+  "mode": "revolve",
+  "iou3d": 0.1201,
+  "region": 0.933,
+  "f1": 1.0,
+  "verify": 0.967,
+  "note": ""
+ },
+ {
+  "part": "00297",
+  "refused": "silhouette does not match the photo (IoU 0.509 < 0.6)"
+ },
+ {
+  "part": "00307",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.2571,
+  "region": 0.418,
+  "f1": 0.9091,
+  "verify": 0.732,
+  "note": ""
+ },
+ {
+  "part": "00377",
+  "tier": "assemble",
+  "mode": "revolve",
+  "iou3d": 0.0669,
+  "region": 0.7573,
+  "f1": 0.04,
+  "verify": 0.971,
+  "note": ""
+ },
+ {
+  "part": "00384",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.7953,
+  "region": 0.3945,
+  "f1": 0.1667,
+  "verify": 0.858,
+  "note": ""
+ },
+ {
+  "part": "00386",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.8033,
+  "region": 0.9581,
+  "f1": 0.9091,
+  "verify": 0.937,
+  "note": ""
+ },
+ {
+  "part": "00432",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5736,
+  "region": 0.6214,
+  "f1": 0.9,
+  "verify": 0.744,
+  "note": ""
+ },
+ {
+  "part": "00447",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.4502,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.859,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "00455",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.1636,
+  "region": 0.1341,
+  "f1": 1.0,
+  "verify": 0.846,
+  "note": ""
+ },
+ {
+  "part": "00460",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3933,
+  "region": 0.3055,
+  "f1": 0.3333,
+  "verify": 0.866,
+  "note": ""
+ },
+ {
+  "part": "00471",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 1.0,
+  "region": 0.9167,
+  "f1": 1.0,
+  "verify": 0.952,
+  "note": ""
+ },
+ {
+  "part": "00478",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.7703,
+  "region": 0.8389,
+  "f1": 0.6667,
+  "verify": 0.891,
+  "note": ""
+ },
+ {
+  "part": "00500",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.2286,
+  "region": 0.0218,
+  "f1": 0.8571,
+  "verify": 0.832,
+  "note": ""
+ },
+ {
+  "part": "00538",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.4722,
+  "region": 0.8641,
+  "f1": 1.0,
+  "verify": 0.949,
+  "note": ""
+ },
+ {
+  "part": "00541",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.1013,
+  "region": 0.0626,
+  "f1": 1.0,
+  "verify": 0.853,
+  "note": ""
+ },
+ {
+  "part": "00579",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6211,
+  "region": 0.4061,
+  "f1": 0.4571,
+  "verify": 0.907,
+  "note": ""
+ },
+ {
+  "part": "00595",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.2842,
+  "region": 0.473,
+  "f1": 1.0,
+  "verify": 0.837,
+  "note": ""
+ },
+ {
+  "part": "00608",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5027,
+  "region": 0.8191,
+  "f1": 1.0,
+  "verify": 0.899,
+  "note": ""
+ },
+ {
+  "part": "00610",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3765,
+  "region": 0.1606,
+  "f1": 1.0,
+  "verify": 0.963,
+  "note": ""
+ },
+ {
+  "part": "00626",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.4294,
+  "region": 0.3329,
+  "f1": 1.0,
+  "verify": 0.86,
+  "note": ""
+ },
+ {
+  "part": "00643",
+  "refused": "no template for this part and it is not a revolve or a flat extrusion"
+ },
+ {
+  "part": "00653",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.8889,
+  "region": 0.7282,
+  "f1": 0.8889,
+  "verify": 0.894,
+  "note": ""
+ },
+ {
+  "part": "00677",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.728,
+  "region": 0.6905,
+  "f1": 0.9825,
+  "verify": 0.957,
+  "note": ""
+ },
+ {
+  "part": "00697",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6923,
+  "region": 0.6798,
+  "f1": 1.0,
+  "verify": 0.852,
+  "note": ""
+ },
+ {
+  "part": "00698",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.585,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.971,
+  "note": "length from the side view 00698_1.jpg (1.38 x diameter)"
+ },
+ {
+  "part": "00701",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.8167,
+  "region": 0.8099,
+  "f1": 1.0,
+  "verify": 0.79,
+  "note": ""
+ },
+ {
+  "part": "00718",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.195,
+  "region": 0.6761,
+  "f1": 1.0,
+  "verify": 0.98,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "00721",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7336,
+  "region": 0.9098,
+  "f1": 1.0,
+  "verify": 0.847,
+  "note": ""
+ },
+ {
+  "part": "00724",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7235,
+  "region": 0.2907,
+  "f1": 0.4,
+  "verify": 0.831,
+  "note": ""
+ },
+ {
+  "part": "00725",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6545,
+  "region": 0.6914,
+  "f1": 0.0,
+  "verify": 0.939,
+  "note": ""
+ },
+ {
+  "part": "00747",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.9184,
+  "region": 0.7101,
+  "f1": 0.8,
+  "verify": 0.913,
+  "note": ""
+ },
+ {
+  "part": "00766",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.7583,
+  "region": 0.8199,
+  "f1": 1.0,
+  "verify": 0.849,
+  "note": ""
+ },
+ {
+  "part": "00773",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6842,
+  "region": 0.9922,
+  "f1": 1.0,
+  "verify": 0.802,
+  "note": ""
+ },
+ {
+  "part": "00794",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7029,
+  "region": 0.8463,
+  "f1": 0.1481,
+  "verify": 0.803,
+  "note": ""
+ },
+ {
+  "part": "00798",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.1493,
+  "region": 0.2141,
+  "f1": 0.75,
+  "verify": 0.922,
+  "note": ""
+ },
+ {
+  "part": "00825",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.6942,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.879,
+  "note": "standing part seen from 52 deg above in 00825_1.jpg: length "
+ },
+ {
+  "part": "00838",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6567,
+  "region": 0.7076,
+  "f1": 0.88,
+  "verify": 0.956,
+  "note": ""
+ },
+ {
+  "part": "00863",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.4331,
+  "region": 0.4305,
+  "f1": 0.4,
+  "verify": 0.938,
+  "note": ""
+ },
+ {
+  "part": "00873",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7481,
+  "region": 0.9778,
+  "f1": 0.96,
+  "verify": 0.938,
+  "note": ""
+ },
+ {
+  "part": "00876",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.291,
+  "region": 0.2729,
+  "f1": 1.0,
+  "verify": 0.963,
+  "note": "length from the side view 00876_3.jpg (1.45 x diameter)"
+ },
+ {
+  "part": "00882",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 1.0,
+  "region": 0.9907,
+  "f1": 1.0,
+  "verify": 0.886,
+  "note": "length from the side view 00882_1.jpg (22.37 x diameter)"
+ },
+ {
+  "part": "00884",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.9449,
+  "region": 0.9451,
+  "f1": 1.0,
+  "verify": 0.944,
+  "note": ""
+ },
+ {
+  "part": "00907",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.6624,
+  "region": 0.5557,
+  "f1": 0.6897,
+  "verify": 0.619,
+  "note": ""
+ },
+ {
+  "part": "00943",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.0604,
+  "region": 0.1022,
+  "f1": 0.0,
+  "verify": 0.761,
+  "note": ""
+ },
+ {
+  "part": "00944",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.5421,
+  "region": 0.4227,
+  "f1": 0.6897,
+  "verify": 0.912,
+  "note": ""
+ },
+ {
+  "part": "00945",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.0676,
+  "region": 0.0767,
+  "f1": 0.6667,
+  "verify": 0.883,
+  "note": "length from the side view 00945_2.jpg (1.25 x diameter)"
+ },
+ {
+  "part": "00958",
+  "refused": "no template for this part and it is not a revolve or a flat extrusion"
+ },
+ {
+  "part": "00968",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5888,
+  "region": 0.9827,
+  "f1": 1.0,
+  "verify": 0.95,
+  "note": ""
+ },
+ {
+  "part": "00972",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.2009,
+  "region": 0.2429,
+  "f1": 0.3077,
+  "verify": 0.929,
+  "note": ""
+ },
+ {
+  "part": "00982",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5874,
+  "region": 0.3576,
+  "f1": 0.3529,
+  "verify": 0.877,
+  "note": ""
+ },
+ {
+  "part": "00992",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7075,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.972,
+  "note": "disc seen edge-on in 00992_2.jpg: thickness 0.08 x diameter"
+ },
+ {
+  "part": "01005",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.3898,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.956,
+  "note": "length from the side view 01005_1.jpg (4.36 x diameter)"
+ },
+ {
+  "part": "01055",
+  "refused": "no template for this part and it is not a revolve or a flat extrusion"
+ },
+ {
+  "part": "01071",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.5186,
+  "region": 0.6621,
+  "f1": 1.0,
+  "verify": 0.941,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "01072",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8578,
+  "region": 0.9907,
+  "f1": 0.0,
+  "verify": 0.96,
+  "note": "length from the side view 01072_1.jpg (4.39 x diameter)"
+ },
+ {
+  "part": "01089",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7268,
+  "region": 0.7772,
+  "f1": 0.6364,
+  "verify": 0.77,
+  "note": ""
+ },
+ {
+  "part": "01099",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6737,
+  "region": 0.2481,
+  "f1": 0.0,
+  "verify": 0.735,
+  "note": ""
+ },
+ {
+  "part": "01100",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9204,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.871,
+  "note": "length from the side view 01100_1.jpg (1.18 x diameter)"
+ },
+ {
+  "part": "01107",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.7933,
+  "region": 0.7849,
+  "f1": 0.8889,
+  "verify": 0.903,
+  "note": ""
+ },
+ {
+  "part": "01109",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.7963,
+  "region": 0.7648,
+  "f1": 0.6667,
+  "verify": 0.824,
+  "note": ""
+ },
+ {
+  "part": "01115",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3566,
+  "region": 0.4402,
+  "f1": 0.8,
+  "verify": 0.926,
+  "note": ""
+ },
+ {
+  "part": "01124",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6918,
+  "region": 0.6482,
+  "f1": 1.0,
+  "verify": 0.804,
+  "note": ""
+ },
+ {
+  "part": "01134",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7528,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.955,
+  "note": "length from the side view 01134_3.jpg (2.55 x diameter)"
+ },
+ {
+  "part": "01163",
+  "refused": "build produced no valid solid"
+ },
+ {
+  "part": "01179",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7289,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.91,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "01181",
+  "refused": "silhouette does not match the photo (IoU 0.418 < 0.6)"
+ },
+ {
+  "part": "01187",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6706,
+  "region": 0.6146,
+  "f1": 1.0,
+  "verify": 0.911,
+  "note": ""
+ },
+ {
+  "part": "01209",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6252,
+  "region": 0.7249,
+  "f1": 0.75,
+  "verify": 0.89,
+  "note": ""
+ },
+ {
+  "part": "01222",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.353,
+  "region": 0.2647,
+  "f1": 0.7619,
+  "verify": 0.809,
+  "note": ""
+ },
+ {
+  "part": "01252",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.4527,
+  "region": 0.497,
+  "f1": 0.9333,
+  "verify": 0.922,
+  "note": ""
+ },
+ {
+  "part": "01254",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.2117,
+  "region": 0.1995,
+  "f1": 1.0,
+  "verify": 0.891,
+  "note": "length from the side view 01254_1.jpg (1.18 x diameter); sta"
+ },
+ {
+  "part": "01262",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.4925,
+  "region": 0.6814,
+  "f1": 1.0,
+  "verify": 0.918,
+  "note": ""
+ },
+ {
+  "part": "01264",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.307,
+  "region": 0.7742,
+  "f1": 0.175,
+  "verify": 0.886,
+  "note": ""
+ },
+ {
+  "part": "01265",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9866,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.971,
+  "note": "length from the side view 01265_2.jpg (8.02 x diameter)"
+ },
+ {
+  "part": "01279",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.8564,
+  "region": 0.8561,
+  "f1": 0.0,
+  "verify": 0.872,
+  "note": ""
+ },
+ {
+  "part": "01297",
+  "refused": "no template for this part and it is not a revolve or a flat extrusion"
+ },
+ {
+  "part": "01298",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9601,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.974,
+  "note": "length from the side view 01298_3.jpg (6.67 x diameter)"
+ },
+ {
+  "part": "01334",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.36,
+  "region": 0.8105,
+  "f1": 0.0,
+  "verify": 0.825,
+  "note": ""
+ },
+ {
+  "part": "01341",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.793,
+  "region": 0.7958,
+  "f1": 0.6667,
+  "verify": 0.945,
+  "note": ""
+ },
+ {
+  "part": "01345",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.592,
+  "region": 0.7905,
+  "f1": 0.8,
+  "verify": 0.84,
+  "note": ""
+ },
+ {
+  "part": "01362",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9836,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.91,
+  "note": "length from the side view 01362_3.jpg (2.49 x diameter)"
+ },
+ {
+  "part": "01364",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5137,
+  "region": 0.8898,
+  "f1": 1.0,
+  "verify": 0.922,
+  "note": ""
+ },
+ {
+  "part": "01380",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8961,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.961,
+  "note": "length from the side view 01380_3.jpg (7.08 x diameter)"
+ },
+ {
+  "part": "01391",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7291,
+  "region": 0.6695,
+  "f1": 0.8889,
+  "verify": 0.835,
+  "note": ""
+ },
+ {
+  "part": "01426",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7124,
+  "region": 0.9619,
+  "f1": 1.0,
+  "verify": 0.977,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "01448",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7463,
+  "region": 0.8724,
+  "f1": 0.2581,
+  "verify": 0.879,
+  "note": ""
+ },
+ {
+  "part": "01449",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7002,
+  "region": 0.7428,
+  "f1": 0.6667,
+  "verify": 0.979,
+  "note": "length from the side view 01449_2.jpg (2.84 x diameter)"
+ },
+ {
+  "part": "01470",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3333,
+  "region": 0.5711,
+  "f1": 0.75,
+  "verify": 0.884,
+  "note": ""
+ },
+ {
+  "part": "01477",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8845,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.956,
+  "note": "disc seen edge-on in 01477_3.jpg: thickness 0.56 x diameter"
+ },
+ {
+  "part": "01498",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6673,
+  "region": 0.8182,
+  "f1": 1.0,
+  "verify": 0.853,
+  "note": ""
+ },
+ {
+  "part": "01504",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.2703,
+  "region": 0.798,
+  "f1": 0.6667,
+  "verify": 0.931,
+  "note": ""
+ },
+ {
+  "part": "01510",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6309,
+  "region": 0.6781,
+  "f1": 0.6667,
+  "verify": 0.817,
+  "note": ""
+ },
+ {
+  "part": "01512",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.681,
+  "region": 0.8544,
+  "f1": 1.0,
+  "verify": 0.964,
+  "note": "disc seen edge-on in 01512_3.jpg: thickness 0.76 x diameter"
+ },
+ {
+  "part": "01520",
+  "tier": "assemble",
+  "mode": "revolve",
+  "iou3d": 0.7884,
+  "region": 0.8525,
+  "f1": 0.2857,
+  "verify": 0.963,
+  "note": ""
+ },
+ {
+  "part": "01525",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.0215,
+  "region": 0.302,
+  "f1": 0.6667,
+  "verify": 0.954,
+  "note": "length from the side view 01525_2.jpg (11.71 x diameter)"
+ },
+ {
+  "part": "01526",
+  "refused": "silhouette does not match the photo (IoU 0.347 < 0.6)"
+ },
+ {
+  "part": "01540",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5581,
+  "region": 0.899,
+  "f1": 1.0,
+  "verify": 0.96,
+  "note": ""
+ },
+ {
+  "part": "01544",
+  "refused": "build produced no valid solid"
+ },
+ {
+  "part": "01545",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.6,
+  "region": 0.6072,
+  "f1": 1.0,
+  "verify": 0.947,
+  "note": ""
+ },
+ {
+  "part": "01560",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7335,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.925,
+  "note": "disc seen edge-on in 01560_3.jpg: thickness 0.77 x diameter"
+ },
+ {
+  "part": "01584",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3136,
+  "region": 0.838,
+  "f1": 1.0,
+  "verify": 0.941,
+  "note": ""
+ },
+ {
+  "part": "01589",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.1946,
+  "region": 0.5122,
+  "f1": 0.6667,
+  "verify": 0.911,
+  "note": "length from the side view 01589_1.jpg (3.27 x diameter)"
+ },
+ {
+  "part": "01609",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.5055,
+  "region": 0.7441,
+  "f1": 0.1333,
+  "verify": 0.826,
+  "note": ""
+ },
+ {
+  "part": "01630",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7237,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.95,
+  "note": "disc seen edge-on in 01630_3.jpg: thickness 0.56 x diameter"
+ },
+ {
+  "part": "01653",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.5828,
+  "region": 0.3102,
+  "f1": 1.0,
+  "verify": 0.95,
+  "note": ""
+ },
+ {
+  "part": "01657",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.3971,
+  "region": 0.358,
+  "f1": 0.3333,
+  "verify": 0.89,
+  "note": ""
+ },
+ {
+  "part": "01674",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.8919,
+  "region": 0.4893,
+  "f1": 1.0,
+  "verify": 0.968,
+  "note": ""
+ },
+ {
+  "part": "01676",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.6088,
+  "region": 0.599,
+  "f1": 0.8,
+  "verify": 0.9,
+  "note": ""
+ },
+ {
+  "part": "01682",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.794,
+  "region": 0.4312,
+  "f1": 0.4167,
+  "verify": 0.839,
+  "note": ""
+ },
+ {
+  "part": "01715",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7184,
+  "region": 0.6943,
+  "f1": 0.0,
+  "verify": 0.929,
+  "note": ""
+ },
+ {
+  "part": "01719",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.6085,
+  "region": 0.6284,
+  "f1": 1.0,
+  "verify": 0.961,
+  "note": ""
+ },
+ {
+  "part": "01721",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.637,
+  "region": 0.3448,
+  "f1": 0.449,
+  "verify": 0.766,
+  "note": ""
+ },
+ {
+  "part": "01731",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.9275,
+  "region": 0.9225,
+  "f1": 0.6667,
+  "verify": 0.923,
+  "note": ""
+ },
+ {
+  "part": "01741",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.528,
+  "region": 0.507,
+  "f1": 0.0,
+  "verify": 0.913,
+  "note": "length from the side view 01741_2.jpg (1.62 x diameter); sta"
+ },
+ {
+  "part": "01744",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9912,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.953,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "01751",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.6234,
+  "region": 0.4169,
+  "f1": 0.8,
+  "verify": 0.881,
+  "note": ""
+ },
+ {
+  "part": "01761",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.3305,
+  "region": 0.9562,
+  "f1": 0.9091,
+  "verify": 0.975,
+  "note": ""
+ },
+ {
+  "part": "01783",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.331,
+  "region": 0.65,
+  "f1": 1.0,
+  "verify": 0.939,
+  "note": ""
+ },
+ {
+  "part": "01786",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 1.0,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.937,
+  "note": "length from the side view 01786_1.jpg (7.83 x diameter)"
+ },
+ {
+  "part": "01823",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.1478,
+  "region": 0.1555,
+  "f1": 0.5,
+  "verify": 0.802,
+  "note": ""
+ },
+ {
+  "part": "01825",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.811,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.963,
+  "note": "no side view among the photos: thickness set to 0.15 x diame"
+ },
+ {
+  "part": "01838",
+  "refused": "no template for this part and it is not a revolve or a flat extrusion"
+ },
+ {
+  "part": "01858",
+  "tier": "assemble",
+  "mode": "profile",
+  "iou3d": 0.4788,
+  "region": 0.6867,
+  "f1": 0.9,
+  "verify": 0.726,
+  "note": ""
+ },
+ {
+  "part": "01875",
+  "refused": "build produced no valid solid"
+ },
+ {
+  "part": "01884",
+  "tier": "assemble",
+  "mode": "plan",
+  "iou3d": 0.7991,
+  "region": 0.995,
+  "f1": 1.0,
+  "verify": 0.984,
+  "note": ""
+ },
+ {
+  "part": "01894",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.1936,
+  "region": 0.1513,
+  "f1": 0.6667,
+  "verify": 0.985,
+  "note": "standing part seen from 56 deg above in 01894_1.jpg: length "
+ },
+ {
+  "part": "01908",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 1.0,
+  "region": 0.9907,
+  "f1": 1.0,
+  "verify": 0.886,
+  "note": "length from the side view 01908_1.jpg (36.00 x diameter)"
+ },
+ {
+  "part": "01934",
+  "refused": "build produced no valid solid"
+ },
+ {
+  "part": "01947",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.6291,
+  "region": 0.887,
+  "f1": 1.0,
+  "verify": 0.97,
+  "note": "standing part seen from 41 deg above in 01947_1.jpg: length "
+ }
+]
