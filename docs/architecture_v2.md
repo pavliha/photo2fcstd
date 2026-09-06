@@ -538,3 +538,20 @@ agreement > 0.5 -> **+0.034 (n=24, 15 wins / 4 losses)**; tilt in [30,45) +0.038
 window, n=19); face inliers do not separate. Rank correlation of gain with agreement is only
 0.23, so this is a modest, credible gain (~+0.011 over the whole set), not a breakthrough.
 Shipped as the trigger (tilt > 20 deg AND agreement > 0.5), still opt-in via P2F_FACEPOSE=1.
+
+### Acceptance run of the deployed facepose rule (150 parts, `runs/gate_bench_rule.json`)
+
+Rule as shipped: rectify iff chosen-view VGGT tilt >= 30 deg, raw build verify IoU < 0.90, and cross-view agreement of the rectified masks > 0.5 (plan-mode specs only). Paired against `gate_bench_base.json` (same 150 parts, facepose off).
+
+| | baseline | rule |
+|---|---|---|
+| mean region IoU (150) | 0.599 | 0.609 |
+| rectified | 0 | 12 |
+| refused | 9 | 9 |
+| false refusals (F1 >= 0.6) | 4 (4.1%) | 4 (4.1%) |
+| accepted F1 | 0.655 | 0.655 |
+| spearman(verify IoU, F1) | 0.37 | 0.38 |
+
+On the 12 rectified parts: 9 wins, 2 losses (00460 -0.18, 01751 -0.08), 1 tie, mean +0.133. The 137 untouched parts are bit-identical to baseline. Refusals swap one part each way (01391 now refused, 01838 now accepted). Bench 00701 through the app: region IoU 0.976, F1 1.000, gate 0.945, solid IoU 0.985.
+
+Accepted as the default. The agreement gate (added after the paired analysis) cut the firing set from 27 to 12 and removed most of the 4 earlier losses; the two remaining losses are parts whose desk plane RANSAC picked a tilted surface, the next thing to look at if the rule is revisited.
