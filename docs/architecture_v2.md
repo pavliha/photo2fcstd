@@ -706,3 +706,14 @@ lose their bore in silhouette (the floor seen through the bore lies at z = 0, no
 plane); real photos get it from `bore_ratio`'s rim edge, so renders now carry Lambertian shading.
 Second bench run (per-axis) : F1 0.725, region 0.710 under the prism rule; the 0.727 / 0.765 of
 the holes run stands as the shipped number (learned chooser).
+
+## Axis chooser retrained on board hulls (2026-09-07): no gain, old model kept
+
+`tools/axis_data_board.py` labelled 1047 trustworthy parts through the board pipeline (six
+rendered views, hull, three sketches scored); `tools/axis_train_board.py` trains the same
+HistGradientBoosting on the same 12 features, bench parts held out. Train (849, 5-fold): thinnest
+0.614, old 0.676 (81%), new 0.682 (85%), oracle 0.716. Held-out bench (142): thinnest 0.603, old
+0.687, new 0.675, oracle 0.723. The new chooser agrees more often but its mistakes cost more; the
+shipped `data/axis_model.joblib` stays. The 3-4 point gap to the oracle is the STEP author's choice
+of sketch face, not a geometric signal; the face-photo rule (`axis_facing`) is the way to close it
+on real captures. Rows kept in `data/axis_rows_board.json`.
