@@ -487,3 +487,17 @@ boosting 0.797, kNN 0.798, all below the do-nothing baseline. T1 is a measured n
 size; not pursued further. The label factory (`tools/tilt_labels.py`) stays for a larger set.
 The route that needs no learning - poses from VGGT on the part's own three photos, silhouette
 projected onto the recovered face plane - is the next experiment.
+
+**Tilt without learning - VGGT poses from the part's own three photos (2026-09-06).**
+`tools/vggt_face.py` runs VGGT on a part's three dataset photos, fits the desk and the visible
+top face from the masked world points, and warps each photo's dense mask onto the face plane by
+the plane-induced homography (K [R u, R v, R o + t]). Projecting the sparse 3-view points
+themselves is useless (0/12 wins, mean 0.59) - a 3-view cloud is not a silhouette source - but
+the *pose* is: on bench part 00701 the rectified masks score **0.885 / 0.955 / 0.938** against
+0.810 for the best raw photo, i.e. the bench target (>= 0.95) is met with no learning. On the
+other eleven parts, which the photo path already scores 0.87-0.999, rectification matches on
+most and fails on some views (bad warps at 0.0-0.2), and no truth-free selector (min VGGT tilt,
+cross-view consistency) beats the photo overall. The rule that holds: **rectify only when VGGT
+says the best view is tilted > 20 deg**; here that fires only on 00701, taking the 12-part mean
+0.958 -> 0.970 with no losses. That is the honest, deployable form of T1: a pose from three
+photos, not a learned head.
