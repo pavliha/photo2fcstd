@@ -1,0 +1,493 @@
+[
+ {
+  "part": "01520",
+  "mode": "revolve",
+  "region_iou": 0.85248505960756,
+  "f1": 0.28571428571428575,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00039",
+  "mode": "revolve",
+  "region_iou": 0.40988681172135444,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00005",
+  "mode": "revolve",
+  "region_iou": 0.35600277145735365,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00500",
+  "mode": "profile",
+  "region_iou": 0.021769744463080203,
+  "f1": 0.8571428571428571,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00011",
+  "mode": "plan",
+  "region_iou": 0.1820184082577773,
+  "f1": 0.5454545454545455,
+  "region_iou_mv": 0.08582585539085141,
+  "f1_mv": 0.4,
+  "depth_px_mv": 64.50033569335938,
+  "fit_iou": [
+   0.9455271363258362,
+   0.9667715430259705,
+   0.9525850415229797
+  ],
+  "tilts": [
+   57.549980411233044,
+   50.68801150358718,
+   50.90503963147868
+  ],
+  "depth": 0.08227083832025528,
+  "view": 1,
+  "applied": true,
+  "tilt": 50.68801150358718
+ },
+ {
+  "part": "01744",
+  "mode": "revolve",
+  "region_iou": 0.9908009457303347,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01341",
+  "mode": "plan",
+  "region_iou": 0.7958083597923326,
+  "f1": 0.6666666666666666,
+  "region_iou_mv": 0.6499113326089329,
+  "f1_mv": 0.6666666666666666,
+  "depth_px_mv": 112.58042907714844,
+  "fit_iou": [
+   0.9724535346031189,
+   0.9598976373672485,
+   0.9278557300567627
+  ],
+  "tilts": [
+   15.179486882199113,
+   6.54879912170129,
+   0.15450506866003139
+  ],
+  "depth": 0.14359748363494873,
+  "view": 1,
+  "applied": false,
+  "reason": "reference view already square (7 deg)"
+ },
+ {
+  "part": "00297",
+  "mode": "profile",
+  "region_iou": 0.4448177388067222,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01364",
+  "mode": "plan",
+  "region_iou": 0.8897522194433022,
+  "f1": 1.0,
+  "region_iou_mv": 0.9537490220893339,
+  "f1_mv": 1.0,
+  "depth_px_mv": 142.8824462890625,
+  "fit_iou": [
+   0.9451175928115845,
+   0.9683065414428711,
+   0.9724621772766113
+  ],
+  "tilts": [
+   84.92931040063998,
+   43.31413896169219,
+   85.85909778400963
+  ],
+  "depth": 0.18224801123142242,
+  "view": 1,
+  "applied": true,
+  "tilt": 43.31413896169219
+ },
+ {
+  "part": "00907",
+  "mode": "profile",
+  "region_iou": 0.5556687834210575,
+  "f1": 0.6896551724137931,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00224",
+  "mode": "plan",
+  "region_iou": 0.29106541392912705,
+  "f1": 0.21621621621621626,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "00048",
+  "mode": "plan",
+  "region_iou": 0.5521413665085062,
+  "f1": 0.0,
+  "region_iou_mv": 0.5150494872257768,
+  "f1_mv": 0.0,
+  "depth_px_mv": 164.2729034423828,
+  "fit_iou": [
+   0.921554446220398,
+   0.9681771993637085,
+   0.9271096587181091
+  ],
+  "tilts": [
+   5.586020913880774,
+   85.95547506767443,
+   69.93410353660543
+  ],
+  "depth": 0.209531769156456,
+  "view": 0,
+  "applied": false,
+  "reason": "reference view already square (6 deg)"
+ },
+ {
+  "part": "00643",
+  "mode": "plan",
+  "region_iou": 0.6780276864188104,
+  "f1": 0.7272727272727273,
+  "region_iou_mv": 0.7384826018617852,
+  "f1_mv": 0.0,
+  "depth_px_mv": 128.99612426757812,
+  "fit_iou": [
+   0.9283965826034546,
+   0.9445910453796387,
+   0.9400593638420105
+  ],
+  "tilts": [
+   8.552810887966135,
+   40.863208270179655,
+   6.151731151906782
+  ],
+  "depth": 0.16453586518764496,
+  "view": 2,
+  "applied": false,
+  "reason": "reference view already square (6 deg)"
+ },
+ {
+  "part": "01072",
+  "mode": "revolve",
+  "region_iou": 0.9907413358908023,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00478",
+  "mode": "profile",
+  "region_iou": 0.8388932828264158,
+  "f1": 0.6666666666666665,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01653",
+  "mode": "profile",
+  "region_iou": 0.3107681016078515,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01297",
+  "mode": "plan",
+  "region_iou": 0.25231034205393366,
+  "f1": 0.9090909090909091,
+  "region_iou_mv": 0.24248625203039811,
+  "f1_mv": 0.8571428571428571,
+  "depth_px_mv": 149.4730987548828,
+  "fit_iou": [
+   0.910968005657196,
+   0.9110094308853149,
+   0.9727601408958435
+  ],
+  "tilts": [
+   47.529123350213695,
+   65.64757241304429,
+   20.805195446302005
+  ],
+  "depth": 0.190654456615448,
+  "view": 2,
+  "applied": true,
+  "tilt": 20.805195446302005
+ },
+ {
+  "part": "01345",
+  "mode": "plan",
+  "region_iou": 0.7904969663467895,
+  "f1": 0.8,
+  "region_iou_mv": 0.9932910621761659,
+  "f1_mv": 1.0,
+  "depth_px_mv": 119.68790435791016,
+  "fit_iou": [
+   0.9755526781082153,
+   0.979009211063385,
+   0.9615277647972107
+  ],
+  "tilts": [
+   12.634244195299896,
+   49.5260309692985,
+   24.56509901189806
+  ],
+  "depth": 0.15266314148902893,
+  "view": 1,
+  "applied": true,
+  "tilt": 49.5260309692985
+ },
+ {
+  "part": "01786",
+  "mode": "revolve",
+  "region_iou": 0.990817871993074,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01783",
+  "mode": "plan",
+  "region_iou": 0.6500456995860524,
+  "f1": 1.0,
+  "region_iou_mv": 0.9199110380598243,
+  "f1_mv": 0.6666666666666665,
+  "depth_px_mv": 109.50953674316406,
+  "fit_iou": [
+   0.9649595618247986,
+   0.9697732925415039,
+   0.9835058450698853
+  ],
+  "tilts": [
+   39.71776016304911,
+   20.692410157912814,
+   42.98680377739974
+  ],
+  "depth": 0.13968053460121155,
+  "view": 2,
+  "applied": true,
+  "tilt": 42.98680377739974
+ },
+ {
+  "part": "00460",
+  "mode": "plan",
+  "region_iou": 0.1983742589250001,
+  "f1": 0.3333333333333333,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01498",
+  "mode": "plan",
+  "region_iou": 0.8181818181818182,
+  "f1": 1.0,
+  "region_iou_mv": 0.947932011331444,
+  "f1_mv": 1.0,
+  "depth_px_mv": 69.64811706542969,
+  "fit_iou": [
+   0.9892584085464478,
+   0.945797324180603,
+   0.9630293250083923
+  ],
+  "tilts": [
+   49.48507061026048,
+   46.98826802237957,
+   36.02993953087696
+  ],
+  "depth": 0.08883688598871231,
+  "view": 0,
+  "applied": true,
+  "tilt": 49.48507061026048
+ },
+ {
+  "part": "00698",
+  "mode": "revolve",
+  "region_iou": 0.9907947143917917,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00135",
+  "mode": "revolve",
+  "region_iou": 0.9912806072832956,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01163",
+  "mode": "profile",
+  "region_iou": 0.0,
+  "f1": 0.5,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00653",
+  "mode": "plan",
+  "region_iou": 0.49726307512000584,
+  "f1": 0.888888888888889,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01279",
+  "mode": "plan",
+  "region_iou": 0.8560557970622679,
+  "f1": 0.0,
+  "region_iou_mv": 0.8595533827526265,
+  "f1_mv": 0.0,
+  "depth_px_mv": 96.94802856445312,
+  "fit_iou": [
+   0.9105997085571289,
+   0.9615841507911682,
+   0.9573500752449036
+  ],
+  "tilts": [
+   69.41423285499147,
+   45.21790767432098,
+   47.92981481944147
+  ],
+  "depth": 0.1236581951379776,
+  "view": 1,
+  "applied": true,
+  "tilt": 45.21790767432098
+ },
+ {
+  "part": "01908",
+  "mode": "revolve",
+  "region_iou": 0.9907237469957689,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01089",
+  "mode": "plan",
+  "region_iou": 0.7788151548426777,
+  "f1": 0.5555555555555556,
+  "region_iou_mv": 0.6670227146934484,
+  "f1_mv": 0.25,
+  "depth_px_mv": 190.93072509765625,
+  "fit_iou": [
+   0.926591157913208,
+   0.9420197606086731,
+   0.9590089917182922
+  ],
+  "tilts": [
+   45.377728570676545,
+   55.29614314510771,
+   12.898685958916753
+  ],
+  "depth": 0.24353408813476562,
+  "view": 2,
+  "applied": true,
+  "tilt": 12.898685958916753
+ },
+ {
+  "part": "01100",
+  "mode": "revolve",
+  "region_iou": 0.9908059760238069,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01682",
+  "mode": "profile",
+  "region_iou": 0.43123424162907176,
+  "f1": 0.4166666666666667,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00626",
+  "mode": "profile",
+  "region_iou": 0.3329273244011369,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01477",
+  "mode": "revolve",
+  "region_iou": 0.9908009457303343,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00579",
+  "mode": "profile",
+  "region_iou": 0.4061032669476864,
+  "f1": 0.4571428571428572,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01674",
+  "mode": "profile",
+  "region_iou": 0.48930290244328073,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01838",
+  "mode": "plan",
+  "region_iou": 0.5621674789150969,
+  "f1": 0.8,
+  "region_iou_mv": 0.6293625684753341,
+  "f1_mv": 0.7272727272727273,
+  "depth_px_mv": 124.90984344482422,
+  "fit_iou": [
+   0.9362319111824036,
+   0.94728684425354,
+   0.8847746849060059
+  ],
+  "tilts": [
+   65.81244967460748,
+   42.71074488094082,
+   77.40788144111657
+  ],
+  "depth": 0.1593237668275833,
+  "view": 1,
+  "applied": false,
+  "reason": "fit IoU 0.88 < 0.90"
+ },
+ {
+  "part": "01676",
+  "mode": "plan",
+  "region_iou": 0.5989737485232985,
+  "f1": 0.8,
+  "region_iou_mv": 0.5710403998107955,
+  "f1_mv": 0.38095238095238093,
+  "depth_px_mv": 169.23440551757812,
+  "fit_iou": [
+   0.9573129415512085,
+   0.9341093301773071,
+   0.9134930372238159
+  ],
+  "tilts": [
+   28.743823348458278,
+   44.883932547598384,
+   52.5264429247645
+  ],
+  "depth": 0.21586021780967712,
+  "view": 0,
+  "applied": true,
+  "tilt": 28.743823348458278
+ }
+]

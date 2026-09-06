@@ -555,3 +555,24 @@ Rule as shipped: rectify iff chosen-view VGGT tilt >= 30 deg, raw build verify I
 On the 12 rectified parts: 9 wins, 2 losses (00460 -0.18, 01751 -0.08), 1 tie, mean +0.133. The 137 untouched parts are bit-identical to baseline. Refusals swap one part each way (01391 now refused, 01838 now accepted). Bench 00701 through the app: region IoU 0.976, F1 1.000, gate 0.945, solid IoU 0.985.
 
 Accepted as the default. The agreement gate (added after the paired analysis) cut the firing set from 27 to 12 and removed most of the 4 earlier losses; the two remaining losses are parts whose desk plane RANSAC picked a tilted surface, the next thing to look at if the rule is revisited.
+
+## Multi-view render-and-compare fit (2026-09-07): tried, lost, removed
+
+The "learn the discrete, optimise the continuous" step 3: a prism (face polygon P, depth d)
+rendered as a soft SDF silhouette into all three views, poses per view from EXIF focal length,
+fitted jointly by Adam against the three masks (`multiview.py`, H100, 11 s/part). Synthetic
+recovery works (tilts within 2 deg, IoU 0.99) once the reference view is initialised from
+several tilt hypotheses instead of its own contour.
+
+On the 150-part bench, paired against the photo path (`runs/multiview_bench2_*.json`):
+
+| run | fitted parts | photo path | multi-view | wins / losses | best truth-free picker |
+|---|---|---|---|---|---|
+| first | 55 | 0.581 | 0.519 | 11 / 28 | +0.004 |
+| after 4 fixes (filled targets, outline = P, affine + small residual, edge-on skip) | 46 | 0.631 | 0.590 | 11 / 27 | none positive |
+
+Fit IoU is 0.94-0.98 on the losses too: the silhouettes are matched and the face is still
+wrong. Three phone views of a flat face leave its aspect and skew nearly free (planar affine
+ambiguity; perspective at 27 mm equivalent and a fifth of the frame is too weak), and a
+Manhattan prior does not close it. Cases: `runs/results/multiview_cases.png`.
+Code removed in the following commit; it lives in history at the commit that added it.

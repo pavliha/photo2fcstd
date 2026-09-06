@@ -1,0 +1,501 @@
+[
+ {
+  "part": "01504",
+  "mode": "plan",
+  "region_iou": 0.7980255978438467,
+  "f1": 0.6666666666666666,
+  "region_iou_mv": 0.6487665374874234,
+  "f1_mv": 0.6666666666666666,
+  "depth_px_mv": 92.7676010131836,
+  "fit_iou": [
+   0.9703065156936646,
+   0.9859856963157654,
+   0.9880785346031189
+  ],
+  "tilts": [
+   65.498138889818,
+   54.620511363612856,
+   46.29189090812059
+  ],
+  "depth": 0.11832600831985474,
+  "view": 2,
+  "applied": true,
+  "tilt": 46.29189090812059
+ },
+ {
+  "part": "00798",
+  "mode": "plan",
+  "region_iou": 0.21408448547111525,
+  "f1": 0.75,
+  "region_iou_mv": 0.176730565445593,
+  "f1_mv": 0.5,
+  "depth_px_mv": 156.31069946289062,
+  "fit_iou": [
+   0.9411392211914062,
+   0.9305974841117859,
+   0.9766654372215271
+  ],
+  "tilts": [
+   83.78945565136847,
+   87.93619116214316,
+   58.99229842458504
+  ],
+  "depth": 0.19937589764595032,
+  "view": 2,
+  "applied": true,
+  "tilt": 58.99229842458504
+ },
+ {
+  "part": "00386",
+  "mode": "plan",
+  "region_iou": 0.9580547893849186,
+  "f1": 0.9090909090909091,
+  "region_iou_mv": 0.8613164203459186,
+  "f1_mv": 0.8,
+  "depth_px_mv": 167.97137451171875,
+  "fit_iou": [
+   0.9740259647369385,
+   0.9658674001693726,
+   0.9484597444534302
+  ],
+  "tilts": [
+   40.989044639749125,
+   58.72482622850249,
+   54.54956334141423
+  ],
+  "depth": 0.21424920856952667,
+  "view": 2,
+  "applied": true,
+  "tilt": 54.54956334141423
+ },
+ {
+  "part": "01630",
+  "mode": "revolve",
+  "region_iou": 0.9908009457303347,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00541",
+  "mode": "profile",
+  "region_iou": 0.06261606046941683,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01264",
+  "mode": "plan",
+  "region_iou": 0.7741613904984038,
+  "f1": 0.175,
+  "region_iou_mv": 0.42951210887810787,
+  "f1_mv": 0.22222222222222224,
+  "depth_px_mv": 73.81047821044922,
+  "fit_iou": [
+   0.9571555852890015,
+   0.9600614309310913,
+   0.9592729806900024
+  ],
+  "tilts": [
+   54.33696884604081,
+   51.72879669248429,
+   68.13978877162583
+  ],
+  "depth": 0.09414602071046829,
+  "view": 2,
+  "applied": true,
+  "tilt": 68.13978877162583
+ },
+ {
+  "part": "00149",
+  "mode": "revolve",
+  "region_iou": 0.9908009457303346,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00725",
+  "mode": "revolve",
+  "region_iou": 0.6913677037103791,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00972",
+  "mode": "profile",
+  "region_iou": 0.24285459440415105,
+  "f1": 0.3076923076923077,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00773",
+  "mode": "profile",
+  "region_iou": 0.9921991036414568,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01761",
+  "mode": "plan",
+  "region_iou": 0.9561556107833326,
+  "f1": 0.9090909090909091,
+  "region_iou_mv": 0.9656989309871712,
+  "f1_mv": 0.888888888888889,
+  "depth_px_mv": 76.57500457763672,
+  "fit_iou": [
+   0.975642740726471,
+   0.9639233350753784,
+   0.9832999110221863
+  ],
+  "tilts": [
+   18.51460821266581,
+   42.12759630775424,
+   16.80993399270822
+  ],
+  "depth": 0.09767220169305801,
+  "view": 0,
+  "applied": true,
+  "tilt": 18.51460821266581
+ },
+ {
+  "part": "01209",
+  "mode": "plan",
+  "region_iou": 0.724883822540333,
+  "f1": 0.7499999999999999,
+  "region_iou_mv": 0.702001362175536,
+  "f1_mv": 0.33333333333333337,
+  "depth_px_mv": 226.34080505371094,
+  "fit_iou": [
+   0.9519811272621155,
+   0.9701212048530579,
+   0.9707670211791992
+  ],
+  "tilts": [
+   21.236600260806675,
+   12.179581956831681,
+   78.36255013097964
+  ],
+  "depth": 0.28870001435279846,
+  "view": 1,
+  "applied": true,
+  "tilt": 12.179581956831681
+ },
+ {
+  "part": "01584",
+  "mode": "plan",
+  "region_iou": 0.8394768404061382,
+  "f1": 1.0,
+  "region_iou_mv": 0.7538961352268526,
+  "f1_mv": 1.0,
+  "depth_px_mv": 89.13384246826172,
+  "fit_iou": [
+   0.9908084869384766,
+   0.994915246963501,
+   0.9931921362876892
+  ],
+  "tilts": [
+   23.366153307222255,
+   22.883578455705297,
+   17.726797689870384
+  ],
+  "depth": 0.11369112133979797,
+  "view": 1,
+  "applied": true,
+  "tilt": 22.883578455705297
+ },
+ {
+  "part": "01298",
+  "mode": "revolve",
+  "region_iou": 0.990774213848281,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01222",
+  "mode": "profile",
+  "region_iou": 0.2646596150062694,
+  "f1": 0.761904761904762,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01005",
+  "mode": "revolve",
+  "region_iou": 0.990793887397875,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00538",
+  "mode": "profile",
+  "region_iou": 0.8641354071363221,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00958",
+  "mode": "profile",
+  "region_iou": 0.5704366558375462,
+  "f1": 0.8333333333333333,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01715",
+  "mode": "revolve",
+  "region_iou": 0.6943033440659294,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01252",
+  "mode": "plan",
+  "region_iou": 0.49701796470920867,
+  "f1": 0.9333333333333333,
+  "region_iou_mv": 0.42119201272611617,
+  "f1_mv": 0.5,
+  "depth_px_mv": 99.92176055908203,
+  "fit_iou": [
+   0.9052658081054688,
+   0.9435728192329407,
+   0.9424424171447754
+  ],
+  "tilts": [
+   27.64783007968511,
+   39.390486910529255,
+   40.78320736941948
+  ],
+  "depth": 0.12745121121406555,
+  "view": 1,
+  "applied": true,
+  "tilt": 39.390486910529255
+ },
+ {
+  "part": "01187",
+  "mode": "plan",
+  "region_iou": 0.6127999556213016,
+  "f1": 1.0,
+  "region_iou_mv": 0.8942526499999994,
+  "f1_mv": 1.0,
+  "depth_px_mv": 136.88958740234375,
+  "fit_iou": [
+   0.9572322964668274,
+   0.9584550261497498,
+   0.9375264048576355
+  ],
+  "tilts": [
+   50.3365720963898,
+   35.94090914296451,
+   32.71353900423223
+  ],
+  "depth": 0.17460407316684723,
+  "view": 0,
+  "applied": true,
+  "tilt": 50.3365720963898
+ },
+ {
+  "part": "00677",
+  "mode": "profile",
+  "region_iou": 0.692167032567246,
+  "f1": 0.9824561403508771,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00721",
+  "mode": "profile",
+  "region_iou": 0.909842347700381,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01134",
+  "mode": "revolve",
+  "region_iou": 0.9907980357976547,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01589",
+  "mode": "revolve",
+  "region_iou": 0.9908009457303347,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00608",
+  "mode": "plan",
+  "region_iou": 0.8191179743589743,
+  "f1": 1.0,
+  "region_iou_mv": 0.8315115366972482,
+  "f1_mv": 1.0,
+  "depth_px_mv": 169.19068908691406,
+  "fit_iou": [
+   0.9761319756507874,
+   0.9939379692077637,
+   0.8727127909660339
+  ],
+  "tilts": [
+   81.93042490257552,
+   22.027468075047118,
+   84.7593912923548
+  ],
+  "depth": 0.21580445766448975,
+  "view": 1,
+  "applied": false,
+  "reason": "fit IoU 0.87 < 0.90"
+ },
+ {
+  "part": "00610",
+  "mode": "plan",
+  "region_iou": 0.16062778839666889,
+  "f1": 1.0,
+  "region_iou_mv": 0.14525598150161192,
+  "f1_mv": 1.0,
+  "depth_px_mv": 129.98269653320312,
+  "fit_iou": [
+   0.9785553216934204,
+   0.9667282700538635,
+   0.9476782083511353
+  ],
+  "tilts": [
+   15.541570794678492,
+   13.772966057198238,
+   13.46339591158272
+  ],
+  "depth": 0.1657942533493042,
+  "view": 1,
+  "applied": true,
+  "tilt": 13.772966057198238
+ },
+ {
+  "part": "01731",
+  "mode": "profile",
+  "region_iou": 0.9224764737720161,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01884",
+  "mode": "plan",
+  "region_iou": 0.9949932584269666,
+  "f1": 1.0,
+  "region_iou_mv": 0.9658513353094649,
+  "f1_mv": 1.0,
+  "depth_px_mv": 197.26318359375,
+  "fit_iou": [
+   0.9779326319694519,
+   0.986125111579895,
+   0.9460688829421997
+  ],
+  "tilts": [
+   26.598182933698762,
+   3.3770742321325975,
+   87.245847323626
+  ],
+  "depth": 0.25161120295524597,
+  "view": 1,
+  "applied": false,
+  "reason": "reference view already square (3 deg)"
+ },
+ {
+  "part": "00873",
+  "mode": "profile",
+  "region_iou": 0.9777891623062357,
+  "f1": 0.9600000000000001,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "01449",
+  "mode": "revolve",
+  "region_iou": 0.7428265633392664,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00174",
+  "mode": "plan",
+  "region_iou": 0.18644159063990384,
+  "f1": 0.46464646464646464,
+  "region_iou_mv": 0.21532081839247785,
+  "f1_mv": 0.14814814814814814,
+  "depth_px_mv": 167.93104553222656,
+  "fit_iou": [
+   0.9352381229400635,
+   0.9541438817977905,
+   0.9648529887199402
+  ],
+  "tilts": [
+   70.18331079031705,
+   70.6904772620856,
+   19.902718908975455
+  ],
+  "depth": 0.21419775485992432,
+  "view": 2,
+  "applied": true,
+  "tilt": 19.902718908975455
+ },
+ {
+  "part": "01875",
+  "mode": "plan",
+  "region_iou": 0.0,
+  "f1": 0.4,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01525",
+  "mode": "revolve",
+  "region_iou": 0.302001356852348,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01560",
+  "mode": "revolve",
+  "region_iou": 0.9908007688967615,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "01609",
+  "mode": "profile",
+  "region_iou": 0.7441167698937615,
+  "f1": 0.13333333333333333,
+  "applied": false,
+  "reason": "mode profile keeps its own construction"
+ },
+ {
+  "part": "00825",
+  "mode": "revolve",
+  "region_iou": 0.9908009457303341,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ },
+ {
+  "part": "00718",
+  "mode": "revolve",
+  "region_iou": 0.35600185924087685,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "no outline or fewer than 2 photos"
+ }
+]
