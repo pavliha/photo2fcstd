@@ -509,3 +509,12 @@ view and verify compares against that rectified mask. Bench 00701 end to end thr
 tilt 35 deg detected, **region IoU 0.976 (was 0.810), F1 1.000, solid IoU 0.985 (was 0.817)** -
 the bench target is met by the shipped path, not a one-off script. 150-part re-bench with the
 rule on is running; acceptance is no loss on the untilted parts.
+
+**Paired A/B of the >20 deg rule on 150 parts (2026-09-07):** rectification fired on 71 parts.
+Region IoU vs STEP truth on those: base 0.564 -> 0.562 - a wash - with 31 wins and 29 losses of
+more than 0.01. It rescues badly tilted parts (00626 0.33 -> 0.94, 00595 0.47 -> 0.79) and
+damages others when the face-plane fit or warp fails (00873 0.98 -> 0.59, VGGT tilt 80 deg;
+01100 0.88 -> 0.44). By tilt: 20-30 deg -0.023, 30-40 deg +0.022, 40+ deg -0.003; where the
+photo path was weak (< 0.85): +0.021. So the gain exists but is not separable with the signals
+logged (tilt alone); the rule ships opt-in. Next: log the rectified views' cross-agreement and
+face inlier fraction and test truth-free pickers on the same paired set.

@@ -133,4 +133,4 @@ def maybe_rectify(photos, spec, name="part"):
     new["outline"]["depth_note"] = spec["outline"].get("depth_note", "")
     new["outline"]["tilt_note"] = "chosen view tilted %.0f deg; outline traced from view %d rectified by the VGGT face pose" % (tilt, best)
     return new, {"applied": True, "tilt": tilt, "view": best, "tilts": info["tilts_deg"], "agreement": info["agreement"],
-                 "mask": info["rectified"][best]}
+                 "face_inliers": info["face_inliers"], "mask": info["rectified"][best]}

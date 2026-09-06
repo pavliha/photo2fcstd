@@ -42,7 +42,9 @@ def one(part):
         refused = (not r["valid"]) or iou is None or iou < THRESHOLD
         return {"part": part, "mode": spec.get("mode"), "valid": bool(r["valid"]), "f1": f1, "region_iou": region,
                 "iou": iou, "refused": bool(refused), "rectified": bool(tilt.get("applied")),
-                "tilt": float(tilt["tilt"]) if tilt.get("applied") else None}
+                "tilt": float(tilt["tilt"]) if tilt.get("applied") else None,
+                "tilts": tilt.get("tilts"), "agreement": tilt.get("agreement"), "view": tilt.get("view"),
+                "face_inliers": tilt.get("face_inliers")}
     except Exception as e:
         return {"part": part, "error": str(e)[:200]}
 
