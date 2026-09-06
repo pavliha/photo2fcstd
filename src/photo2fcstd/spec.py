@@ -19,7 +19,7 @@ def loop_area(loop):
     return abs(sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))) / 2.0
 
 
-def outline_aspect(loops):
+def outline_extent(loops):
     pts = []
     for loop in loops:
         if loop["type"] == "circle":
@@ -32,11 +32,28 @@ def outline_aspect(loops):
             pts += [q for e in loop["elements"]
                     for q in (e["xy"] if e["type"] == "bsplinecurve" else [e["p0"]])]
     if len(pts) < 3:
-        return 0.0
+        return 0.0, 0.0
     a = [p[0] for p in pts]
     b = [p[1] for p in pts]
-    w, h = max(a) - min(a), max(b) - min(b)
+    return max(a) - min(a), max(b) - min(b)
+
+
+def outline_aspect(loops):
+    w, h = outline_extent(loops)
     return min(w, h) / max(w, h) if max(w, h) else 0.0
+
+
+def cross_section(loops, depth, depth_note, source):
+    w, h = outline_extent(loops)
+    width, length = min(w, h), max(w, h)
+    a, b = width / 2, depth / 2
+    pts = [(-a, -b), (a, -b), (a, b), (-a, b)]
+    loop = {"type": "loop", "kinds": ["H", "V", "H", "V"], "joins": [""] * 4,
+            "elements": [{"type": "line", "p0": list(pts[i]), "p1": list(pts[(i + 1) % 4])} for i in range(4)]}
+    return {"source": source, "loops": [loop], "depth_px": length, "depth_trusted": True,
+            "depth_note": "length of the bar from the silhouette (px units)",
+            "warning": "the photos look at this part edge-on (%.0fx longer than wide), so the sketch is its "
+                       "cross-section: width from the silhouette, thickness %s" % (length / max(width, 1e-6), depth_note)}
 
 
 def traced_outline(view, min_fill=th.MIN_OUTLINE_FILL):
@@ -147,11 +164,9 @@ def assemble(specs, name, mode=None, mm_per_px=None, length_mm=None, thickness_p
         depth, note, depth_trusted = modes.outline_depth(src, others, mode_sel, thickness_px)
         outline_spec = {"source": src["source"], "loops": loops, "depth_px": depth, "depth_note": note,
                         "depth_trusted": depth_trusted}
-        aspect = outline_aspect(loops)
-        if aspect < th.SLIVER_ASPECT:
-            outline_spec["warning"] = ("the outline is %.0fx longer than it is wide, so these photos are "
-                                       "looking at the part edge-on - lay it flat and reshoot to get its "
-                                       "real face" % (1.0 / max(aspect, 1e-6)))
+        if outline_aspect(loops) < th.SLIVER_ASPECT:
+            outline_spec = cross_section(loops, depth, note, src["source"])
+            loops = outline_spec["loops"]
             log("WARNING: %s" % outline_spec["warning"])
         described = ["circle r=%.0f" % l["r"] if l["type"] == "circle"
                      else "ellipse %.0fx%.0f" % (l["a"], l["b"]) if l["type"] == "ellipse"

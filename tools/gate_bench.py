@@ -15,11 +15,12 @@ THRESHOLD = 0.6
 def one(part):
     from photo2fcstd import bench, cli, design, recognise, sketch_score as SS
     photos = bench.photos_of(part)[:3]
-    rec = {"part_class": None, "revolve": False, "single_extrusion": True, "face_photo_index": 0}
     d = tempfile.mkdtemp(prefix="gb_")
     out = os.path.join(d, part + ".FCStd")
     try:
-        spec, _ = recognise.route(photos, name=part, rec=rec)
+        rec = {**recognise._recognise_program_live(photos), "single_extrusion": True}
+        spec = recognise.revolve_spec(photos, rec, name=part) if rec.get("revolve") \
+            else recognise.route(photos, name=part, rec=rec)[0]
         tilt = {"applied": False}
         sp = os.path.join(d, part + ".spec.json")
         json.dump(spec, open(sp, "w"))

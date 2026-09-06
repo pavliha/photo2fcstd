@@ -200,7 +200,16 @@ def revolve_spec(photos, rec, name="part", samples=48):
     return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "px",
             "scale_note": "UNSCALED: set from one caliper reading",
             "views": {}, "outline": None, "stl": None, "measured": [],
-            "revolve": {"generic": True, "profile": prof, "holes": [], "rings": []}}
+            "revolve": {"generic": True, "profile": straight_or_traced(prof), "holes": [], "rings": []}}
+
+
+def straight_or_traced(prof, spread_max=1.25):
+    mid = np.array(prof[1:-1], float)
+    mid = mid[int(0.1 * len(mid)):max(int(0.9 * len(mid)), 1)]
+    if len(mid) < 4 or np.percentile(mid[:, 0], 90) / max(np.percentile(mid[:, 0], 10), 1e-6) > spread_max:
+        return prof
+    r, h = round(float(np.median(mid[:, 0])), 2), prof[-1][1]
+    return [[0.0, 0.0], [r, 0.0], [r, h], [0.0, h]]
 
 
 def _to_jpeg(src, dst):
