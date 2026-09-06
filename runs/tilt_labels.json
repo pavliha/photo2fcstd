@@ -1,0 +1,786 @@
+[
+ {
+  "part": "00595",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00595_2.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.05033933742591025,
+  "foreshorten": 0.6618453756657181,
+  "tilt_deg": 48.55923605921037,
+  "H": [
+   [
+    0.009069767857135869,
+    7.011555221380699e-05,
+    -0.1975807357820107
+   ],
+   [
+    -8.177551052296191e-05,
+    0.011827929494508609,
+    0.9774688532985232
+   ],
+   [
+    -2.045808237807746e-06,
+    0.00024312131988408066,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.655531446589969,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "00595",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00595_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.05033933742591025,
+  "foreshorten": 0.6618453756657181,
+  "tilt_deg": 48.55923605921037,
+  "H": [
+   [
+    0.009069767857135869,
+    7.011555221380699e-05,
+    -0.1975807357820107
+   ],
+   [
+    -8.177551052296191e-05,
+    0.011827929494508609,
+    0.9774688532985232
+   ],
+   [
+    -2.045808237807746e-06,
+    0.00024312131988408066,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.655531446589969,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "00245",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1-250)/00245_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.0038985785953177185,
+  "foreshorten": 0.9680637470663411,
+  "tilt_deg": 14.519185330062411,
+  "H": [
+   [
+    0.033444816053511704,
+    0.0,
+    -10.0
+   ],
+   [
+    0.0,
+    0.032376713948707066,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.9637305699481865,
+  "iou_rectified": 0.9946524064171123
+ },
+ {
+  "part": "00245",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1-250)/00245_2.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.04956086956521739,
+  "foreshorten": 0.5806145716245901,
+  "tilt_deg": 54.50622004980825,
+  "H": [
+   [
+    0.02717391304347826,
+    0.0,
+    -9.972826086956522
+   ],
+   [
+    0.0,
+    0.04680198253971517,
+    -0.6552277555560124
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.5860215053763441,
+  "iou_rectified": 0.9946524064171123
+ },
+ {
+  "part": "00245",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1-250)/00245_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 6.82432432432406e-05,
+  "foreshorten": 0.9994229071480887,
+  "tilt_deg": 1.9466208271690395,
+  "H": [
+   [
+    0.03003003003003003,
+    0.0,
+    -10.0
+   ],
+   [
+    0.0,
+    0.03001269991435703,
+    0.015006349957178516
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.9946524064171123,
+  "iou_rectified": 0.9946524064171123
+ },
+ {
+  "part": "01364",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1301-1500)/01364_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.010279472616632864,
+  "foreshorten": 0.7942458320255732,
+  "tilt_deg": 37.415919488088235,
+  "H": [
+   [
+    0.010141987466908857,
+    0.0,
+    -12.780399680137634
+   ],
+   [
+    0.0,
+    0.012769330423860886,
+    10.98898440047194
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.7974683544303798,
+  "iou_rectified": 0.9850186074620694
+ },
+ {
+  "part": "01364",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1301-1500)/01364_2.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.01654786448880822,
+  "foreshorten": 0.8291897847957485,
+  "tilt_deg": 33.98440094739512,
+  "H": [
+   [
+    0.012447551282810946,
+    -0.004030048104845788,
+    -12.95875308830826
+   ],
+   [
+    0.00022918370309913836,
+    0.01288740159832072,
+    11.023852075778667
+   ],
+   [
+    2.6283401386806846e-06,
+    0.00016780841497661926,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.893715204382387,
+  "iou_rectified": 0.9850186074620694
+ },
+ {
+  "part": "01364",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1301-1500)/01364_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.016258302107728342,
+  "foreshorten": 0.8440417528130071,
+  "tilt_deg": 32.43058748577752,
+  "H": [
+   [
+    0.012054354253559777,
+    -0.00015938569619691593,
+    -12.676928971163886
+   ],
+   [
+    -0.00032964373615652215,
+    0.015183600935709436,
+    11.050964300083125
+   ],
+   [
+    -4.606675765656198e-06,
+    0.00015939906782205863,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.848762750587251,
+  "iou_rectified": 0.9850186074620694
+ },
+ {
+  "part": "00773",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00773_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.0017233415841584332,
+  "foreshorten": 0.9921991257440477,
+  "tilt_deg": 7.161302129876285,
+  "H": [
+   [
+    0.009900990099009903,
+    0.0,
+    -9.89108910891089
+   ],
+   [
+    0.0,
+    0.009823753720238098,
+    8.546665736607144
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.9885057471264368,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "00968",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(801-1000)/00968_2.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.004689754689754688,
+  "foreshorten": 0.9812409812409814,
+  "tilt_deg": 11.115370611776193,
+  "H": [
+   [
+    0.028860028860028863,
+    0.0,
+    -0.014430014430014432
+   ],
+   [
+    0.0,
+    0.029411764705882366,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.9821882951653944,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "01584",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1501-1650)/01584_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.04030897196261682,
+  "foreshorten": 0.834514417169767,
+  "tilt_deg": 33.434690201285804,
+  "H": [
+   [
+    0.03115264797507788,
+    0.0,
+    0.4361370716510903
+   ],
+   [
+    0.0,
+    0.037330269356797036,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.837696335078534,
+  "iou_rectified": 0.9973890339425587
+ },
+ {
+  "part": "01584",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1501-1650)/01584_2.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.03946150289017339,
+  "foreshorten": 0.8379936397913471,
+  "tilt_deg": 33.07114453682322,
+  "H": [
+   [
+    0.028901734104046242,
+    0.0,
+    0.4046242774566474
+   ],
+   [
+    0.0,
+    0.03448920460928859,
+    0.017244602304644294
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.8403141361256544,
+  "iou_rectified": 0.9973890339425587
+ },
+ {
+  "part": "01584",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1501-1650)/01584_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.05880896698615548,
+  "foreshorten": 0.7585640335180807,
+  "tilt_deg": 40.66223072719134,
+  "H": [
+   [
+    0.021299254526091594,
+    0.0,
+    0.37273695420660286
+   ],
+   [
+    0.0,
+    0.0280783870378214,
+    0.0561567740756428
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.7591623036649214,
+  "iou_rectified": 0.9973890339425587
+ },
+ {
+  "part": "01262",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1001-1300)/01262_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.009227681564245804,
+  "foreshorten": 0.8112279994147165,
+  "tilt_deg": 35.78391562830404,
+  "H": [
+   [
+    0.015106666655767532,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.018621973929236497,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.8513513513513513,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "01262",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1001-1300)/01262_2.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.01853745773732119,
+  "foreshorten": 0.6814456978323742,
+  "tilt_deg": 47.043281475504294,
+  "H": [
+   [
+    0.017722905015146263,
+    0.0,
+    -0.026584357522719395
+   ],
+   [
+    0.0,
+    0.02600780234070221,
+    -0.1950585175552666
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.7777777777777778,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "01262",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1001-1300)/01262_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.02100876496191512,
+  "foreshorten": 0.6536851116360035,
+  "tilt_deg": 49.17997680682912,
+  "H": [
+   [
+    0.014226008958346102,
+    0.0,
+    -0.021339013437519157
+   ],
+   [
+    0.0,
+    0.021762785636561477,
+    0.16322089227421108
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.7590361445783133,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "01345",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1301-1500)/01345_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.01126637665198238,
+  "foreshorten": 0.9175010388897311,
+  "tilt_deg": 23.43655754147708,
+  "H": [
+   [
+    0.010104636992177654,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.011013215859030843,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.9380952380952381,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "01345",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1301-1500)/01345_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.0008108470225872688,
+  "foreshorten": 0.9935286359745121,
+  "tilt_deg": 6.521838350656625,
+  "H": [
+   [
+    0.01033381432602086,
+    0.0,
+    0.11367195758622944
+   ],
+   [
+    0.0,
+    0.010266940451745385,
+    -0.9958932238193025
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.9949238578680203,
+  "iou_rectified": 1.0
+ },
+ {
+  "part": "01187",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1001-1300)/01187_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.06504905868479467,
+  "foreshorten": 0.5668938125622557,
+  "tilt_deg": 55.466095350277136,
+  "H": [
+   [
+    0.044345898004434565,
+    -3.0166291261995315e-17,
+    -19.999999999999982
+   ],
+   [
+    -3.3883077136075796e-18,
+    7.662472168274885e-18,
+    -1.3213518069289408e-15
+   ],
+   [
+    -0.0022172949002217256,
+    3.0166291261995316e-18,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.3150510648680679,
+  "iou_rectified": 0.02174033301985949
+ },
+ {
+  "part": "01187",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1001-1300)/01187_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.04834945585664333,
+  "foreshorten": 0.7408165137316757,
+  "tilt_deg": 42.19898346725115,
+  "H": [
+   [
+    0.03496503496503494,
+    -3.282161733405213e-17,
+    -19.99999999999998
+   ],
+   [
+    -2.6715503126521294e-18,
+    8.336945604472964e-18,
+    -1.3286828530783092e-15
+   ],
+   [
+    -0.0017482517482517448,
+    3.2821617334052134e-18,
+    0.9999999999999999
+   ]
+  ],
+  "iou_similarity": 0.4152759797575615,
+  "iou_rectified": 0.02174033301985949
+ },
+ {
+  "part": "00721",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00721_1.jpg",
+  "n_vertices": 6,
+  "match_resid": 0.036625668002671995,
+  "foreshorten": 0.919933845684058,
+  "tilt_deg": 23.083587458220677,
+  "H": [
+   [
+    0.009830538238036424,
+    0.001285141969724778,
+    -0.15182741028509683
+   ],
+   [
+    -0.0004842343839899165,
+    0.009671261034901875,
+    -0.009896367282458926
+   ],
+   [
+    -3.744613364039732e-07,
+    3.79193636830381e-07,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.9116572101588133,
+  "iou_rectified": 0.9504787026182102
+ },
+ {
+  "part": "00608",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00608_1.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.019331699573105654,
+  "foreshorten": 0.831285737913052,
+  "tilt_deg": 33.76895821294781,
+  "H": [
+   [
+    0.012838375668565768,
+    0.0,
+    0.05135350267426307
+   ],
+   [
+    0.0,
+    0.010672358591248671,
+    -0.03201707577374602
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.8333333333333334,
+  "iou_rectified": 0.994475138121547
+ },
+ {
+  "part": "00608",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00608_2.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.02530272238163557,
+  "foreshorten": 0.8191179946752695,
+  "tilt_deg": 35.00340114472303,
+  "H": [
+   [
+    0.01175205157353328,
+    0.0,
+    -0.02350410314706656
+   ],
+   [
+    0.0,
+    0.014347202295552374,
+    0.3299856527977046
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.8823529411764706,
+  "iou_rectified": 0.994475138121547
+ },
+ {
+  "part": "01858",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1651-2000)/01858_1.jpg",
+  "n_vertices": 10,
+  "match_resid": 0.036082194657762925,
+  "foreshorten": 0.9012832443703538,
+  "tilt_deg": 25.672739982823167,
+  "H": [
+   [
+    0.03820791759379249,
+    -0.001512563743464291,
+    1.1658207515180534
+   ],
+   [
+    0.0029373189628596886,
+    0.030563922323001213,
+    1.0358217312075133
+   ],
+   [
+    0.0007365408661571149,
+    7.668823480103882e-05,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.5809473876173976,
+  "iou_rectified": 0.7227281487905945
+ },
+ {
+  "part": "00701",
+  "view": 0,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00701_1.jpg",
+  "n_vertices": 12,
+  "match_resid": 0.016202083333333343,
+  "foreshorten": 0.907844876151803,
+  "tilt_deg": 24.790792104874264,
+  "H": [
+   [
+    0.016832490117354933,
+    -0.00015826553679713912,
+    -0.631860877039247
+   ],
+   [
+    3.8461071613918534e-05,
+    0.01527049986222007,
+    0.4520148349344818
+   ],
+   [
+    2.7122824511973713e-05,
+    3.827182149158513e-05,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.7941044239299844,
+  "iou_rectified": 0.9219354642128036
+ },
+ {
+  "part": "00701",
+  "view": 1,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00701_2.jpg",
+  "n_vertices": 12,
+  "match_resid": 0.027833549136786193,
+  "foreshorten": 0.8330927270195889,
+  "tilt_deg": 33.582240902733425,
+  "H": [
+   [
+    0.019231079412746103,
+    -0.00014586566480840143,
+    -1.2776077220003976
+   ],
+   [
+    2.0013392829867617e-05,
+    0.016034251257806487,
+    -0.1183957055764859
+   ],
+   [
+    -3.802505818408289e-05,
+    -1.8201723908932982e-05,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.7366945183835566,
+  "iou_rectified": 0.9172676947981557
+ },
+ {
+  "part": "00701",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(501-800)/00701_3.jpg",
+  "n_vertices": 12,
+  "match_resid": 0.07340079707236138,
+  "foreshorten": 0.6777002803312007,
+  "tilt_deg": 47.33580483586877,
+  "H": [
+   [
+    0.02012080516187059,
+    -0.0008213389539726247,
+    -1.8963327111436272
+   ],
+   [
+    0.002934697478114724,
+    0.013848992339639602,
+    -0.5295308446659174
+   ],
+   [
+    -0.00024845705811234333,
+    -5.523730068793995e-05,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.3954429977770721,
+  "iou_rectified": 0.9301734273956496
+ },
+ {
+  "part": "01676",
+  "view": 2,
+  "photo": "/Users/pavliha/Code/photo2fcstd/data/printcad/PrintCAD/captured_img/captured_img(1651-2000)/01676_3.jpg",
+  "n_vertices": 4,
+  "match_resid": 0.06842983405483405,
+  "foreshorten": 0.708032708032708,
+  "tilt_deg": 44.92492435782829,
+  "H": [
+   [
+    0.028860028860028863,
+    0.0,
+    -0.014430014430014432
+   ],
+   [
+    0.0,
+    0.040760869565217406,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "iou_similarity": 0.7092391304347826,
+  "iou_rectified": 1.0
+ }
+]

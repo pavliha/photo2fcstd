@@ -462,3 +462,19 @@ have been a guess. Containment with the boss **0.896**. `revolve_template.py` ta
 
 This is the multi-feature-from-measured-3D path working end to end on both objects: LLM for
 class, fused video for numbers, templates for clean output, containment for verify.
+
+
+## Bench part 00701 and the tilt labels (2026-09-06)
+
+The user asked for a dataset part as the bench. 00701 (the "E" plate): from its three photos the
+pipeline finds all 12 lines in every view (F1 1.000) but region IoU is 0.810 / 0.733 / 0.371 and
+solid IoU 0.817 - the gap is tilt. Oracle: matching the 12 vertices to the truth gives the exact
+homography; rectifying by it lifts IoU to **0.923 / 0.930 / 0.937** (affine alone 0.87-0.92), so
+tilt is the whole gap and the tracer/matting ceiling on this part is ~0.93.
+
+That oracle is also a label factory: every part whose trace matches the truth vertex-for-vertex
+yields the photo's homography and camera tilt for free. `tools/tilt_labels.py` over 150 parts:
+28 photos labelled, **median tilt 33.9 deg (p10 9.9, p90 48.7)** - the archive is shot far from
+square - and rectification is worth **+0.132 region IoU (0.775 -> 0.907), >= 0.9 on 89%**. The
+plan's T1 (a DINOv3 tilt head) now has real-photo, own-domain labels; the earlier record's
+"rectification does not help" was measured on renders with side walls, not on these plates.

@@ -1,0 +1,21 @@
+{
+ "part": "00701",
+ "score": {
+  "has_sketch": true,
+  "region_iou": 0.8099441019396609,
+  "trivial": 0.4066738125605945,
+  "difficulty": 0.5933261874394056,
+  "discriminating": true,
+  "missing": 0.1674618144040417,
+  "extra": 0.027895855531496733,
+  "dev_mean": 0.0160602243477687,
+  "dev_p95": 0.04439923664122137,
+  "loops_mine": 1,
+  "loops_ideal": 1,
+  "curve_frac_mine": 0.0,
+  "curve_frac_ideal": 0.0,
+  "prism": true,
+  "trustworthy": true
+ },
+ "f1": 1.0
+}
