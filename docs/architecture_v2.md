@@ -717,3 +717,18 @@ HistGradientBoosting on the same 12 features, bench parts held out. Train (849, 
 shipped `data/axis_model.joblib` stays. The 3-4 point gap to the oracle is the STEP author's choice
 of sketch face, not a geometric signal; the face-photo rule (`axis_facing`) is the way to close it
 on real captures. Rows kept in `data/axis_rows_board.json`.
+
+## Vanishing-point rectification (2026-09-07): third photo-only pose recovery, net zero, removed
+
+Perspective from the part's own edges: LSD segments plus the mask outline's straight edges,
+RANSAC vanishing points, orthogonal pair under the EXIF focal, face normal = the direction most
+aligned with the camera axis, homography rectification, applied only when two views' rectified
+outlines agree (IoU > 0.7) and the tilt is 12-55 deg. `tools/rectifier_bench.py` (FreeCAD-free,
+region IoU vs truth) on the 108 plan-mode bench parts: applied on 20, base 0.627 -> 0.625,
+8 wins / 9 losses; overall 0.593 -> 0.593. Single wins are large (00595 0.47 -> 0.86,
+00626 0.33 -> 0.94) and so are single losses; no gate separates them.
+
+Three independent photo-only pose recoveries (VGGT face pose, joint silhouette fit, vanishing
+points) now give the same result on the dataset: about zero on average. The board path with a
+known pose gives region 0.765 vs 0.651. The pose has to come from capture, not from the pixels.
+`vanish.py` deleted; the bench tool stays for the facepose rectifier.

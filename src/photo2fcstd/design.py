@@ -62,7 +62,7 @@ def design(photos, out, rec=None, **kw):
             from photo2fcstd import facepose
             raw = verify(out, photos, rec)
             if raw["silhouette_iou"] is not None and raw["silhouette_iou"] < facepose.RAW_VERIFY_MAX:
-                spec2, tilt_info = facepose.maybe_rectify(photos, spec, name=_stem(out))
+                spec2, tilt_info = _rectifier().maybe_rectify(photos, spec, name=_stem(out))
                 if tilt_info.get("applied"):
                     res = {**_build(spec2, out, "assemble", cls), "tilt": {**tilt_info, "raw_verify_iou": raw["silhouette_iou"]}}
                 else:
@@ -131,6 +131,11 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
         return _refuse(out, "model does not match the carved hull (IoU %s < %s)" % (v["silhouette_iou"], THRESHOLD["board"]), v["advice"])
     return {**res, "board": {"views": carved["views"], "extents_mm": [round(float(x), 2) for x in carved["extents_mm"]], "top_mm": round(float(carved["top_mm"]), 2),
                              "min_elevation_deg": round(float(carved["min_elevation_deg"]), 1)}, "verify": v}
+
+
+def _rectifier():
+    from photo2fcstd import facepose
+    return facepose
 
 
 def _refuse(out, reason, reshoot):
@@ -236,6 +241,15 @@ def _canon(mask, size=512):
     y0 = (size - r.shape[0]) // 2; x0 = (size - r.shape[1]) // 2
     out[y0:y0 + r.shape[0], x0:x0 + r.shape[1]] = r
     return out
+
+
+def _aligned_iou_masks(a, b):
+    ca = _canon(a); b0 = _canon(b)
+    best = 0.0
+    for bb in (b0, b0[::-1], b0[:, ::-1], np.rot90(b0), np.rot90(b0)[::-1]):
+        bb = _canon(bb)
+        best = max(best, float(np.logical_and(ca, bb).sum() / (np.logical_or(ca, bb).sum() or 1)))
+    return best
 
 
 def _aligned_iou(mask, tris):

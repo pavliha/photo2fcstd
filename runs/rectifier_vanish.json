@@ -1,0 +1,1694 @@
+[
+ {
+  "part": "01504",
+  "mode": "plan",
+  "region_iou": 0.7980255978438467,
+  "f1": 0.6666666666666666,
+  "region_iou_rect": 0.8914485087481215,
+  "f1_rect": 0.6666666666666666,
+  "applied": true,
+  "tilt": 21.34093579886551,
+  "view": 1,
+  "inliers": [
+   17,
+   10
+  ],
+  "lines": 33,
+  "tilts": {
+   "2": 15.3,
+   "1": 21.3
+  },
+  "agreement": [
+   0.95,
+   0.96
+  ],
+  "rectangularity": [
+   0.121,
+   0.169
+  ]
+ },
+ {
+  "part": "01540",
+  "mode": "plan",
+  "region_iou": 0.8989929115231741,
+  "f1": 1.0,
+  "region_iou_rect": 0.8391236615977986,
+  "f1_rect": 0.8,
+  "applied": true,
+  "tilt": 12.67129621842656,
+  "view": 1,
+  "inliers": [
+   14,
+   6
+  ],
+  "lines": 43,
+  "tilts": {
+   "2": 18.4,
+   "1": 12.7
+  },
+  "agreement": [
+   0.97,
+   0.97
+  ],
+  "rectangularity": [
+   -0.029,
+   -0.019
+  ]
+ },
+ {
+  "part": "01520",
+  "mode": "revolve",
+  "region_iou": 0.8524850596075604,
+  "f1": 0.28571428571428575,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00008",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00798",
+  "mode": "plan",
+  "region_iou": 0.21408448547111525,
+  "f1": 0.75,
+  "region_iou_rect": 0.923695951338567,
+  "f1_rect": 0.75,
+  "applied": true,
+  "tilt": 37.427111532917586,
+  "view": 1,
+  "inliers": [
+   15,
+   9
+  ],
+  "lines": 28,
+  "tilts": {
+   "0": 26.9,
+   "1": 37.4
+  },
+  "agreement": [
+   0.77,
+   0.78
+  ],
+  "rectangularity": [
+   0.987,
+   0.988
+  ]
+ },
+ {
+  "part": "00471",
+  "mode": "plan",
+  "region_iou": 0.9166909094372452,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "00039",
+  "mode": "plan",
+  "region_iou": 0.9647150975486991,
+  "f1": 1.0,
+  "region_iou_rect": 0.6824678527365166,
+  "f1_rect": 0.6666666666666666,
+  "applied": true,
+  "tilt": 23.63714610166757,
+  "view": 0,
+  "inliers": [
+   10,
+   8
+  ],
+  "lines": 82,
+  "tilts": {
+   "0": 23.6,
+   "1": 13.8,
+   "2": 21.4
+  },
+  "agreement": [
+   0.8,
+   0.67,
+   0.78
+  ],
+  "rectangularity": [
+   -0.106,
+   -0.018
+  ]
+ },
+ {
+  "part": "00595",
+  "mode": "plan",
+  "region_iou": 0.47296197718631205,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "0: no orthogonal vanishing pair (25 segments); 1: rectification makes the outline less rectangular (0.81 -> 0.71); 2: rectification makes the outline less rectangular (0.81 -> 0.71)"
+ },
+ {
+  "part": "00386",
+  "mode": "plan",
+  "region_iou": 0.9580547893849186,
+  "f1": 0.9090909090909091,
+  "region_iou_rect": 0.9442495417230685,
+  "f1_rect": 0.8,
+  "applied": true,
+  "tilt": 13.269411873716493,
+  "view": 2,
+  "inliers": [
+   15,
+   9
+  ],
+  "lines": 39,
+  "tilts": {
+   "2": 13.3,
+   "0": 31.0,
+   "1": 53.1
+  },
+  "agreement": [
+   0.75,
+   0.75,
+   0.55
+  ],
+  "rectangularity": [
+   0.796,
+   0.796
+  ]
+ },
+ {
+  "part": "00724",
+  "mode": "plan",
+  "region_iou": 0.29065123193975895,
+  "f1": 0.4,
+  "region_iou_rect": 0.3927947001960677,
+  "f1_rect": 0.5454545454545454,
+  "applied": true,
+  "tilt": 14.99917800857195,
+  "view": 2,
+  "inliers": [
+   7,
+   8
+  ],
+  "lines": 52,
+  "tilts": {
+   "0": 20.9,
+   "1": 4.3,
+   "2": 15.0
+  },
+  "agreement": [
+   0.62,
+   0.84,
+   0.84
+  ],
+  "rectangularity": [
+   0.485,
+   0.482
+  ]
+ },
+ {
+  "part": "00005",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00280",
+  "mode": "revolve",
+  "region_iou": 0.9330152517995561,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01630",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00096",
+  "mode": "plan",
+  "region_iou": 0.6161039942053402,
+  "f1": 0.14814814814814814,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.59)",
+  "tilts": {
+   "0": 23.3,
+   "1": 20.5
+  },
+  "agreement": [
+   0.59,
+   0.58
+  ]
+ },
+ {
+  "part": "00500",
+  "mode": "profile",
+  "region_iou": 0.021769744463080203,
+  "f1": 0.8571428571428571,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01470",
+  "mode": "plan",
+  "region_iou": 0.571128536058981,
+  "f1": 0.75,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "00541",
+  "mode": "plan",
+  "region_iou": 0.06261606046941683,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "0": 19.4
+  }
+ },
+ {
+  "part": "01544",
+  "mode": "plan",
+  "region_iou": 0.0,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "00011",
+  "mode": "plan",
+  "region_iou": 0.1820184082577773,
+  "f1": 0.5454545454545455,
+  "region_iou_rect": 0.10557656379099876,
+  "f1_rect": 0.33333333333333337,
+  "applied": true,
+  "tilt": 43.134381436602716,
+  "view": 2,
+  "inliers": [
+   12,
+   8
+  ],
+  "lines": 33,
+  "tilts": {
+   "1": 2.9,
+   "0": 5.3,
+   "2": 43.1
+  },
+  "agreement": [
+   0.58,
+   0.72,
+   0.72
+  ],
+  "rectangularity": [
+   0.478,
+   0.549
+  ]
+ },
+ {
+  "part": "00794",
+  "mode": "plan",
+  "region_iou": 0.846272547875749,
+  "f1": 0.14814814814814814,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.63)",
+  "tilts": {
+   "1": 33.5,
+   "2": 13.0
+  },
+  "agreement": [
+   0.63,
+   0.63
+  ]
+ },
+ {
+  "part": "01264",
+  "mode": "plan",
+  "region_iou": 0.7741613904984038,
+  "f1": 0.175,
+  "region_iou_rect": 0.823870490550574,
+  "f1_rect": 0.4761904761904762,
+  "applied": true,
+  "tilt": 17.088318152190258,
+  "view": 2,
+  "inliers": [
+   9,
+   8
+  ],
+  "lines": 61,
+  "tilts": {
+   "2": 17.1,
+   "0": 17.5,
+   "1": 33.8
+  },
+  "agreement": [
+   0.88,
+   0.87,
+   0.68
+  ],
+  "rectangularity": [
+   0.23,
+   0.262
+  ]
+ },
+ {
+  "part": "00384",
+  "mode": "profile",
+  "region_iou": 0.39454088572472573,
+  "f1": 0.16666666666666666,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01744",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00245",
+  "mode": "plan",
+  "region_iou": 0.9994228571428575,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "view 2 is already square (5 deg)",
+  "tilts": {
+   "2": 5.5,
+   "0": 3.8
+  },
+  "view": 2
+ },
+ {
+  "part": "00149",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01448",
+  "mode": "plan",
+  "region_iou": 0.8723533358188625,
+  "f1": 0.25806451612903225,
+  "region_iou_rect": 0.90573226277405,
+  "f1_rect": 0.2222222222222222,
+  "applied": true,
+  "tilt": 18.978054756387067,
+  "view": 1,
+  "inliers": [
+   8,
+   7
+  ],
+  "lines": 62,
+  "tilts": {
+   "2": 16.5,
+   "1": 19.0
+  },
+  "agreement": [
+   0.85,
+   0.87
+  ],
+  "rectangularity": [
+   0.131,
+   0.167
+  ]
+ },
+ {
+  "part": "01341",
+  "mode": "plan",
+  "region_iou": 0.7958083597923326,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "1: no orthogonal vanishing pair (27 segments); 0: no orthogonal vanishing pair (22 segments); 2: no orthogonal vanishing pair (24 segments)"
+ },
+ {
+  "part": "00838",
+  "mode": "plan",
+  "region_iou": 0.7075918393294991,
+  "f1": 0.8799999999999999,
+  "region_iou_rect": 0.5059332339987862,
+  "f1_rect": 0.5,
+  "applied": true,
+  "tilt": 26.234104039394722,
+  "view": 2,
+  "inliers": [
+   13,
+   14
+  ],
+  "lines": 83,
+  "tilts": {
+   "0": 4.3,
+   "1": 12.5,
+   "2": 26.2
+  },
+  "agreement": [
+   0.8,
+   0.66,
+   0.81
+  ],
+  "rectangularity": [
+   0.44,
+   0.406
+  ]
+ },
+ {
+  "part": "00725",
+  "mode": "plan",
+  "region_iou": 0.6913677037103791,
+  "f1": 0.0,
+  "region_iou_rect": 0.4996653238661393,
+  "f1_rect": 0.0,
+  "applied": true,
+  "tilt": 17.46478729122893,
+  "view": 1,
+  "inliers": [
+   9,
+   7
+  ],
+  "lines": 74,
+  "tilts": {
+   "0": 18.2,
+   "1": 17.5,
+   "2": 20.6
+  },
+  "agreement": [
+   0.93,
+   0.94,
+   0.44
+  ],
+  "rectangularity": [
+   0.199,
+   0.198
+  ]
+ },
+ {
+  "part": "01109",
+  "mode": "profile",
+  "region_iou": 0.7648435628242175,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00297",
+  "mode": "plan",
+  "region_iou": 0.4448177388067222,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 16.5
+  }
+ },
+ {
+  "part": "01362",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00972",
+  "mode": "plan",
+  "region_iou": 0.24285459440415105,
+  "f1": 0.3076923076923077,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 1.4
+  }
+ },
+ {
+  "part": "01741",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01364",
+  "mode": "plan",
+  "region_iou": 0.8897522194433022,
+  "f1": 1.0,
+  "region_iou_rect": 0.9546141832669324,
+  "f1_rect": 1.0,
+  "applied": true,
+  "tilt": 27.2169004391011,
+  "view": 1,
+  "inliers": [
+   23,
+   6
+  ],
+  "lines": 37,
+  "tilts": {
+   "1": 27.2,
+   "0": 27.7
+  },
+  "agreement": [
+   0.92,
+   0.92
+  ],
+  "rectangularity": [
+   -0.112,
+   -0.158
+  ]
+ },
+ {
+  "part": "00060",
+  "mode": "plan",
+  "region_iou": 0.7905445485963424,
+  "f1": 0.05128205128205128,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.63)",
+  "tilts": {
+   "0": 40.9,
+   "1": 12.1
+  },
+  "agreement": [
+   0.63,
+   0.63
+  ]
+ },
+ {
+  "part": "00773",
+  "mode": "plan",
+  "region_iou": 0.9921991036414568,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.16)",
+  "tilts": {
+   "0": 13.6,
+   "1": 32.9
+  },
+  "agreement": [
+   0.16,
+   0.16
+  ]
+ },
+ {
+  "part": "00882",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00907",
+  "mode": "profile",
+  "region_iou": 0.5556687834210575,
+  "f1": 0.6896551724137931,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00944",
+  "mode": "profile",
+  "region_iou": 0.42273793117339026,
+  "f1": 0.6896551724137931,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01761",
+  "mode": "plan",
+  "region_iou": 0.9561556107833326,
+  "f1": 0.9090909090909091,
+  "applied": false,
+  "reason": "view 0 is already square (5 deg)",
+  "tilts": {
+   "0": 5.1,
+   "1": 31.5,
+   "2": 7.0
+  },
+  "view": 0
+ },
+ {
+  "part": "01657",
+  "mode": "profile",
+  "region_iou": 0.35799156204441446,
+  "f1": 0.33333333333333337,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00224",
+  "mode": "plan",
+  "region_iou": 0.3858905435222385,
+  "f1": 0.21621621621621626,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "00069",
+  "mode": "revolve",
+  "region_iou": 0.9908009457303345,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01209",
+  "mode": "plan",
+  "region_iou": 0.724883822540333,
+  "f1": 0.7499999999999999,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 37.6
+  }
+ },
+ {
+  "part": "01107",
+  "mode": "profile",
+  "region_iou": 0.7848550275397776,
+  "f1": 0.888888888888889,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00048",
+  "mode": "plan",
+  "region_iou": 0.6189579470441385,
+  "f1": 0.0,
+  "region_iou_rect": 0.46420173824345323,
+  "f1_rect": 0.0,
+  "applied": true,
+  "tilt": 23.213928176258026,
+  "view": 0,
+  "inliers": [
+   14,
+   11
+  ],
+  "lines": 106,
+  "tilts": {
+   "0": 23.2,
+   "1": 5.5,
+   "2": 16.5
+  },
+  "agreement": [
+   0.85,
+   0.85,
+   0.76
+  ],
+  "rectangularity": [
+   -0.063,
+   -0.111
+  ]
+ },
+ {
+  "part": "00968",
+  "mode": "plan",
+  "region_iou": 0.9812409812409812,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "1": 4.4
+  }
+ },
+ {
+  "part": "01584",
+  "mode": "plan",
+  "region_iou": 0.8379936657764455,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 15.6
+  }
+ },
+ {
+  "part": "01391",
+  "mode": "plan",
+  "region_iou": 0.669463107061214,
+  "f1": 0.888888888888889,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 23.3
+  }
+ },
+ {
+  "part": "00643",
+  "mode": "profile",
+  "region_iou": 0.6780276864188104,
+  "f1": 0.7272727272727273,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01262",
+  "mode": "plan",
+  "region_iou": 0.6814456983240224,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 19.3
+  }
+ },
+ {
+  "part": "01298",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00992",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01072",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00447",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01222",
+  "mode": "profile",
+  "region_iou": 0.2646596150062694,
+  "f1": 0.761904761904762,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00432",
+  "mode": "plan",
+  "region_iou": 0.621356333685749,
+  "f1": 0.9,
+  "region_iou_rect": 0.48720653245874046,
+  "f1_rect": 0.9,
+  "applied": true,
+  "tilt": 26.083442645708097,
+  "view": 2,
+  "inliers": [
+   16,
+   19
+  ],
+  "lines": 57,
+  "tilts": {
+   "1": 28.9,
+   "0": 28.4,
+   "2": 26.1
+  },
+  "agreement": [
+   0.79,
+   0.83,
+   0.85
+  ],
+  "rectangularity": [
+   0.377,
+   0.393
+  ]
+ },
+ {
+  "part": "00478",
+  "mode": "profile",
+  "region_iou": 0.8388932828264158,
+  "f1": 0.6666666666666665,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01721",
+  "mode": "profile",
+  "region_iou": 0.3448480609601502,
+  "f1": 0.44897959183673464,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01005",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01823",
+  "mode": "profile",
+  "region_iou": 0.15553743982535884,
+  "f1": 0.5,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01653",
+  "mode": "plan",
+  "region_iou": 0.3107681016078515,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "0: no orthogonal vanishing pair (21 segments); 1: rectification makes the outline less rectangular (-0.11 -> -0.40); 2: no orthogonal vanishing pair (27 segments)"
+ },
+ {
+  "part": "00307",
+  "mode": "plan",
+  "region_iou": 0.4179510119219274,
+  "f1": 0.9090909090909091,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "1": 20.3
+  }
+ },
+ {
+  "part": "00538",
+  "mode": "plan",
+  "region_iou": 0.8641354071363221,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 13.4
+  }
+ },
+ {
+  "part": "00945",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01297",
+  "mode": "plan",
+  "region_iou": 0.25231034205393366,
+  "f1": 0.9090909090909091,
+  "region_iou_rect": 0.2549257781823881,
+  "f1_rect": 0.9090909090909091,
+  "applied": true,
+  "tilt": 24.65805092028997,
+  "view": 0,
+  "inliers": [
+   23,
+   7
+  ],
+  "lines": 42,
+  "tilts": {
+   "2": 22.1,
+   "0": 24.7,
+   "1": 30.2
+  },
+  "agreement": [
+   0.78,
+   0.79,
+   0.77
+  ],
+  "rectangularity": [
+   0.71,
+   0.733
+  ]
+ },
+ {
+  "part": "01265",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00958",
+  "mode": "profile",
+  "region_iou": 0.5704366558375462,
+  "f1": 0.8333333333333333,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01334",
+  "mode": "plan",
+  "region_iou": 0.8104769205729653,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01345",
+  "mode": "plan",
+  "region_iou": 0.7904969663467895,
+  "f1": 0.8,
+  "region_iou_rect": 0.9087693057851243,
+  "f1_rect": 1.0,
+  "applied": true,
+  "tilt": 13.037545103323746,
+  "view": 0,
+  "inliers": [
+   13,
+   8
+  ],
+  "lines": 45,
+  "tilts": {
+   "0": 13.0,
+   "2": 42.9
+  },
+  "agreement": [
+   0.8,
+   0.79
+  ],
+  "rectangularity": [
+   0.847,
+   0.804
+  ]
+ },
+ {
+  "part": "00131",
+  "mode": "plan",
+  "region_iou": 0.7942926474316968,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "view 1 is already square (6 deg)",
+  "tilts": {
+   "1": 5.7,
+   "0": 1.5,
+   "2": 10.0
+  },
+  "view": 1
+ },
+ {
+  "part": "01715",
+  "mode": "plan",
+  "region_iou": 0.6943033440659293,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.19)",
+  "tilts": {
+   "1": 23.5,
+   "2": 7.9
+  },
+  "agreement": [
+   0.19,
+   0.19
+  ]
+ },
+ {
+  "part": "00089",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01786",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01825",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01252",
+  "mode": "plan",
+  "region_iou": 0.49701796470920867,
+  "f1": 0.9333333333333333,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 36.4
+  }
+ },
+ {
+  "part": "01545",
+  "mode": "profile",
+  "region_iou": 0.6072157172001165,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01783",
+  "mode": "plan",
+  "region_iou": 0.6500456995860524,
+  "f1": 1.0,
+  "region_iou_rect": 0.8240228842840012,
+  "f1_rect": 1.0,
+  "applied": true,
+  "tilt": 31.25307716346768,
+  "view": 2,
+  "inliers": [
+   21,
+   8
+  ],
+  "lines": 66,
+  "tilts": {
+   "2": 31.3,
+   "0": 30.2,
+   "1": 25.7
+  },
+  "agreement": [
+   0.96,
+   0.88,
+   0.95
+  ],
+  "rectangularity": [
+   0.533,
+   0.514
+  ]
+ },
+ {
+  "part": "01934",
+  "mode": "plan",
+  "region_iou": 0.0,
+  "f1": 0.5714285714285715,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01187",
+  "mode": "plan",
+  "region_iou": 0.6127999556213016,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 13.7
+  }
+ },
+ {
+  "part": "01071",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00460",
+  "mode": "plan",
+  "region_iou": 0.30549635874450015,
+  "f1": 0.3333333333333333,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01719",
+  "mode": "profile",
+  "region_iou": 0.6283696521801451,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00677",
+  "mode": "profile",
+  "region_iou": 0.6888634848733096,
+  "f1": 0.9824561403508771,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00876",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01498",
+  "mode": "plan",
+  "region_iou": 0.8181818181818182,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "view 1 is already square (10 deg)",
+  "tilts": {
+   "0": 22.4,
+   "1": 9.9,
+   "2": 16.6
+  },
+  "view": 1
+ },
+ {
+  "part": "01526",
+  "mode": "plan",
+  "region_iou": 0.5634055600851104,
+  "f1": 0.11764705882352942,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.51)",
+  "tilts": {
+   "1": 26.5,
+   "2": 23.9
+  },
+  "agreement": [
+   0.51,
+   0.49
+  ]
+ },
+ {
+  "part": "00721",
+  "mode": "plan",
+  "region_iou": 0.909842347700381,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.62)",
+  "tilts": {
+   "0": 15.0,
+   "1": 10.9
+  },
+  "agreement": [
+   0.62,
+   0.62
+  ]
+ },
+ {
+  "part": "00455",
+  "mode": "profile",
+  "region_iou": 0.13409159756056618,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00698",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00747",
+  "mode": "profile",
+  "region_iou": 0.7100888230874571,
+  "f1": 0.8,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01134",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00098",
+  "mode": "plan",
+  "region_iou": 0.7460399446115236,
+  "f1": 0.8163265306122449,
+  "applied": false,
+  "reason": "view 0 is already square (3 deg)",
+  "tilts": {
+   "0": 2.8,
+   "1": 8.8,
+   "2": 20.6
+  },
+  "view": 0
+ },
+ {
+  "part": "00135",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01115",
+  "mode": "plan",
+  "region_iou": 0.4402402399133876,
+  "f1": 0.8,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "0": 30.0
+  }
+ },
+ {
+  "part": "01589",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00160",
+  "mode": "plan",
+  "region_iou": 0.80889561202925,
+  "f1": 0.8235294117647058,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.26)",
+  "tilts": {
+   "0": 3.3,
+   "1": 17.8
+  },
+  "agreement": [
+   0.26,
+   0.25
+  ]
+ },
+ {
+  "part": "01163",
+  "mode": "plan",
+  "region_iou": 0.0,
+  "f1": 0.5,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "00377",
+  "mode": "revolve",
+  "region_iou": 0.7573452360828189,
+  "f1": 0.039999999999999994,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00608",
+  "mode": "plan",
+  "region_iou": 0.8191179743589743,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.66)",
+  "tilts": {
+   "1": 17.6,
+   "0": 15.2,
+   "2": 18.0
+  },
+  "agreement": [
+   0.65,
+   0.66,
+   0.47
+  ]
+ },
+ {
+  "part": "00766",
+  "mode": "profile",
+  "region_iou": 0.8199428655555424,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00653",
+  "mode": "profile",
+  "region_iou": 0.7281764523377828,
+  "f1": 0.888888888888889,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00112",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00610",
+  "mode": "plan",
+  "region_iou": 0.16062778839666889,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "1": 34.3
+  }
+ },
+ {
+  "part": "01751",
+  "mode": "plan",
+  "region_iou": 0.41693574207211964,
+  "f1": 0.8,
+  "applied": false,
+  "reason": "view 2 is already square (3 deg)",
+  "tilts": {
+   "1": 36.6,
+   "0": 39.4,
+   "2": 3.0
+  },
+  "view": 2
+ },
+ {
+  "part": "01279",
+  "mode": "plan",
+  "region_iou": 0.8560557970622679,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 10.8
+  }
+ },
+ {
+  "part": "00863",
+  "mode": "profile",
+  "region_iou": 0.43053254454438084,
+  "f1": 0.4,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01731",
+  "mode": "plan",
+  "region_iou": 0.9224764737720161,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "0": 27.5
+  }
+ },
+ {
+  "part": "00943",
+  "mode": "plan",
+  "region_iou": 0.1022028842423639,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01908",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01426",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01884",
+  "mode": "plan",
+  "region_iou": 0.9949932584269666,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.47)",
+  "tilts": {
+   "1": 1.4,
+   "2": 10.7
+  },
+  "agreement": [
+   0.47,
+   0.47
+  ]
+ },
+ {
+  "part": "01055",
+  "mode": "plan",
+  "region_iou": 0.40958981334527506,
+  "f1": 0.888888888888889,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.48)",
+  "tilts": {
+   "0": 41.2,
+   "1": 23.7
+  },
+  "agreement": [
+   0.48,
+   0.48
+  ]
+ },
+ {
+  "part": "01089",
+  "mode": "plan",
+  "region_iou": 0.7771976166144487,
+  "f1": 0.6363636363636364,
+  "region_iou_rect": 0.5789221832214981,
+  "f1_rect": 0.761904761904762,
+  "applied": true,
+  "tilt": 13.261364847239633,
+  "view": 0,
+  "inliers": [
+   18,
+   6
+  ],
+  "lines": 78,
+  "tilts": {
+   "2": 3.9,
+   "0": 13.3
+  },
+  "agreement": [
+   0.82,
+   0.82
+  ],
+  "rectangularity": [
+   0.333,
+   0.328
+  ]
+ },
+ {
+  "part": "01512",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00873",
+  "mode": "plan",
+  "region_iou": 0.9777891623062357,
+  "f1": 0.9600000000000001,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.55)",
+  "tilts": {
+   "1": 1.5,
+   "2": 35.9
+  },
+  "agreement": [
+   0.52,
+   0.55
+  ]
+ },
+ {
+  "part": "00982",
+  "mode": "plan",
+  "region_iou": 0.357597312219052,
+  "f1": 0.35294117647058826,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.69)",
+  "tilts": {
+   "1": 16.3,
+   "0": 28.3,
+   "2": 42.2
+  },
+  "agreement": [
+   0.65,
+   0.68,
+   0.69
+  ]
+ },
+ {
+  "part": "01100",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01947",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01449",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01099",
+  "mode": "plan",
+  "region_iou": 0.24805301752000009,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "01682",
+  "mode": "plan",
+  "region_iou": 0.43123424162907176,
+  "f1": 0.4166666666666667,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 25.6
+  }
+ },
+ {
+  "part": "01179",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00174",
+  "mode": "plan",
+  "region_iou": 0.18644159063990384,
+  "f1": 0.46464646464646464,
+  "region_iou_rect": 0.19108081752453906,
+  "f1_rect": 0.14545454545454545,
+  "applied": true,
+  "tilt": 25.770818723679604,
+  "view": 2,
+  "inliers": [
+   19,
+   8
+  ],
+  "lines": 61,
+  "tilts": {
+   "2": 25.8,
+   "0": 24.0,
+   "1": 14.9
+  },
+  "agreement": [
+   0.92,
+   0.49,
+   0.91
+  ],
+  "rectangularity": [
+   -0.463,
+   -0.496
+  ]
+ },
+ {
+  "part": "01894",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00626",
+  "mode": "plan",
+  "region_iou": 0.3329273244011369,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.36)",
+  "tilts": {
+   "1": 36.2,
+   "2": 12.9
+  },
+  "agreement": [
+   0.36,
+   0.36
+  ]
+ },
+ {
+  "part": "01181",
+  "mode": "profile",
+  "region_iou": 0.5680017504872905,
+  "f1": 0.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01875",
+  "mode": "plan",
+  "region_iou": 0.0,
+  "f1": 0.4,
+  "applied": false,
+  "reason": "edge-on part: the sketch is its cross-section"
+ },
+ {
+  "part": "00139",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01477",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01124",
+  "mode": "plan",
+  "region_iou": 0.6482206955591533,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "2": 27.0
+  }
+ },
+ {
+  "part": "01525",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01510",
+  "mode": "plan",
+  "region_iou": 0.6781041951222675,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.38)",
+  "tilts": {
+   "2": 26.8,
+   "0": 43.0
+  },
+  "agreement": [
+   0.37,
+   0.38
+  ]
+ },
+ {
+  "part": "00579",
+  "mode": "plan",
+  "region_iou": 0.4061032669476864,
+  "f1": 0.4571428571428572,
+  "region_iou_rect": 0.3289618637878072,
+  "f1_rect": 0.20689655172413793,
+  "applied": true,
+  "tilt": 31.964987937601187,
+  "view": 1,
+  "inliers": [
+   15,
+   11
+  ],
+  "lines": 57,
+  "tilts": {
+   "0": 23.8,
+   "1": 32.0,
+   "2": 45.4
+  },
+  "agreement": [
+   0.84,
+   0.84,
+   0.71
+  ],
+  "rectangularity": [
+   -0.534,
+   -0.571
+  ]
+ },
+ {
+  "part": "01254",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01560",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00697",
+  "mode": "plan",
+  "region_iou": 0.6797969062500001,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "only one view has vanishing points; no cross-check",
+  "tilts": {
+   "0": 23.5
+  }
+ },
+ {
+  "part": "01674",
+  "mode": "profile",
+  "region_iou": 0.48930290244328073,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "01380",
+  "skipped": "revolve"
+ },
+ {
+  "part": "01609",
+  "mode": "profile",
+  "region_iou": 0.7441167698937615,
+  "f1": 0.13333333333333333,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00884",
+  "mode": "plan",
+  "region_iou": 0.9450600167655947,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.35)",
+  "tilts": {
+   "2": 2.0,
+   "1": 6.8
+  },
+  "agreement": [
+   0.35,
+   0.35
+  ]
+ },
+ {
+  "part": "01838",
+  "mode": "plan",
+  "region_iou": 0.5621674789150969,
+  "f1": 0.8,
+  "applied": false,
+  "reason": "1: no orthogonal vanishing pair (31 segments); 0: rectification makes the outline less rectangular (0.00 -> -0.16); 2: rectification makes the outline less rectangular (-0.41 -> -0.58)"
+ },
+ {
+  "part": "01858",
+  "mode": "profile",
+  "region_iou": 0.6867180197243573,
+  "f1": 0.9,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00825",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00701",
+  "mode": "plan",
+  "region_iou": 0.8099441019396609,
+  "f1": 1.0,
+  "applied": false,
+  "reason": "rectified views disagree (best agreement 0.67)",
+  "tilts": {
+   "0": 23.4,
+   "1": 16.3,
+   "2": 20.5
+  },
+  "agreement": [
+   0.53,
+   0.67,
+   0.67
+  ]
+ },
+ {
+  "part": "01676",
+  "mode": "profile",
+  "region_iou": 0.5989737485232985,
+  "f1": 0.8,
+  "applied": false,
+  "reason": "no plan outline"
+ },
+ {
+  "part": "00208",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00718",
+  "skipped": "revolve"
+ },
+ {
+  "part": "00027",
+  "mode": "profile",
+  "region_iou": 0.08022774728659648,
+  "f1": 0.6666666666666666,
+  "applied": false,
+  "reason": "no plan outline"
+ }
+]
