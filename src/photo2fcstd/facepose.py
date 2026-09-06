@@ -6,6 +6,7 @@ import numpy as np
 _MODEL = {}
 TILT_RECTIFY_DEG = float(os.environ.get("P2F_TILT_RECTIFY_DEG", "30"))
 RAW_VERIFY_MAX = float(os.environ.get("P2F_RAW_VERIFY_MAX", "0.90"))
+AGREEMENT_MIN = float(os.environ.get("P2F_AGREEMENT_MIN", "0.5"))
 
 
 def _model():
