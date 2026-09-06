@@ -108,6 +108,8 @@ def maybe_rectify(photos, spec, name="part"):
     from photo2fcstd.trace import segment_photo
     if not spec.get("outline") or len(photos) < 2:
         return spec, {"applied": False, "reason": "no outline or fewer than 2 photos"}
+    if spec.get("mode") != "plan":
+        return spec, {"applied": False, "reason": "mode %s keeps its own construction" % spec.get("mode")}
     was = trace.RECOVER_DARK; trace.RECOVER_DARK = False
     try:
         masks = [segment_photo(p) for p in photos]
