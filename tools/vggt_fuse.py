@@ -8,6 +8,9 @@ import torch
 from PIL import Image
 
 
+BLANK_BG = os.environ.get("FUSE_BLANK_BG", "0") == "1"
+
+
 def crop_to_object(frames_dir, masks_dir, out_dir, margin=0.6):
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(out_dir + "_masks", exist_ok=True)
@@ -23,11 +26,24 @@ def crop_to_object(frames_dir, masks_dir, out_dir, margin=0.6):
         x0, y0 = int(max(cx - side / 2, 0)), int(max(cy - side / 2, 0))
         x1, y1 = int(min(cx + side / 2, m.shape[1])), int(min(cy + side / 2, m.shape[0]))
         img = Image.open(p).convert("RGB").crop((x0, y0, x1, y1))
+        if BLANK_BG:
+            a = np.array(img); a[~m[y0:y1, x0:x1]] = 128; img = Image.fromarray(a)
         mk = Image.fromarray((m[y0:y1, x0:x1] * 255).astype(np.uint8))
         b = os.path.basename(p)
         img.save(os.path.join(out_dir, b), quality=95)
         mk.save(os.path.join(out_dir + "_masks", os.path.splitext(b)[0] + ".png"))
         kept.append(os.path.join(out_dir, b))
+    return kept
+
+
+def blank_frames(frames_dir, masks_dir, out_dir):
+    os.makedirs(out_dir, exist_ok=True)
+    kept = []
+    for p in sorted(glob.glob(os.path.join(frames_dir, "*.jpg"))):
+        m = np.array(Image.open(os.path.join(masks_dir, os.path.splitext(os.path.basename(p))[0] + ".png")).convert("L")) > 128
+        a = np.array(Image.open(p).convert("RGB")); a[~m] = 128
+        Image.fromarray(a).save(os.path.join(out_dir, os.path.basename(p)), quality=95)
+        kept.append(os.path.join(out_dir, os.path.basename(p)))
     return kept
 
 
@@ -57,7 +73,8 @@ def main(frames_dir, masks_dir, out_json, crop=True):
     from vggt.utils.load_fn import load_and_preprocess_images
     from vggt.utils.pose_enc import pose_encoding_to_extri_intri
     work = os.path.splitext(out_json)[0] + "_crops"
-    names = crop_to_object(frames_dir, masks_dir, work) if crop else sorted(glob.glob(os.path.join(frames_dir, "*.jpg")))
+    names = crop_to_object(frames_dir, masks_dir, work) if crop else blank_frames(frames_dir, masks_dir, work) if BLANK_BG \
+        else sorted(glob.glob(os.path.join(frames_dir, "*.jpg")))
     mdir = work + "_masks" if crop else masks_dir
     dev = "cuda"
     model = VGGT.from_pretrained("facebook/VGGT-1B").to(dev).eval()
@@ -83,11 +100,16 @@ def main(frames_dir, masks_dir, out_json, crop=True):
     P = Wp[keep].reshape(-1, 3)
     if len(P) > 400000:
         P = P[np.random.default_rng(0).choice(len(P), 400000, replace=False)]
-    n, d, frac = fit_plane_ransac(P)
     cams = np.array([-E[i, :3, :3].T @ E[i, :3, 3] for i in range(len(E))])
-    if np.median(cams @ n + d) < 0:
-        n, d = -n, -d
     raw_obj = Wp[keep & M].reshape(-1, 3)
+    if BLANK_BG:
+        oc = raw_obj.mean(0); n = np.linalg.svd(raw_obj[::max(1, len(raw_obj) // 100000)] - oc, full_matrices=False)[2][2]
+        n = n if np.median(cams @ n - oc @ n) > 0 else -n
+        d = -float(np.quantile(raw_obj @ n, 0.02)); frac = 0.0
+    else:
+        n, d, frac = fit_plane_ransac(P)
+        if np.median(cams @ n + d) < 0:
+            n, d = -n, -d
     scale = float(np.ptp(raw_obj, 0).max())
 
     vdiv = float(os.environ.get("FUSE_VOXEL_DIV", "250"))
@@ -106,7 +128,7 @@ def main(frames_dir, masks_dir, out_json, crop=True):
         vol.integrate(rgbd, intrinsic, ext)
     pcd = vol.extract_point_cloud()
     fused = np.asarray(pcd.points)
-    fused = fused[(fused @ n + d) > 0.01 * scale]
+    fused = fused if BLANK_BG else fused[(fused @ n + d) > 0.01 * scale]
     if len(fused) > 300000:
         fused = fused[np.random.default_rng(0).choice(len(fused), 300000, replace=False)]
     fc = fused.mean(0)

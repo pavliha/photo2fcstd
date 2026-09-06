@@ -576,3 +576,16 @@ wrong. Three phone views of a flat face leave its aspect and skew nearly free (p
 ambiguity; perspective at 27 mm equivalent and a fifth of the frame is too weak), and a
 Manhattan prior does not close it. Cases: `runs/results/multiview_cases.png`.
 Code removed in the following commit; it lives in history at the commit that added it.
+
+## Hand-turned fan clip IMG_3222 (2026-09-07, "fix it")
+
+Object rotated in the hand against a static desk, hand in frame. Fixed in code: `tools/mask_frames.py`
+cuts skin (YCrCb) out of every mask and keeps the largest filled component; `tools/vggt_fuse.py`
+gains `FUSE_BLANK_BG=1` (paint the background grey, plane from the object's own back face).
+Pose recovery still failed four ways on this footage (VGGT cropped, VGGT full blanked, VGGT chained
+by frame pairs, depth-cloud ICP chain): cameras placed under one object width away, tens of degrees
+between neighbouring frames, because the yellow plastic is textureless once the desk is masked out.
+COLMAP on 158 dense masked frames with sequential matching registered 45 frames (cameras 3.05 widths
+away, spread 16%, arc 16 deg); `tools/colmap_extents.py` turns the sparse model into the extents json
+`design_fan` reads. Result 80 x 80 x 29 mm (true depth 34: the arc never sees the back). The chain
+and ICP tools were deleted; they live in this commit's parent history only as this paragraph.
