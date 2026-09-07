@@ -842,3 +842,16 @@ parts (17%), < 0.3 on 20; revolves mean 0.633, 16 of 45 at >= 0.8.
 View selection on the 65 plan parts is at its ceiling: the router's chosen view scores region 0.651
 against 0.649 for the best single view per part (oracle) and 0.608 for the LLM's face photo alone.
 The remaining plan-mode loss is inside the views, i.e. perspective, not which view is used.
+
+## CAD-Recode as the fitting step (2026-09-07, "look up how others do it" -> "go ahead")
+
+The field's recipe is capture a metric mesh (many views + a scale reference), then fit CAD to it
+(Geomagic Design X commercially, CAD-Recode in research, ICCV 2025). `tools/cadrecode_bench.py`
+runs the pretrained `filapro/cad-recode-v1.5` (Qwen2-1.5B + Fourier point encoder, 256 farthest
+points, executed CadQuery code) on the 150 bench parts, scored by `score.best_iou` in 3D.
+
+From the STEP truth mesh points (the "given the geometry" ceiling): valid CadQuery on 143/150,
+3D IoU mean 0.887, median 0.991, >= 0.8 on 116 parts (77%). The shipped photo path reaches
+25/150. The fitting step is solved by a pretrained model when the input is metric geometry; the
+whole problem is the geometry. RTX 5090 boxes need torch cu128 (the pytorch 2.5.1 image has no
+sm_120 kernels); transformers 4.47.1, cadquery 2.8 from pip work.

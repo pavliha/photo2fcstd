@@ -148,7 +148,7 @@ def main(parts):
         row = {"part": part}
         try:
             truth = trimesh.load(bench.truth_of(part))
-            for name, src in (("truth", truth), ("hull", None)):
+            for name, src in [x for x in (("truth", truth), ("hull", None)) if not (x[0] == "truth" and os.environ.get("CADRECODE_SKIP_TRUTH") == "1")]:
                 if src is None:
                     hull_mesh, oriented = hull_for(part)
                     row["hull_mesh_iou"] = round(float(score.best_iou(oriented, hull_mesh)[0]), 4)
@@ -165,8 +165,9 @@ def main(parts):
         rows.append(row)
         if k % 5 == 0 or k == len(parts):
             print("progress %d/%d" % (k, len(parts)), flush=True)
-            json.dump(rows, open(os.path.join(ROOT, "runs", "cadrecode_bench.json"), "w"), indent=1)
+            json.dump(rows, open(os.path.join(ROOT, "runs", os.environ.get("CADRECODE_OUT", "cadrecode_bench.json")), "w"), indent=1)
     ok = [r for r in rows if r.get("truth_iou") is not None]; hk = [r for r in rows if r.get("hull_iou") is not None]
+    json.dump(rows, open(os.path.join(ROOT, "runs", os.environ.get("CADRECODE_OUT", "cadrecode_bench.json")), "w"), indent=1)
     print("CADRECODE n=%d | from truth points: valid %d, 3D IoU mean %.3f, >=0.8 %d | from board hull points: valid %d, 3D IoU mean %.3f, >=0.8 %d | hull mesh itself: %.3f"
           % (len(rows), len(ok), np.mean([r["truth_iou"] for r in ok]) if ok else 0, sum(r["truth_iou"] >= 0.8 for r in ok),
              len(hk), np.mean([r["hull_iou"] for r in hk]) if hk else 0, sum(r["hull_iou"] >= 0.8 for r in hk),
