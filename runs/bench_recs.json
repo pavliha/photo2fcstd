@@ -1,0 +1,1307 @@
+{
+ "01504": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01540": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01520": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00008": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "washer",
+  "grille": null
+ },
+ "00798": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00471": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00039": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00595": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00386": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00724": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00005": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "00280": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "01630": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "00096": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00500": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01470": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00541": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "frame",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01544": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00011": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "enclosure",
+  "single_extrusion": false,
+  "openings": [],
+  "grille": null
+ },
+ "00794": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01264": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00384": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01744": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "00245": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00149": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "01448": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01341": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00838": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00725": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "01109": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00297": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01362": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00972": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01741": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "01364": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00060": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00773": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00882": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00907": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00944": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01761": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "01657": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00224": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00069": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01209": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01107": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00048": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00968": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01584": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01391": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00643": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "grille": null
+ },
+ "01262": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01298": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00992": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "01072": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00447": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "01222": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00432": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00478": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01721": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01005": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "01823": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01653": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00307": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00538": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00945": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "01297": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": false,
+  "openings": [],
+  "grille": null
+ },
+ "01265": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00958": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": false,
+  "openings": [],
+  "grille": null
+ },
+ "01334": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01345": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00131": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "frame",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01715": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00089": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "01786": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "01825": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "01252": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01545": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01783": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01934": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "01187": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01071": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "00460": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01719": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00677": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00876": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "cup",
+  "grille": null
+ },
+ "01498": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01526": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00721": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00455": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00698": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00747": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01134": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00098": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00135": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "01115": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01589": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "cap",
+  "grille": null
+ },
+ "00160": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "01163": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00377": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": {
+   "rings": 1,
+   "spokes": 30
+  }
+ },
+ "00608": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00766": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00653": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00112": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "00610": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01751": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01279": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00863": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01731": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00943": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01908": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "01426": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": "washer",
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "washer",
+  "grille": null
+ },
+ "01884": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01055": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "grille": null
+ },
+ "01089": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01512": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "00873": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00982": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01100": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "cup",
+  "grille": null
+ },
+ "01947": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "01449": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "01099": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01682": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01179": {
+  "face_photo_index": 2,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "00174": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01894": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "00626": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01181": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01875": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00139": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "01477": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "01124": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "01525": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "01510": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "grille": null
+ },
+ "00579": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01254": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "01560": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "00697": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01674": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "bracket",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01380": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [],
+  "revolve_family": "rod",
+  "grille": null
+ },
+ "01609": {
+  "face_photo_index": 1,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00884": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01838": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "enclosure",
+  "single_extrusion": false,
+  "openings": [],
+  "grille": null
+ },
+ "01858": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00825": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "revolve_family": "disc",
+  "grille": null
+ },
+ "00701": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": "plate",
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "01676": {
+  "face_photo_index": 2,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ },
+ "00208": {
+  "face_photo_index": 1,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": false,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "tube",
+  "grille": null
+ },
+ "00718": {
+  "face_photo_index": 0,
+  "revolve": true,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [
+   "bore"
+  ],
+  "revolve_family": "washer",
+  "grille": null
+ },
+ "00027": {
+  "face_photo_index": 0,
+  "revolve": false,
+  "part_class": null,
+  "single_extrusion": true,
+  "openings": [],
+  "grille": null
+ }
+}

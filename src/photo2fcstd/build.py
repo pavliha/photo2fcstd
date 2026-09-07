@@ -389,8 +389,14 @@ def build_revolve(spec, doc, params):
         pk = doc.addObject("PartDesign::Pocket", "pocket_holes")
         body.addObject(pk)
         pk.Profile = hs
-        pk.Type = "ThroughAll"
-        symmetric(pk)
+        blind = [h["depth"] for h in v["holes"] if h.get("depth")]
+        if blind:
+            pk.Type = "Length"
+            pk.Length = float(max(blind)) * mpp
+            pk.Reversed = True
+        else:
+            pk.Type = "ThroughAll"
+            symmetric(pk)
         doc.recompute()
     return body
 

@@ -1,10 +1,10 @@
 [
  {
   "part": "00008",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.105,
-  "err": 0.354,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": 0.479,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 2
  },
  {
@@ -25,10 +25,10 @@
  },
  {
   "part": "01744",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.161,
-  "err": -0.073,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": 0.053,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 0
  },
  {
@@ -89,10 +89,10 @@
  },
  {
   "part": "00447",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.048,
-  "err": 1.134,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": 1.259,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 1
  },
  {
@@ -137,18 +137,18 @@
  },
  {
   "part": "01825",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.114,
-  "err": 0.278,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": 0.403,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 0
  },
  {
   "part": "01071",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.25,
-  "err": -0.511,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": -0.386,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 0
  },
  {
@@ -185,10 +185,10 @@
  },
  {
   "part": "01589",
-  "ld_model": 3.33,
+  "ld_model": 0.305,
   "ld_truth": 0.3,
-  "err": 2.407,
-  "note": "length from the side view 01589_1.jpg (3.27 x diameter)",
+  "err": 0.018,
+  "note": "disc seen edge-on in 01589_1.jpg: thickness 0.31 x diameter",
   "side_view": 0
  },
  {
@@ -209,10 +209,10 @@
  },
  {
   "part": "01426",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.222,
-  "err": -0.393,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": -0.268,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 2
  },
  {
@@ -249,10 +249,10 @@
  },
  {
   "part": "01179",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.222,
-  "err": -0.39,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": -0.265,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 1
  },
  {
@@ -289,10 +289,10 @@
  },
  {
   "part": "01254",
-  "ld_model": 0.768,
+  "ld_model": 0.85,
   "ld_truth": 0.997,
-  "err": -0.262,
-  "note": "length from the side view 01254_1.jpg (1.18 x diameter); standing part seen from",
+  "err": -0.16,
+  "note": "disc seen edge-on in 01254_1.jpg: thickness 0.85 x diameter",
   "side_view": 0
  },
  {
@@ -329,10 +329,10 @@
  },
  {
   "part": "00718",
-  "ld_model": 0.15,
+  "ld_model": 0.17,
   "ld_truth": 0.04,
-  "err": 1.322,
-  "note": "no side view among the photos: thickness set to 0.15 x diameter (a guess, put a ",
+  "err": 1.447,
+  "note": "no side view among the photos: thickness set to 0.17 x diameter (the dataset med",
   "side_view": 1
  }
 ]

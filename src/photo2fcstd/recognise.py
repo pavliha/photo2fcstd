@@ -176,6 +176,8 @@ def program_prompt(n):
         '"bracket","plate","enclosure"), else null\n'
         '  "single_extrusion": true|false - one flat profile of constant thickness\n'
         '  "openings": ["bore"] if there is a large central round opening, else []\n'
+        '  "revolve_family": for a revolve, one of "rod" (solid, longer than wide), "disc" (solid, wider than long), '
+        '"tube" (open both ends), "washer" (flat ring), "cup" (open one end, closed bottom), "cap" (like a cup, shallow), else null\n'
         '  "grille": {"rings": int, "spokes": int} or null\n'
         "Judge only what is visible.\n"
         "Reply with ONLY the JSON." % (n, n - 1))
@@ -213,6 +215,8 @@ def _top_ellipse_aspect(raw, ys, xs, frac=0.45):
 
 def revolve_spec(photos, rec, name="part", samples=48):
     views, bar, family = revolve_views(photos)
+    said = (rec.get("revolve_family") or "").lower()
+    family = "disc" if said in ("disc", "washer", "cap") else "rod" if said == "rod" else family
     has_side = bar is not None
     v = bar if has_side else max(views, key=lambda v: v["elong"])
     i, elong, mask = v["i"], v["elong"], v["mask"]
@@ -255,6 +259,9 @@ def revolve_spec(photos, rec, name="part", samples=48):
         profile = [[0.0, 0.0], [round(R, 2), 0.0], [round(R, 2), round(L, 2)], [0.0, round(L, 2)]]
     ratio, how = (bore_ratio(photos) if "bore" in (rec.get("openings") or []) else (None, None))
     holes = [{"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how}] if ratio else []
+    if holes and said in ("cup", "cap"):
+        holes[0]["depth"] = round(max(profile[-2][1] * 0.85, profile[-2][1] - 2 * R * 0.15), 2)
+        holes[0]["source"] += "; blind (%s), bottom left at %.0f%% of the length" % (said, 100 * (1 - holes[0]["depth"] / max(profile[-2][1], 1e-9)))
     return {"name": name, "mode": "revolve", "mm_per_px": 1.0, "unit": "px",
             "scale_note": "UNSCALED: set from one caliper reading",
             "views": {}, "outline": None, "stl": None, "measured": [],

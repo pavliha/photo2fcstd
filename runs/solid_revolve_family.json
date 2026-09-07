@@ -1,0 +1,416 @@
+[
+ {
+  "part": "00005",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8333,
+  "region": 0.9295,
+  "f1": 1.0,
+  "verify": 0.967,
+  "note": "length from the side view 00005_2.jpg (4.04 x diameter)"
+ },
+ {
+  "part": "00008",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.6077,
+  "region": 0.9506,
+  "f1": 1.0,
+  "verify": 0.961,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "00089",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.5498,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.956,
+  "note": "disc seen edge-on in 00089_3.jpg: thickness 0.13 x diameter"
+ },
+ {
+  "part": "00112",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9317,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.974,
+  "note": "length from the side view 00112_3.jpg (3.65 x diameter)"
+ },
+ {
+  "part": "00135",
+  "refused": "silhouette does not match the photo (IoU 0.797 < 0.8)"
+ },
+ {
+  "part": "00139",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8652,
+  "region": 0.9911,
+  "f1": 1.0,
+  "verify": 0.97,
+  "note": "length from the side view 00139_1.jpg (6.93 x diameter)"
+ },
+ {
+  "part": "00149",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.4677,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.954,
+  "note": "standing part seen from 45 deg above in 00149_3.jpg: length "
+ },
+ {
+  "part": "00208",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.2363,
+  "region": 0.1874,
+  "f1": 0.6667,
+  "verify": 0.962,
+  "note": "length from the side view 00208_2.jpg (3.18 x diameter)"
+ },
+ {
+  "part": "00447",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.45,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.858,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "00698",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.585,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.971,
+  "note": "length from the side view 00698_1.jpg (1.38 x diameter)"
+ },
+ {
+  "part": "00718",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.1948,
+  "region": 0.6761,
+  "f1": 1.0,
+  "verify": 0.98,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "00825",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.6942,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.879,
+  "note": "standing part seen from 52 deg above in 00825_1.jpg: length "
+ },
+ {
+  "part": "00876",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.3258,
+  "region": 0.2729,
+  "f1": 1.0,
+  "verify": 0.963,
+  "note": "length from the side view 00876_3.jpg (1.45 x diameter)"
+ },
+ {
+  "part": "00882",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 1.0,
+  "region": 0.9907,
+  "f1": 1.0,
+  "verify": 0.886,
+  "note": "length from the side view 00882_1.jpg (22.37 x diameter)"
+ },
+ {
+  "part": "00945",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.0676,
+  "region": 0.0767,
+  "f1": 0.6667,
+  "verify": 0.883,
+  "note": "length from the side view 00945_2.jpg (1.25 x diameter)"
+ },
+ {
+  "part": "00992",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7075,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.972,
+  "note": "disc seen edge-on in 00992_2.jpg: thickness 0.08 x diameter"
+ },
+ {
+  "part": "01005",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.3898,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.956,
+  "note": "length from the side view 01005_1.jpg (4.36 x diameter)"
+ },
+ {
+  "part": "01071",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.519,
+  "region": 0.6621,
+  "f1": 1.0,
+  "verify": 0.941,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "01072",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8578,
+  "region": 0.9907,
+  "f1": 0.0,
+  "verify": 0.96,
+  "note": "length from the side view 01072_1.jpg (4.39 x diameter)"
+ },
+ {
+  "part": "01100",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.913,
+  "region": 0.9764,
+  "f1": 0.6667,
+  "verify": 0.871,
+  "note": "length from the side view 01100_1.jpg (1.18 x diameter)"
+ },
+ {
+  "part": "01134",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7528,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.955,
+  "note": "length from the side view 01134_3.jpg (2.55 x diameter)"
+ },
+ {
+  "part": "01179",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7285,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.911,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "01254",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.2284,
+  "region": 0.1995,
+  "f1": 1.0,
+  "verify": 0.891,
+  "note": "disc seen edge-on in 01254_1.jpg: thickness 0.85 x diameter"
+ },
+ {
+  "part": "01265",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9866,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.971,
+  "note": "length from the side view 01265_2.jpg (8.02 x diameter)"
+ },
+ {
+  "part": "01298",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9601,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.974,
+  "note": "length from the side view 01298_3.jpg (6.67 x diameter)"
+ },
+ {
+  "part": "01362",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9836,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.91,
+  "note": "length from the side view 01362_3.jpg (2.49 x diameter)"
+ },
+ {
+  "part": "01380",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8961,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.961,
+  "note": "length from the side view 01380_3.jpg (7.08 x diameter)"
+ },
+ {
+  "part": "01426",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7121,
+  "region": 0.9619,
+  "f1": 1.0,
+  "verify": 0.977,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "01449",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7002,
+  "region": 0.7428,
+  "f1": 0.6667,
+  "verify": 0.979,
+  "note": "length from the side view 01449_2.jpg (2.84 x diameter)"
+ },
+ {
+  "part": "01477",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8845,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.956,
+  "note": "disc seen edge-on in 01477_3.jpg: thickness 0.56 x diameter"
+ },
+ {
+  "part": "01512",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.1883,
+  "region": 0.8544,
+  "f1": 1.0,
+  "verify": 0.941,
+  "note": "length from the side view 01512_3.jpg (1.31 x diameter)"
+ },
+ {
+  "part": "01525",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.0215,
+  "region": 0.302,
+  "f1": 0.6667,
+  "verify": 0.954,
+  "note": "length from the side view 01525_2.jpg (11.71 x diameter)"
+ },
+ {
+  "part": "01560",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7335,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.925,
+  "note": "disc seen edge-on in 01560_3.jpg: thickness 0.77 x diameter"
+ },
+ {
+  "part": "01589",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9821,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.972,
+  "note": "disc seen edge-on in 01589_1.jpg: thickness 0.31 x diameter"
+ },
+ {
+  "part": "01630",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.7237,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.95,
+  "note": "disc seen edge-on in 01630_3.jpg: thickness 0.56 x diameter"
+ },
+ {
+  "part": "01741",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.528,
+  "region": 0.507,
+  "f1": 0.0,
+  "verify": 0.913,
+  "note": "length from the side view 01741_2.jpg (1.62 x diameter); sta"
+ },
+ {
+  "part": "01744",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.9911,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.953,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "01786",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 1.0,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.937,
+  "note": "length from the side view 01786_1.jpg (7.83 x diameter)"
+ },
+ {
+  "part": "01825",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.8107,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.963,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
+ },
+ {
+  "part": "01894",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.1936,
+  "region": 0.1513,
+  "f1": 0.6667,
+  "verify": 0.985,
+  "note": "standing part seen from 56 deg above in 01894_1.jpg: length "
+ },
+ {
+  "part": "01908",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 1.0,
+  "region": 0.9907,
+  "f1": 1.0,
+  "verify": 0.886,
+  "note": "length from the side view 01908_1.jpg (36.00 x diameter)"
+ },
+ {
+  "part": "01947",
+  "tier": "revolve",
+  "mode": "revolve",
+  "iou3d": 0.6291,
+  "region": 0.887,
+  "f1": 1.0,
+  "verify": 0.97,
+  "note": "standing part seen from 41 deg above in 01947_1.jpg: length "
+ }
+]

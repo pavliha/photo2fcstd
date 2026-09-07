@@ -13,11 +13,11 @@
   "part": "00008",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.6084,
+  "iou3d": 0.6077,
   "region": 0.9506,
   "f1": 1.0,
   "verify": 0.961,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "00011",
@@ -253,11 +253,11 @@
   "part": "00447",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.4502,
+  "iou3d": 0.45,
   "region": 0.9908,
   "f1": 1.0,
-  "verify": 0.859,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "verify": 0.858,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "00455",
@@ -437,11 +437,11 @@
   "part": "00718",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.195,
+  "iou3d": 0.1948,
   "region": 0.6761,
   "f1": 1.0,
   "verify": 0.98,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "00721",
@@ -567,7 +567,7 @@
   "part": "00876",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.291,
+  "iou3d": 0.3258,
   "region": 0.2729,
   "f1": 1.0,
   "verify": 0.963,
@@ -695,11 +695,11 @@
   "part": "01071",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.5186,
+  "iou3d": 0.519,
   "region": 0.6621,
   "f1": 1.0,
   "verify": 0.941,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "01072",
@@ -735,9 +735,9 @@
   "part": "01100",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.9204,
-  "region": 0.9908,
-  "f1": 1.0,
+  "iou3d": 0.913,
+  "region": 0.9764,
+  "f1": 0.6667,
   "verify": 0.871,
   "note": "length from the side view 01100_1.jpg (1.18 x diameter)"
  },
@@ -799,11 +799,11 @@
   "part": "01179",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.7289,
+  "iou3d": 0.7285,
   "region": 0.9908,
   "f1": 1.0,
-  "verify": 0.91,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "verify": 0.911,
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "01181",
@@ -853,11 +853,11 @@
   "part": "01254",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.2117,
+  "iou3d": 0.2284,
   "region": 0.1995,
   "f1": 1.0,
   "verify": 0.891,
-  "note": "length from the side view 01254_1.jpg (1.18 x diameter); sta"
+  "note": "disc seen edge-on in 01254_1.jpg: thickness 0.85 x diameter"
  },
  {
   "part": "01262",
@@ -987,11 +987,11 @@
   "part": "01426",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.7124,
+  "iou3d": 0.7121,
   "region": 0.9619,
   "f1": 1.0,
   "verify": 0.977,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "01448",
@@ -1145,11 +1145,11 @@
   "part": "01589",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.1946,
-  "region": 0.5122,
-  "f1": 0.6667,
-  "verify": 0.911,
-  "note": "length from the side view 01589_1.jpg (3.27 x diameter)"
+  "iou3d": 0.9821,
+  "region": 0.9908,
+  "f1": 1.0,
+  "verify": 0.972,
+  "note": "disc seen edge-on in 01589_1.jpg: thickness 0.31 x diameter"
  },
  {
   "part": "01609",
@@ -1275,11 +1275,11 @@
   "part": "01744",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.9912,
+  "iou3d": 0.9911,
   "region": 0.9908,
   "f1": 1.0,
   "verify": 0.953,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "01751",
@@ -1335,11 +1335,11 @@
   "part": "01825",
   "tier": "revolve",
   "mode": "revolve",
-  "iou3d": 0.811,
+  "iou3d": 0.8107,
   "region": 0.9908,
   "f1": 1.0,
   "verify": 0.963,
-  "note": "no side view among the photos: thickness set to 0.15 x diame"
+  "note": "no side view among the photos: thickness set to 0.17 x diame"
  },
  {
   "part": "01838",

@@ -818,3 +818,23 @@ seven "edge-on" parts carry depth as bar length by design and score 0.06-1.0 in 
 `tests/test_regression_solid.py` locks the 3D IoU of eleven parts (`data/regression/solid_parts.json`,
 rods, tubes, a washer, a cup, three plates, two profiles): any part more than 0.05 below its golden
 fails.
+
+Two more depth ideas closed on the bench: the learned depth head was already trained on 1442
+dataset parts with true ratios (`data/depth_rows.json`), so the 25% median error on the bench is
+its held-out ceiling for silhouettes; and a gate cue comparing the model's depth/width with the most
+elongated photo's aspect is uncorrelated with 3D correctness (Spearman -0.10) because casual
+"side" photos are oblique, not side views.
+
+Recognition now names the revolve family (`revolve_family`: rod / disc / tube / washer / cup / cap).
+It settles the one ambiguity silhouettes cannot: two bar-shaped views are a rod or a disc seen
+edge-on (01589 0.19 -> 0.98 as "cap"). The family only overrides the geometric rod/disc decision
+when it implies an aspect (disc, washer, cap -> disc; rod -> rod); "tube" and "cup" say nothing about
+aspect (01512 broke at 0.19 under a naive mapping, back to 0.68). Cups and caps get a blind bore:
+`build_revolve` pockets to a length instead of through-all when a hole carries `depth`. Length
+|log ratio| median 0.259 -> 0.177, within 25% 20 -> 22. Changing the prompt invalidates the
+recognition cache; the 42 round bench parts were re-recognised (4 parallel `claude -p` calls).
+
+Mode routing checked in 3D: forcing plan mode on the 24 profile-mode parts gives 0.503 against
+0.591 (better on 1, worse on 11); the router is not the loss. Headline after the family work
+(`runs/solid_bench_merged.json`): built 134/150, 3D IoU mean 0.587, median 0.622, >= 0.8 on 25
+parts (17%), < 0.3 on 20; revolves mean 0.633, 16 of 45 at >= 0.8.
