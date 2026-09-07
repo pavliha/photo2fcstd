@@ -36,3 +36,5 @@ tools/*.png
 docs/img/multiview_cases.png
 docs/img/verify_dataset.png
 docs/img/results_gate.png
+data/printcad_ideal_sketches.json
+data/pair_survey*.json
