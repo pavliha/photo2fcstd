@@ -96,7 +96,14 @@ def pose(image, K=None, dist=None):
     K = camera_matrix(arr.shape) if K is None else K
     dist = np.zeros(5) if dist is None else dist
     object_points = np.c_[board_points(ids), np.zeros(len(ids))].astype(np.float32)
-    ok, rvec, tvec = cv2.solvePnP(object_points, corners, K, dist, flags=cv2.SOLVEPNP_ITERATIVE)
+    n, rvecs, tvecs, errs = cv2.solvePnPGeneric(object_points, corners, K, dist, flags=cv2.SOLVEPNP_IPPE)
+    if not n:
+        return None
+    above = [(float(e), r, t) for r, t, e in zip(rvecs, tvecs, np.asarray(errs).reshape(-1)) if (-cv2.Rodrigues(r)[0].T @ t.reshape(3))[2] > 0]
+    if not above:
+        return None
+    _, rvec, tvec = min(above, key=lambda c: c[0])
+    ok, rvec, tvec = cv2.solvePnP(object_points, corners, K, dist, rvec, tvec, useExtrinsicGuess=True, flags=cv2.SOLVEPNP_ITERATIVE)
     if not ok:
         return None
     projected, _ = cv2.projectPoints(object_points, rvec, tvec, K, dist)

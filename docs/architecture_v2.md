@@ -867,3 +867,20 @@ gives double the matching parts of the photo path (51 vs 25) with zero hand-writ
 Twelve rendered views instead of six (`BOARD_VIEWS=12`): hull mesh >= 0.8 on 74 parts (was 63),
 mean 0.697 (flat); hull -> CAD-Recode >= 0.8 on 58 (was 51). Per family the hull is unchanged
 for tubes (0.46) and frames (0.51): concavities are a silhouette limit, not a view-count limit.
+
+## CAD-Recode wired into the board tier (2026-09-07)
+
+`design._design_from_board` now fits the hull with CAD-Recode when `.venv-cadrecode` exists
+(`P2F_CADRECODE=0` disables): `carve.mesh_of(hull)` -> 8192 surface points -> `tools/cadrecode_run.py`
+(isolated venv: transformers 4.47.1, cadquery 2.8, torch on MPS; transformers 5.x breaks the model
+class and the main venv needs 5.x for DINOv3) -> CadQuery code, STEP, STL, rescaled to the hull's
+metric extent -> `cli.freecad_import_step` -> Part::Feature in the FCStd. The CadQuery source sits
+next to the model as the editable form. The gate runs unchanged on the imported solid (synthetic
+box: 0.955). Local cost: 4.3 GB RSS, ~40 s model load, ~30 s per part on the Mac GPU. Revolves
+still take `revolve_from_carve`; the fan keeps its template.
+
+Fixes surfaced by the full suite around the wiring: `capture.pose` now solves with IPPE and keeps
+the solution whose camera is above the board (planar targets have a mirrored second solution; the
+old iterative solver could return it, 180 deg off); `capture_check` renders in the corrected board
+frame; three functions in `recognise` and one test set `trace.RECOVER_DARK` without restoring it,
+leaking dark-hole recovery into later builds (00471 went 1.0 -> 0.71 in-suite). All restore now.

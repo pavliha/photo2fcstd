@@ -123,3 +123,24 @@ def run():
 
 if __name__ == "__main__":
     run()
+
+
+def freecad_import_step(step_path, out):
+    import subprocess, tempfile
+    scr = tempfile.NamedTemporaryFile("w", suffix=".py", dir=os.path.dirname(os.path.abspath(out)), delete=False)
+    scr.write("import FreeCAD, Part, json\n"
+              "doc = FreeCAD.newDocument('part')\n"
+              "sh = Part.read(%r)\n"
+              "f = doc.addObject('Part::Feature', 'fitted')\n"
+              "f.Shape = sh\n"
+              "doc.recompute()\n"
+              "doc.saveAs(%r)\n"
+              "print('STEP_IMPORT ' + json.dumps({'valid': bool(sh.isValid() and sh.Solids), 'solids': len(sh.Solids), 'bbox': [sh.BoundBox.XLength, sh.BoundBox.YLength, sh.BoundBox.ZLength]}))\n"
+              % (os.path.abspath(step_path), os.path.abspath(out)))
+    scr.close()
+    try:
+        r = subprocess.run([FREECADCMD, scr.name], capture_output=True, text=True, timeout=600)
+        line = [l for l in r.stdout.splitlines() if l.startswith("STEP_IMPORT ")]
+        return json.loads(line[0][12:]) if line else {"valid": False, "solids": 0, "bbox": None, "error": r.stderr[-300:]}
+    finally:
+        os.path.exists(scr.name) and os.remove(scr.name)

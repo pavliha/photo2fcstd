@@ -104,10 +104,10 @@ def test_grille_is_a_valid_connected_web(freecad, tmp_path):
         assert s["solve"] == 0
 
 
-def test_fan_guard_params_measures_bore_from_photo(tmp_path):
+def test_fan_guard_params_measures_bore_from_photo(tmp_path, monkeypatch):
     import numpy as np, cv2
     from photo2fcstd import recognise, trace
-    trace.RECOVER_DARK = True
+    monkeypatch.setattr(trace, "RECOVER_DARK", True)
     img = np.zeros((700, 700), np.uint8)
     cv2.rectangle(img, (150, 150), (550, 550), 255, -1)
     cv2.circle(img, (350, 350), 150, 0, -1)

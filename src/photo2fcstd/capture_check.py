@@ -29,16 +29,8 @@ def board_mm():
 
 
 def board_to_world():
-    """The board lies pattern-up with the camera above it.
-
-    Its printed frame runs x right and y down, which is left-handed in 2D, so laying it along
-    world +x and +y and shooting from above renders it mirrored - the detector then finds three
-    phantom markers out of thirty-five. Turning it over about its x axis is a real rotation
-    rather than a reflection, and it leaves the part above the board where `carve` expects it.
-    """
-    _, h_mm = board_mm()
-    rvec, _ = cv2.Rodrigues(np.diag([1.0, -1.0, -1.0]))
-    return rvec, np.array([[0.0], [h_mm], [0.0]])
+    rvec, _ = cv2.Rodrigues(np.eye(3))
+    return rvec, np.zeros((3, 1))
 
 
 def world_from_board(rvec_bc, tvec_bc):
@@ -53,7 +45,7 @@ def board_quad_world():
     w_mm, h_mm = board_mm()
     rv, tv = board_to_world()
     R, _ = cv2.Rodrigues(rv)
-    corners = np.float32([[0, 0, 0], [w_mm, 0, 0], [w_mm, h_mm, 0], [0, h_mm, 0]])
+    corners = np.float32([[0, h_mm, 0], [w_mm, h_mm, 0], [w_mm, 0, 0], [0, 0, 0]])
     return (corners @ R.T + tv.ravel()).astype(np.float32)
 
 

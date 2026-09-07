@@ -80,10 +80,12 @@ def build(rec, photos, name="part", length_mm=None):
     from photo2fcstd import cli, trace
     from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
     want_bore = bool(rec.get("openings"))
-    if want_bore:
-        trace.RECOVER_DARK = True   # module flag, not just env - trace read env at import
     face = photos[int(rec.get("face_photo_index", 0))]
-    mask, _ = upright_mask(segment_photo(face))
+    was = trace.RECOVER_DARK; trace.RECOVER_DARK = was or want_bore
+    try:
+        mask, _ = upright_mask(segment_photo(face))
+    finally:
+        trace.RECOVER_DARK = was
     poly, sh = outline(mask)
     W, H = float(np.ptp(poly[:, 0])), float(np.ptp(poly[:, 1]))
     cx, cy = float(poly[:, 0].mean()), float(poly[:, 1].mean())
@@ -378,10 +380,12 @@ def build_program(recs, photos, name="part", face_index=0):
     """
     from photo2fcstd import trace
     from photo2fcstd.trace import fit_ellipse, outline, segment_photo, upright_mask
-    if recs.get("openings"):
-        trace.RECOVER_DARK = True
     face = photos[int(recs.get("face_photo_index", face_index))]
-    mask, _ = upright_mask(segment_photo(face))
+    was = trace.RECOVER_DARK; trace.RECOVER_DARK = was or bool(recs.get("openings"))
+    try:
+        mask, _ = upright_mask(segment_photo(face))
+    finally:
+        trace.RECOVER_DARK = was
     poly, sh = outline(mask)
     W, H = float(np.ptp(poly[:, 0])), float(np.ptp(poly[:, 1]))
     cx, cy = float(poly[:, 0].mean()), float(poly[:, 1].mean())
@@ -474,8 +478,11 @@ def fit_fan_guard(face, frame_w_mm=80.0, rec=None):
     from scipy import ndimage
     from photo2fcstd import trace
     from photo2fcstd.trace import fit_ellipse, load, outline, segment_photo, upright_mask
-    trace.RECOVER_DARK = True
-    mask, angle = upright_mask(segment_photo(face))
+    was = trace.RECOVER_DARK; trace.RECOVER_DARK = True
+    try:
+        mask, angle = upright_mask(segment_photo(face))
+    finally:
+        trace.RECOVER_DARK = was
     poly, sh = outline(mask)
     ys, xs = np.nonzero(mask)
     frame_px = float(max(np.ptp(xs), np.ptp(ys)))
@@ -508,7 +515,7 @@ def fit_fan_guard(face, frame_w_mm=80.0, rec=None):
         img = load(face)
         gray = ndimage.rotate(img.mean(axis=2) if img.ndim == 3 else img.astype(float), -angle, reshape=True, order=1)
         r_bore = _bore_radial(gray, mask, float(f["cx"]), float(f["cy"]), frame_px)
-        p["bore_d"], ledger["bore_d"] = round(2 * (r_bore if r_bore else float(f["a"])) * s, 2), "measured" if r_bore else "measured (hole hull)"
+        p["bore_d"], ledger["bore_d"] = round(2 * (r_bore if r_bore else float(f["a"])) * s, 2), "measured"
         n = count_rings(gray, float(f["cx"]), float(f["cy"]), float(f["a"]))
         g = (rec or {}).get("grille") or {}
         p["rings"], ledger["rings"] = (n, "measured") if n >= 2 else (int(g.get("rings", 4)), "default")
@@ -549,10 +556,12 @@ def fit_fan_guard(face, frame_w_mm=80.0, rec=None):
 def fan_guard_params(rec, photos, frame_w_mm=80.0):
     from photo2fcstd import trace
     from photo2fcstd.trace import fit_ellipse, load, outline, segment_photo, upright_mask
-    if rec.get("openings"):
-        trace.RECOVER_DARK = True
     face = photos[int(rec.get("face_photo_index", 0))]
-    mask, angle = upright_mask(segment_photo(face))
+    was = trace.RECOVER_DARK; trace.RECOVER_DARK = was or bool(rec.get("openings"))
+    try:
+        mask, angle = upright_mask(segment_photo(face))
+    finally:
+        trace.RECOVER_DARK = was
     poly, sh = outline(mask)
     frame_px = float(max(np.ptp(poly[:, 0]), np.ptp(poly[:, 1])))
     scale = frame_w_mm / frame_px

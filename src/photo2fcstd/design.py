@@ -117,6 +117,8 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
                 R = spec["revolve"]["profile"][1][0]
                 spec["revolve"]["holes"].append({"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how})
         res = _build(spec, out, "board", cls)
+    elif _cadrecode_available():
+        res = _build_cadrecode(carved, out, cls)
     else:
         face = rec.get("face_photo_index")
         axis = carve.axis_facing(carved["board_views"][carved["sources"].index(photos[face])]) \
@@ -126,7 +128,7 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
     if res.get("valid") is False:
         return _refuse(out, "build produced no valid solid", ["reshoot with the target fully in frame"])
     mask = carve.occupancy(carved, axis=2)
-    v = verify(out, photos, rec, threshold=THRESHOLD["board"], mask=mask)
+    v = verify(out, photos, {**rec, "_depth_measured": True}, threshold=THRESHOLD["board"], mask=mask)
     if v["confidence"] != "ok":
         return _refuse(out, "model does not match the carved hull (IoU %s < %s)" % (v["silhouette_iou"], THRESHOLD["board"]), v["advice"])
     return {**res, "board": {"views": carved["views"], "extents_mm": [round(float(x), 2) for x in carved["extents_mm"]], "top_mm": round(float(carved["top_mm"]), 2),
@@ -136,6 +138,32 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
 def _rectifier():
     from photo2fcstd import facepose
     return facepose
+
+
+CADRECODE_PY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".venv-cadrecode", "bin", "python")
+
+
+def _cadrecode_available():
+    return os.environ.get("P2F_CADRECODE", "1") == "1" and os.path.exists(CADRECODE_PY)
+
+
+def _build_cadrecode(carved, out, cls):
+    import subprocess, tempfile
+    import trimesh
+    from photo2fcstd import carve, cli
+    tools = os.path.join(os.path.dirname(CADRECODE_PY), "..", "..", "tools")
+    mesh = carve.mesh_of(carved)
+    pts, _ = trimesh.sample.sample_surface(mesh, 8192)
+    d = tempfile.mkdtemp(prefix="cr_")
+    npy = os.path.join(d, "pts.npy"); np.save(npy, np.asarray(pts))
+    prefix = os.path.splitext(out)[0]
+    r = subprocess.run([CADRECODE_PY, os.path.join(tools, "cadrecode_run.py"), npy, prefix], capture_output=True, text=True, timeout=900,
+                       env={**os.environ, "CADRECODE_ATTN": os.environ.get("CADRECODE_ATTN", "sdpa")})
+    if r.returncode != 0 or not os.path.exists(prefix + ".step"):
+        return {"tier": "board", "part_class": cls, "out": out, "valid": False, "solids": 0, "sketches_clean": False, "cadrecode_error": r.stderr[-300:]}
+    report = cli.freecad_import_step(prefix + ".step", out)
+    return {"tier": "board", "part_class": cls, "out": out, "valid": report["valid"], "solids": report["solids"], "sketches_clean": False,
+            "cadquery": prefix + ".cq.py", "fitter": "cad-recode-v1.5 on the board hull (%d views)" % carved["views"]}
 
 
 def _refuse(out, reason, reshoot):
