@@ -838,3 +838,7 @@ Mode routing checked in 3D: forcing plan mode on the 24 profile-mode parts gives
 0.591 (better on 1, worse on 11); the router is not the loss. Headline after the family work
 (`runs/solid_bench_merged.json`): built 134/150, 3D IoU mean 0.587, median 0.622, >= 0.8 on 25
 parts (17%), < 0.3 on 20; revolves mean 0.633, 16 of 45 at >= 0.8.
+
+View selection on the 65 plan parts is at its ceiling: the router's chosen view scores region 0.651
+against 0.649 for the best single view per part (oracle) and 0.608 for the LLM's face photo alone.
+The remaining plan-mode loss is inside the views, i.e. perspective, not which view is used.
