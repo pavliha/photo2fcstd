@@ -884,3 +884,16 @@ the solution whose camera is above the board (planar targets have a mirrored sec
 old iterative solver could return it, 180 deg off); `capture_check` renders in the corrected board
 frame; three functions in `recognise` and one test set `trace.RECOVER_DARK` without restoring it,
 leaking dark-hole recovery into later builds (00471 went 1.0 -> 0.71 in-suite). All restore now.
+
+## First real photos on the printed sheet (2026-09-07, power bank, A4 target)
+
+Eight iPhone photos, a black power bank standing on the A4 target. Five solve a pose (9-27 corners,
+2-4 px reprojection vs 0.3 on renders: paper, focal from EXIF, no distortion model); three do not
+(one blurred top-down, two with the part lying and covering the markers). The part was moved
+between shots (standing, then lying), so only the four standing views form one set.
+Three limits hit at once: `carve.MAX_HEIGHT_MM` 120 and `clear_prism` 120 mm clipped a part taller
+than that (now 300); the board-comparison mask fails on a black part over black squares; and the
+part's footprint exceeds the A4 clear patch. `capture.board_mask(path=...)` now tries the saliency
+segmenter first, accepted when it stays inside the board prism and does not swallow the sheet,
+falling back to the board comparison (the top-down view). Result: hull 34 x 79 x 116 mm, CAD-Recode
+model 33 x 73 x 116 mm, gate 0.854. Real dimensions awaited from the user.

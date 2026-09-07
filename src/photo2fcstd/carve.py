@@ -6,7 +6,7 @@ from photo2fcstd.errors import CaptureError
 from photo2fcstd.make_target import COLS, ROWS, SQUARE_MM
 
 VOXEL_MM = 0.4
-MAX_HEIGHT_MM = 120.0
+MAX_HEIGHT_MM = 300.0
 MARGIN_MM = 4.0
 MIN_POSED_VIEWS = 3
 DEPTH_TOLERANCE_MM = 6.0
@@ -284,7 +284,7 @@ def board_views(paths):
         p = pose(image, K, cal["dist"] if cal else None)
         if p is None:
             continue
-        m = board_mask(image, p)
+        m = board_mask(image, p, path=path)
         if m.sum() < 50:
             continue
         views.append(p)

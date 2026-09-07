@@ -55,10 +55,25 @@ def focal_px_from_exif(path, shape):
     return f35 * max(shape[:2]) / 36.0 if f35 else None
 
 
-def board_mask(image, view, min_frac=0.0005, open_px=5):
+def board_mask(image, view, min_frac=0.0005, open_px=5, path=None):
     from photo2fcstd.rectify import as_uint8
     from scipy import ndimage
     img = as_uint8(image)
+    if path is not None:
+        from photo2fcstd import trace
+        was = trace.RECOVER_DARK; trace.RECOVER_DARK = False
+        try:
+            sal = trace.segment_photo(path)
+        finally:
+            trace.RECOVER_DARK = was
+        quad = np.zeros(img.shape[:2], np.uint8); cv2.fillConvexPoly(quad, board_quad(view).astype(np.int32), 1)
+        region = np.zeros(img.shape[:2], np.uint8); cv2.fillConvexPoly(region, cv2.convexHull(board_prism(view).astype(np.int32)), 1)
+        if sal.shape == region.shape and (sal & (quad > 0)).sum() < 0.6 * quad.sum() and (sal & (region > 0)).sum() > 0.7 * sal.sum():
+            m = sal & (region > 0)
+            lab, n = ndimage.label(m)
+            if n:
+                sizes = ndimage.sum(m, lab, range(1, n + 1))
+                return lab == (int(np.argmax(sizes)) + 1)
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV) if img.ndim == 3 else None
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) if img.ndim == 3 else img
     prism = np.zeros(gray.shape, np.uint8)
@@ -182,7 +197,15 @@ def clear_quad(view):
     return uv.reshape(-1, 2)
 
 
-def clear_prism(view, height_mm=120.0):
+def board_prism(view, height_mm=300.0):
+    from photo2fcstd.make_target import COLS, ROWS, SQUARE_MM
+    w, h = COLS * SQUARE_MM, ROWS * SQUARE_MM
+    pts = np.float32([[x, y, z] for z in (0.0, height_mm) for x, y in ((0, 0), (w, 0), (w, h), (0, h))])
+    uv, _ = cv2.projectPoints(pts, view["rvec"], view["tvec"], view["K"], view["dist"])
+    return uv.reshape(-1, 2)
+
+
+def clear_prism(view, height_mm=300.0):
     from photo2fcstd.make_target import clear_rect_mm
     x0, y0, x1, y1 = clear_rect_mm()
     pts = np.float32([[x, y, z] for z in (0.0, height_mm) for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))])
