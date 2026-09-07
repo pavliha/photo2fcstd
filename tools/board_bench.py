@@ -15,6 +15,8 @@ SIZE = (1600, 1200)
 FOCAL = 1500.0
 RECS = json.load(open(os.path.join(ROOT, "runs", "bench_recs.json"))) if os.path.exists(os.path.join(ROOT, "runs", "bench_recs.json")) else {}
 VIEWS = [(0, 30), (90, 30), (180, 25), (270, 35), (45, 55), (225, 15)]
+if os.environ.get("BOARD_VIEWS") == "12":
+    VIEWS = [(az, el) for az, el in zip(range(0, 360, 30), [30, 15, 45, 25, 55, 20, 35, 15, 50, 25, 40, 20])]
 PART_MM = 80.0
 VOXEL = 0.4
 

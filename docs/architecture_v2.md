@@ -855,3 +855,11 @@ From the STEP truth mesh points (the "given the geometry" ceiling): valid CadQue
 25/150. The fitting step is solved by a pretrained model when the input is metric geometry; the
 whole problem is the geometry. RTX 5090 boxes need torch cu128 (the pytorch 2.5.1 image has no
 sm_120 kernels); transformers 4.47.1, cadquery 2.8 from pip work.
+
+From the board hull's surface points (six rendered views, `carve.mesh_of`): valid CadQuery on
+129/150, 3D IoU mean 0.650, median 0.707, >= 0.8 on 51 parts (34%). The hull mesh itself scores
+0.695 with 63 at >= 0.8, so CAD-Recode reproduces what it is given and the hull is the ceiling:
+rect 0.78 (photo path 0.56), cylinders 0.77 (0.75), tubes 0.43 (the hull cannot carve a bore), frames
+0.49. Nineteen parts failed inside CadQuery on a degenerate arc. Pipeline "board hull -> CAD-Recode"
+gives double the matching parts of the photo path (51 vs 25) with zero hand-written templates.
+`BOARD_VIEWS=12` in `board_bench.py` tests whether a denser orbit raises the hull ceiling.
