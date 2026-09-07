@@ -53,9 +53,8 @@ def main(parts):
     rows = []
     for k, part in enumerate(parts, 1):
         rows.append(one(part))
-        if k % 5 == 0 or k == len(parts):
-            print("progress %d/%d" % (k, len(parts)), flush=True)
-            json.dump(rows, open(os.path.join(ROOT, "runs", os.environ.get("CHAIN_OUT", "chain_bench.json")), "w"), indent=1)
+        print("progress %d/%d %s %s" % (k, len(parts), part, rows[-1].get("iou3d", rows[-1].get("refused", rows[-1].get("error", "")))[:40] if isinstance(rows[-1].get("iou3d", rows[-1].get("refused", rows[-1].get("error", ""))), str) else rows[-1].get("iou3d")), flush=True)
+        json.dump(rows, open(os.path.join(ROOT, "runs", os.environ.get("CHAIN_OUT", "chain_bench.json")), "w"), indent=1)
     ok = [r for r in rows if "iou3d" in r]; iou = np.array([r["iou3d"] for r in ok])
     print("CHAIN n=%d built=%d refused=%d errors=%d | 3D IoU mean %.3f median %.3f >=0.8 %d <0.3 %d" % (len(rows), len(ok), sum("refused" in r for r in rows), sum("error" in r for r in rows), iou.mean() if len(iou) else 0, np.median(iou) if len(iou) else 0, (iou >= 0.8).sum(), (iou < 0.3).sum()))
     for f in sorted(set(r["fitter"] for r in ok)):

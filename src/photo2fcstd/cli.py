@@ -139,7 +139,7 @@ def freecad_import_step(step_path, out):
               % (os.path.abspath(step_path), os.path.abspath(out)))
     scr.close()
     try:
-        r = subprocess.run([FREECADCMD, scr.name], capture_output=True, text=True, timeout=600)
+        r = subprocess.run([FREECADCMD, scr.name], capture_output=True, text=True, timeout=180)
         line = [l for l in r.stdout.splitlines() if l.startswith("STEP_IMPORT ")]
         return json.loads(line[0][12:]) if line else {"valid": False, "solids": 0, "bbox": None, "error": r.stderr[-300:]}
     finally:

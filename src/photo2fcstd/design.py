@@ -157,7 +157,7 @@ def _build_cadrecode(carved, out, cls):
     d = tempfile.mkdtemp(prefix="cr_")
     npy = os.path.join(d, "pts.npy"); np.save(npy, np.asarray(pts))
     prefix = os.path.splitext(out)[0]
-    r = subprocess.run([CADRECODE_PY, os.path.join(tools, "cadrecode_run.py"), npy, prefix], capture_output=True, text=True, timeout=900,
+    r = subprocess.run([CADRECODE_PY, os.path.join(tools, "cadrecode_run.py"), npy, prefix], capture_output=True, text=True, timeout=int(os.environ.get("P2F_CADRECODE_TIMEOUT", "240")),
                        env={**os.environ, "CADRECODE_ATTN": os.environ.get("CADRECODE_ATTN", "sdpa")})
     if r.returncode != 0 or not os.path.exists(prefix + ".step"):
         return {"tier": "board", "part_class": cls, "out": out, "valid": False, "solids": 0, "sketches_clean": False, "cadrecode_error": r.stderr[-300:]}
