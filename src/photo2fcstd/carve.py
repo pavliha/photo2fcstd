@@ -111,7 +111,8 @@ def top_height(carved, frac=0.9):
     z = carved["points_mm"][:, 2]; vox = carved["voxel_mm"]
     zs = np.arange(z.min(), z.max() + vox, vox)
     area = np.array([((z >= s - vox / 2) & (z < s + vox / 2)).sum() for s in zs])
-    ref = np.median(area[:max(3, len(area) // 4)])
+    q = len(area) // 4
+    ref = np.median(area[q:2 * q]) if q >= 3 else np.median(area[:max(3, q)])
     ok = np.nonzero(area >= frac * ref)[0]
     return float(zs[ok[-1]] + vox / 2)
 
@@ -285,7 +286,7 @@ def board_views(paths):
         if p is None:
             continue
         m = board_mask(image, p, path=path)
-        if m.sum() < 50:
+        if m.sum() < 50 or _covers_markers(m, p):
             continue
         views.append(p)
         masks.append(m)
@@ -307,6 +308,14 @@ def from_known_poses(paths, views, voxel_mm=VOXEL_MM):
     carved["sources"] = used
     carved["calibration_rms_px"] = None
     return carved
+
+
+def _covers_markers(mask, view, limit=0.35):
+    from photo2fcstd.capture import board_quad, clear_quad
+    quad = np.zeros(mask.shape, np.uint8); cv2.fillConvexPoly(quad, board_quad(view).astype(np.int32), 1)
+    patch = np.zeros(mask.shape, np.uint8); cv2.fillConvexPoly(patch, clear_quad(view).astype(np.int32), 1)
+    ring = (quad > 0) & (patch == 0)
+    return bool((mask & ring).sum() > limit * max(ring.sum(), 1))
 
 
 def from_photos(paths, segment_fn=None, voxel_mm=VOXEL_MM):

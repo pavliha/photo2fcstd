@@ -57,8 +57,19 @@ def focal_px_from_exif(path, shape):
 
 def board_mask(image, view, min_frac=0.0005, open_px=5, path=None):
     from photo2fcstd.rectify import as_uint8
-    from scipy import ndimage
     img = as_uint8(image)
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV) if img.ndim == 3 else None
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) if img.ndim == 3 else img
+    def poly(pts):
+        m = np.zeros(gray.shape, np.uint8); cv2.fillConvexPoly(m, cv2.convexHull(np.asarray(pts, np.float32)).astype(np.int32), 1); return m > 0
+    patch, quad, prism = poly(clear_quad(view)), poly(board_quad(view)), poly(board_prism(view))
+    paper = (gray > 185) & ((hsv[..., 1] < 45) if hsv is not None else True)
+    expected = cv2.cvtColor(board_render(view, gray.shape), cv2.COLOR_BGR2GRAY)
+    differs = np.abs(cv2.GaussianBlur(gray, (0, 0), 1.5).astype(int) - cv2.GaussianBlur(expected, (0, 0), 1.5).astype(int)) > 60
+    coloured = (hsv[..., 1] > 60) if hsv is not None else np.zeros(gray.shape, bool)
+    aligned = float(view.get("reprojection_px", 0.0)) < 1.0
+    on_sheet = ((~paper) & patch) | (((differs & aligned) | coloured) & quad & ~patch)
+    sal = None
     if path is not None:
         from photo2fcstd import trace
         was = trace.RECOVER_DARK; trace.RECOVER_DARK = False
@@ -66,27 +77,17 @@ def board_mask(image, view, min_frac=0.0005, open_px=5, path=None):
             sal = trace.segment_photo(path)
         finally:
             trace.RECOVER_DARK = was
-        quad = np.zeros(img.shape[:2], np.uint8); cv2.fillConvexPoly(quad, board_quad(view).astype(np.int32), 1)
-        region = np.zeros(img.shape[:2], np.uint8); cv2.fillConvexPoly(region, cv2.convexHull(board_prism(view).astype(np.int32)), 1)
-        if sal.shape == region.shape and (sal & (quad > 0)).sum() < 0.6 * quad.sum() and (sal & (region > 0)).sum() > 0.7 * sal.sum():
-            m = sal & (region > 0)
-            lab, n = ndimage.label(m)
-            if n:
-                sizes = ndimage.sum(m, lab, range(1, n + 1))
-                return lab == (int(np.argmax(sizes)) + 1)
-    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV) if img.ndim == 3 else None
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) if img.ndim == 3 else img
-    prism = np.zeros(gray.shape, np.uint8)
-    cv2.fillConvexPoly(prism, cv2.convexHull(clear_prism(view).astype(np.int32)), 1)
-    patch = np.zeros(gray.shape, np.uint8)
-    cv2.fillConvexPoly(patch, clear_quad(view).astype(np.int32), 1)
-    paper = (gray > 185) & ((hsv[..., 1] < 45) if hsv is not None else True)
-    expected = cv2.cvtColor(board_render(view, gray.shape), cv2.COLOR_BGR2GRAY)
-    differs = np.abs(cv2.GaussianBlur(gray, (0, 0), 1.5).astype(int) - cv2.GaussianBlur(expected, (0, 0), 1.5).astype(int)) > 60
-    coloured = (hsv[..., 1] > 60) if hsv is not None else np.zeros(gray.shape, bool)
-    mask = ((~paper) & (patch > 0)) | ((differs | coloured) & (prism > 0) & (patch == 0))
+        ring = quad & ~patch
+        if sal.shape != gray.shape or (sal & ring).sum() > 0.35 * ring.sum():
+            sal = None
+    mask = (sal & prism) if sal is not None else (on_sheet | ((~paper) & prism & ~quad))
     mask = cv2.morphologyEx(mask.astype(np.uint8), cv2.MORPH_OPEN, np.ones((open_px, open_px), np.uint8)) > 0
     mask = cv2.morphologyEx(mask.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((3 * open_px, 3 * open_px), np.uint8)) > 0
+    return _largest_touching(mask, patch.astype(np.uint8), min_frac)
+
+
+def _largest_touching(mask, patch, min_frac):
+    from scipy import ndimage
     lab, n = ndimage.label(mask)
     if n == 0:
         return mask
