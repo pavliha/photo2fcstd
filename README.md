@@ -50,7 +50,6 @@ Every attempt to recover where the camera was from the photos themselves:
 | phone-grade poses (0.5°, 1°) into the hull | 0.717 → 0.632 → 0.549 |
 | refinement on top of phone-grade poses | did not recover the box |
 
-![multiview](docs/img/multiview_cases.png)
 ![pose noise](docs/img/pose_noise.png)
 
 ### 4. Round parts: the recogniser was the bug
@@ -66,7 +65,6 @@ them. Revolve length from the side view instead of the face view, and the disc-v
 took revolves from 0.58 to 0.66 in 3D. The silhouette gate turned out to be uncorrelated with 3D
 correctness: it can judge an outline, never a depth.
 
-![verify](docs/img/verify_dataset.png)
 
 ### 6. Reconstruct perspective first: the printed sheet
 A ChArUco sheet under the part gives every photo an exact pose and millimetre scale. The v1 code
@@ -113,4 +111,14 @@ python tools/solid_bench.py                                            # shipped
 ```
 
 FreeCAD (`FREECADCMD`) is needed to build; CAD-Recode runs in its own environment
-(`.venv-cadrecode`, see `docs/architecture_v2.md`). The PrintCAD dataset is not in the repo.
+(`.venv-cadrecode`, see `docs/architecture_v2.md`).
+
+## Data
+
+The PrintCAD dataset (photos, STEP and STL files) is not in the repository, and neither is anything
+derived from it: the ideal sketches, the depth, mode, tilt and axis training rows, and the figures
+that show dataset photos. Its license is not published, so nothing from it is redistributed here.
+With the dataset under `data/printcad/PrintCAD/`, the derived files are rebuilt with
+`photo2fcstd.ideal_sketches`, `tools/depth_data.py`, `tools/axis_data.py` and
+`tools/axis_data_board.py`; the benches and the dataset regression tests skip when they are absent.
+Trained model files (`data/*.joblib`, `data/*.pt`) are included.

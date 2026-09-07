@@ -7,7 +7,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GOLDEN = os.path.join(ROOT, "data", "regression", "round_parts.json")
 PHOTOS = os.path.join(ROOT, "data", "printcad", "PrintCAD", "captured_img")
 
-pytestmark = pytest.mark.skipif(not os.path.isdir(PHOTOS), reason="PrintCAD photos not present")
+IDEAL_JSON = os.path.join(ROOT, "data", "printcad_ideal_sketches_all.json")
+pytestmark = pytest.mark.skipif(not os.path.exists(IDEAL_JSON) or not os.path.isdir(PHOTOS), reason="PrintCAD photos not present")
 
 
 def test_round_parts_do_not_regress():

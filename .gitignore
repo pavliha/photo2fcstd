@@ -22,3 +22,17 @@ data/sketchnet_*.npz
 data/fusion360_ideal_sketches.json
 data/fusion360_probe.json
 .venv/
+.idea/
+data/printcad_ideal_sketches_all.json
+data/mode_labels*.json
+data/depth_rows.json
+data/tilt_criteria.json
+data/view_ceiling*.json
+data/view_features.json
+data/axis_rows*.json
+data/axis_holdout.json
+data/pair_survey_png/
+tools/*.png
+docs/img/multiview_cases.png
+docs/img/verify_dataset.png
+docs/img/results_gate.png
