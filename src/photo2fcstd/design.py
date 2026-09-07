@@ -117,8 +117,8 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
                 R = spec["revolve"]["profile"][1][0]
                 spec["revolve"]["holes"].append({"type": "circle", "cx": 0.0, "cy": 0.0, "r": round(R * ratio, 2), "source": how})
         res = _build(spec, out, "board", cls)
-    elif _cadrecode_available():
-        res = _build_cadrecode(carved, out, cls)
+    elif _cadrecode_available() and (res := _build_cadrecode(carved, out, cls)).get("valid"):
+        pass
     else:
         face = rec.get("face_photo_index")
         axis = carve.axis_facing(carved["board_views"][carved["sources"].index(photos[face])]) \
@@ -128,7 +128,7 @@ def _design_from_board(carved, photos, out, rec, cls, **kw):
     if res.get("valid") is False:
         return _refuse(out, "build produced no valid solid", ["reshoot with the target fully in frame"])
     mask = carve.occupancy(carved, axis=2)
-    v = verify(out, photos, {**rec, "_depth_measured": True}, threshold=THRESHOLD["board"], mask=mask)
+    v = verify(out, photos, {**rec, "_depth_measured": True}, threshold=THRESHOLD["board"], mask=mask, axes=(0, 1))
     if v["confidence"] != "ok":
         return _refuse(out, "model does not match the carved hull (IoU %s < %s)" % (v["silhouette_iou"], THRESHOLD["board"]), v["advice"])
     return {**res, "board": {"views": carved["views"], "extents_mm": [round(float(x), 2) for x in carved["extents_mm"]], "top_mm": round(float(carved["top_mm"]), 2),
@@ -184,7 +184,7 @@ def _stem(out):
     return os.path.splitext(os.path.basename(out))[0]
 
 
-def verify(out, photos, rec, threshold=None, mask=None):
+def verify(out, photos, rec, threshold=None, mask=None, axes=None):
     import numpy as np
     from photo2fcstd.trace import segment_photo, upright_mask
     from photo2fcstd import trace
@@ -194,7 +194,7 @@ def verify(out, photos, rec, threshold=None, mask=None):
         masks = [upright_mask(mask)[0]] if mask is not None else [upright_mask(segment_photo(p))[0] for p in photos]
     finally:
         trace.RECOVER_DARK = was
-    model = _model_silhouette(out)
+    model = _model_silhouette(out, axes)
     advice = []
     iou = None
     if model is not None:
@@ -208,7 +208,7 @@ def verify(out, photos, rec, threshold=None, mask=None):
     return {"silhouette_iou": iou, "views": ious if model is not None else None, "advice": advice, "confidence": "ok" if ok else "low"}
 
 
-def _model_silhouette(out):
+def _model_silhouette(out, axes=None):
     import subprocess, tempfile
     import numpy as np
     freecad = os.environ.get("FREECADCMD", os.path.expanduser("~/Code/FreeCAD/build/release/bin/FreeCADCmd"))
@@ -223,8 +223,8 @@ def _model_silhouette(out):
         "sh=(fuse[-1] if fuse else bodies[-1] if bodies else max(s,key=lambda o:o.Shape.Volume)).Shape\n"
         "v,t=sh.tessellate(0.5)\n"
         "V=np.array([[p.x,p.y,p.z] for p in v]); T=np.array(t)\n"
-        "ax=np.argsort(np.ptp(V,0))[-2:]\n"
-        "np.savez(%r,tris=V[T][:,:,ax])\n" % (out, npz))
+        "ax=%s\n"
+        "np.savez(%r,tris=V[T][:,:,ax])\n" % (out, "np.argsort(np.ptp(V,0))[-2:]" if axes is None else "np.array(%r)" % list(axes), npz))
     scr.close()
     try:
         subprocess.run([freecad, scr.name], capture_output=True, text=True, timeout=120)
