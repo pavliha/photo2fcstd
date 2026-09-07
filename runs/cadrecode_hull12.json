@@ -1,0 +1,900 @@
+[
+ {
+  "part": "01504",
+  "hull_mesh_iou": 0.3464,
+  "hull_iou": 0.3298,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-2))\nr=w0.sketch().segment((-100,25),(-98,-32)).segment((-84,-32)).segment((-84,-44)).segment((-30,-41)).arc((-21,-44),(-11,-44)).segment((-11,-43)).segment((83,-44)).segment((83,-34)).segment((98,-34)).segment((100,13)).segment((96,13)).segment((96,28)).segment((91,28)).segment((91,44)).segment((-65,44)).segment((-65,41)).segment((-94,41)).segment((-94,25)).close().assemble().finalize().extrude(4)"
+ },
+ {
+  "part": "01540",
+  "hull_mesh_iou": 0.8948,
+  "hull_iou": 0.9475,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,6))\nr=w0.sketch().segment((-74,-20),(84,-20)).arc((99,-8),(95,13)).segment((95,15)).segment((93,15)).arc((83,20),(72,20)).segment((-74,20)).segment((-74,19)).arc((-100,-1),(-74,-19)).close().assemble().finalize().extrude(-12)"
+ },
+ {
+  "part": "01520",
+  "hull_mesh_iou": 0.8502,
+  "hull_iou": 0.1113,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,27))\nr=w0.sketch().segment((-100,1),(-98,-1)).arc((-83,-54),(-41,-89)).segment((-39,-96)).segment((-32,-94)).arc((4,-99),(40,-95)).segment((32,-95)).segment((32,-90)).segment((39,-90)).segment((39,-94)).arc((78,-61),(98,-12)).segment((100,-1)).segment((98,1)).arc((83,54),(41,89)).segment((39,96)).segment((32,94)).arc((-4,99),(-40,95)).segment((-32,95)).segment((-32,90)).segment((-39,90)).segment((-39,96)).arc((-78,61),(-98,12)).close().assemble().reset().face(w0.sketch().segment((-56,25),(-44,24)).segment((-47,-26)).segment((-34,-27)).segm"
+ },
+ {
+  "part": "00008",
+  "hull_mesh_iou": 0.7384,
+  "hull_iou": 0.7213,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,11))\nr=w0.sketch().segment((-100,-14),(-98,-16)).arc((-67,-73),(-7,-99)).segment((-5,-100)).segment((-4,-99)).arc((73,-66),(98,12)).segment((100,14)).segment((98,16)).arc((67,73),(7,99)).segment((5,100)).segment((4,99)).arc((-73,66),(-98,-12)).close().assemble().reset().face(w0.sketch().segment((-60,-10),(-58,-10)).arc((-57,-17),(-54,-24)).segment((-54,-28)).segment((-52,-28)).arc((0,-55),(52,-28)).segment((54,-28)).segment((54,-24)).arc((57,-17),(58,-10)).segment((60,-10)).segment((60,10)).segment((58,10)).arc((57,17),(54,24)).segment((54"
+ },
+ {
+  "part": "00798",
+  "hull_mesh_iou": 0.9879,
+  "hull_iou": 0.986,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-95,0,0))\nw1=cq.Workplane('YZ',origin=(-100,0,0))\nr=w0.sketch().segment((-17,-14),(17,-14)).arc((15,0),(17,14)).segment((-17,14)).close().assemble().finalize().extrude(193).union(w1.workplane(offset=200/2).box(32,32,200))"
+ },
+ {
+  "part": "00471",
+  "hull_mesh_iou": 0.9994,
+  "hull_iou": 0.965,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(35,0,0))\nr=w0.sketch().segment((-7,-6),(-6,-6)).segment((-6,-7)).segment((5,-7)).segment((5,-6)).segment((6,-6)).segment((6,6)).segment((5,6)).segment((5,7)).segment((-6,7)).segment((-6,6)).segment((-7,6)).close().assemble().finalize().extrude(-135).union(w0.sketch().segment((-6,-7),(6,-7)).segment((6,0)).arc((8,0),(6,1)).segment((6,7)).segment((-6,7)).close().assemble().finalize().extrude(-43)).union(w0.sketch().segment((-8,6),(-7,-7)).segment((6,-6)).segment((6,7)).close().assemble().finalize().extrude(65))"
+ },
+ {
+  "part": "00039",
+  "hull_mesh_iou": 0.9526,
+  "hull_iou": 0.9201,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,7))\nr=w0.sketch().arc((-66,41),(-99,-7),(-55,-45)).segment((-55,-49)).segment((-46,-49)).arc((-14,-55),(18,-52)).arc((41,-52),(63,-43)).arc((99,-4),(74,36)).arc((54,48),(31,51)).arc((2,55),(-27,51)).arc((-42,50),(-56,46)).segment((-55,46)).segment((-55,41)).close().assemble().reset().face(w0.sketch().segment((-48,-15),(-41,-15)).arc((-19,-22),(3,-21)).arc((28,-18),(48,-10)).arc((62,1),(64,18)).arc((63,19),(63,20)).arc((44,13),(26,21)).segment((-20,21)).arc((-29,19),(-38,16)).segment((-48,16)).segment((-48,13)).arc((-56,-1),(-48,-15)).assem"
+ },
+ {
+  "part": "00595",
+  "hull_mesh_iou": 0.9998,
+  "hull_iou": 0.931,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-99,0,0))\nr=w0.sketch().segment((-42,-2),(-41,-2)).segment((-41,-4)).segment((41,-4)).segment((41,-2)).segment((42,-2)).segment((42,2)).segment((41,2)).segment((41,4)).segment((-41,4)).segment((-41,2)).segment((-42,2)).close().assemble().finalize().extrude(199)"
+ },
+ {
+  "part": "00386",
+  "hull_mesh_iou": 0.9624,
+  "hull_iou": 0.9505,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-26))\nr=w0.sketch().segment((-100,-16),(-96,-16)).segment((-96,-20)).segment((-98,-20)).segment((-98,-28)).segment((-96,-28)).segment((-96,-41)).segment((-71,-41)).segment((-71,-40)).segment((-69,-40)).segment((-69,-41)).segment((-65,-41)).arc((-53,-43),(-41,-41)).segment((-37,-41)).segment((-37,-43)).segment((28,-43)).segment((28,-40)).segment((73,-43)).segment((73,-41)).segment((96,-41)).segment((96,-16)).segment((99,-16)).segment((99,16)).segment((96,16)).segment((96,20)).segment((98,20)).segment((98,28)).segment((96,28)).segment((96,31"
+ },
+ {
+  "part": "00724",
+  "hull_mesh_iou": 0.8708,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "00005",
+  "hull_mesh_iou": 0.2436,
+  "hull_iou": 0.2531,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-99,0,0))\nw1=cq.Workplane('YZ',origin=(-100,0,0))\nr=w0.sketch().segment((-15,-18),(-10,-18)).arc((0,-23),(10,-18)).segment((15,-18)).segment((14,23)).segment((-15,23)).close().assemble().finalize().extrude(198).union(w1.sketch().arc((-14,-13),(-10,-12),(-10,-16)).arc((10,13),(-14,-13)).assemble().finalize().extrude(200))"
+ },
+ {
+  "part": "00280",
+  "hull_mesh_iou": 0.3474,
+  "hull_iou": 0.3037,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,2))\nr=w0.sketch().segment((-14,-99),(-14,-83)).arc((0,-86),(14,-83)).segment((14,-99)).arc((99,-1),(14,99)).segment((14,83)).arc((0,86),(-14,83)).segment((-14,99)).arc((-99,-1),(-14,-99)).assemble().circle(85,mode='s').finalize().extrude(-4)"
+ },
+ {
+  "part": "01630",
+  "hull_mesh_iou": 0.9404,
+  "hull_iou": 0.1343,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,40))\nr=w0.sketch().segment((-99,-10),(-97,-11)).arc((-88,-40),(-69,-67)).segment((-69,-73)).segment((-63,-73)).arc((-50,-84),(-35,-94)).segment((-35,-87)).arc((0,-97),(35,-87)).segment((35,-94)).arc((50,-84),(63,-73)).segment((69,-73)).segment((69,-67)).arc((88,-37),(95,-1)).segment((99,10)).segment((95,11)).arc((88,35),(75,58)).segment((75,61)).segment((73,61)).arc((60,74),(45,83)).segment((45,89)).segment((35,89)).arc((0,95),(-35,89)).segment((-45,89)).segment((-45,88)).segment((-46,89)).segment((-47,87)).arc((-79,55),(-96,10)).close().a"
+ },
+ {
+  "part": "00096",
+  "hull_mesh_iou": 0.7721,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "00500",
+  "hull_mesh_iou": 0.8064,
+  "hull_iou": 0.5182,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-6))\nr=w0.sketch().segment((-100,71),(61,29)).segment((72,-13)).segment((72,-1)).segment((77,-1)).segment((77,-2)).segment((80,-3)).segment((77,-3)).segment((77,-30)).segment((100,-78)).arc((89,-42),(77,-4)).segment((77,-16)).segment((72,-16)).segment((72,-5)).arc((50,42),(4,55)).arc((-48,67),(-100,77)).close().assemble().finalize().extrude(12)"
+ },
+ {
+  "part": "01470",
+  "hull_mesh_iou": 0.7177,
+  "hull_iou": 0.7895,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.sketch().segment((-6,0),(-5,-4)).segment((-4,-4)).segment((-4,-5)).segment((4,-5)).segment((4,0)).segment((5,0)).segment((4,4)).segment((4,5)).segment((-4,5)).segment((-4,0)).close().assemble().finalize().extrude(-200)"
+ },
+ {
+  "part": "00541",
+  "hull_mesh_iou": 0.8018,
+  "hull_iou": 0.7902,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,3))\nr=w0.sketch().segment((-100,-29),(-99,-29)).segment((-99,-41)).segment((-94,-41)).segment((-94,-79)).segment((-99,-79)).segment((-99,-89)).segment((100,-90)).segment((100,-49)).arc((93,-29),(100,-8)).segment((100,89)).segment((-99,90)).close().assemble().reset().face(w0.sketch().segment((-94,-79),(-93,-79)).segment((-93,-83)).segment((93,-82)).segment((93,-79)).segment((94,-79)).segment((94,79)).segment((93,79)).segment((93,82)).segment((-93,82)).segment((-93,79)).segment((-94,79)).close().assemble(),mode='s').finalize().extrude(-6)"
+ },
+ {
+  "part": "01544",
+  "hull_mesh_iou": 0.7889,
+  "hull_iou": 0.7581,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,11))\nr=w0.sketch().segment((-100,-3),(-97,-16)).segment((-95,-15)).arc((-93,-27),(-88,-38)).segment((-92,-35)).arc((-78,-59),(-57,-78)).segment((-57,-83)).segment((-49,-83)).arc((-18,-97),(16,-97)).segment((13,-94)).arc((47,-86),(74,-65)).segment((71,-69)).arc((93,-33),(97,10)).segment((100,10)).segment((97,23)).segment((95,22)).arc((93,33),(88,43)).segment((92,40)).arc((78,64),(57,82)).segment((61,79)).arc((37,92),(10,98)).segment((13,94)).arc((-21,97),(-51,83)).segment((-49,87)).arc((-71,69),(-88,45)).segment((-85,49)).arc((-93,27),(-97,"
+ },
+ {
+  "part": "00011",
+  "hull_mesh_iou": 0.2007,
+  "hull_iou": 0.2036,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,91,0))\nr=w0.sketch().segment((-35,-91),(-30,-91)).segment((-30,-100)).segment((35,-100)).segment((35,75)).segment((-34,100)).segment((-35,100)).close().assemble().finalize().extrude(-182)"
+ },
+ {
+  "part": "00794",
+  "hull_mesh_iou": 0.9139,
+  "hull_iou": 0.9111,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,17))\nr=w0.sketch().arc((-98,15),(-83,-53),(-23,-88)).arc((55,-77),(98,-10)).arc((98,29),(80,64)).segment((71,64)).segment((71,73)).arc((50,85),(27,91)).segment((27,70)).segment((22,70)).segment((22,46)).arc((57,1),(19,-34)).arc((-38,-26),(-31,34)).arc((-31,59),(-40,82)).segment((-40,85)).arc((-59,81),(-76,70)).segment((-77,70)).segment((-77,68)).arc((-95,37),(-98,15)).assemble().finalize().extrude(-34)"
+ },
+ {
+  "part": "01264",
+  "hull_mesh_iou": 0.3502,
+  "hull_iou": 0.3192,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-2))\nr=w0.sketch().segment((-100,34),(-88,34)).segment((-91,10)).segment((-80,9)).arc((-75,-32),(-40,-52)).segment((-40,-48)).segment((59,-52)).segment((59,-49)).arc((78,-25),(87,3)).arc((99,33),(70,52)).segment((40,52)).segment((40,50)).arc((18,47),(-2,37)).segment((-4,37)).segment((-4,36)).arc((-10,31),(-15,25)).segment((-14,41)).segment((-97,44)).segment((-97,43)).segment((-100,43)).close().assemble().finalize().extrude(4)"
+ },
+ {
+  "part": "00384",
+  "hull_mesh_iou": 0.7585,
+  "hull_iou": 0.7754,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-89,0,0))\nw1=cq.Workplane('XY',origin=(0,0,-23))\nr=w0.sketch().segment((-18,-17),(-16,-17)).segment((-16,-26)).segment((6,-26)).arc((12,-22),(19,-20)).segment((18,26)).segment((-17,26)).close().assemble().finalize().extrude(189).union(w1.sketch().arc((-99,-1),(-99,-7),(-93,-10)).arc((-72,-17),(-51,-10)).arc((-52,-7),(-49,-7)).arc((-48,0),(-49,7)).segment((-41,7)).segment((-41,17)).segment((-96,17)).segment((-96,16)).arc((-99,8),(-99,-1)).assemble().finalize().extrude(47))"
+ },
+ {
+  "part": "01744",
+  "hull_mesh_iou": 0.8421,
+  "hull_iou": 0.841,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,18))\nr=w0.sketch().segment((-99,-14),(-97,-14)).arc((-62,-77),(7,-99)).segment((20,-99)).segment((20,-97)).arc((77,-63),(98,0)).segment((99,0)).segment((99,14)).segment((97,14)).arc((62,76),(-7,99)).segment((-20,99)).segment((-20,97)).arc((-77,62),(-98,-0)).close().assemble().finalize().extrude(-36)"
+ },
+ {
+  "part": "00245",
+  "hull_mesh_iou": 0.9995,
+  "hull_iou": 0.9566,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(98,0,0))\nr=w0.sketch().segment((-48,-1),(-46,-1)).segment((-46,-3)).segment((46,-3)).segment((46,-1)).segment((48,-1)).segment((48,1)).segment((46,1)).segment((46,3)).segment((-46,3)).segment((-46,1)).segment((-48,1)).close().assemble().finalize().extrude(-198).union(w0.workplane(offset=2/2).cylinder(2,20))"
+ },
+ {
+  "part": "00149",
+  "hull_mesh_iou": 0.8915,
+  "hull_iou": 0.8783,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,73))\nr=w0.workplane(offset=-146/2).moveTo(0,1).cylinder(146,95).union(w0.sketch().segment((-97,-15),(-89,-15)).arc((-68,-68),(-18,-94)).segment((-17,-100)).segment((1,-98)).arc((11,-97),(21,-94)).segment((39,-91)).segment((38,-85)).arc((50,-73),(60,-59)).arc((97,-6),(74,55)).segment((73,61)).segment((65,60)).arc((28,94),(-22,98)).segment((-23,94)).arc((-45,85),(-63,70)).segment((-69,71)).segment((-68,69)).arc((-80,56),(-89,40)).segment((-97,16)).segment((-95,15)).arc((-97,0),(-95,-15)).close().assemble().finalize().extrude(-54))"
+ },
+ {
+  "part": "01448",
+  "hull_mesh_iou": 0.8866,
+  "hull_iou": 0.9223,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,14))\nr=w0.sketch().segment((-100,-19),(-95,-21)).arc((-88,-46),(-72,-69)).segment((-72,-68)).segment((-44,-82)).segment((-45,-89)).arc((-35,-94),(-25,-97)).segment((-20,-99)).segment((-19,-97)).arc((46,-87),(91,-38)).segment((95,-38)).segment((95,-31)).arc((100,0),(95,31)).segment((95,38)).segment((91,38)).arc((44,89),(-24,97)).segment((-29,99)).segment((-30,95)).arc((-49,86),(-66,75)).segment((-66,72)).segment((-68,72)).segment((-68,73)).arc((-73,68),(-78,61)).segment((-82,62)).segment((-83,55)).arc((-97,20),(-98,-17)).close().assemble()."
+ },
+ {
+  "part": "01341",
+  "hull_mesh_iou": 0.3697,
+  "hull_iou": 0.3306,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-2))\nr=w0.sketch().segment((-100,-15),(-51,-15)).arc((-34,-14),(-17,-15)).segment((50,-15)).segment((50,-12)).segment((52,-12)).segment((52,-15)).segment((90,-15)).segment((100,-11)).segment((98,15)).segment((50,12)).segment((50,15)).segment((-17,15)).arc((-34,14),(-51,15)).segment((-100,15)).close().assemble().finalize().extrude(4)"
+ },
+ {
+  "part": "00838",
+  "hull_mesh_iou": 0.6873,
+  "hull_iou": 0.1328,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,21))\nr=w0.sketch().segment((-100,-12),(-97,-12)).arc((-83,-61),(-40,-78)).segment((-40,-79)).segment((-18,-79)).arc((-10,-81),(-2,-81)).segment((-2,-79)).segment((1,-79)).segment((1,-81)).arc((8,-80),(14,-79)).segment((15,-79)).arc((23,-81),(31,-81)).segment((31,-79)).segment((34,-79)).segment((34,-81)).arc((41,-80),(49,-78)).segment((66,-78)).segment((66,-73)).arc((83,-62),(95,-42)).segment((97,-42)).segment((97,-24)).arc((100,-3),(97,18)).segment((97,37)).segment((95,37)).arc((83,60),(66,78)).segment((66,77)).segment((34,77)).segment((34"
+ },
+ {
+  "part": "00725",
+  "hull_mesh_iou": 0.8174,
+  "hull_iou": 0.8114,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,27))\nr=w0.sketch().segment((-98,-27),(-95,-27)).arc((-72,-64),(-36,-85)).segment((-36,-86)).segment((-32,-87)).segment((-31,-86)).arc((10,-90),(50,-82)).segment((50,-75)).segment((63,-75)).arc((79,-58),(91,-39)).segment((95,-39)).segment((95,-30)).arc((99,-5),(98,20)).segment((98,27)).segment((96,27)).arc((73,64),(37,85)).segment((36,86)).segment((35,85)).arc((1,89),(-33,86)).segment((-33,88)).segment((-36,88)).segment((-36,85)).arc((-72,68),(-95,30)).segment((-98,30)).segment((-98,20)).arc((-100,0),(-98,-20)).close().assemble().reset().fa"
+ },
+ {
+  "part": "01109",
+  "hull_mesh_iou": 0.8297,
+  "hull_iou": 0.8403,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,15))\nr=w0.sketch().segment((-100,-18),(-97,-18)).segment((-99,-39)).segment((-97,-39)).segment((-97,-48)).segment((-62,-49)).segment((-62,-51)).segment((-59,-49)).segment((96,-50)).segment((96,-39)).segment((97,-39)).segment((97,-18)).segment((99,-18)).segment((99,-1)).segment((96,-1)).segment((96,7)).segment((95,7)).segment((100,16)).segment((97,18)).segment((99,48)).segment((79,50)).segment((78,37)).segment((62,4)).segment((63,4)).segment((63,3)).segment((65,3)).segment((49,-16)).segment((30,-16)).segment((30,-25)).segment((-4,-27)).segm"
+ },
+ {
+  "part": "00297",
+  "hull_mesh_iou": 0.9719,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "01362",
+  "hull_mesh_iou": 0.5673,
+  "hull_iou": 0.5584,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,-19,0))\nw1=cq.Workplane('YZ',origin=(92,0,0))\nr=w0.sketch().segment((-33,-82),(-28,-82)).segment((-28,-95)).segment((33,-97)).segment((33,95)).segment((25,95)).segment((26,98)).segment((-28,100)).segment((-29,69)).segment((-29,-81)).segment((-33,-81)).close().assemble().finalize().extrude(38).union(w1.workplane(offset=-186/2).moveTo(0,-31).cylinder(186,3))"
+ },
+ {
+  "part": "00972",
+  "hull_mesh_iou": 0.981,
+  "hull_iou": 0.9897,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-15))\nr=w0.sketch().segment((-100,-11),(-98,-12)).segment((-98,-22)).segment((-68,-22)).segment((-66,-22)).segment((-66,-21)).segment((-65,-21)).segment((-65,-22)).segment((-64,-22)).segment((-64,-21)).segment((-63,-21)).segment((-63,-22)).segment((-62,-22)).segment((-62,-21)).segment((-61,-21)).segment((-61,-22)).segment((-60,-22)).segment((-60,-21)).segment((-59,-21)).segment((-59,-22)).segment((-58,-22)).segment((-58,-21)).segment((-57,-21)).segment((-57,-22)).segment((98,-23)).segment((100,21)).segment((32,22)).segment((32,21)).segment"
+ },
+ {
+  "part": "01741",
+  "hull_mesh_iou": 0.2076,
+  "hull_iou": 0.2324,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,30,0))\nr=w0.sketch().segment((-58,-82),(-55,-82)).segment((-55,-93)).segment((55,-93)).segment((55,-82)).segment((58,-82)).segment((58,82)).segment((55,82)).segment((55,93)).segment((44,93)).segment((44,97)).segment((31,97)).arc((11,100),(-9,97)).segment((-22,97)).segment((-22,93)).segment((-55,93)).segment((-55,82)).segment((-58,82)).close().assemble().finalize().extrude(-60).union(w0.sketch().segment((-57,-93),(-43,-95)).arc((-15,-98),(13,-98)).segment((57,-97)).segment((57,97)).segment((-57,98)).close().assemble().finalize().extrude(-56))"
+ },
+ {
+  "part": "01364",
+  "hull_mesh_iou": 0.6038,
+  "hull_iou": 0.5991,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,5))\nr=w0.sketch().segment((-100,-19),(-85,-20)).segment((-85,-19)).segment((-82,-19)).segment((-82,-20)).segment((-8,-20)).segment((-8,-19)).segment((59,-19)).segment((59,-20)).segment((68,-20)).segment((68,-19)).segment((100,-19)).segment((98,19)).segment((68,20)).segment((68,19)).segment((65,19)).segment((65,20)).segment((-8,20)).segment((-8,19)).segment((-82,19)).segment((-82,18)).segment((-99,19)).close().assemble().finalize().extrude(-11)"
+ },
+ {
+  "part": "00060",
+  "hull_mesh_iou": 0.7712,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "00773",
+  "hull_mesh_iou": 0.8392,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "00882",
+  "hull_mesh_iou": 1.0,
+  "hull_iou": 1.0,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-100,0,0))\nr=w0.sketch().segment((-4,1),(-3,1)).segment((-3,-1)).arc((0,-3),(4,0)).segment((3,0)).segment((3,2)).segment((4,2)).arc((0,3),(-4,1)).assemble().finalize().extrude(200)"
+ },
+ {
+  "part": "00907",
+  "hull_mesh_iou": 0.1163,
+  "hull_iou": 0.1136,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,2))\nr=w0.sketch().segment((-91,-51),(-80,-62)).segment((-68,-52)).arc((-77,-10),(-48,21)).segment((-48,28)).segment((-40,28)).arc((1,33),(26,-3)).segment((30,-3)).segment((30,-10)).arc((31,-11),(31,-12)).segment((49,-6)).segment((49,-10)).segment((25,-13)).arc((25,-21),(24,-29)).segment((100,-17)).segment((91,15)).segment((45,4)).arc((20,45),(-26,61)).segment((-26,59)).segment((-31,59)).segment((-31,60)).arc((-43,51),(-53,39)).segment((-91,-3)).arc((-100,-26),(-91,-51)).assemble().finalize().extrude(-4)"
+ },
+ {
+  "part": "00944",
+  "hull_mesh_iou": 0.7174,
+  "hull_iou": 0.7635,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,49))\nw1=cq.Workplane('YZ',origin=(33,0,0))\nr=w0.sketch().arc((-94,-24),(-83,-62),(-45,-72)).arc((-21,-74),(2,-71)).segment((2,-75)).segment((53,-71)).segment((53,-61)).arc((86,-31),(94,14)).segment((100,17)).segment((96,25)).arc((96,46),(89,66)).segment((89,70)).segment((85,72)).arc((76,73),(68,76)).segment((64,74)).arc((58,64),(53,54)).segment((53,49)).segment((48,46)).arc((47,28),(53,11)).segment((53,10)).segment((2,-19)).segment((2,-18)).arc((-21,-11),(-45,-1)).arc((-76,16),(-94,-15)).arc((-97,-19),(-94,-24)).assemble().finalize().extru"
+ },
+ {
+  "part": "01761",
+  "hull_mesh_iou": 0.3337,
+  "hull_iou": 0.329,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.sketch().segment((-38,1),(-36,1)).segment((-37,-2)).segment((38,-2)).segment((36,2)).segment((-38,2)).close().assemble().finalize().extrude(-200)"
+ },
+ {
+  "part": "01657",
+  "hull_mesh_iou": 0.2392,
+  "hull_iou": 0.2253,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,31,0))\nw1=cq.Workplane('ZX',origin=(0,29,0))\nr=w0.sketch().segment((-49,-95),(-20,-95)).segment((-20,-99)).segment((-18,-99)).segment((-18,-100)).segment((18,-100)).segment((18,-99)).segment((20,-99)).segment((20,-95)).segment((50,-95)).segment((50,-80)).segment((72,-80)).segment((72,100)).segment((50,100)).segment((50,80)).segment((20,80)).segment((20,84)).segment((18,84)).segment((18,85)).segment((-18,85)).segment((-18,84)).segment((-20,84)).segment((-20,80)).segment((-49,80)).close().assemble().push([(66,-71)]).circle(11,mode='s').finaliz"
+ },
+ {
+  "part": "00224",
+  "hull_mesh_iou": 0.8958,
+  "hull_iou": 0.9231,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.sketch().segment((-6,0),(-3,-3)).segment((-3,-4)).segment((2,-4)).segment((6,0)).segment((5,3)).segment((4,3)).segment((-4,3)).close().assemble().finalize().extrude(-200)"
+ },
+ {
+  "part": "00069",
+  "hull_mesh_iou": 0.9904,
+  "hull_iou": 0.983,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,4))\nr=w0.sketch().segment((-82,57),(-81,55)).arc((-84,-52),(16,-98)).segment((17,-100)).segment((22,-96)).arc((52,-85),(77,-63)).segment((82,-57)).segment((81,-55)).arc((84,52),(-16,98)).segment((-17,100)).segment((-22,96)).arc((-52,85),(-77,63)).close().assemble().finalize().extrude(-8)"
+ },
+ {
+  "part": "01209",
+  "hull_mesh_iou": 0.8986,
+  "hull_iou": 0.9028,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-35))\nr=w0.sketch().segment((-100,-91),(-74,-94)).arc((-53,-95),(-33,-97)).segment((100,-92)).segment((100,-73)).segment((88,-46)).segment((88,-45)).segment((87,-24)).segment((81,-24)).segment((79,-11)).segment((77,-12)).segment((77,-1)).segment((37,98)).segment((31,95)).segment((31,91)).segment((28,91)).segment((-10,40)).segment((-10,35)).segment((-12,35)).segment((-12,34)).segment((-13,33)).arc((-25,16),(-38,-3)).close().assemble().finalize().extrude(70)"
+ },
+ {
+  "part": "01107",
+  "hull_mesh_iou": 0.9006,
+  "hull_iou": 0.8878,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,71))\nr=w0.sketch().segment((-96,-77),(96,-81)).segment((96,-52)).arc((93,-47),(96,-42)).segment((96,-15)).segment((96,15)).segment((96,52)).segment((-94,52)).segment((-94,15)).segment((-94,-15)).segment((-96,-15)).close().assemble().finalize().extrude(-142).union(w0.sketch().segment((-100,-60),(-96,-60)).segment((-95,-78)).segment((-4,-78)).segment((-4,-84)).segment((4,-84)).segment((4,-79)).segment((96,-79)).segment((96,-60)).segment((100,-60)).segment((100,60)).segment((96,60)).segment((95,78)).segment((4,78)).segment((4,84)).segment((-4"
+ },
+ {
+  "part": "00048",
+  "hull_mesh_iou": 0.5657,
+  "hull_iou": 0.6185,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,45))\nw1=cq.Workplane('YZ',origin=(-24,0,0))\nr=w0.sketch().arc((-100,-6),(-68,-51),(-14,-43)).arc((94,10),(-20,43)).arc((-69,51),(-100,10)).arc((-97,2),(-100,-6)).assemble().finalize().extrude(-90).union(w0.sketch().arc((-10,-41),(95,0),(-10,41)).arc((-100,0),(-10,-41)).assemble().finalize().extrude(-85)).union(w1.sketch().segment((-59,-10),(-38,-10)).arc((2,-39),(42,-10)).segment((62,-10)).segment((62,10)).segment((42,10)).arc((2,39),(-38,10)).segment((-59,10)).close().assemble().finalize().extrude(92))"
+ },
+ {
+  "part": "00968",
+  "hull_mesh_iou": 0.8351,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "01584",
+  "hull_mesh_iou": 0.3494,
+  "hull_iou": null,
+  "hull_error": "BRep_API: command not done"
+ },
+ {
+  "part": "01391",
+  "hull_mesh_iou": 0.5743,
+  "hull_iou": 0.5695,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-8))\nr=w0.sketch().segment((11,-22),(13,-22)).arc((23,-25),(34,-22)).segment((36,-22)).arc((55,-24),(74,-22)).segment((76,-22)).segment((76,-21)).arc((100,0),(76,21)).segment((76,22)).segment((74,22)).arc((55,24),(36,22)).segment((34,22)).arc((23,25),(13,22)).segment((11,22)).segment((11,21)).arc((-12,0),(11,-21)).close().assemble().finalize().extrude(10).union(w0.sketch().segment((-100,-6),(-98,-7)).segment((-98,-24)).segment((-48,-24)).segment((-32,-25)).segment((-32,-24)).segment((11,-24)).segment((11,-25)).segment((80,-24)).segment((80"
+ },
+ {
+  "part": "00643",
+  "hull_mesh_iou": 0.8467,
+  "hull_iou": 0.6686,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,26))\nw1=cq.Workplane('XY',origin=(0,0,31))\nr=w0.sketch().segment((-100,-12),(-98,-12)).arc((-67,-39),(-27,-28)).arc((93,0),(-28,25)).arc((-67,43),(-98,18)).segment((-100,18)).close().assemble().finalize().extrude(-54).union(w0.sketch().segment((-75,-41),(-41,-41)).segment((-41,-43)).segment((33,-43)).segment((33,-41)).segment((67,-41)).segment((67,41)).segment((33,41)).segment((33,43)).segment((-41,43)).segment((-41,41)).segment((-75,41)).close().assemble().finalize().extrude(-50)).union(w1.sketch().segment((-100,-19),(-1,-19)).arc((100,-1"
+ },
+ {
+  "part": "01262",
+  "hull_mesh_iou": 0.9961,
+  "hull_iou": 1.0,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,6))\nr=w0.sketch().segment((-100,-4),(-99,-4)).segment((-99,-16)).segment((-56,-16)).arc((-41,-15),(-26,-16)).segment((100,-15)).segment((99,16)).segment((56,15)).segment((56,16)).segment((44,16)).segment((44,15)).segment((-100,15)).close().assemble().finalize().extrude(-12)"
+ },
+ {
+  "part": "01298",
+  "hull_mesh_iou": 0.9039,
+  "hull_iou": 0.876,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(99,0,0))\nr=w0.workplane(offset=-199/2).cylinder(199,4).union(w0.sketch().arc((-15,-8),(14,0),(-15,8)).close().assemble().finalize().extrude(-198)).union(w0.sketch().segment((-5,-10),(6,-15)).segment((15,10)).segment((12,11)).segment((12,10)).segment((10,10)).segment((10,12)).segment((10,13)).segment((12,13)).segment((13,15)).segment((-5,15)).close().assemble().finalize().extrude(-165))"
+ },
+ {
+  "part": "00992",
+  "hull_mesh_iou": 0.7197,
+  "hull_iou": 0.643,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,8))\nr=w0.sketch().segment((-100,-7),(-98,-14)).arc((-93,-33),(-85,-50)).segment((-83,-57)).segment((-81,-56)).arc((-69,-73),(-53,-82)).segment((-53,-85)).segment((-48,-85)).arc((0,-100),(48,-85)).segment((53,-85)).segment((53,-82)).arc((65,-72),(76,-62)).segment((80,-61)).segment((79,-55)).arc((96,23),(43,85)).segment((42,90)).segment((38,89)).arc((26,95),(13,99)).segment((13,100)).segment((-100,-6)).close().assemble().finalize().extrude(-16)"
+ },
+ {
+  "part": "01072",
+  "hull_mesh_iou": 0.695,
+  "hull_iou": 0.7031,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(99,0,0))\nw1=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.workplane(offset=-198/2).cylinder(198,13).union(w1.workplane(offset=-198/2).box(30,44,198))"
+ },
+ {
+  "part": "00447",
+  "hull_mesh_iou": 0.9751,
+  "hull_iou": 0.9891,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,6))\nr=w0.sketch().segment((-73,-67),(-73,-66)).segment((-55,-66)).segment((-55,-81)).arc((64,75),(-73,-67)).assemble().finalize().extrude(-12)"
+ },
+ {
+  "part": "01222",
+  "hull_mesh_iou": 0.5517,
+  "hull_iou": 0.5137,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,24))\nr=w0.sketch().segment((-100,-26),(-73,-40)).segment((-73,-42)).segment((-70,-42)).segment((-52,-51)).segment((-51,-49)).arc((-25,-56),(-1,-45)).segment((1,-45)).arc((23,-51),(45,-45)).segment((55,-51)).segment((60,-45)).segment((100,-28)).segment((91,-13)).segment((83,-18)).segment((57,45)).segment((63,47)).arc((59,53),(55,58)).segment((52,52)).segment((19,56)).segment((18,49)).segment((4,39)).segment((13,27)).segment((10,12)).segment((-12,1)).segment((-10,13)).segment((-13,14)).segment((-13,16)).segment((-16,16)).segment((-17,56)).se"
+ },
+ {
+  "part": "00432",
+  "hull_mesh_iou": 0.4742,
+  "hull_iou": 0.4715,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,30))\nw1=cq.Workplane('YZ',origin=(92,0,0))\nr=w0.sketch().segment((-87,-92),(-43,-92)).arc((-1,-100),(43,-92)).segment((92,-92)).segment((92,92)).segment((43,92)).arc((-1,100),(-43,92)).segment((-87,92)).close().assemble().finalize().extrude(-55).union(w1.sketch().segment((-95,-22),(-89,-22)).segment((-89,-30)).segment((89,-30)).segment((89,-22)).segment((95,-22)).segment((95,22)).segment((89,22)).segment((89,30)).segment((-89,30)).segment((-89,22)).segment((-95,22)).close().assemble().finalize().extrude(-184))"
+ },
+ {
+  "part": "00478",
+  "hull_mesh_iou": 0.6731,
+  "hull_iou": 0.0698,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,63,0))\nr=w0.sketch().segment((-65,-82),(-54,-89)).segment((-54,-95)).segment((-42,-95)).segment((-31,-100)).segment((-29,-95)).segment((-24,-95)).segment((-24,-90)).segment((-23,-89)).segment((-24,-89)).segment((-24,-85)).segment((-23,-85)).segment((-23,-84)).segment((-22,-84)).segment((-22,-85)).segment((-21,-85)).segment((-21,-86)).segment((-19,-85)).segment((-18,-85)).segment((-18,-84)).segment((-17,-84)).segment((-17,-85)).segment((-16,-85)).segment((-16,-86)).segment((-15,-86)).segment((-15,-87)).segment((-14,-87)).segment((-14,-88)).se"
+ },
+ {
+  "part": "01721",
+  "hull_mesh_iou": 0.7487,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "01005",
+  "hull_mesh_iou": 0.8033,
+  "hull_iou": 0.8551,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.sketch().arc((-9,-1),(-7,-1),(-7,-3)).arc((8,1),(-9,-1)).assemble().finalize().extrude(-200).union(w0.sketch().arc((-10,-6),(0,-12),(10,-7)).segment((10,10)).arc((0,12),(-10,9)).close().assemble().finalize().extrude(-199))"
+ },
+ {
+  "part": "01823",
+  "hull_mesh_iou": 0.3097,
+  "hull_iou": 0.3242,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-8))\nr=w0.sketch().segment((-100,-37),(-97,-37)).segment((-97,-52)).segment((-59,-52)).segment((-59,-43)).segment((-42,-45)).segment((-42,-43)).arc((-14,-51),(15,-43)).segment((15,-52)).segment((96,-52)).segment((96,-37)).segment((99,-37)).segment((99,-1)).arc((100,10),(99,21)).segment((99,37)).segment((96,37)).segment((96,52)).segment((15,52)).segment((15,43)).segment((-3,45)).segment((-3,43)).arc((-21,49),(-40,47)).segment((-40,50)).segment((-96,52)).segment((-97,37)).segment((-99,37)).segment((-99,11)).close().assemble().finalize().extr"
+ },
+ {
+  "part": "01653",
+  "hull_mesh_iou": 0.5449,
+  "hull_iou": 0.5395,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,37))\nw1=cq.Workplane('ZX',origin=(0,-46,0))\nr=w0.sketch().segment((-94,-56),(-58,-59)).arc((-37,-62),(-16,-59)).segment((20,-61)).segment((20,-51)).segment((73,-51)).segment((73,-42)).segment((21,-42)).segment((22,-19)).arc((27,0),(21,19)).segment((22,42)).segment((-14,45)).arc((-35,48),(-56,45)).segment((-91,48)).segment((-92,37)).arc((-97,16),(-93,-5)).close().assemble().finalize().extrude(-74).union(w0.sketch().segment((-97,-54),(94,-59)).segment((95,-37)).arc((97,-24),(97,-11)).segment((100,11)).segment((97,11)).arc((79,50),(39,63)).se"
+ },
+ {
+  "part": "00307",
+  "hull_mesh_iou": 0.8609,
+  "hull_iou": 0.9415,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,14))\nr=w0.sketch().segment((-100,-10),(-97,-10)).segment((-97,-19)).segment((-75,-19)).arc((-66,-21),(-57,-19)).segment((-35,-19)).segment((-35,-10)).segment((-32,-10)).segment((-32,10)).segment((-35,10)).segment((-35,14)).segment((-57,14)).arc((-66,16),(-75,14)).segment((-97,14)).segment((-97,10)).segment((-100,10)).close().assemble().reset().face(w0.sketch().segment((-9,-19),(-5,-19)).segment((-5,-21)).segment((98,-22)).segment((100,20)).segment((-9,22)).close().assemble()).finalize().extrude(-28).union(w0.workplane(offset=-22/2).moveTo("
+ },
+ {
+  "part": "00538",
+  "hull_mesh_iou": 0.8624,
+  "hull_iou": 0.8536,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,92))\nw1=cq.Workplane('ZX',origin=(0,100,0))\nr=w0.sketch().segment((-95,-91),(92,-92)).segment((95,91)).segment((-91,97)).close().assemble().finalize().extrude(-184).union(w1.workplane(offset=-200/2).box(132,196,200))"
+ },
+ {
+  "part": "00945",
+  "hull_mesh_iou": 0.1765,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "01297",
+  "hull_mesh_iou": 0.5388,
+  "hull_iou": 0.4382,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(97,0,0))\nw1=cq.Workplane('ZX',origin=(0,-74,0))\nr=w0.sketch().segment((-77,9),(4,-32)).segment((77,13)).segment((73,19)).arc((73,29),(64,29)).segment((-4,62)).segment((-4,42)).segment((-33,42)).segment((-33,43)).segment((-74,26)).close().assemble().finalize().extrude(-160).union(w0.sketch().segment((-76,-40),(75,-43)).segment((76,33)).segment((-74,35)).close().assemble().finalize().extrude(-24)).union(w1.sketch().arc((-42,-93),(37,-75),(-10,-10)).arc((-14,-60),(-42,-93)).assemble().finalize().extrude(146))"
+ },
+ {
+  "part": "01265",
+  "hull_mesh_iou": 0.8033,
+  "hull_iou": 0.8406,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.workplane(offset=-200/2).moveTo(-2,0).cylinder(200,8).union(w0.sketch().arc((-10,-6),(0,-12),(10,-7)).segment((10,10)).arc((0,12),(-10,9)).close().assemble().finalize().extrude(-199))"
+ },
+ {
+  "part": "00958",
+  "hull_mesh_iou": 0.749,
+  "hull_iou": 0.1617,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,43))\nr=w0.sketch().segment((-96,-76),(-47,-79)).arc((-28,-81),(-9,-80)).segment((5,-80)).segment((5,-84)).segment((96,-77)).segment((94,-52)).segment((94,-31)).segment((97,-31)).segment((97,-44)).arc((100,-10),(95,24)).segment((99,24)).segment((99,31)).segment((98,31)).segment((98,50)).segment((95,50)).segment((95,77)).segment((62,79)).arc((61,59),(55,40)).segment((78,38)).segment((75,-51)).segment((1,-53)).segment((1,40)).arc((10,55),(1,69)).segment((1,79)).segment((-1,79)).segment((-1,82)).segment((-59,81)).arc((-78,78),(-95,77)).segment"
+ },
+ {
+  "part": "01334",
+  "hull_mesh_iou": 1.0,
+  "hull_iou": 1.0,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.sketch().arc((-4,-2),(0,-4),(4,-2)).segment((3,-2)).segment((3,4)).segment((4,4)).arc((0,5),(-4,3)).segment((-3,3)).segment((-3,-2)).close().assemble().finalize().extrude(-200)"
+ },
+ {
+  "part": "01345",
+  "hull_mesh_iou": 0.9511,
+  "hull_iou": 0.9636,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-30))\nr=w0.sketch().segment((-97,-48),(-68,-49)).arc((-53,-50),(-38,-49)).segment((-10,-48)).arc((1,-52),(12,-50)).arc((33,-51),(54,-50)).segment((54,-51)).segment((68,-48)).segment((68,-49)).segment((95,-49)).segment((95,-27)).arc((98,-12),(98,3)).segment((100,11)).segment((98,12)).arc((97,31),(95,49)).segment((68,49)).segment((68,48)).segment((38,48)).arc((23,51),(8,49)).segment((-18,49)).arc((-33,51),(-48,50)).segment((-51,51)).segment((-51,49)).arc((-60,49),(-68,48)).segment((-96,48)).segment((-96,27)).arc((-100,0),(-96,-27)).close().a"
+ },
+ {
+  "part": "00131",
+  "hull_mesh_iou": 0.5282,
+  "hull_iou": 0.1933,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-5))\nr=w0.sketch().segment((-99,-81),(-40,-81)).arc((-29,-82),(-18,-81)).segment((98,-81)).segment((98,-65)).segment((98,-60)).segment((98,-49)).arc((100,-39),(99,-29)).segment((99,-14)).segment((98,-14)).segment((98,-13)).segment((97,-13)).arc((93,-10),(88,-7)).segment((88,-66)).segment((83,-66)).segment((83,-69)).segment((-88,-69)).segment((-88,-66)).segment((-90,-66)).segment((-90,66)).segment((-88,66)).segment((-88,69)).segment((83,69)).segment((83,66)).segment((85,66)).segment((85,60)).arc((89,39),(88,18)).segment((88,80)).segment((57"
+ },
+ {
+  "part": "01715",
+  "hull_mesh_iou": 0.9151,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "00089",
+  "hull_mesh_iou": 0.714,
+  "hull_iou": 0.7085,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,9))\nr=w0.sketch().segment((-98,27),(-95,23)).arc((-74,-66),(10,-97)).segment((13,-100)).segment((17,-96)).arc((66,-74),(94,-27)).segment((98,-23)).segment((95,-23)).arc((74,66),(-10,97)).segment((-13,100)).segment((-17,96)).arc((-66,76),(-94,28)).close().assemble().finalize().extrude(-18)"
+ },
+ {
+  "part": "01786",
+  "hull_mesh_iou": 0.8061,
+  "hull_iou": 0.8551,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(99,0,0))\nw1=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.sketch().arc((-10,-6),(0,-12),(10,-7)).segment((10,10)).arc((0,12),(-10,9)).close().assemble().finalize().extrude(-198).union(w1.workplane(offset=-199/2).cylinder(199,4))"
+ },
+ {
+  "part": "01825",
+  "hull_mesh_iou": 0.9863,
+  "hull_iou": 0.989,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-13))\nr=w0.sketch().segment((-100,-10),(-98,-10)).arc((-72,-69),(-14,-98)).segment((-14,-99)).segment((-10,-98)).arc((69,-70),(99,7)).segment((100,10)).segment((98,10)).arc((72,69),(14,98)).segment((14,99)).segment((10,98)).arc((-69,70),(-99,-7)).close().assemble().finalize().extrude(26)"
+ },
+ {
+  "part": "01252",
+  "hull_mesh_iou": 0.2213,
+  "hull_iou": 0.2372,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(71,0,0))\nw1=cq.Workplane('ZX',origin=(0,96,0))\nr=w0.sketch().segment((-100,74),(-94,26)).segment((-94,19)).segment((-96,19)).segment((-96,-52)).segment((-64,-52)).segment((-62,-68)).segment((99,-45)).segment((92,13)).segment((92,20)).segment((94,20)).segment((94,72)).segment((92,72)).segment((92,87)).segment((1,87)).segment((0,91)).segment((-88,86)).segment((-88,74)).close().assemble().finalize().extrude(-142).union(w1.sketch().segment((-52,-38),(90,-38)).segment((90,72)).segment((-52,72)).segment((-52,65)).arc((-91,31),(-52,-2)).close().assem"
+ },
+ {
+  "part": "01545",
+  "hull_mesh_iou": 0.6501,
+  "hull_iou": 0.6,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nw1=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.workplane(offset=-199/2).box(16,4,199).union(w1.workplane(offset=-199/2).box(18,10,199))"
+ },
+ {
+  "part": "01783",
+  "hull_mesh_iou": 0.824,
+  "hull_iou": 0.9321,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-17))\nr=w0.sketch().segment((-100,3),(-99,-9)).segment((-96,-9)).segment((-96,-15)).segment((-83,-23)).segment((-42,-23)).arc((-32,-25),(-22,-23)).segment((-19,-23)).segment((-19,-24)).segment((39,-24)).segment((39,-23)).segment((81,-23)).segment((81,-24)).segment((82,-24)).segment((82,-23)).segment((86,-23)).segment((100,-7)).segment((98,-5)).arc((95,13),(82,24)).segment((81,24)).segment((39,24)).segment((39,25)).segment((-19,25)).segment((-19,23)).segment((-81,23)).segment((-81,24)).segment((-82,24)).segment((-82,23)).segment((-86,23)).s"
+ },
+ {
+  "part": "01934",
+  "hull_mesh_iou": 0.8148,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "01187",
+  "hull_mesh_iou": 0.9843,
+  "hull_iou": 0.991,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-23))\nr=w0.sketch().segment((-99,-16),(-89,-16)).segment((-89,-28)).segment((-56,-28)).arc((-41,-29),(-26,-28)).segment((8,-28)).segment((8,-26)).segment((10,-26)).segment((10,-28)).segment((82,-29)).segment((82,28)).segment((8,28)).segment((8,26)).segment((6,26)).segment((6,28)).segment((-56,28)).segment((-56,27)).segment((-89,28)).segment((-89,26)).segment((-97,26)).close().assemble().finalize().extrude(38).union(w0.sketch().segment((-99,-16),(-97,-16)).segment((-97,-27)).segment((97,-28)).segment((97,-16)).segment((99,-16)).segment((99,"
+ },
+ {
+  "part": "01071",
+  "hull_mesh_iou": 0.6876,
+  "hull_iou": 0.693,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,24))\nr=w0.sketch().segment((-99,-23),(-95,-23)).arc((-75,-66),(-38,-92)).segment((-38,-97)).segment((-23,-97)).arc((0,-99),(23,-97)).segment((38,-97)).segment((38,-92)).arc((75,-66),(95,-23)).segment((98,-23)).segment((98,-11)).arc((100,8),(98,26)).segment((98,29)).segment((96,29)).arc((80,60),(58,81)).segment((58,88)).segment((43,88)).arc((0,100),(-43,90)).segment((-43,96)).segment((-45,96)).segment((-45,90)).arc((-75,65),(-95,29)).segment((-98,29)).segment((-98,16)).arc((-99,0),(-99,-16)).close().assemble().reset().face(w0.sketch().segme"
+ },
+ {
+  "part": "00460",
+  "hull_mesh_iou": 0.835,
+  "hull_iou": 0.8302,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,15))\nr=w0.sketch().segment((-100,21),(-81,8)).segment((-78,8)).segment((-78,7)).segment((-67,1)).arc((-57,-6),(-47,-12)).segment((-35,-19)).segment((-33,-15)).arc((-18,-23),(-2,-23)).segment((-2,-25)).segment((10,-25)).arc((16,-27),(22,-25)).segment((34,-25)).segment((34,-26)).segment((46,-26)).segment((46,-27)).segment((54,-27)).segment((54,-26)).segment((66,-26)).segment((66,-25)).segment((82,-25)).segment((82,-18)).segment((100,-16)).segment((99,-10)).segment((82,-11)).segment((82,-7)).segment((66,-7)).segment((66,-6)).segment((54,-6))."
+ },
+ {
+  "part": "01719",
+  "hull_mesh_iou": 0.7758,
+  "hull_iou": null,
+  "hull_error": "GC_MakeArcOfCircle::Value() - no result"
+ },
+ {
+  "part": "00677",
+  "hull_mesh_iou": 0.6119,
+  "hull_iou": 0.2946,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,22))\nw1=cq.Workplane('YZ',origin=(-28,0,0))\nr=w0.sketch().segment((-100,-12),(-98,-12)).segment((-98,-29)).segment((-81,-30)).arc((-78,-42),(-74,-53)).segment((-74,-31)).segment((-65,-31)).segment((-65,-56)).segment((-13,-56)).segment((-13,-52)).arc((-10,-42),(-9,-32)).segment((98,-32)).segment((98,-12)).segment((99,-12)).segment((99,12)).segment((98,12)).segment((98,30)).segment((-3,30)).arc((-10,42),(-11,55)).segment((-75,57)).segment((-76,39)).segment((-97,37)).segment((-97,12)).segment((-98,12)).segment((-98,1)).close().assemble().rese"
+ },
+ {
+  "part": "00876",
+  "hull_mesh_iou": 0.2234,
+  "hull_iou": 0.2229,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,28,0))\nr=w0.sketch().segment((-73,-89),(-64,-94)).segment((-63,-93)).arc((-50,-98),(-36,-96)).segment((-36,-100)).segment((36,-100)).segment((36,-98)).arc((54,-97),(73,-93)).segment((73,-55)).segment((73,95)).segment((36,100)).segment((36,99)).segment((21,99)).segment((21,100)).segment((-36,100)).segment((-36,99)).segment((-64,99)).segment((-64,89)).arc((-73,58),(-68,28)).segment((-68,-1)).segment((-73,-1)).close().assemble().finalize().extrude(-56)"
+ },
+ {
+  "part": "01498",
+  "hull_mesh_iou": 0.9792,
+  "hull_iou": 0.9628,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,10))\nr=w0.sketch().segment((-100,-86),(-54,-87)).arc((-35,-81),(-16,-87)).segment((97,-86)).segment((97,-47)).arc((99,-35),(97,-23)).segment((97,-11)).arc((100,10),(97,31)).segment((97,85)).segment((-97,88)).close().assemble().reset().face(w0.sketch().segment((-97,64),(-96,58)).segment((-8,81)).segment((-9,87)).close().assemble(),mode='s').finalize().extrude(-20)"
+ },
+ {
+  "part": "01526",
+  "hull_mesh_iou": 0.7341,
+  "hull_iou": 0.8507,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,17))\nr=w0.sketch().arc((-99,9),(-92,-33),(-63,-67)).segment((-63,-68)).segment((-61,-68)).arc((-43,-78),(-23,-83)).segment((-23,-82)).segment((-19,-82)).segment((-19,-83)).arc((-1,-84),(17,-83)).segment((17,-85)).arc((28,-83),(38,-80)).segment((38,-81)).arc((99,0),(42,83)).segment((37,71)).arc((40,56),(41,49)).arc((67,-20),(1,-52)).arc((-64,-29),(-60,37)).arc((-44,54),(-26,67)).segment((-35,85)).arc((-51,81),(-66,73)).segment((-68,73)).segment((-68,72)).arc((-92,42),(-99,9)).assemble().finalize().extrude(-34)"
+ },
+ {
+  "part": "00721",
+  "hull_mesh_iou": 0.9599,
+  "hull_iou": 0.95,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,44))\nr=w0.sketch().segment((-100,-3),(-89,-22)).arc((-79,-44),(-63,-66)).segment((-52,-83)).segment((-49,-81)).arc((-21,-91),(10,-88)).arc((51,-86),(75,-47)).arc((79,-41),(82,-35)).segment((100,-3)).segment((91,5)).arc((82,38),(60,63)).arc((52,81),(35,89)).segment((35,88)).segment((32,88)).segment((32,89)).arc((14,90),(-4,84)).arc((-17,87),(-31,86)).segment((-31,87)).segment((-53,85)).segment((-53,81)).arc((-69,57),(-80,32)).arc((-89,23),(-94,10)).close().assemble().finalize().extrude(-88)"
+ },
+ {
+  "part": "00455",
+  "hull_mesh_iou": 0.1986,
+  "hull_iou": 0.17,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,46))\nr=w0.sketch().segment((-100,-35),(-93,-36)).segment((-93,-46)).segment((-61,-47)).segment((-57,-48)).segment((-57,-47)).segment((-13,-50)).segment((-13,-47)).segment((-10,-47)).segment((-10,-50)).segment((93,-47)).segment((93,-40)).segment((95,-40)).segment((100,35)).segment((93,36)).segment((93,47)).segment((61,47)).segment((57,48)).segment((57,47)).segment((13,47)).segment((13,48)).segment((-93,47)).segment((-93,40)).segment((-95,40)).close().assemble().reset().face(w0.sketch().arc((-82,13),(-69,-19),(-36,-36)).close().assemble(),mo"
+ },
+ {
+  "part": "00698",
+  "hull_mesh_iou": 0.4066,
+  "hull_iou": 0.4067,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,28,0))\nr=w0.sketch().segment((-74,-90),(-54,-90)).segment((-54,-98)).segment((-30,-98)).segment((-30,-100)).segment((30,-100)).segment((30,-98)).segment((54,-98)).segment((54,-96)).segment((74,-96)).segment((74,95)).segment((54,95)).segment((54,98)).segment((30,98)).segment((30,100)).segment((-30,100)).segment((-30,98)).segment((-54,98)).segment((-54,95)).segment((-74,95)).close().assemble().finalize().extrude(-56).union(w0.workplane(offset=-52/2).box(142,180,52))"
+ },
+ {
+  "part": "00747",
+  "hull_mesh_iou": 0.9253,
+  "hull_iou": 0.9368,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,37))\nr=w0.sketch().segment((-99,80),(-90,-22)).segment((-97,-19)).segment((-99,-23)).segment((-90,-27)).segment((-90,-30)).segment((-96,-30)).segment((-90,-71)).segment((-90,-97)).segment((-87,-97)).segment((-87,-98)).segment((-78,-97)).segment((-70,-97)).segment((-70,-96)).segment((-25,-90)).segment((-25,-76)).arc((-10,-70),(3,-61)).segment((3,-68)).segment((78,-31)).segment((76,-27)).arc((93,49),(34,93)).segment((34,92)).segment((13,92)).arc((10,91),(7,91)).segment((3,91)).segment((3,90)).segment((-52,84)).segment((-52,86)).close().assem"
+ },
+ {
+  "part": "01134",
+  "hull_mesh_iou": 0.4941,
+  "hull_iou": 0.5,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,19,0))\nw1=cq.Workplane('YZ',origin=(-94,0,0))\nr=w0.sketch().segment((-39,-94),(39,-100)).segment((41,-66)).arc((39,-43),(41,-21)).segment((41,95)).segment((-36,98)).close().assemble().finalize().extrude(-38).union(w1.workplane(offset=191/2).moveTo(0,-38.5).box(16,5,191))"
+ },
+ {
+  "part": "00098",
+  "hull_mesh_iou": 0.3554,
+  "hull_iou": 0.2978,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,2))\nr=w0.sketch().segment((-100,51),(-99,-52)).segment((-84,-52)).segment((-84,-55)).segment((69,-55)).segment((69,-53)).segment((99,-54)).segment((100,54)).segment((69,54)).segment((69,55)).segment((49,55)).segment((49,53)).segment((-69,53)).segment((-69,55)).segment((-84,55)).segment((-84,51)).close().assemble().reset().face(w0.sketch().segment((-74,-35),(-19,-36)).segment((-9,-13)).segment((-19,-13)).segment((-19,-14)).segment((-25,-14)).segment((-25,-13)).segment((-73,-13)).close().assemble(),mode='s').reset().face(w0.sketch().segment("
+ },
+ {
+  "part": "00135",
+  "error": "CaptureError: need the ChArUco target visible in at least 3 photos, found 0",
+  "trace": "e 137, in hull_for\n    carved = carve.from_photos(photos, voxel_mm=B.VOXEL)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 315, in from_photos\n    raise CaptureError(\"need the ChArUco target visible in at least %d photos, found %d\"\nphoto2fcstd.errors.CaptureError: need the ChArUco target visible in at least 3 photos, found 0\n"
+ },
+ {
+  "part": "01115",
+  "hull_mesh_iou": 0.8441,
+  "hull_iou": 0.8087,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-7))\nr=w0.sketch().segment((-100,-73),(100,-74)).segment((100,74)).segment((17,74)).arc((0,75),(-17,74)).segment((-99,74)).close().assemble().reset().face(w0.sketch().segment((-81,56),(-77,-63)).segment((81,-58)).segment((78,-53)).segment((81,-53)).segment((81,53)).segment((78,53)).segment((78,62)).segment((-77,59)).segment((-77,56)).close().assemble(),mode='s').finalize().extrude(14)"
+ },
+ {
+  "part": "01589",
+  "hull_mesh_iou": 0.9808,
+  "hull_iou": 0.0704,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,30))\nr=w0.sketch().segment((-100,-8),(-99,-18)).segment((-97,-18)).arc((-88,-46),(-74,-65)).segment((-75,-66)).segment((-69,-72)).segment((-68,-73)).segment((-67,-73)).arc((-56,-81),(-44,-89)).segment((-43,-90)).segment((-43,-89)).arc((-39,-90),(-35,-90)).segment((-35,-96)).segment((-27,-96)).arc((0,-99),(27,-96)).segment((38,-96)).segment((38,-91)).arc((50,-87),(61,-80)).segment((62,-79)).arc((88,-47),(99,-6)).segment((100,-8)).segment((99,-18)).segment((97,-18)).arc((90,42),(44,88)).segment((43,90)).segment((43,89)).arc((39,90),(35,90))."
+ },
+ {
+  "part": "00160",
+  "hull_mesh_iou": 0.9316,
+  "hull_iou": 0.9057,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,9))\nr=w0.sketch().arc((-100,0),(-73,-26),(-93,-55)).arc((-57,-82),(-13,-98)).segment((-13,-99)).segment((-10,-100)).segment((20,-76)).segment((35,-94)).arc((81,-56),(100,0)).segment((79,0)).segment((79,29)).segment((93,29)).arc((57,82),(0,100)).segment((0,86)).segment((-37,86)).segment((-37,93)).arc((-83,56),(-100,0)).assemble().push([(-1,0)]).circle(25,mode='s').finalize().extrude(-18)"
+ },
+ {
+  "part": "01163",
+  "hull_mesh_iou": 0.9528,
+  "hull_iou": 0.0715,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,46))\nr=w0.sketch().segment((-100,10),(-96,6)).arc((-92,-27),(-75,-59)).segment((-75,-65)).segment((-70,-65)).arc((-58,-76),(-44,-83)).segment((-39,-88)).segment((-36,-86)).arc((-21,-88),(-6,-89)).segment((-10,-89)).segment((-10,-90)).segment((10,-90)).segment((10,-89)).segment((10,-88)).arc((25,-87),(39,-80)).segment((44,-80)).segment((44,-77)).arc((58,-62),(70,-47)).segment((100,-10)).segment((96,-6)).arc((92,20),(75,42)).segment((75,43)).segment((74,43)).arc((60,63),(44,75)).segment((44,80)).segment((39,80)).arc((21,88),(1,90)).segment(("
+ },
+ {
+  "part": "00377",
+  "hull_mesh_iou": 0.3256,
+  "hull_iou": 0.302,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,2))\nr=w0.sketch().arc((91,41),(-97,-20),(99,7)).arc((97,22),(91,41)).assemble().push([(1,0)]).circle(78,mode='s').finalize().extrude(-4)"
+ },
+ {
+  "part": "00608",
+  "hull_mesh_iou": 0.6015,
+  "hull_iou": 0.5879,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,5))\nr=w0.sketch().segment((-100,-39),(-98,-39)).segment((-98,-45)).segment((-85,-45)).segment((-85,-46)).segment((-33,-46)).segment((-33,-45)).segment((-19,-45)).segment((-19,-46)).segment((33,-46)).segment((33,-45)).segment((47,-45)).segment((47,-43)).segment((98,-46)).segment((100,44)).segment((47,45)).segment((47,46)).segment((33,46)).segment((33,45)).segment((-19,46)).segment((-19,45)).segment((-33,45)).segment((-33,46)).segment((-85,46)).segment((-85,45)).segment((-98,45)).segment((-98,39)).segment((-100,39)).segment((-100,37)).segmen"
+ },
+ {
+  "part": "00766",
+  "hull_mesh_iou": 0.7647,
+  "hull_iou": 0.781,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,34))\nr=w0.sketch().segment((-100,-4),(-79,-36)).arc((-73,-51),(-63,-64)).segment((-51,-87)).segment((-41,-82)).arc((-18,-89),(6,-91)).arc((25,-90),(43,-87)).segment((51,-87)).segment((51,-82)).arc((69,-59),(81,-32)).segment((100,-4)).segment((91,3)).arc((75,43),(51,80)).segment((51,86)).segment((43,86)).arc((18,89),(-7,91)).segment((-15,89)).arc((-38,88),(-59,73)).segment((-61,71)).arc((-74,51),(-83,31)).arc((-91,20),(-95,8)).close().assemble().reset().face(w0.sketch().arc((-41,6),(11,-34),(33,27)).segment((11,20)).segment((11,33)).segment"
+ },
+ {
+  "part": "00653",
+  "hull_mesh_iou": 0.0216,
+  "hull_iou": null,
+  "hull_error": "BRep_API: command not done"
+ },
+ {
+  "part": "00112",
+  "hull_mesh_iou": 0.6571,
+  "hull_iou": 0.2431,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-99,0,0))\nw1=cq.Workplane('YZ',origin=(-100,0,0))\nr=w0.workplane(offset=198/2).moveTo(0,-1).cylinder(198,26).union(w1.sketch().arc((-15,-21),(0,-27),(15,-21)).segment((15,26)).segment((-15,26)).close().assemble().finalize().extrude(199))"
+ },
+ {
+  "part": "00610",
+  "hull_mesh_iou": 0.8572,
+  "hull_iou": 0.7124,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,32))\nw1=cq.Workplane('YZ',origin=(13,0,0))\nr=w0.sketch().segment((-100,-41),(-92,-62)).segment((-46,-38)).segment((-46,-40)).segment((-46,-41)).segment((-46,-42)).segment((-46,-43)).segment((-46,-44)).segment((-45,-44)).segment((-45,-43)).segment((-44,-43)).segment((-44,-42)).segment((-44,-41)).segment((-44,-40)).segment((-44,-39)).segment((-44,-38)).segment((-44,-37)).segment((-44,-36)).segment((-44,-35)).segment((-44,-34)).segment((-44,-33)).segment((-44,-32)).segment((-44,-31)).segment((-44,-30)).segment((-44,-29)).segment((-44,-28)).se"
+ },
+ {
+  "part": "01751",
+  "hull_mesh_iou": 0.9593,
+  "hull_iou": 0.9754,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-18))\nr=w0.sketch().segment((-97,-45),(-76,-45)).arc((-56,-47),(-36,-45)).segment((-15,-45)).segment((-15,-29)).arc((-10,-23),(-7,-16)).segment((99,-16)).segment((99,16)).segment((-15,16)).segment((-15,45)).segment((-36,45)).arc((-56,47),(-76,45)).segment((-97,45)).segment((-97,20)).arc((-100,0),(-97,-20)).close().assemble().finalize().extrude(19).union(w0.sketch().segment((-97,-45),(96,-47)).segment((97,45)).segment((-97,47)).close().assemble().finalize().extrude(36))"
+ },
+ {
+  "part": "01279",
+  "hull_mesh_iou": 0.6076,
+  "hull_iou": 0.5538,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,5))\nr=w0.sketch().arc((-20,84),(-71,-59),(83,-27)).arc((95,-9),(100,13)).segment((100,35)).segment((94,35)).arc((85,49),(72,57)).arc((34,62),(1,74)).arc((-9,80),(-20,84)).assemble().finalize().extrude(-11)"
+ },
+ {
+  "part": "00863",
+  "hull_mesh_iou": 0.7068,
+  "hull_iou": 0.7064,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,45))\nw1=cq.Workplane('YZ',origin=(-10,0,0))\nr=w0.sketch().segment((-97,-19),(-46,-20)).segment((-46,-21)).segment((-33,-21)).segment((-33,-20)).segment((18,-21)).segment((18,-22)).segment((57,-22)).segment((57,-33)).segment((52,-33)).segment((52,-58)).segment((57,-58)).segment((57,-76)).segment((94,-76)).segment((94,-58)).segment((96,-58)).segment((96,-33)).segment((94,-33)).segment((94,-22)).segment((95,-22)).segment((95,1)).segment((94,1)).segment((94,14)).segment((98,14)).segment((98,49)).segment((94,49)).segment((94,75)).segment((63,75"
+ },
+ {
+  "part": "01731",
+  "hull_mesh_iou": 0.6114,
+  "hull_iou": 0.5963,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,5))\nr=w0.sketch().segment((-100,-25),(-99,-25)).segment((-99,-40)).segment((-91,-40)).segment((-91,-48)).segment((-52,-49)).arc((33,-81),(98,-18)).segment((100,-18)).segment((100,-10)).segment((98,-10)).arc((59,72),(-33,67)).segment((-33,60)).segment((-42,60)).arc((-47,54),(-52,49)).segment((-99,51)).segment((-99,10)).segment((-100,10)).arc((-97,0),(-100,-10)).close().assemble().finalize().extrude(-10)"
+ },
+ {
+  "part": "00943",
+  "hull_mesh_iou": 0.319,
+  "hull_iou": 0.3853,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-9))\nr=w0.sketch().arc((-100,39),(-87,2),(-66,-26)).segment((-66,-27)).segment((-65,-26)).arc((-34,-45),(2,-49)).segment((3,-50)).segment((4,-50)).arc((26,-48),(46,-38)).segment((47,-38)).segment((47,-37)).arc((87,2),(98,51)).segment((94,51)).arc((81,14),(51,-14)).segment((51,-19)).segment((41,-19)).segment((41,-18)).arc((10,-29),(-22,-28)).segment((-23,-28)).segment((-23,-27)).arc((-54,-14),(-76,8)).segment((-77,8)).segment((-77,9)).arc((-89,32),(-96,51)).segment((-100,47)).close().assemble().finalize().extrude(18)"
+ },
+ {
+  "part": "01908",
+  "hull_mesh_iou": 0.8889,
+  "hull_iou": 1.0,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-100,0,0))\nr=w0.sketch().segment((-4,1),(-1,-3)).segment((3,0)).segment((1,3)).arc((-2,3),(-4,1)).assemble().finalize().extrude(200)"
+ },
+ {
+  "part": "01426",
+  "hull_mesh_iou": 0.9165,
+  "hull_iou": 0.927,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,23))\nr=w0.sketch().segment((-100,-9),(-99,-10)).arc((-80,-59),(-40,-91)).segment((-39,-95)).segment((-35,-93)).arc((-16,-97),(3,-98)).segment((3,-100)).segment((13,-98)).arc((37,-94),(59,-81)).segment((68,-78)).segment((67,-73)).arc((97,18),(37,92)).segment((37,95)).segment((31,94)).arc((12,98),(-8,99)).segment((-9,100)).segment((-10,99)).arc((-78,61),(-98,-9)).close().assemble().reset().face(w0.sketch().segment((-38,7),(-18,-31)).segment((3,-21)).segment((3,-39)).arc((33,-19),(24,17)).segment((10,37)).close().assemble(),mode='s').finalize"
+ },
+ {
+  "part": "01884",
+  "hull_mesh_iou": 0.2605,
+  "hull_iou": 0.2547,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.sketch().arc((-13,-44),(-5,-49),(1,-51)).arc((8,-41),(14,-31)).segment((13,-31)).segment((13,49)).arc((11,50),(10,51)).arc((8,50),(4,52)).segment((-13,52)).close().assemble().finalize().extrude(-200)"
+ },
+ {
+  "part": "01055",
+  "hull_mesh_iou": 0.9201,
+  "hull_iou": 0.9418,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,29))\nr=w0.sketch().segment((-100,38),(-80,21)).segment((-80,15)).segment((-75,15)).segment((-52,-11)).segment((-52,-17)).segment((-47,-17)).segment((-43,-21)).segment((-43,-25)).segment((-38,-25)).segment((13,-76)).segment((13,-79)).segment((16,-79)).segment((39,-100)).segment((67,-76)).segment((70,-76)).segment((70,-70)).segment((100,-44)).segment((70,-9)).segment((70,-5)).segment((65,-5)).segment((38,20)).segment((38,25)).segment((33,25)).segment((11,46)).segment((11,56)).segment((5,56)).segment((-10,71)).segment((-10,76)).segment((-15,7"
+ },
+ {
+  "part": "01089",
+  "hull_mesh_iou": 0.7138,
+  "hull_iou": 0.6845,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-9))\nr=w0.sketch().segment((-99,-67),(-87,-68)).segment((-87,-84)).segment((-70,-84)).segment((-70,-89)).segment((-11,-89)).arc((1,-90),(13,-89)).segment((46,-89)).segment((46,-84)).segment((50,-84)).segment((50,-71)).arc((64,-64),(76,-53)).segment((85,-54)).segment((86,-39)).arc((99,-11),(96,20)).segment((96,39)).segment((80,39)).arc((70,49),(58,57)).segment((61,76)).segment((50,78)).segment((50,87)).segment((33,87)).segment((33,90)).segment((-16,90)).segment((-16,83)).segment((-88,88)).segment((-89,73)).arc((-97,50),(-94,26)).segment((-9"
+ },
+ {
+  "part": "01512",
+  "hull_mesh_iou": 0.5393,
+  "hull_iou": 0.1347,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,56))\nr=w0.sketch().segment((-99,-1),(-94,-1)).arc((-88,-32),(-72,-60)).segment((-74,-66)).segment((-58,-72)).arc((-35,-89),(-8,-94)).segment((12,-100)).segment((14,-94)).arc((49,-83),(76,-56)).segment((80,-56)).segment((80,-53)).arc((94,-24),(96,8)).segment((99,1)).segment((94,1)).arc((88,38),(68,69)).segment((68,71)).segment((66,71)).arc((45,86),(21,94)).segment((-12,100)).segment((-14,96)).arc((-39,88),(-64,73)).segment((-68,73)).segment((-68,69)).arc((-88,37),(-96,-1)).segment((-97,-1)).close().assemble().reset().face(w0.sketch().segmen"
+ },
+ {
+  "part": "00873",
+  "hull_mesh_iou": 0.7556,
+  "hull_iou": 0.9095,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-11))\nr=w0.sketch().segment((-100,-82),(97,-83)).segment((97,-70)).arc((100,-55),(97,-39)).segment((98,81)).segment((78,82)).arc((65,83),(52,82)).segment((-97,82)).segment((-97,40)).segment((-99,40)).segment((-99,37)).arc((-81,-10),(-99,-57)).close().assemble().finalize().extrude(22)"
+ },
+ {
+  "part": "00982",
+  "hull_mesh_iou": 0.8966,
+  "hull_iou": 0.9043,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-13))\nr=w0.sketch().segment((-100,-16),(-59,-69)).segment((-59,-70)).segment((-58,-70)).segment((-34,-94)).segment((-17,-77)).segment((-45,-37)).segment((-45,-19)).segment((-39,-19)).segment((-39,-23)).segment((-21,-4)).segment((21,-39)).segment((41,-26)).segment((10,25)).segment((40,45)).segment((78,4)).segment((92,2)).segment((100,16)).segment((59,69)).segment((58,70)).segment((39,94)).segment((-2,68)).segment((-9,68)).segment((-9,61)).segment((-40,39)).segment((-40,38)).segment((-41,38)).segment((-41,39)).segment((-40,39)).segment((-40,"
+ },
+ {
+  "part": "01100",
+  "hull_mesh_iou": 0.3861,
+  "hull_iou": 0.4001,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,28,0))\nw1=cq.Workplane('YZ',origin=(97,0,0))\nr=w0.sketch().segment((-74,-95),(-53,-95)).segment((-53,-98)).segment((-37,-98)).segment((-37,-100)).segment((37,-99)).segment((37,-97)).segment((69,-97)).segment((69,-95)).segment((79,-95)).segment((79,95)).segment((69,95)).segment((69,97)).segment((53,97)).segment((53,98)).segment((-37,97)).segment((-37,95)).segment((-53,95)).segment((-53,94)).segment((-74,94)).close().assemble().finalize().extrude(-56).union(w1.workplane(offset=-170/2).box(44,158,170))"
+ },
+ {
+  "part": "01947",
+  "hull_mesh_iou": 0.5996,
+  "hull_iou": 0.6749,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,58))\nr=w0.sketch().segment((-98,10),(-94,4)).arc((-82,-43),(-48,-80)).segment((-44,-86)).segment((-40,-85)).arc((43,-84),(93,-18)).segment((98,-10)).segment((94,-4)).arc((82,46),(48,81)).segment((44,87)).segment((40,87)).arc((-43,89),(-93,18)).close().assemble().reset().face(w0.sketch().segment((-38,11),(-10,-35)).segment((38,-12)).segment((10,34)).close().assemble(),mode='s').push([(19,-48)]).circle(2,mode='s').finalize().extrude(-116).union(w0.sketch().segment((-98,10),(-84,-12)).arc((-74,-53),(-42,-81)).segment((-28,-100)).segment((-13,"
+ },
+ {
+  "part": "01449",
+  "hull_mesh_iou": 0.3125,
+  "hull_iou": 0.3359,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,16,0))\nw1=cq.Workplane('YZ',origin=(96,0,0))\nr=w0.sketch().segment((-33,93),(-29,53)).arc((-29,26),(-21,1)).segment((-19,-10)).arc((-29,-76),(34,-95)).segment((34,-45)).segment((33,-45)).segment((33,-44)).segment((34,-44)).segment((34,95)).arc((10,96),(-13,93)).segment((-14,100)).close().assemble().finalize().extrude(-32).union(w1.workplane(offset=-182/2).moveTo(2,-14).cylinder(182,20))"
+ },
+ {
+  "part": "01099",
+  "hull_mesh_iou": 0.9005,
+  "hull_iou": 0.1682,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-7))\nr=w0.sketch().segment((-100,11),(-74,-7)).arc((-58,-13),(-42,-18)).segment((-31,-21)).segment((15,-21)).segment((15,-19)).arc((55,-10),(83,13)).segment((100,20)).segment((95,21)).segment((93,21)).segment((93,14)).segment((89,14)).segment((89,11)).segment((93,11)).segment((93,9)).segment((89,9)).segment((89,7)).segment((85,7)).segment((85,9)).segment((81,9)).segment((81,11)).segment((85,11)).segment((85,14)).segment((89,14)).segment((89,16)).segment((85,16)).segment((85,18)).segment((81,18)).segment((81,16)).segment((77,16)).segment((7"
+ },
+ {
+  "part": "01682",
+  "hull_mesh_iou": 0.9473,
+  "hull_iou": 0.8793,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,5))\nr=w0.sketch().segment((-73,8),(95,-52)).segment((100,-35)).segment((98,-35)).segment((98,-24)).segment((100,-24)).segment((100,-10)).segment((98,-10)).segment((98,1)).segment((99,1)).segment((98,2)).segment((98,10)).segment((97,10)).arc((84,23),(69,10)).segment((68,10)).segment((68,1)).segment((-70,42)).arc((-100,38),(-73,18)).close().assemble().finalize().extrude(-9)"
+ },
+ {
+  "part": "01179",
+  "hull_mesh_iou": 0.875,
+  "hull_iou": 0.9416,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,24))\nr=w0.sketch().segment((-100,-4),(-97,-18)).segment((-96,-18)).arc((-92,-36),(-87,-52)).segment((-87,-48)).segment((-63,-76)).segment((-67,-79)).arc((-49,-87),(-31,-90)).segment((-31,-96)).segment((-15,-97)).arc((16,-98),(46,-87)).segment((55,-88)).segment((56,-81)).arc((91,-38),(97,17)).segment((100,18)).segment((97,32)).segment((96,32)).arc((87,48),(75,65)).segment((75,68)).segment((72,68)).arc((54,87),(31,95)).segment((31,96)).segment((28,96)).arc((16,98),(4,99)).segment((4,96)).segment((-31,96)).segment((-31,95)).arc((-80,59),(-98,"
+ },
+ {
+  "part": "00174",
+  "hull_mesh_iou": 0.2617,
+  "hull_iou": 0.2617,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-98,0,0))\nr=w0.sketch().segment((-12,-27),(-10,-27)).arc((0,-31),(10,-27)).segment((12,-27)).segment((12,31)).segment((-12,31)).close().assemble().finalize().extrude(196).union(w0.sketch().arc((-12,-19),(0,-23),(12,-19)).close().assemble().reset().face(w0.sketch().segment((-12,19),(12,19)).arc((0,23),(-12,19)).assemble()).finalize().extrude(198))"
+ },
+ {
+  "part": "01894",
+  "hull_mesh_iou": 0.1547,
+  "hull_iou": 0.25,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,76))\nr=w0.sketch().segment((-97,17),(-92,13)).arc((-93,-17),(-80,-47)).segment((-75,-47)).segment((-75,-62)).arc((-65,-70),(-53,-76)).segment((-48,-81)).segment((-45,-80)).segment((-46,-84)).segment((13,-98)).segment((15,-92)).arc((48,-81),(74,-57)).segment((85,-46)).segment((80,-42)).arc((93,17),(62,73)).segment((62,75)).segment((59,76)).arc((37,89),(13,95)).segment((13,98)).segment((-1,98)).segment((-1,95)).arc((-53,80),(-88,33)).segment((-90,34)).close().assemble().reset().face(w0.sketch().segment((-72,53),(-10,-75)).segment((81,-30)).s"
+ },
+ {
+  "part": "00626",
+  "hull_mesh_iou": 0.8348,
+  "hull_iou": 0.7938,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-23))\nr=w0.sketch().segment((-100,-13),(-97,-14)).segment((-97,-56)).segment((-95,-56)).segment((-95,-70)).segment((-96,-70)).segment((-95,-71)).segment((-94,-70)).segment((-72,-73)).segment((-71,-74)).segment((-70,-73)).segment((94,-73)).segment((94,-56)).segment((96,-56)).segment((96,-34)).segment((100,13)).segment((96,14)).segment((96,56)).segment((94,56)).segment((94,70)).segment((96,70)).segment((95,71)).segment((94,70)).segment((72,73)).segment((71,74)).segment((70,73)).segment((-94,73)).segment((-94,70)).segment((-96,70)).segment((-"
+ },
+ {
+  "part": "01181",
+  "hull_mesh_iou": 0.0145,
+  "hull_iou": 0.0175,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-11,0,0))\nw1=cq.Workplane('ZX',origin=(0,-27,0))\nr=w0.sketch().segment((-34,-11),(-29,-11)).segment((-29,-18)).segment((-17,-18)).arc((-12,-26),(-5,-31)).segment((-5,-30)).segment((-4,-30)).segment((-4,-32)).arc((1,-33),(6,-33)).segment((6,-26)).segment((14,-26)).segment((14,-25)).segment((21,-25)).arc((30,-16),(35,-4)).segment((42,-4)).segment((41,23)).segment((34,23)).segment((34,30)).segment((24,30)).arc((0,42),(-24,33)).segment((-29,33)).segment((-29,26)).segment((-33,26)).close().assemble().finalize().extrude(-89).union(w0.sketch().segmen"
+ },
+ {
+  "part": "01875",
+  "hull_mesh_iou": 0.9815,
+  "hull_iou": 0.9723,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-14))\nr=w0.sketch().segment((-100,-14),(-94,-26)).segment((-91,-24)).arc((-51,-54),(-1,-52)).arc((30,-57),(61,-50)).segment((64,-50)).segment((64,-49)).arc((79,-40),(91,-27)).segment((98,-19)).segment((97,-17)).arc((99,13),(83,42)).segment((83,44)).segment((76,47)).arc((65,54),(52,55)).segment((45,56)).segment((45,55)).arc((30,55),(16,51)).arc((-10,56),(-35,55)).arc((-51,56),(-67,51)).arc((-94,29),(-96,-6)).close().assemble().finalize().extrude(28)"
+ },
+ {
+  "part": "00139",
+  "error": "TypeError: 'NoneType' object is not subscriptable",
+  "trace": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 120, in trimmed_to_top\n    h = top_height(carved)\n        ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/photo2fcstd/src/photo2fcstd/carve.py\", line 111, in top_height\n    z = carved[\"points_mm\"][:, 2]; vox = carved[\"voxel_mm\"]\n        ~~~~~~^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+ },
+ {
+  "part": "01477",
+  "hull_mesh_iou": 0.9127,
+  "hull_iou": 0.9457,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,49))\nr=w0.sketch().segment((-97,15),(-92,13)).arc((-88,-31),(-65,-65)).segment((-70,-70)).segment((-61,-74)).arc((-45,-83),(-27,-89)).segment((-18,-94)).segment((-16,-91)).arc((3,-94),(23,-92)).segment((26,-94)).segment((29,-91)).arc((43,-85),(56,-77)).segment((57,-77)).segment((57,-76)).arc((62,-70),(67,-65)).segment((72,-60)).segment((72,-61)).arc((94,-19),(91,29)).segment((92,31)).segment((88,34)).arc((72,62),(47,85)).segment((50,85)).segment((18,98)).segment((16,92)).arc((1,95),(-14,93)).segment((-17,98)).segment((-22,92)).segment((-32"
+ },
+ {
+  "part": "01124",
+  "hull_mesh_iou": 0.9473,
+  "hull_iou": 0.8961,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,7))\nr=w0.sketch().segment((-100,-10),(-98,-10)).segment((-98,-74)).segment((-73,-74)).segment((-73,-73)).segment((-28,-73)).arc((-12,-75),(4,-73)).segment((68,-75)).segment((68,-74)).segment((98,-74)).segment((98,-30)).segment((100,-30)).segment((98,-28)).segment((98,-10)).segment((100,-10)).segment((100,10)).segment((98,10)).segment((98,74)).segment((73,74)).segment((73,73)).segment((28,73)).arc((12,75),(-4,73)).segment((-68,73)).segment((-68,74)).segment((-68,75)).segment((-68,74)).segment((-98,75)).segment((-98,30)).segment((-99,30)).se"
+ },
+ {
+  "part": "01525",
+  "hull_mesh_iou": 0.3397,
+  "hull_iou": 0.3573,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(-100,0,0))\nr=w0.sketch().arc((-10,-11),(0,-15),(10,-11)).segment((10,15)).segment((-10,15)).close().assemble().finalize().extrude(200)"
+ },
+ {
+  "part": "01510",
+  "hull_mesh_iou": 0.7029,
+  "hull_iou": 0.0929,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,48))\nr=w0.sketch().segment((-100,-1),(-95,-7)).arc((-91,-37),(-78,-63)).segment((-78,-64)).segment((-77,-64)).arc((-70,-72),(-63,-79)).segment((-59,-86)).segment((-56,-84)).arc((-51,-88),(-46,-90)).segment((-46,-82)).arc((-41,-81),(-36,-79)).arc((-35,-49),(-23,-28)).segment((-46,-28)).segment((-46,-21)).arc((-10,12),(35,-2)).segment((35,-10)).arc((46,-18),(35,-27)).segment((35,-58)).segment((29,-58)).segment((29,-53)).arc((45,-64),(40,-80)).arc((53,-87),(61,-79)).arc((87,-45),(93,-1)).segment((100,17)).segment((88,22)).arc((67,58),(35,80))"
+ },
+ {
+  "part": "00579",
+  "hull_mesh_iou": 0.9097,
+  "hull_iou": 0.8223,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,10))\nr=w0.sketch().segment((-100,-33),(-98,-62)).segment((-40,-60)).segment((-40,-62)).segment((88,-62)).segment((88,-56)).segment((99,-56)).segment((99,-32)).segment((97,-32)).arc((36,63),(-24,-33)).close().assemble().reset().face(w0.sketch().segment((19,32),(20,29)).arc((0,-1),(22,-31)).segment((23,-35)).segment((34,-33)).arc((45,-35),(56,-34)).segment((67,-34)).segment((67,-29)).arc((74,-10),(71,9)).segment((70,12)).segment((69,12)).arc((58,27),(40,29)).segment((40,32)).close().assemble(),mode='s').finalize().extrude(-20)"
+ },
+ {
+  "part": "01254",
+  "hull_mesh_iou": 0.2387,
+  "hull_iou": 0.2382,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(26,0,0))\nr=w0.sketch().segment((-100,-47),(-98,-47)).segment((-98,-76)).segment((-92,-76)).segment((-92,-93)).segment((99,-90)).segment((98,-76)).segment((100,-76)).segment((100,76)).segment((94,76)).segment((94,93)).segment((-92,92)).segment((-92,76)).segment((-94,76)).segment((-94,61)).segment((-98,61)).segment((-98,32)).segment((-100,32)).close().assemble().finalize().extrude(-52)"
+ },
+ {
+  "part": "01560",
+  "hull_mesh_iou": 0.3945,
+  "hull_iou": 0.4272,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,33,0))\nr=w0.sketch().segment((-84,-89),(-70,-90)).segment((-70,-96)).segment((-44,-99)).segment((-44,-100)).segment((14,-100)).segment((14,-98)).segment((84,-98)).segment((84,96)).segment((59,96)).segment((59,98)).segment((44,100)).segment((44,98)).segment((14,98)).segment((14,100)).segment((-44,100)).segment((-44,98)).segment((-84,98)).segment((-84,81)).segment((-78,81)).segment((-80,4)).segment((-84,4)).close().assemble().finalize().extrude(-66).union(w0.workplane(offset=-52/2).moveTo(-10,0).box(128,196,52))"
+ },
+ {
+  "part": "00697",
+  "hull_mesh_iou": 0.3495,
+  "hull_iou": 0.5291,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(99,0,0))\nr=w0.sketch().segment((-41,-1),(40,-2)).segment((40,1)).segment((-41,2)).close().assemble().finalize().extrude(-199).union(w0.workplane(offset=1/2).moveTo(11,0).cylinder(1,3))"
+ },
+ {
+  "part": "01674",
+  "hull_mesh_iou": 0.8848,
+  "hull_iou": 0.8136,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,36))\nw1=cq.Workplane('YZ',origin=(-6,0,0))\nr=w0.sketch().segment((-95,-59),(-26,-63)).segment((-25,-58)).segment((-23,-58)).segment((-23,-28)).segment((-20,-1)).segment((95,-1)).segment((95,17)).segment((98,17)).segment((96,58)).segment((71,59)).segment((71,57)).segment((61,57)).segment((61,59)).segment((-94,60)).segment((-94,42)).segment((-95,42)).segment((-95,32)).arc((-98,10),(-95,-9)).close().assemble().finalize().extrude(-72).union(w0.sketch().segment((-100,-14),(-95,-15)).segment((-95,-55)).segment((-23,-55)).segment((-23,-14)).segme"
+ },
+ {
+  "part": "01380",
+  "hull_mesh_iou": 0.8034,
+  "hull_iou": 0.8551,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('YZ',origin=(100,0,0))\nr=w0.workplane(offset=-200/2).moveTo(0,-1).cylinder(200,6).union(w0.sketch().arc((-10,-6),(0,-12),(10,-6)).segment((10,10)).arc((0,12),(-10,9)).close().assemble().finalize().extrude(-199))"
+ },
+ {
+  "part": "01609",
+  "hull_mesh_iou": 0.4283,
+  "hull_iou": 0.4337,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,21,0))\nw1=cq.Workplane('YZ',origin=(-95,0,0))\nr=w0.sketch().segment((-11,97),(-10,86)).arc((-29,10),(32,-39)).segment((32,-100)).segment((33,-100)).segment((32,-89)).segment((32,97)).segment((28,97)).segment((28,100)).close().assemble().finalize().extrude(-56).union(w1.sketch().segment((-14,-32),(32,-32)).arc((10,29),(-14,-32)).assemble().finalize().extrude(190))"
+ },
+ {
+  "part": "00884",
+  "hull_mesh_iou": 0.9573,
+  "hull_iou": 0.9252,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-19))\nr=w0.sketch().segment((-95,56),(-92,45)).arc((-97,-32),(-42,-82)).segment((-42,-77)).arc((-18,-81),(6,-77)).segment((6,-82)).arc((13,-82),(20,-80)).arc((60,-79),(91,-55)).segment((95,-54)).segment((92,-45)).arc((97,-27),(98,-8)).arc((99,5),(97,17)).arc((97,34),(91,51)).segment((91,56)).segment((89,56)).arc((87,59),(84,62)).segment((84,65)).segment((81,65)).arc((41,79),(-1,77)).segment((-6,82)).segment((-10,79)).arc((-51,79),(-86,60)).close().assemble().finalize().extrude(38)"
+ },
+ {
+  "part": "01838",
+  "hull_mesh_iou": 0.9376,
+  "hull_iou": 0.9299,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-28))\nr=w0.sketch().segment((-100,-14),(-95,-49)).segment((-88,-48)).arc((-27,-75),(35,-47)).segment((42,-46)).segment((42,-41)).arc((51,-28),(57,-14)).segment((62,-14)).segment((62,14)).segment((57,14)).arc((0,55),(-57,14)).segment((-64,14)).segment((-64,-1)).arc((-73,-10),(-79,-20)).close().assemble().finalize().extrude(27).union(w0.sketch().segment((-94,-71),(95,-73)).segment((95,-69)).segment((95,-68)).segment((95,-67)).arc((100,-20),(94,20)).segment((94,30)).segment((96,30)).segment((97,71)).segment((-93,73)).segment((-93,69)).segment"
+ },
+ {
+  "part": "01858",
+  "hull_mesh_iou": 0.8085,
+  "hull_iou": 0.6774,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,-10))\nr=w0.sketch().segment((-100,25),(-28,-14)).segment((-62,-92)).segment((-59,-93)).segment((-25,-15)).segment((62,-91)).segment((62,-90)).segment((29,-14)).segment((39,-19)).segment((45,-5)).arc((65,1),(80,15)).segment((100,24)).segment((98,28)).segment((80,20)).arc((69,23),(59,18)).segment((10,34)).segment((14,40)).segment((4,47)).segment((11,51)).segment((1,93)).segment((-8,72)).segment((-3,72)).segment((-3,69)).segment((-1,69)).segment((-1,66)).segment((-3,66)).segment((-3,63)).segment((-1,63)).segment((-1,60)).segment((-3,60)).segm"
+ },
+ {
+  "part": "00825",
+  "hull_mesh_iou": 0.8743,
+  "hull_iou": 0.8332,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,76))\nr=w0.workplane(offset=-153/2).cylinder(153,93).union(w0.sketch().segment((-100,-10),(-88,-19)).arc((-50,-80),(20,-95)).segment((32,-100)).segment((39,-87)).arc((80,-52),(95,2)).segment((100,10)).segment((88,19)).arc((50,80),(-20,95)).segment((-32,100)).segment((-39,87)).arc((-80,52),(-95,-2)).close().assemble().finalize().extrude(-103))"
+ },
+ {
+  "part": "00701",
+  "hull_mesh_iou": 0.9729,
+  "hull_iou": 0.9278,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,3))\nr=w0.sketch().segment((-99,-70),(-66,-71)).segment((-66,-72)).segment((66,-72)).segment((66,-71)).segment((99,-71)).segment((99,-27)).segment((100,-27)).segment((100,35)).segment((99,35)).segment((99,71)).segment((66,70)).segment((66,72)).segment((65,72)).segment((65,35)).segment((66,35)).segment((66,-35)).segment((16,-35)).segment((18,33)).segment((-15,33)).arc((-41,-35),(-65,35)).segment((-66,35)).segment((-66,71)).segment((-99,72)).segment((-99,27)).segment((-100,27)).close().assemble().finalize().extrude(-6)"
+ },
+ {
+  "part": "01676",
+  "hull_mesh_iou": 0.9045,
+  "hull_iou": 0.9176,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,62))\nw1=cq.Workplane('YZ',origin=(61,0,0))\nr=w0.sketch().segment((-97,-87),(94,-90)).segment((97,88)).segment((-94,90)).close().assemble().finalize().extrude(-124).union(w0.sketch().segment((-100,-69),(-61,-69)).segment((-61,-93)).segment((61,-93)).segment((61,-69)).segment((100,-69)).segment((100,69)).segment((61,69)).segment((61,93)).segment((-61,93)).segment((-61,69)).segment((-100,69)).close().assemble().finalize().extrude(-106)).union(w1.workplane(offset=39/2).moveTo(0,1).cylinder(39,52))"
+ },
+ {
+  "part": "00208",
+  "hull_mesh_iou": 0.1316,
+  "hull_iou": 0.1464,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('ZX',origin=(0,14,0))\nw1=cq.Workplane('YZ',origin=(96,0,0))\nr=w0.sketch().segment((-31,-97),(31,-97)).segment((31,94)).arc((1,96),(-31,94)).close().assemble().finalize().extrude(-28).union(w1.workplane(offset=-193/2).moveTo(0,-1).box(14,60,193))"
+ },
+ {
+  "part": "00718",
+  "hull_mesh_iou": 0.925,
+  "hull_iou": 0.4949,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,5))\nr=w0.sketch().arc((79,-59),(80,-50),(89,-46)).arc((-86,51),(79,-59)).assemble().push([(0,1)]).circle(78,mode='s').finalize().extrude(-10)"
+ },
+ {
+  "part": "00027",
+  "hull_mesh_iou": 0.7097,
+  "hull_iou": 0.5573,
+  "hull_code": "import cadquery as cq\nw0=cq.Workplane('XY',origin=(0,0,8))\nw1=cq.Workplane('YZ',origin=(-92,0,0))\nr=w0.sketch().segment((-92,-30),(-46,-25)).segment((-46,-18)).segment((-91,-28)).close().assemble().reset().face(w0.sketch().segment((-42,-19),(-41,-24)).segment((-3,-11)).segment((13,-4)).segment((14,-4)).segment((14,-3)).segment((27,2)).segment((26,6)).segment((14,1)).segment((14,12)).segment((9,12)).segment((9,1)).segment((-42,-7)).segment((-42,-8)).close().assemble()).reset().face(w0.sketch().segment((31,19),(32,15)).segment((44,11)).arc((49,13),(52,11)).segment((100,37)).segment((96,47)).segm"
+ }
+]

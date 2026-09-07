@@ -863,3 +863,7 @@ rect 0.78 (photo path 0.56), cylinders 0.77 (0.75), tubes 0.43 (the hull cannot 
 0.49. Nineteen parts failed inside CadQuery on a degenerate arc. Pipeline "board hull -> CAD-Recode"
 gives double the matching parts of the photo path (51 vs 25) with zero hand-written templates.
 `BOARD_VIEWS=12` in `board_bench.py` tests whether a denser orbit raises the hull ceiling.
+
+Twelve rendered views instead of six (`BOARD_VIEWS=12`): hull mesh >= 0.8 on 74 parts (was 63),
+mean 0.697 (flat); hull -> CAD-Recode >= 0.8 on 58 (was 51). Per family the hull is unchanged
+for tubes (0.46) and frames (0.51): concavities are a silhouette limit, not a view-count limit.
